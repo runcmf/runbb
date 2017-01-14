@@ -1,0 +1,54 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: RunBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: FeatherBB <admin@featherbb.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "Topics"
+msgstr "Темы"
+
+msgid "Link to"
+msgstr "Link to:"
+
+msgid "Empty board"
+msgstr "Форум пустой."
+
+msgid "Newest user"
+msgstr "Последний зарегистрированный: %s"
+
+msgid "Users online"
+msgstr "Пользователей онлайн: %s"
+
+msgid "Guests online"
+msgstr "Гостей онлайн: %s"
+
+msgid "No of users"
+msgstr "Всего зарегистрированных: %s"
+
+msgid "No of topics"
+msgstr "Всего тем: %s"
+
+msgid "No of posts"
+msgstr "Всего сообщений: %s"
+
+msgid "Online"
+msgstr "Онлайн:"
+
+msgid "Board info"
+msgstr "Информация форума"
+
+msgid "Board stats"
+msgstr "Статистика форума"
+
+msgid "User info"
+msgstr "Информация пользователя"

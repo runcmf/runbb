@@ -1,0 +1,10 @@
+{
+    "name": "sceditor-toolbar",
+    "title": "SCEditor Toolbar",
+    "description": "Add a SCEditor toolbar to format BBCode in your posts.",
+    "version": "0.1.0",
+    "keywords": ["runbb", "bbcode", "toolbar", "helper", "messages"],
+    "author": {
+        "name": "1f7"
+    }
+}
