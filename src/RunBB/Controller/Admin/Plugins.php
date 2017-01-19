@@ -19,6 +19,7 @@ use ZipArchive;
 class Plugins
 {
     private $c;
+
     public function __construct(\Slim\Container $c)
     {
         $this->c = $c;
@@ -28,15 +29,20 @@ class Plugins
 
     /**
      * Download a plugin, unzip it and rename it
+     * @param $req
+     * @param $res
+     * @param $args
+     * @return mixed
+     * @throws RunBBException
      */
     public function download($req, $res, $args)
     {
-        $zipFile = ForumEnv::get('FORUM_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name']."-".$args['version'].'.zip';
+        $zipFile = ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'] . "-" . $args['version'] . '.zip';
         $zipResource = fopen($zipFile, "w");
 
         // Get the zip file straight from GitHub
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://codeload.github.com/featherbb/' . $args['name'] . '/zip/'.$args['version']);
+        curl_setopt($ch, CURLOPT_URL, 'https://codeload.github.com/featherbb/' . $args['name'] . '/zip/' . $args['version']);
         curl_setopt($ch, CURLOPT_FAILONERROR, true);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -51,7 +57,7 @@ class Plugins
         fclose($zipResource);
 
         if (!$page) {
-            unlink(ForumEnv::get('FORUM_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name']."-".$args['version'].'.zip');
+            unlink(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'] . "-" . $args['version'] . '.zip');
             throw new  RunBBException(__('Bad request'), 400);
         }
 
@@ -61,19 +67,28 @@ class Plugins
             throw new  RunBBException(__('Bad request'), 400);
         }
 
-        $zip->extractTo(ForumEnv::get('FORUM_ROOT').'plugins');
+        $zip->extractTo(ForumEnv::get('FORUM_ROOT') . 'plugins');
         $zip->close();
 
-        if (file_exists(ForumEnv::get('FORUM_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name'])) {
-            AdminUtils::delete_folder(ForumEnv::get('FORUM_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name']);
+        if (file_exists(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'])) {
+            AdminUtils::delete_folder(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name']);
         }
-        rename(ForumEnv::get('FORUM_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name']."-".$args['version'], ForumEnv::get('FORUM_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name']);
-        unlink(ForumEnv::get('FORUM_ROOT').'plugins'.DIRECTORY_SEPARATOR.$args['name']."-".$args['version'].'.zip');
+        rename(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'] . "-" . $args['version'], ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name']);
+        unlink(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'] . "-" . $args['version'] . '.zip');
         return Router::redirect(Router::pathFor('adminPlugins'), 'Plugin downloaded!');
     }
 
+    /**
+     * @param $req
+     * @param $res
+     * @param $args
+     * @throws RunBBException
+     */
     public function index($req, $res, $args)
     {
+        // check plugins dir exists
+        Utils::checkDir($this->c['forum_env']['WEB_ROOT'] . $this->c['forum_env']['WEB_PLUGINS']);
+
         Container::get('hooks')->fire('controller.admin.plugins.index');
 
         View::addAsset('js', 'style/imports/common.js', ['type' => 'text/javascript']);
@@ -88,13 +103,20 @@ class Plugins
         View::setPageInfo([
             'admin_console' => true,
             'active_page' => 'admin',
-            'availablePlugins'    =>    $availablePlugins,
-            'activePlugins'    =>    $activePlugins,
-            'officialPlugins'    =>    $officialPlugins,
+            'availablePlugins' => $availablePlugins,
+            'activePlugins' => $activePlugins,
+            'officialPlugins' => $officialPlugins,
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')],
-            ])->addTemplate('admin/plugins.php')->display();
+        ])->addTemplate('admin/plugins.php')->display();
     }
 
+    /**
+     * @param $req
+     * @param $res
+     * @param $args
+     * @return mixed
+     * @throws RunBBException
+     */
     public function activate($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.plugins.activate');
@@ -108,6 +130,13 @@ class Plugins
         return Router::redirect(Router::pathFor('adminPlugins'), 'Plugin activated!');
     }
 
+    /**
+     * @param $req
+     * @param $res
+     * @param $args
+     * @return mixed
+     * @throws RunBBException
+     */
     public function deactivate($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.plugins.deactivate');
@@ -117,10 +146,17 @@ class Plugins
         }
 
         $this->model->deactivate($args['name']);
-        // // Plugin has been deactivated, confirm and redirect
+        // Plugin has been deactivated, confirm and redirect
         return Router::redirect(Router::pathFor('adminPlugins'), ['warning', 'Plugin deactivated!']);
     }
 
+    /**
+     * @param $req
+     * @param $res
+     * @param $args
+     * @return mixed
+     * @throws RunBBException
+     */
     public function uninstall($req, $res, $args)
     {
         Container::get('hooks')->fire('controller.admin.plugins.uninstall');
@@ -134,23 +170,23 @@ class Plugins
         return Router::redirect(Router::pathFor('adminPlugins'), ['warning', 'Plugin uninstalled!']);
     }
 
+
     /**
      * Load plugin info if it exists
-     * @param null $pluginName
-     * @throws Error
+     * @param $req
+     * @param $res
+     * @param $args
+     * @return mixed
+     * @throws RunBBException
      */
     public function info($req, $res, $args)
     {
-//        $formattedPluginName =  str_replace('-', '', $args['name']);
-        // camel case
-        $formattedPluginName = //lcfirst(
+        $formattedPluginName =
             str_replace(' ', '', ucwords(
                 str_replace(['-', '_'], ' ', $args['name'])
             ));
-//        );
-        // TODO plugins from composer with any namespaces
-        $new = "\\RunBB\\Plugins\\Controller\\".$formattedPluginName;
-//        $new = "\\RunBB\\Plugins\\".$formattedPluginName;
+
+        $new = "\\RunBB\\Plugins\\Controller\\" . $formattedPluginName;
         if (class_exists($new)) {
             $plugin = new $new;
             if (method_exists($plugin, 'info')) {

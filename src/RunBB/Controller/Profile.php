@@ -89,7 +89,7 @@ class Profile
         $user = $this->model->get_user_info($args['id']);
 
         if ($user->signature != '') {
-            $parsed_signature = Container::get('parser')->parse_signature($user->signature);
+            $parsed_signature = Container::get('parser')->parseSignature($user->signature);
         }
 
         // View or edit?

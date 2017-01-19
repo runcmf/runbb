@@ -78,7 +78,8 @@ $feather->add(new \RunBB\Middleware\Csrf());
 
 $feather_settings = ['config_file' => 'RunBB/config.php',
     'cache_dir' => 'cache/',
-    'debug' => 'all']; // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
+    'debug' => 'all']; // 3 levels : false, info (only execution time and number of queries),
+// and all (display info + queries)
 $feather->add(new \RunBB\Middleware\Auth());
 $feather->add(new \RunBB\Middleware\Core($feather_settings));
 
@@ -89,9 +90,11 @@ if (!defined('FORUM_EXTERN_MAX_SUBJECT_LENGTH')) {
 
 function featherbb_write_cache_file($file, $content)
 {
-    $fh = @fopen(FORUM_CACHE_DIR.$file, 'wb');
+    $fh = @fopen(FORUM_CACHE_DIR . $file, 'wb');
     if (!$fh) {
-        die('Unable to write cache file '.Utils::escape($file).' to cache directory. Please make sure PHP has write access to the directory \''.Utils::escape(FORUM_CACHE_DIR).'\'');
+        die('Unable to write cache file ' . Utils::escape($file) .
+            ' to cache directory. Please make sure PHP has write access to the directory \'' .
+            Utils::escape(FORUM_CACHE_DIR) . '\'');
     }
 
     flock($fh, LOCK_EX);
@@ -103,9 +106,9 @@ function featherbb_write_cache_file($file, $content)
     fclose($fh);
 
     if (function_exists('opcache_invalidate')) {
-        opcache_invalidate(FORUM_CACHE_DIR.$file, true);
+        opcache_invalidate(FORUM_CACHE_DIR . $file, true);
     } elseif (function_exists('apc_delete_file')) {
-        @apc_delete_file(FORUM_CACHE_DIR.$file);
+        @apc_delete_file(FORUM_CACHE_DIR . $file);
     }
 }
 
@@ -123,9 +126,11 @@ function escape_cdata($str)
 function get_current_url($max_length = 0)
 {
     $protocol = get_current_protocol();
-    $port = (isset($_SERVER['SERVER_PORT']) && (($_SERVER['SERVER_PORT'] != '80' && $protocol == 'http') || ($_SERVER['SERVER_PORT'] != '443' && $protocol == 'https')) && strpos($_SERVER['HTTP_HOST'], ':') === false) ? ':'.$_SERVER['SERVER_PORT'] : '';
+    $port = (isset($_SERVER['SERVER_PORT']) && (($_SERVER['SERVER_PORT'] != '80' && $protocol == 'http') ||
+            ($_SERVER['SERVER_PORT'] != '443' && $protocol == 'https')) &&
+        strpos($_SERVER['HTTP_HOST'], ':') === false) ? ':' . $_SERVER['SERVER_PORT'] : '';
 
-    $url = urldecode($protocol.'://'.$_SERVER['HTTP_HOST'].$port.$_SERVER['REQUEST_URI']);
+    $url = urldecode($protocol . '://' . $_SERVER['HTTP_HOST'] . $port . $_SERVER['REQUEST_URI']);
 
     if (strlen($url) <= $max_length || $max_length == 0) {
         return $url;
@@ -146,11 +151,11 @@ function set_default_user()
     $select_set_default_user = ['u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search'];
     $where_set_default_user = ['u.id' => '1'];
 
-    $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+    $result = \ORM::for_table(ORM_TABLE_PREFIX . 'users')
         ->table_alias('u')
         ->select_many($select_set_default_user)
-        ->inner_join(ORM_TABLE_PREFIX.'groups', ['u.group_id', '=', 'g.g_id'], 'g')
-        ->left_outer_join(ORM_TABLE_PREFIX.'online', ['o.ident', '=', $remote_addr], 'o', true)
+        ->inner_join(ORM_TABLE_PREFIX . 'groups', ['u.group_id', '=', 'g.g_id'], 'g')
+        ->left_outer_join(ORM_TABLE_PREFIX . 'online', ['o.ident', '=', $remote_addr], 'o', true)
         ->where($where_set_default_user)
         ->find_result_set();
 
@@ -158,7 +163,7 @@ function set_default_user()
         exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
     }
 
-    foreach ($result as User::get());
+    foreach ($result as User::get()) ;
 
     // Update online list
     if (!User::get()->logged) {
@@ -172,15 +177,21 @@ function set_default_user()
             case 'mysqli_innodb':
             case 'sqlite':
             case 'sqlite3':
-                \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', [':ident' => $remote_addr, ':logged' => User::get()->logged]);
+                \ORM::for_table(ORM_TABLE_PREFIX . 'online')->raw_execute('REPLACE INTO ' .
+                    ForumSettings::get('db_prefix') . 'online (user_id, ident, logged) VALUES(1, :ident, :logged)',
+                    [':ident' => $remote_addr, ':logged' => User::get()->logged]);
                 break;
 
             default:
-                \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE ident=:ident)', [':ident' => $remote_addr, ':logged' => User::get()->logged]);
+                \ORM::for_table(ORM_TABLE_PREFIX . 'online')->raw_execute('INSERT INTO ' .
+                    ForumSettings::get('db_prefix') .
+                    'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM ' .
+                    ForumSettings::get('db_prefix') . 'online WHERE ident=:ident)',
+                    [':ident' => $remote_addr, ':logged' => User::get()->logged]);
                 break;
         }
     } else {
-        \ORM::for_table(ORM_TABLE_PREFIX.'online')->where('ident', $remote_addr)
+        \ORM::for_table(ORM_TABLE_PREFIX . 'online')->where('ident', $remote_addr)
             ->find_one()
             ->set(['logged' => time()])
             ->save();
@@ -199,18 +210,19 @@ function set_default_user()
 //
 // Authenticates the provided username and password against the user database
 // $user can be either a user ID (integer) or a username (string)
-// $password can be either a plaintext password or a password hash including salt ($password_is_hash must be set accordingly)
+// $password can be either a plaintext password or a password hash including salt
+// ($password_is_hash must be set accordingly)
 //
 function authenticate_user($user, $password, $password_is_hash = false)
 {
     // Check if there's a user matching $user and $password
     $select_check_cookie = ['u.*', 'g.*', 'o.logged', 'o.idle'];
 
-    $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')
-                ->table_alias('u')
-                ->select_many($select_check_cookie)
-                ->inner_join(ORM_TABLE_PREFIX.'groups', ['u.group_id', '=', 'g.g_id'], 'g')
-                ->left_outer_join(ORM_TABLE_PREFIX.'online', ['o.user_id', '=', 'u.id'], 'o');
+    $result = \ORM::for_table(ORM_TABLE_PREFIX . 'users')
+        ->table_alias('u')
+        ->select_many($select_check_cookie)
+        ->inner_join(ORM_TABLE_PREFIX . 'groups', ['u.group_id', '=', 'g.g_id'], 'g')
+        ->left_outer_join(ORM_TABLE_PREFIX . 'online', ['o.user_id', '=', 'u.id'], 'o');
 
     if (is_int($user)) {
         $result = $result->where('u.id', intval($user));
@@ -225,7 +237,8 @@ function authenticate_user($user, $password, $password_is_hash = false)
 
     if (!isset(User::get()->id) ||
         ($password_is_hash && $password != User::get()->password) ||
-        (!$password_is_hash && \RunBB\Core\Random::hash($password) != User::get()->password)) {
+        (!$password_is_hash && \RunBB\Core\Random::hash($password) != User::get()->password)
+    ) {
         set_default_user();
     } else {
         User::get()->is_guest = false;
@@ -271,7 +284,7 @@ function http_authenticate_user()
         return;
     }
 
-    header('WWW-Authenticate: Basic realm="'.ForumSettings::get('o_board_title').' External Syndication"');
+    header('WWW-Authenticate: Basic realm="' . ForumSettings::get('o_board_title') . ' External Syndication"');
     header('HTTP/1.0 401 Unauthorized');
 }
 
@@ -283,39 +296,43 @@ function output_rss($feed)
 {
     // Send XML/no cache headers
     header('Content-Type: application/xml; charset=utf-8');
-    header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
+    header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 
-    echo '<?xml version="1.0" encoding="utf-8"?>'."\n";
-    echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'."\n";
-    echo "\t".'<channel>'."\n";
-    echo "\t\t".'<atom:link href="'.Utils::escape(get_current_url()).'" rel="self" type="application/rss+xml" />'."\n";
-    echo "\t\t".'<title><![CDATA['.escape_cdata($feed['title']).']]></title>'."\n";
-    echo "\t\t".'<link>'.Utils::escape($feed['link']).'</link>'."\n";
-    echo "\t\t".'<description><![CDATA['.escape_cdata($feed['description']).']]></description>'."\n";
-    echo "\t\t".'<lastBuildDate>'.gmdate('r', count($feed['items']) ? $feed['items'][0]['pubdate'] : time()).'</lastBuildDate>'."\n";
+    echo '<?xml version="1.0" encoding="utf-8"?>' . "\n";
+    echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">' . "\n";
+    echo "\t" . '<channel>' . "\n";
+    echo "\t\t" . '<atom:link href="' . Utils::escape(get_current_url()) . '" rel="self" type="application/rss+xml" />'
+        . "\n";
+    echo "\t\t" . '<title><![CDATA[' . escape_cdata($feed['title']) . ']]></title>' . "\n";
+    echo "\t\t" . '<link>' . Utils::escape($feed['link']) . '</link>' . "\n";
+    echo "\t\t" . '<description><![CDATA[' . escape_cdata($feed['description']) . ']]></description>' . "\n";
+    echo "\t\t" . '<lastBuildDate>' . gmdate('r', count($feed['items']) ? $feed['items'][0]['pubdate'] :
+            time()) . '</lastBuildDate>' . "\n";
 
     if (ForumSettings::get('o_show_version') == '1') {
-        echo "\t\t".'<generator>RunBB '.ForumSettings::get('o_cur_version').'</generator>'."\n";
+        echo "\t\t" . '<generator>RunBB ' . ForumSettings::get('o_cur_version') . '</generator>' . "\n";
     } else {
-        echo "\t\t".'<generator>RunBB</generator>'."\n";
+        echo "\t\t" . '<generator>RunBB</generator>' . "\n";
     }
 
     foreach ($feed['items'] as $item) {
-        echo "\t\t".'<item>'."\n";
-        echo "\t\t\t".'<title><![CDATA['.escape_cdata($item['title']).']]></title>'."\n";
-        echo "\t\t\t".'<link>'.Utils::escape($item['link']).'</link>'."\n";
-        echo "\t\t\t".'<description><![CDATA['.escape_cdata($item['description']).']]></description>'."\n";
-        echo "\t\t\t".'<author><![CDATA['.(isset($item['author']['email']) ? escape_cdata($item['author']['email']) : 'dummy@example.com').' ('.escape_cdata($item['author']['name']).')]]></author>'."\n";
-        echo "\t\t\t".'<pubDate>'.gmdate('r', $item['pubdate']).'</pubDate>'."\n";
-        echo "\t\t\t".'<guid>'.Utils::escape($item['link']).'</guid>'."\n";
+        echo "\t\t" . '<item>' . "\n";
+        echo "\t\t\t" . '<title><![CDATA[' . escape_cdata($item['title']) . ']]></title>' . "\n";
+        echo "\t\t\t" . '<link>' . Utils::escape($item['link']) . '</link>' . "\n";
+        echo "\t\t\t" . '<description><![CDATA[' . escape_cdata($item['description']) . ']]></description>' . "\n";
+        echo "\t\t\t" . '<author><![CDATA[' . (isset($item['author']['email']) ?
+                escape_cdata($item['author']['email']) : 'dummy@example.com') . ' (' .
+            escape_cdata($item['author']['name']) . ')]]></author>' . "\n";
+        echo "\t\t\t" . '<pubDate>' . gmdate('r', $item['pubdate']) . '</pubDate>' . "\n";
+        echo "\t\t\t" . '<guid>' . Utils::escape($item['link']) . '</guid>' . "\n";
 
-        echo "\t\t".'</item>'."\n";
+        echo "\t\t" . '</item>' . "\n";
     }
 
-    echo "\t".'</channel>'."\n";
-    echo '</rss>'."\n";
+    echo "\t" . '</channel>' . "\n";
+    echo '</rss>' . "\n";
 }
 
 
@@ -326,52 +343,54 @@ function output_atom($feed)
 {
     // Send XML/no cache headers
     header('Content-Type: application/atom+xml; charset=utf-8');
-    header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
+    header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 
-    echo '<?xml version="1.0" encoding="utf-8"?>'."\n";
-    echo '<feed xmlns="http://www.w3.org/2005/Atom">'."\n";
+    echo '<?xml version="1.0" encoding="utf-8"?>' . "\n";
+    echo '<feed xmlns="http://www.w3.org/2005/Atom">' . "\n";
 
-    echo "\t".'<title type="html"><![CDATA['.escape_cdata($feed['title']).']]></title>'."\n";
-    echo "\t".'<link rel="self" href="'.Utils::escape(get_current_url()).'"/>'."\n";
-    echo "\t".'<link href="'.Utils::escape($feed['link']).'"/>'."\n";
-    echo "\t".'<updated>'.gmdate('Y-m-d\TH:i:s\Z', count($feed['items']) ? $feed['items'][0]['pubdate'] : time()).'</updated>'."\n";
+    echo "\t" . '<title type="html"><![CDATA[' . escape_cdata($feed['title']) . ']]></title>' . "\n";
+    echo "\t" . '<link rel="self" href="' . Utils::escape(get_current_url()) . '"/>' . "\n";
+    echo "\t" . '<link href="' . Utils::escape($feed['link']) . '"/>' . "\n";
+    echo "\t" . '<updated>' . gmdate('Y-m-d\TH:i:s\Z', count($feed['items']) ? $feed['items'][0]['pubdate'] :
+            time()) . '</updated>' . "\n";
 
     if (ForumSettings::get('o_show_version') == '1') {
-        echo "\t".'<generator version="'.ForumSettings::get('o_cur_version').'">RunBB</generator>'."\n";
+        echo "\t" . '<generator version="' . ForumSettings::get('o_cur_version') . '">RunBB</generator>' . "\n";
     } else {
-        echo "\t".'<generator>RunBB</generator>'."\n";
+        echo "\t" . '<generator>RunBB</generator>' . "\n";
     }
 
-    echo "\t".'<id>'.Utils::escape($feed['link']).'</id>'."\n";
+    echo "\t" . '<id>' . Utils::escape($feed['link']) . '</id>' . "\n";
 
     $content_tag = ($feed['type'] == 'posts') ? 'content' : 'summary';
 
     foreach ($feed['items'] as $item) {
-        echo "\t".'<entry>'."\n";
-        echo "\t\t".'<title type="html"><![CDATA['.escape_cdata($item['title']).']]></title>'."\n";
-        echo "\t\t".'<link rel="alternate" href="'.Utils::escape($item['link']).'"/>'."\n";
-        echo "\t\t".'<'.$content_tag.' type="html"><![CDATA['.escape_cdata($item['description']).']]></'.$content_tag.'>'."\n";
-        echo "\t\t".'<author>'."\n";
-        echo "\t\t\t".'<name><![CDATA['.escape_cdata($item['author']['name']).']]></name>'."\n";
+        echo "\t" . '<entry>' . "\n";
+        echo "\t\t" . '<title type="html"><![CDATA[' . escape_cdata($item['title']) . ']]></title>' . "\n";
+        echo "\t\t" . '<link rel="alternate" href="' . Utils::escape($item['link']) . '"/>' . "\n";
+        echo "\t\t" . '<' . $content_tag . ' type="html"><![CDATA[' . escape_cdata($item['description']) . ']]></' .
+            $content_tag . '>' . "\n";
+        echo "\t\t" . '<author>' . "\n";
+        echo "\t\t\t" . '<name><![CDATA[' . escape_cdata($item['author']['name']) . ']]></name>' . "\n";
 
         if (isset($item['author']['email'])) {
-            echo "\t\t\t".'<email><![CDATA['.escape_cdata($item['author']['email']).']]></email>'."\n";
+            echo "\t\t\t" . '<email><![CDATA[' . escape_cdata($item['author']['email']) . ']]></email>' . "\n";
         }
 
         if (isset($item['author']['uri'])) {
-            echo "\t\t\t".'<uri>'.Utils::escape($item['author']['uri']).'</uri>'."\n";
+            echo "\t\t\t" . '<uri>' . Utils::escape($item['author']['uri']) . '</uri>' . "\n";
         }
 
-        echo "\t\t".'</author>'."\n";
-        echo "\t\t".'<updated>'.gmdate('Y-m-d\TH:i:s\Z', $item['pubdate']).'</updated>'."\n";
+        echo "\t\t" . '</author>' . "\n";
+        echo "\t\t" . '<updated>' . gmdate('Y-m-d\TH:i:s\Z', $item['pubdate']) . '</updated>' . "\n";
 
-        echo "\t\t".'<id>'.Utils::escape($item['link']).'</id>'."\n";
-        echo "\t".'</entry>'."\n";
+        echo "\t\t" . '<id>' . Utils::escape($item['link']) . '</id>' . "\n";
+        echo "\t" . '</entry>' . "\n";
     }
 
-    echo '</feed>'."\n";
+    echo '</feed>' . "\n";
 }
 
 
@@ -382,40 +401,40 @@ function output_xml($feed)
 {
     // Send XML/no cache headers
     header('Content-Type: application/xml; charset=utf-8');
-    header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
+    header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 
-    echo '<?xml version="1.0" encoding="utf-8"?>'."\n";
-    echo '<source>'."\n";
-    echo "\t".'<url>'.Utils::escape($feed['link']).'</url>'."\n";
+    echo '<?xml version="1.0" encoding="utf-8"?>' . "\n";
+    echo '<source>' . "\n";
+    echo "\t" . '<url>' . Utils::escape($feed['link']) . '</url>' . "\n";
 
     $forum_tag = ($feed['type'] == 'posts') ? 'post' : 'topic';
 
     foreach ($feed['items'] as $item) {
-        echo "\t".'<'.$forum_tag.' id="'.$item['id'].'">'."\n";
+        echo "\t" . '<' . $forum_tag . ' id="' . $item['id'] . '">' . "\n";
 
-        echo "\t\t".'<title><![CDATA['.escape_cdata($item['title']).']]></title>'."\n";
-        echo "\t\t".'<link>'.Utils::escape($item['link']).'</link>'."\n";
-        echo "\t\t".'<content><![CDATA['.escape_cdata($item['description']).']]></content>'."\n";
-        echo "\t\t".'<author>'."\n";
-        echo "\t\t\t".'<name><![CDATA['.escape_cdata($item['author']['name']).']]></name>'."\n";
+        echo "\t\t" . '<title><![CDATA[' . escape_cdata($item['title']) . ']]></title>' . "\n";
+        echo "\t\t" . '<link>' . Utils::escape($item['link']) . '</link>' . "\n";
+        echo "\t\t" . '<content><![CDATA[' . escape_cdata($item['description']) . ']]></content>' . "\n";
+        echo "\t\t" . '<author>' . "\n";
+        echo "\t\t\t" . '<name><![CDATA[' . escape_cdata($item['author']['name']) . ']]></name>' . "\n";
 
         if (isset($item['author']['email'])) {
-            echo "\t\t\t".'<email><![CDATA['.escape_cdata($item['author']['email']).']]></email>'."\n";
+            echo "\t\t\t" . '<email><![CDATA[' . escape_cdata($item['author']['email']) . ']]></email>' . "\n";
         }
 
         if (isset($item['author']['uri'])) {
-            echo "\t\t\t".'<uri>'.Utils::escape($item['author']['uri']).'</uri>'."\n";
+            echo "\t\t\t" . '<uri>' . Utils::escape($item['author']['uri']) . '</uri>' . "\n";
         }
 
-        echo "\t\t".'</author>'."\n";
-        echo "\t\t".'<posted>'.gmdate('r', $item['pubdate']).'</posted>'."\n";
+        echo "\t\t" . '</author>' . "\n";
+        echo "\t\t" . '<posted>' . gmdate('r', $item['pubdate']) . '</posted>' . "\n";
 
-        echo "\t".'</'.$forum_tag.'>'."\n";
+        echo "\t" . '</' . $forum_tag . '>' . "\n";
     }
 
-    echo '</source>'."\n";
+    echo '</source>' . "\n";
 }
 
 
@@ -426,18 +445,20 @@ function output_html($feed)
 {
     // Send the Content-type header in case the web server is setup to send something else
     header('Content-type: text/html; charset=utf-8');
-    header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
+    header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 
     foreach ($feed['items'] as $item) {
         if (utf8_strlen($item['title']) > FORUM_EXTERN_MAX_SUBJECT_LENGTH) {
-            $subject_truncated = Utils::escape(Utils::trim(utf8_substr($item['title'], 0, (FORUM_EXTERN_MAX_SUBJECT_LENGTH - 5)))).' …';
+            $subject_truncated = Utils::escape(Utils::trim(utf8_substr($item['title'], 0,
+                    (FORUM_EXTERN_MAX_SUBJECT_LENGTH - 5)))) . ' …';
         } else {
             $subject_truncated = Utils::escape($item['title']);
         }
 
-        echo '<li><a href="'.Utils::escape($item['link']).'" title="'.Utils::escape($item['title']).'">'.$subject_truncated.'</a></li>'."\n";
+        echo '<li><a href="' . Utils::escape($item['link']) . '" title="' . Utils::escape($item['title']) . '">' .
+            $subject_truncated . '</a></li>' . "\n";
     }
 }
 
@@ -465,20 +486,20 @@ if ($action == 'feed') {
 //            array('fp.read_forum' => '1')
 //        );
 
-        $cur_topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')->table_alias('t')
-                        ->select_many($select_show_recent_topics)
+        $cur_topic = \ORM::for_table(ORM_TABLE_PREFIX . 'topics')->table_alias('t')
+            ->select_many($select_show_recent_topics)
 //                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
 //                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
             ->left_outer_join(
-                ORM_TABLE_PREFIX.'forum_perms',
-                '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
+                ORM_TABLE_PREFIX . 'forum_perms',
+                '(fp.forum_id=t.forum_id AND fp.group_id=' . User::get()->g_id . ')',
                 'fp'
             )
 //                        ->where_any_is($where_show_recent_topics)
-                ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
-                        ->where_null('t.moved_to')
-                        ->where('t.id', $tid)
-                        ->find_one();
+            ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+            ->where_null('t.moved_to')
+            ->where('t.id', $tid)
+            ->find_one();
 
         if (!$cur_topic) {
             http_authenticate_user();
@@ -491,37 +512,42 @@ if ($action == 'feed') {
 
         // Setup the feed
         $feed = [
-            'title'        =>    ForumSettings::get('o_board_title').__('Title separator').$cur_topic['subject'],
-            'link'         =>    Url::get('topic/'.$tid.'/'.Url::url_friendly($cur_topic['subject']).'/'),
-            'description'  =>    sprintf(__('RSS description topic'), $cur_topic['subject']),
-            'items'        =>    [],
-            'type'         =>    'posts'
+            'title' => ForumSettings::get('o_board_title') . __('Title separator') . $cur_topic['subject'],
+            'link' => Url::get('topic/' . $tid . '/' . Url::url_friendly($cur_topic['subject']) . '/'),
+            'description' => sprintf(__('RSS description topic'), $cur_topic['subject']),
+            'items' => [],
+            'type' => 'posts'
         ];
 
         // Fetch $show posts
-        $select_print_posts = ['p.id', 'p.poster', 'p.message', 'p.hide_smilies', 'p.posted', 'p.poster_email', 'p.poster_id', 'u.email_setting', 'u.email'];
+        $select_print_posts = ['p.id', 'p.poster', 'p.message', 'p.hide_smilies', 'p.posted', 'p.poster_email',
+            'p.poster_id', 'u.email_setting', 'u.email'];
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+        $result = \ORM::for_table(ORM_TABLE_PREFIX . 'posts')
             ->table_alias('p')
             ->select_many($select_print_posts)
-            ->inner_join(ORM_TABLE_PREFIX.'users', ['u.id', '=', 'p.poster_id'], 'u')
+            ->inner_join(ORM_TABLE_PREFIX . 'users', ['u.id', '=', 'p.poster_id'], 'u')
             ->where('p.topic_id', $tid)
             ->order_by_desc('p.posted')
             ->limit($show)
             ->find_array();
 
         foreach ($result as $cur_post) {
-            $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
+            $cur_post['message'] = Container::get('parser')->parse_message(
+                $cur_post['message'],
+                $cur_post['hide_smilies']
+            );
 
             $item = [
-                'id'          =>    $cur_post['id'],
-                'title'       =>    $cur_topic['first_post_id'] == $cur_post['id'] ? $cur_topic['subject'] : __('RSS reply').$cur_topic['subject'],
-                'link'        =>    Url::get('post/'.$cur_post['id'].'/#p'.$cur_post['id']),
-                'description' =>    $cur_post['message'],
-                'author'      =>    [
-                    'name'    => $cur_post['poster'],
+                'id' => $cur_post['id'],
+                'title' => $cur_topic['first_post_id'] == $cur_post['id'] ? $cur_topic['subject'] :
+                    __('RSS reply') . $cur_topic['subject'],
+                'link' => Url::get('post/' . $cur_post['id'] . '/#p' . $cur_post['id']),
+                'description' => $cur_post['message'],
+                'author' => [
+                    'name' => $cur_post['poster'],
                 ],
-                'pubdate'     =>    $cur_post['posted']
+                'pubdate' => $cur_post['posted']
             ];
 
             if ($cur_post['poster_id'] > 1) {
@@ -529,7 +555,7 @@ if ($action == 'feed') {
                     $item['author']['email'] = $cur_post['email'];
                 }
 
-                $item['author']['uri'] = Url::get('user/'.$cur_post['poster_id'].'/');
+                $item['author']['uri'] = Url::get('user/' . $cur_post['poster_id'] . '/');
             } elseif ($cur_post['poster_email'] != '' && !User::get()->is_guest) {
                 $item['author']['email'] = $cur_post['poster_email'];
             }
@@ -537,14 +563,14 @@ if ($action == 'feed') {
             $feed['items'][] = $item;
         }
 
-        $output_func = 'output_'.$type;
+        $output_func = 'output_' . $type;
         $output_func($feed);
     } else {
         $order_posted = isset($_GET['order']) && strtolower($_GET['order']) == 'posted';
         $forum_name = '';
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
-                        ->table_alias('t');
+        $result = \ORM::for_table(ORM_TABLE_PREFIX . 'topics')
+            ->table_alias('t');
 
         // Were any forum IDs supplied?
         if (isset($_GET['fid']) && is_scalar($_GET['fid']) && $_GET['fid'] != '') {
@@ -562,22 +588,22 @@ if ($action == 'feed') {
 //                    array('fp.read_forum' => '1')
 //                );
 
-                $cur_topic = \ORM::for_table(ORM_TABLE_PREFIX.'forums')->table_alias('f')
+                $cur_topic = \ORM::for_table(ORM_TABLE_PREFIX . 'forums')->table_alias('f')
 //                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                     ->left_outer_join(
-                        ORM_TABLE_PREFIX.'forum_perms',
-                        '(fp.forum_id=f.id AND fp.group_id='.User::get()->g_id.')',
+                        ORM_TABLE_PREFIX . 'forum_perms',
+                        '(fp.forum_id=f.id AND fp.group_id=' . User::get()->g_id . ')',
                         'fp'
                     )
 //                    ->where_any_is($where_show_forum_name)
-                        ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+                    ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
                     ->where('f.id', $fids[0])
                     ->select('f.forum_name')
                     ->find_one();
 
                 if ($cur_topic) {
-                    $forum_name = __('Title separator').$cur_topic;
+                    $forum_name = __('Title separator') . $cur_topic;
                 }
             }
         }
@@ -593,66 +619,74 @@ if ($action == 'feed') {
         }
 
         // Only attempt to cache if caching is enabled and we have all or a single forum
-        if (ForumSettings::get('o_feed_ttl') > 0 && ($forum_sql == '' || ($forum_name != '' && !isset($_GET['nfid'])))) {
-            $cache_id = 'feed'.sha1(User::get()->g_id.'|'.__('lang_identifier').'|'.($order_posted ? '1' : '0').($forum_name == '' ? '' : '|'.$fids[0]));
+        if (ForumSettings::get('o_feed_ttl') > 0 && ($forum_sql == '' ||
+                ($forum_name != '' && !isset($_GET['nfid'])))) {
+            $cache_id = 'feed' . sha1(User::get()->g_id . '|' . __('lang_identifier') . '|' .
+                    ($order_posted ? '1' : '0') . ($forum_name == '' ? '' : '|' . $fids[0]));
         }
 
         // Load cached feed
-        if (isset($cache_id) && file_exists(FORUM_CACHE_DIR.'cache_'.$cache_id.'.php')) {
-            include FORUM_CACHE_DIR.'cache_'.$cache_id.'.php';
+        if (isset($cache_id) && file_exists(FORUM_CACHE_DIR . 'cache_' . $cache_id . '.php')) {
+            include FORUM_CACHE_DIR . 'cache_' . $cache_id . '.php';
         }
 
         $now = time();
         if (!isset($feed) || $cache_expire < $now) {
             // Setup the feed
             $feed = [
-                'title'        =>    ForumSettings::get('o_board_title').$forum_name,
-                'link'            =>    '/index.php',
-                'description'    =>    sprintf(__('RSS description'), ForumSettings::get('o_board_title')),
-                'items'            =>    [],
-                'type'            =>    'topics'
+                'title' => ForumSettings::get('o_board_title') . $forum_name,
+                'link' => '/index.php',
+                'description' => sprintf(__('RSS description'), ForumSettings::get('o_board_title')),
+                'items' => [],
+                'type' => 'topics'
             ];
 
             // Fetch $show topics
-            $select_print_posts = ['t.id', 't.poster', 't.subject', 't.posted', 't.last_post', 't.last_poster', 'p.message', 'p.hide_smilies', 'u.email_setting', 'u.email', 'p.poster_id', 'p.poster_email'];
+            $select_print_posts = ['t.id', 't.poster', 't.subject', 't.posted', 't.last_post', 't.last_poster',
+                'p.message', 'p.hide_smilies', 'u.email_setting', 'u.email', 'p.poster_id', 'p.poster_email'];
 //            $where_print_posts = array(
 //                array('fp.read_forum' => 'IS NULL'),
 //                array('fp.read_forum' => '1')
 //            );
 
             $result = $result->select_many($select_print_posts)
-                        ->inner_join(ORM_TABLE_PREFIX.'posts', ['p.id', '=', ($order_posted ? 't.first_post_id' : 't.last_post_id')], 'p')
-                        ->inner_join(ORM_TABLE_PREFIX.'users', ['u.id', '=', 'p.poster_id'], 'u')
+                ->inner_join(ORM_TABLE_PREFIX . 'posts', ['p.id', '=',
+                    ($order_posted ? 't.first_post_id' : 't.last_post_id')], 'p')
+                ->inner_join(ORM_TABLE_PREFIX . 'users', ['u.id', '=', 'p.poster_id'], 'u')
 //                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
 //                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                 ->left_outer_join(
-                    ORM_TABLE_PREFIX.'forum_perms',
-                    '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
+                    ORM_TABLE_PREFIX . 'forum_perms',
+                    '(fp.forum_id=t.forum_id AND fp.group_id=' . User::get()->g_id . ')',
                     'fp'
                 )
 //                        ->where_any_is($where_print_posts)
-                    ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
-                        ->where_null('t.moved_to')
-                        ->order_by_expr(($order_posted ? 't.posted' : 't.last_post'))
-                        ->limit((isset($cache_id) ? 50 : $show))
-                        ->find_array();
+                ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+                ->where_null('t.moved_to')
+                ->order_by_expr(($order_posted ? 't.posted' : 't.last_post'))
+                ->limit((isset($cache_id) ? 50 : $show))
+                ->find_array();
 
             foreach ($result as $cur_topic) {
                 if (ForumSettings::get('o_censoring') == '1') {
                     $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
                 }
 
-                $cur_topic['message'] = parse_message($cur_topic['message'], $cur_topic['hide_smilies']);
+                $cur_topic['message'] = Container::get('parser')->parse_message(
+                    $cur_topic['message'],
+                    $cur_topic['hide_smilies']
+                );
 
                 $item = [
-                    'id'            =>    $cur_topic['id'],
-                    'title'            =>    $cur_topic['subject'],
-                    'link'            =>    Url::get('topic/'.$cur_topic['id'].'/'.url_friendly($cur_topic['subject']).'/').($order_posted ? '' : '/action/new/'),
-                    'description'    =>    $cur_topic['message'],
-                    'author'        =>    [
-                        'name'    => $order_posted ? $cur_topic['poster'] : $cur_topic['last_poster']
+                    'id' => $cur_topic['id'],
+                    'title' => $cur_topic['subject'],
+                    'link' => Url::get('topic/' . $cur_topic['id'] . '/' . url_friendly($cur_topic['subject']) . '/') .
+                        ($order_posted ? '' : '/action/new/'),
+                    'description' => $cur_topic['message'],
+                    'author' => [
+                        'name' => $order_posted ? $cur_topic['poster'] : $cur_topic['last_poster']
                     ],
-                    'pubdate'        =>    $order_posted ? $cur_topic['posted'] : $cur_topic['last_post']
+                    'pubdate' => $order_posted ? $cur_topic['posted'] : $cur_topic['last_post']
                 ];
 
                 if ($cur_topic['poster_id'] > 1) {
@@ -660,7 +694,7 @@ if ($action == 'feed') {
                         $item['author']['email'] = $cur_topic['email'];
                     }
 
-                    $item['author']['uri'] = Url::get('user/'.$cur_topic['poster_id'].'/');
+                    $item['author']['uri'] = Url::get('user/' . $cur_topic['poster_id'] . '/');
                 } elseif ($cur_topic['poster_email'] != '' && !User::get()->is_guest) {
                     $item['author']['email'] = $cur_topic['poster_email'];
                 }
@@ -671,11 +705,12 @@ if ($action == 'feed') {
             // Output feed as PHP code
             if (isset($cache_id)) {
                 if (!defined('FORUM_CACHE_FUNCTIONS_LOADED')) {
-                    require FORUM_ROOT.'Helpers/cache.php';
+                    require FORUM_ROOT . 'Helpers/cache.php';
                 }
 
-                $content = '<?php'."\n\n".'$feed = '.var_export($feed, true).';'."\n\n".'$cache_expire = '.($now + (ForumSettings::get('o_feed_ttl') * 60)).';'."\n\n".'?>';
-                featherbb_write_cache_file('cache_'.$cache_id.'.php', $content);
+                $content = '<?php' . "\n\n" . '$feed = ' . var_export($feed, true) . ';' . "\n\n" .
+                    '$cache_expire = ' . ($now + (ForumSettings::get('o_feed_ttl') * 60)) . ';' . "\n\n" . '?>';
+                featherbb_write_cache_file('cache_' . $cache_id . '.php', $content);
             }
         }
 
@@ -685,17 +720,17 @@ if ($action == 'feed') {
         }
 
         // Prepend the current base URL onto some links. Done after caching to handle http/https correctly
-        $feed['link'] = Container::get('url')->base().$feed['link'];
+        $feed['link'] = Container::get('url')->base() . $feed['link'];
 
         foreach ($feed['items'] as $key => $item) {
-            $feed['items'][$key]['link'] = Container::get('url')->base().$item['link'];
+            $feed['items'][$key]['link'] = Container::get('url')->base() . $item['link'];
 
             if (isset($item['author']['uri'])) {
-                $feed['items'][$key]['author']['uri'] = Container::get('url')->base().$item['author']['uri'];
+                $feed['items'][$key]['author']['uri'] = Container::get('url')->base() . $item['author']['uri'];
             }
         }
 
-        $output_func = 'output_'.$type;
+        $output_func = 'output_' . $type;
         $output_func($feed);
     }
 
@@ -710,15 +745,17 @@ elseif ($action == 'online' || $action == 'online_full') {
     $where_fetch_users_online = ['idle' => '0'];
     $order_by_fetch_users_online = 'ident';
 
-    $result = \ORM::for_table(ORM_TABLE_PREFIX.'online')
-                ->select_many($select_fetch_users_online)
-                ->where($where_fetch_users_online)
-                ->order_by_expr($order_by_fetch_users_online)
-                ->find_result_set();
+    $result = \ORM::for_table(ORM_TABLE_PREFIX . 'online')
+        ->select_many($select_fetch_users_online)
+        ->where($where_fetch_users_online)
+        ->order_by_expr($order_by_fetch_users_online)
+        ->find_result_set();
 
     foreach ($result as $feather_user_online) {
         if ($feather_user_online['user_id'] > 1) {
-            $users[] = (User::get()->g_view_users == '1') ? '<a href="'.Url::get('user/'.$feather_user_online['user_id'].'/').'">'.Utils::escape($feather_user_online['ident']).'</a>' : Utils::escape($feather_user_online['ident']);
+            $users[] = (User::get()->g_view_users == '1') ? '<a href="' . Url::get('user/' .
+                    $feather_user_online['user_id'] . '/') . '">' . Utils::escape($feather_user_online['ident']) .
+                '</a>' : Utils::escape($feather_user_online['ident']);
             ++$num_users;
         } else {
             ++$num_guests;
@@ -727,16 +764,16 @@ elseif ($action == 'online' || $action == 'online_full') {
 
     // Send the Content-type header in case the web server is setup to send something else
     header('Content-type: text/html; charset=utf-8');
-    header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
+    header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 
-    echo sprintf(__('Guests online'), Utils::forum_number_format($num_guests)).'<br />'."\n";
+    echo sprintf(__('Guests online'), Utils::forum_number_format($num_guests)) . '<br />' . "\n";
 
     if ($action == 'online_full' && !empty($users)) {
-        echo sprintf(__('Users online'), implode(', ', $users)).'<br />'."\n";
+        echo sprintf(__('Users online'), implode(', ', $users)) . '<br />' . "\n";
     } else {
-        echo sprintf(__('Users online'), Utils::forum_number_format($num_users)).'<br />'."\n";
+        echo sprintf(__('Users online'), Utils::forum_number_format($num_users)) . '<br />' . "\n";
     }
 
     exit;
@@ -748,24 +785,26 @@ elseif ($action == 'stats') {
 
     $stats = Container::get('cache')->retrieve('users_info');
 
-    $stats_query = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
-                        ->select_expr('SUM(num_topics)', 'total_topics')
-                        ->select_expr('SUM(num_posts)', 'total_posts')
-                        ->find_one();
+    $stats_query = \ORM::for_table(ORM_TABLE_PREFIX . 'forums')
+        ->select_expr('SUM(num_topics)', 'total_topics')
+        ->select_expr('SUM(num_posts)', 'total_posts')
+        ->find_one();
 
     $stats['total_topics'] = intval($stats_query['total_topics']);
     $stats['total_posts'] = intval($stats_query['total_posts']);
 
     // Send the Content-type header in case the web server is setup to send something else
     header('Content-type: text/html; charset=utf-8');
-    header('Expires: '.gmdate('D, d M Y H:i:s').' GMT');
+    header('Expires: ' . gmdate('D, d M Y H:i:s') . ' GMT');
     header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
     header('Pragma: public');
 
-    echo sprintf(__('No of users'), Utils::forum_number_format($stats['total_users'])).'<br />'."\n";
-    echo sprintf(__('Newest user'), ((User::get()->g_view_users == '1') ? '<a href="'.Url::get('user/'.$stats['last_user']['id'].'/').'">'.Utils::escape($stats['last_user']['username']).'</a>' : Utils::escape($stats['last_user']['username']))).'<br />'."\n";
-    echo sprintf(__('No of topics'), Utils::forum_number_format($stats['total_topics'])).'<br />'."\n";
-    echo sprintf(__('No of posts'), Utils::forum_number_format($stats['total_posts'])).'<br />'."\n";
+    echo sprintf(__('No of users'), Utils::forum_number_format($stats['total_users'])) . '<br />' . "\n";
+    echo sprintf(__('Newest user'), ((User::get()->g_view_users == '1') ? '<a href="' . Url::get('user/' .
+                $stats['last_user']['id'] . '/') . '">' . Utils::escape($stats['last_user']['username']) . '</a>' :
+            Utils::escape($stats['last_user']['username']))) . '<br />' . "\n";
+    echo sprintf(__('No of topics'), Utils::forum_number_format($stats['total_topics'])) . '<br />' . "\n";
+    echo sprintf(__('No of posts'), Utils::forum_number_format($stats['total_posts'])) . '<br />' . "\n";
 
     exit;
 }

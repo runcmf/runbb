@@ -57,7 +57,7 @@ foreach ($errors as $cur_error) {
 
 <?php
 } elseif (Input::post('preview')) {
-    $preview_message = Container::get('parser')->parse_message($post['message'], $post['hide_smilies']);
+    $preview_message = Container::get('parser')->parseMessage($post['message'], $post['hide_smilies']);
 ?>
 <div id="postpreview" class="blockpost">
     <h2><span><?= __('Post preview') ?></span></h2>

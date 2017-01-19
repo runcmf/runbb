@@ -241,7 +241,7 @@ class PrivateMessages
                 Utils::generateBreadcrumbs($this->crumbs);
 
                 Container::get('hooks')->fire('conversationsPlugin.send.preview');
-                $msg = Container::get('parser')->parse_message($data['req_message'], $data['smilies']);
+                $msg = Container::get('parser')->parseMessage($data['req_message'], $data['smilies']);
                 View::setPageInfo([
                     'parsed_message' => $msg,
                     'username' => Utils::escape($data['username']),

@@ -16,9 +16,10 @@ use RunBB\Core\Utils;
 
 class Topic
 {
-    //
-    // Delete a topic and all of its posts
-    //
+    /**
+     * Delete a topic and all of its posts
+     * @param $topic_id
+     */
     public static function delete($topic_id)
     {
         // Delete the topic and any redirect topics
@@ -42,8 +43,13 @@ class Topic
             ->delete_many();
     }
 
-    // Redirect to a post in particular
-    public function redirect_to_post($post_id)
+    /**
+     * Redirect to a post in particular
+     * @param $post_id
+     * @return mixed
+     * @throws RunBBException
+     */
+    public function redirectToPost($post_id)
     {
         $post_id = Container::get('hooks')->fire('model.topic.redirect_to_post', $post_id);
 
@@ -77,8 +83,13 @@ class Topic
         return $post;
     }
 
-    // Redirect to new posts or last post
-    public function handle_actions($topic_id, $action)
+    /**
+     * Redirect to new posts or last post
+     * @param $topic_id
+     * @param $action
+     * @return mixed
+     */
+    public function handleActions($topic_id, $action)
     {
         $action = Container::get('hooks')->fire('model.topic.handle_actions_start', $action, $topic_id);
 
@@ -121,17 +132,26 @@ class Topic
         Container::get('hooks')->fire('model.topic.handle_actions', $action, $topic_id);
     }
 
-    // Gets some info about the topic
-    public function get_info_topic($id)
+    /**
+     * Gets some info about the topic
+     * @param $id
+     * @return \ORM
+     * @throws RunBBException
+     */
+    public function getInfoTopic($id)
     {
-        $cur_topic['where'] = 'fp.read_forum IS NULL OR fp.read_forum=1';
+        $where = '(fp.read_forum IS NULL OR fp.read_forum=1)';
 //            array(
 //            array('fp.read_forum' => 'IS NULL'),
 //            array('fp.read_forum' => '1')
 //        );
 
         if (!User::get()->is_guest) {
-            $select_get_info_topic = ['t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies', 'is_subscribed' => 's.user_id'];
+            $select_get_info_topic = [
+                't.subject', 't.closed', 't.num_replies', 't.sticky',
+                't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators',
+                'fp.post_replies', 'is_subscribed' => 's.user_id'
+            ];
 
             $cur_topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                 ->table_alias('t')
@@ -152,11 +172,12 @@ class Topic
                     'fp'
                 )
 //                ->where_any_is($cur_topic['where'])
-                ->where_raw($cur_topic['where'])
+                ->where_raw($where)
                 ->where('t.id', $id)
                 ->where_null('t.moved_to');
         } else {
-            $select_get_info_topic = ['t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id', 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies'];
+            $select_get_info_topic = ['t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id',
+                'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies'];
 
             $cur_topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                 ->table_alias('t')
@@ -171,7 +192,7 @@ class Topic
                     'fp'
                 )
 //                            ->where_any_is($cur_topic['where'])
-                ->where_raw($cur_topic['where'])
+                ->where_raw($where)
                 ->where('t.id', $id)
                 ->where_null('t.moved_to');
         }
@@ -188,10 +209,17 @@ class Topic
         return $cur_topic;
     }
 
-    // Generates the post link
-    public function get_post_link($topic_id, $closed, $post_replies, $is_admmod)
+    /**
+     * Generates the post link
+     * @param $topic_id
+     * @param $closed
+     * @param $post_replies
+     * @param $is_admmod
+     * @return string
+     */
+    public function getPostLink($topic_id, $closed, $post_replies, $is_admmod)
     {
-        $closed = Container::get('hooks')->fire('model.topic.get_post_link_start', $closed, $topic_id, $post_replies, $is_admmod);
+        $closed = Container::get('hooks')->fire('model.topic.getPostLinkStart', $closed, $topic_id, $post_replies, $is_admmod);
 
         if ($closed == '0') {
             if (($post_replies == '' && User::get()->g_post_replies == '1') || $post_replies == '1' || $is_admmod) {
@@ -209,13 +237,19 @@ class Topic
             $post_link = "\t\t\t".'<p class="postlink conr">'.$post_link.'</p>'."\n";
         }
 
-        $post_link = Container::get('hooks')->fire('model.topic.get_post_link_start', $post_link, $topic_id, $closed, $post_replies, $is_admmod);
+        $post_link = Container::get('hooks')->fire('model.topic.getPostLinkFinish', $post_link, $topic_id, $closed, $post_replies, $is_admmod);
 
         return $post_link;
     }
 
-    // Should we display the quickpost?
-    public function is_quickpost($post_replies, $closed, $is_admmod)
+    /**
+     * Should we display the quickpost?
+     * @param $post_replies
+     * @param $closed
+     * @param $is_admmod
+     * @return bool
+     */
+    public function isQuickpost($post_replies, $closed, $is_admmod)
     {
         $quickpost = false;
         if (ForumSettings::get('o_quickpost') == '1' && ($post_replies == '1' || ($post_replies == '' && User::get()->g_post_replies == '1')) && ($closed == '0' || $is_admmod)) {
@@ -229,11 +263,16 @@ class Topic
             $quickpost = true;
         }
 
-        $quickpost = Container::get('hooks')->fire('model.topic.is_quickpost', $quickpost, $post_replies, $closed, $is_admmod);
+        $quickpost = Container::get('hooks')->fire('model.topic.isQuickpost', $quickpost, $post_replies, $closed, $is_admmod);
 
         return $quickpost;
     }
 
+    /**
+     * @param $topic_id
+     * @return mixed
+     * @throws RunBBException
+     */
     public function subscribe($topic_id)
     {
         $topic_id = Container::get('hooks')->fire('model.topic.subscribe_topic_start', $topic_id);
@@ -293,6 +332,11 @@ class Topic
         return Router::redirect(Router::pathFor('Topic', ['id' => $topic_id]), __('Subscribe redirect'));
     }
 
+    /**
+     * @param $topic_id
+     * @return mixed
+     * @throws RunBBException
+     */
     public function unsubscribe($topic_id)
     {
         $topic_id = Container::get('hooks')->fire('model.topic.unsubscribe_topic_start', $topic_id);
@@ -321,8 +365,13 @@ class Topic
         return Router::redirect(Router::pathFor('Topic', ['id' => $topic_id]), __('Unsubscribe redirect'));
     }
 
-    // Subscraction link
-    public function get_subscraction($is_subscribed, $topic_id)
+    /**
+     * Subscraction link
+     * @param $is_subscribed
+     * @param $topic_id
+     * @return string
+     */
+    public function getSubscraction($is_subscribed, $topic_id)
     {
         if (!User::get()->is_guest && ForumSettings::get('o_topic_subscriptions') == '1') {
             if ($is_subscribed) {
@@ -340,6 +389,11 @@ class Topic
         return $subscraction;
     }
 
+    /**
+     * @param $id
+     * @param $value
+     * @return \ORM
+     */
     public function setSticky($id, $value)
     {
         $sticky = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
@@ -351,6 +405,11 @@ class Topic
         return $sticky;
     }
 
+    /**
+     * @param $id
+     * @param $value
+     * @return \ORM
+     */
     public function setClosed($id, $value)
     {
         $closed = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
@@ -362,7 +421,10 @@ class Topic
         return $closed;
     }
 
-    public function check_move_possible()
+    /**
+     * @return bool
+     */
+    public function checkMovePossible()
     {
         Container::get('hooks')->fire('model.topic.check_move_possible_start');
 
@@ -397,7 +459,11 @@ class Topic
         return true;
     }
 
-    public function get_forum_list_move($fid)
+    /**
+     * @param $fid
+     * @return string
+     */
+    public function getForumListMove($fid)
     {
         $output = '';
 
@@ -450,7 +516,11 @@ class Topic
         return $output;
     }
 
-    public function get_forum_list_split($id)
+    /**
+     * @param $id
+     * @return string
+     */
+    public function getForumListSplit($id)
     {
         $output = '';
 
@@ -501,7 +571,13 @@ class Topic
         return $output;
     }
 
-    public function move_to($fid, $new_fid, $tid = null)
+    /**
+     * @param $fid
+     * @param $new_fid
+     * @param null $tid
+     * @throws RunBBException
+     */
+    public function moveTo($fid, $new_fid, $tid = null)
     {
         Container::get('hooks')->fire('model.topic.move_to_start', $fid, $new_fid, $tid);
 
@@ -597,7 +673,13 @@ class Topic
         Forum::update($new_fid); // Update the forum TO which the topic was moved
     }
 
-    public function delete_posts($tid, $fid)
+    /**
+     * @param $tid
+     * @param $fid
+     * @return array
+     * @throws RunBBException
+     */
+    public function deletePosts($tid, $fid)
     {
         $posts = Input::post('posts') ? Input::post('posts') : [];
         $posts = Container::get('hooks')->fire('model.topic.delete_posts_start', $posts, $tid, $fid);
@@ -672,9 +754,15 @@ class Topic
         }
     }
 
-    public function get_topic_info($fid, $tid)
+    /**
+     * Fetch some info about the topic
+     * @param $fid
+     * @param $tid
+     * @return \ORM
+     * @throws RunBBException
+     */
+    public function getTopicInfo($fid, $tid)
     {
-        // Fetch some info about the topic
         $cur_topic['select'] = ['forum_id' => 'f.id', 'f.forum_name', 't.subject', 't.num_replies', 't.first_post_id'];
         $cur_topic['where'] = [
             ['fp.read_forum' => 'IS NULL'],
@@ -707,7 +795,14 @@ class Topic
         return $cur_topic;
     }
 
-    public function split_posts($tid, $fid, $p = null)
+    /**
+     * @param $tid
+     * @param $fid
+     * @param null $p
+     * @return array
+     * @throws RunBBException
+     */
+    public function splitPosts($tid, $fid, $p = null)
     {
         $posts = Input::post('posts') ? Input::post('posts') : [];
         $posts = Container::get('hooks')->fire('model.topic.split_posts_start', $posts, $tid, $fid);
@@ -874,8 +969,16 @@ class Topic
         return $posts;
     }
 
-    // Prints the posts
-    public function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
+    /**
+     * Prints the posts
+     * @param $topic_id
+     * @param $start_from
+     * @param $cur_topic
+     * @param $is_admmod
+     * @return array
+     * @throws RunBBException
+     */
+    public function printPosts($topic_id, $start_from, $cur_topic, $is_admmod)
     {
         $post_data = [];
 
@@ -1049,14 +1152,14 @@ class Topic
             }
 
             // Perform the main parsing of the message (BBCode, smilies, censor words etc)
-            $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
+            $cur_post['message'] = Container::get('parser')->parseMessage($cur_post['message'], $cur_post['hide_smilies']);
 
             // Do signature parsing/caching
             if (ForumSettings::get('o_signatures') == '1' && $cur_post['signature'] != '' && User::get()->show_sig != '0') {
                 // if (isset($avatar_cache[$cur_post['poster_id']])) {
                 //     $cur_post['signature_formatted'] = $avatar_cache[$cur_post['poster_id']];
                 // } else {
-                    $cur_post['signature_formatted'] = Container::get('parser')->parse_signature($cur_post['signature']);
+                    $cur_post['signature_formatted'] = Container::get('parser')->parseSignature($cur_post['signature']);
                 //     $avatar_cache[$cur_post['poster_id']] = $cur_post['signature_formatted'];
                 // }
             }
@@ -1069,7 +1172,12 @@ class Topic
         return $post_data;
     }
 
-    public function display_posts_moderate($tid, $start_from)
+    /**
+     * @param $tid
+     * @param $start_from
+     * @return array
+     */
+    public function displayPostsModerate($tid, $start_from)
     {
         Container::get('hooks')->fire('model.topic.display_posts_view_start', $tid, $start_from);
 
@@ -1138,7 +1246,7 @@ class Topic
             }
 
             // Perform the main parsing of the message (BBCode, smilies, censor words etc)
-            $cur_post->message = Container::get('parser')->parse_message($cur_post->message, $cur_post->hide_smilies);
+            $cur_post->message = Container::get('parser')->parseMessage($cur_post->message, $cur_post->hide_smilies);
 
             $post_data[] = $cur_post;
         }
@@ -1148,7 +1256,10 @@ class Topic
         return $post_data;
     }
 
-    public function increment_views($id)
+    /**
+     * @param $id
+     */
+    public function incrementViews($id)
     {
         if (ForumSettings::get('o_topic_views') == '1') {
             $query = \ORM::for_table(ORM_TABLE_PREFIX.'topics')

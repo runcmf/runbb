@@ -293,7 +293,7 @@ class Cache
      * @return boolean
      * @throws RunBBException for invalid creation or readable cache directory.
      */
-    protected function _checkCacheDir()
+    protected function checkCacheDir()
     {
         if (!is_dir($this->getCachePath()) && !mkdir($this->getCachePath(), 0775, true)) {
             throw new RunBBException('Unable to create cache directory ' . $this->getCachePath());
@@ -317,7 +317,7 @@ class Cache
     public function getCacheFile()
     {
         if (!isset($this->filenames[$this->settings['name']])) {
-            if ($this->_checkCacheDir()) {
+            if ($this->checkCacheDir()) {
                 $filename = preg_replace('/[^0-9a-z\.\_\-]/i', '', strtolower($this->settings['name']));
                 $this->filenames[$this->settings['name']] = $this->settings['path'] . sha1($filename) . $this->settings['extension'];
             }

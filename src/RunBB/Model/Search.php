@@ -771,7 +771,7 @@ class Search
                     $cur_search['message'] = Utils::censor($cur_search['message']);
                 }
 
-                $cur_search['message'] = Container::get('parser')->parse_message($cur_search['message'], $cur_search['hide_smilies']);
+                $cur_search['message'] = Container::get('parser')->parseMessage($cur_search['message'], $cur_search['hide_smilies']);
                 $pposter = Utils::escape($cur_search['pposter']);
 
                 if ($cur_search['poster_id'] > 1 && User::get()->g_view_users == '1') {

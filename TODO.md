@@ -18,3 +18,4 @@ http://mouf-php.com/optimizing-composer-autoloader-performance
   
 vendor/bin/phpcs --standard=vendor/runcmf/runbb/phpcs.xml vendor/runcmf/runbb > phpcsReport.txt
 
+composer require runcmf/runbb-plugin-simplemde "*@dev"

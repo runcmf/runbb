@@ -454,4 +454,16 @@ class Utils
         $response.= '</ul>';
         return $response;
     }
+
+    public static function checkDir($dir)
+    {
+        if (!is_dir($dir) && !mkdir($dir, 0775, true)) {
+            throw new \RunBB\Exception\RunBBException('Unable to create directory ' . $dir, 500);
+        } elseif (!is_readable($dir) || !is_writable($dir)) {
+            if (!chmod($dir, 0775)) {
+                throw new \RunBB\Exception\RunBBException($dir . ' must be readable and writeable', 500);
+            }
+        }
+        return true;
+    }
 }

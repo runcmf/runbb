@@ -186,12 +186,12 @@ class Forum
 
             if ($new_fid = Input::post('move_to_forum')) {
                 $topics = explode(',', $topics);
-                $topicModel->move_to($args['fid'], $new_fid, $topics);
+                $topicModel->moveTo($args['fid'], $new_fid, $topics);
                 return Router::redirect(Router::pathFor('Forum', ['id' => $new_fid]), __('Move topics redirect'));
             }
 
             // Check if there are enough forums to move the topic
-            if (!$topicModel->check_move_possible()) {
+            if (!$topicModel->checkMovePossible()) {
                 throw new  RunBBException(__('Nowhere to move'), 403);
             }
 
@@ -201,7 +201,7 @@ class Forum
                     'active_page' => 'moderate',
                     'id'    =>    $args['fid'],
                     'topics'    =>    implode(',', array_map('intval', array_keys($topics))),
-                    'list_forums'   => $topicModel->get_forum_list_move($args['fid']),
+                    'list_forums'   => $topicModel->getForumListMove($args['fid']),
                 ])->addTemplate('moderate/move_topics.php')->display();
         } // Merge two or more topics
         elseif (Input::post('merge_topics') || Input::post('merge_topics_comply')) {

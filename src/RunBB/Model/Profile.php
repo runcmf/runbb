@@ -1014,7 +1014,7 @@ class Profile
                         $errors = [];
 
                         $form['signature'] = Container::get('parser')
-                            ->preparse_bbcode($form['signature'], $errors, true);
+                            ->preparseBBcode($form['signature'], $errors, true);
 
                         if (count($errors) > 0) {
                             throw new  RunBBException('<ul><li>'.implode('</li><li>', $errors).'</li></ul>');
@@ -1036,7 +1036,7 @@ class Profile
                     'show_avatars'        => Input::post('form_show_avatars') ? '1' : '0',
                     'show_sig'            => Input::post('form_show_sig') ? '1' : '0',
                 ];
-//tdie(empty($form['disp_topics']));
+
                 // empty for live blank and use default
 //                if ($form['disp_topics'] !== '') {
                 if (!empty($form['disp_topics'])) {

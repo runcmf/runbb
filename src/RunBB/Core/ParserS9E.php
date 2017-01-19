@@ -35,11 +35,13 @@ class ParserS9E
         }
     }
 
+    /**
+     * TODO Build bundles depend forum config and user group rights
+     */
     private function configureParser()
     {
         $renderer = $parser = null;
         $configurator = new \s9e\TextFormatter\Configurator;
-        // TODO add by config and user rights
         $configurator->plugins->load('Autoemail');//Fatdown & Forum default
         $configurator->plugins->load('Autolink');//Fatdown & Forum default
         $configurator->plugins->load('Escaper');//Fatdown default
@@ -103,7 +105,7 @@ class ParserS9E
         extract($configurator->finalize());
 
         // We save the parser and the renderer to the disk for easy reuse
-        $this->checkCacheDir($this->cacheDir);
+        Utils::checkDir($this->cacheDir);
 
         file_put_contents($this->cacheDir.'/s9eparser.php', serialize($parser));
         file_put_contents($this->cacheDir.'/s9erenderer.php', serialize($renderer));
@@ -112,16 +114,6 @@ class ParserS9E
         $this->renderer = $renderer;
     }
 
-    private function checkCacheDir($dir)
-    {
-        if (!is_dir($dir) && !mkdir($dir, 0775, true)) {
-            throw new \RunBB\Exception\RunBBException('Unable to create s9e parser cache directory ' . $dir);
-        } elseif (!is_readable($dir) || !is_writable($dir)) {
-            if (!chmod($dir, 0775)) {
-                throw new \RunBB\Exception\RunBBException($dir . ' must be readable and writeable');
-            }
-        }
-    }
     /**
      * Parse post or signature message text.
      *
@@ -154,7 +146,8 @@ class ParserS9E
 //        // Set $smile_on flag depending on global flags and whether or not this is a signature.
 //        if ($this->pd['in_signature'])
 //        {
-//            $smile_on = (ForumSettings::get('o_smilies_sig') && User::get()['show_smilies'] && !$hide_smilies) ? 1 : 0;
+//            $smile_on = (ForumSettings::get('o_smilies_sig') &&
+// User::get()['show_smilies'] && !$hide_smilies) ? 1 : 0;
 //        }
 //        else
 //        {
@@ -169,11 +162,17 @@ class ParserS9E
      * @param integer $hide_smilies
      * @return string
      */
-    public function parse_message($text, $hide_smilies)
+    public function parseMessage($text, $hide_smilies)
     {
         if ($hide_smilies) {
             $this->parser->disablePlugin('Emoticons');
         }
+        if (ForumSettings::get('p_message_img_tag') !== '1' || User::get()['show_img'] !== '1')
+        {
+            $this->parser->disablePlugin('Autoimage');// enable after parsing?
+            $this->parser->disablePlugin('Autovideo');
+        }
+
         $xml  = $this->parser->parse($text);
         $html = $this->renderer->render($xml);
         return $html;
@@ -193,13 +192,19 @@ class ParserS9E
      * @param string $text
      * @return string
      */
-    public function parse_signature($text)
+    public function parseSignature($text)
     {
-        // FIXME check length, images limit
+        // FIXME check length
+        if (ForumSettings::get('p_sig_img_tag') !== '1' || User::get()['show_img_sig'] !== '1')
+        {
+            $this->parser->disablePlugin('Autoimage');// enable after parsing?
+            $this->parser->disablePlugin('Autovideo');
+        }
+
         $xml  = $this->parser->parse($text);
         $html = $this->renderer->render($xml);
+
         return $html;
-        // FIXME
 
 //        $this->pd['in_signature'] = true;
 //        // Disable images via the $bbcd['in_sig'] flag if globally disabled.
@@ -213,14 +218,13 @@ class ParserS9E
     {
         $xml  = $this->parser->parse($text);
         $html = $this->renderer->render($xml);
-        $parerErrors = $this->parser->getLogger()->get();
-        if (empty($parerErrors)) {
-//            return \s9e\TextFormatter\Unparser::unparse($xml);
-            return $text;
-        } else {
-            $errors = array_merge($errors, $parerErrors);
-            return Utils::escape($text);
-        }
+
+        // TODO check nestingLimit
+//        $parserErrors = $this->parser->getLogger()->get();
+//        if (!empty($parserErrors)) {
+//tdie($parserErrors);
+//        }
+        return \s9e\TextFormatter\Unparser::unparse($xml);
     }
     /**
      * Pre-process text containing BBCodes. Check for integrity,
@@ -232,19 +236,19 @@ class ParserS9E
      * @param integer $is_signature
      * @return string
      */
-    public function preparse_bbcode($text, &$errors, $is_signature = false)
+    public function preparseBBcode($text, &$errors, $is_signature = false)
     {
+        // FIXME some as parseForSave ???
+
         // TODO check $is_signature limits
         $xml  = $this->parser->parse($text);
         $html = $this->renderer->render($xml);
-        $parerErrors = $this->parser->getLogger()->get();
-
-        if (empty($parerErrors)) {
-            return $html;
-        } else {
-            $errors = array_merge($errors, $parerErrors);
-            return $text;
-        }
+        // TODO check nestingLimit
+//        $parserErrors = $this->parser->getLogger()->get();
+//        if (!empty($parserErrors)) {
+//tdie($parserErrors);
+//        }
+        return \s9e\TextFormatter\Unparser::unparse($xml);
 /*
         $this->pd['new_errors'] = []; // Reset the parser error message stack.
         $this->pd['in_signature'] = ($is_signature) ? true : false;
@@ -275,9 +279,11 @@ class ParserS9E
                 if ($this->pd['config']['textile'])
                 {
                     // Do phrase replacements.
-                    $part = preg_replace_callback($this->pd['re_textile'], array($this, '_textile_phrase_callback'), $part);
+                    $part = preg_replace_callback($this->pd['re_textile'],
+array($this, '_textile_phrase_callback'), $part);
                     // Do lists.
-                    $part = preg_replace_callback('/^([*#]) .*+(?:\n\1 .*+)++$/Sm', array($this, '_textile_list_callback'), $part);
+                    $part = preg_replace_callback('/^([*#]) .*+(?:\n\1 .*+)++$/Sm',
+array($this, '_textile_list_callback'), $part);
                 }
                 $part = preg_replace('/^[ \t]++$/m', '', $part); // Clear "white" lines of spaces and tabs.
             }
