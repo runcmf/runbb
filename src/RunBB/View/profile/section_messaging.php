@@ -24,18 +24,18 @@ Container::get('hooks')->fire('view.profile.section_messaging.start');
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div class="inform">
                 <fieldset>
-                    <legend><?php _e('Contact details legend') ?></legend>
+                    <legend><?= __('Contact details legend') ?></legend>
                     <div class="infldset">
                         <input type="hidden" name="form_sent" value="1" />
-                        <label><?php _e('Jabber') ?><br /><input id="jabber" type="text" name="form_jabber" value="<?= Utils::escape($user->jabber) ?>" size="40" maxlength="75" /><br /></label>
-                        <label><?php _e('ICQ') ?><br /><input id="icq" type="text" name="form_icq" value="<?= $user->icq ?>" size="12" maxlength="12" /><br /></label>
-                        <label><?php _e('MSN') ?><br /><input id="msn" type="text" name="form_msn" value="<?= Utils::escape($user->msn) ?>" size="40" maxlength="50" /><br /></label>
-                        <label><?php _e('AOL IM') ?><br /><input id="aim" type="text" name="form_aim" value="<?= Utils::escape($user->aim) ?>" size="20" maxlength="30" /><br /></label>
-                        <label><?php _e('Yahoo') ?><br /><input id="yahoo" type="text" name="form_yahoo" value="<?= Utils::escape($user->yahoo) ?>" size="20" maxlength="30" /><br /></label>
+                        <label><?= __('Jabber') ?><br /><input id="jabber" type="text" name="form_jabber" value="<?= Utils::escape($user->jabber) ?>" size="40" maxlength="75" /><br /></label>
+                        <label><?= __('ICQ') ?><br /><input id="icq" type="text" name="form_icq" value="<?= $user->icq ?>" size="12" maxlength="12" /><br /></label>
+                        <label><?= __('MSN') ?><br /><input id="msn" type="text" name="form_msn" value="<?= Utils::escape($user->msn) ?>" size="40" maxlength="50" /><br /></label>
+                        <label><?= __('AOL IM') ?><br /><input id="aim" type="text" name="form_aim" value="<?= Utils::escape($user->aim) ?>" size="20" maxlength="30" /><br /></label>
+                        <label><?= __('Yahoo') ?><br /><input id="yahoo" type="text" name="form_yahoo" value="<?= Utils::escape($user->yahoo) ?>" size="20" maxlength="30" /><br /></label>
                     </div>
                 </fieldset>
             </div>
-            <p class="buttons"><input type="submit" name="update" value="<?php _e('Submit') ?>" /> <?php _e('Instructions') ?></p>
+            <p class="buttons"><input type="submit" name="update" value="<?= __('Submit') ?>" /> <?= __('Instructions') ?></p>
         </form>
     </div>
 </div>

@@ -32,8 +32,8 @@ msgstr "It seems like FeatherBB is already installed. You should go <a href=\"..
 msgid "You are running error"
 msgstr "You are running %1$s version %2$s. FeatherBB %3$s requires at least %1$s %4$s to run properly. You must upgrade your %1$s installation before you can continue."
 
-msgid "My FeatherBB Forum"
-msgstr "My FeatherBB Forum"
+msgid "My RunBB Forum"
+msgstr "My RunBB Forum"
 
 msgid "Description"
 msgstr "Lighter than a feather."

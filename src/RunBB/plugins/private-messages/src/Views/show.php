@@ -32,7 +32,7 @@ if (!isset($feather)) {
                                 </dl>
                             </div>
                             <div class="postright">
-                                <h3><?php if ($message['id'] != $cur_conv['first_post_id']) { _e('Re').' '; } ?>
+                                <h3><?php if ($message['id'] != $cur_conv['first_post_id']) { echo __('Re').' '; } ?>
                                     <?= Utils::escape($cur_conv['subject']) ?>
                                 </h3>
                                 <div class="postmsg">

@@ -11,7 +11,7 @@ namespace RunBB\Core;
 
 class Plugin
 {
-    private $c;
+    protected $c;
 
     public function __construct(\Slim\Container $c)
     {
@@ -128,6 +128,15 @@ class Plugin
             $class = new $className($this->c);
             return $class;
         }
+        // check new system
+        if(array_key_exists($plugin, ForumEnv::get('SLIM_SETTINGS')['plugins'])) {
+            $class = ForumEnv::get('SLIM_SETTINGS')['plugins'][$plugin];
+            // check class registered
+            if(class_exists($class)) {
+                $class = new $class($this->c);
+                return $class;
+            }
+        }
         // Invalid plugin
         return false;
     }
@@ -142,8 +151,7 @@ class Plugin
     // For plugins that don't need to provide a Composer autoloader, check if it can be loaded
     protected function checkSimple($plugin)
     {
-        return ForumEnv::get('FORUM_ROOT') . 'plugins' .
-            DIRECTORY_SEPARATOR . $plugin .
+        return ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $plugin .
             DIRECTORY_SEPARATOR . $this->getNamespace($plugin) . '.php';
     }
 

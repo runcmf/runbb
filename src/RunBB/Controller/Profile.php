@@ -22,7 +22,7 @@ class Profile
         translate('profile');
         translate('register');
         translate('prof_reg');
-        translate('misc');
+//        translate('misc');
     }
 
     public function display($req, $res, $args)

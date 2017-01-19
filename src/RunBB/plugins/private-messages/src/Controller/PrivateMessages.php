@@ -21,7 +21,7 @@ class PrivateMessages
     {
         $this->model = new \RunBB\Plugins\Model\PrivateMessages();
         translate('private_messages', 'private-messages');
-        translate('misc');
+//        translate('misc');
         View::addTemplatesDirectory(dirname(dirname(__FILE__)) . '/Views', 5)->setPageInfo(['active_page' => 'navextra1']);
         $this->crumbs = array(
             Router::pathFor('Conversations.home') => __('PMS', 'private_messages')

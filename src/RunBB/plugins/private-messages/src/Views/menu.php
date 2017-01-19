@@ -18,7 +18,7 @@ if (!isset($feather)) {
 
             <div id="adminconsole" class="block2col">
                 <div id="adminmenu" class="blockmenu">
-                    <h2><span><?php _e('Folders', 'private_messages') ?></span></h2>
+                    <h2><span><?= __('Folders', 'private_messages') ?></span></h2>
                     <div class="box">
                         <div class="inbox">
                             <ul>
@@ -36,7 +36,7 @@ endif; ?>
                             </ul>
                         </div>
                     </div>
-                    <h2><span><?php _e('Storage', 'private_messages') ?></span></h2>
+                    <h2><span><?= __('Storage', 'private_messages') ?></span></h2>
                     <div class="box">
                         <div class="inbox">
                             <ul>
@@ -47,12 +47,12 @@ endif; ?>
                         </div>
                     </div>
                     <br />
-                    <h2><span><?php _e('Options', 'private_messages') ?></span></h2>
+                    <h2><span><?= __('Options', 'private_messages') ?></span></h2>
                     <div class="box">
                         <div class="inbox">
                             <ul>
-                                <li<?= ($page == 'blocked') ? ' class="isactive"' : ''; ?>><a href="<?= Router::pathFor('Conversations.blocked') ?>"><?php _e('Blocked Users', 'private_messages') ?></a></li>
-                                <li<?= ($page == 'folders') ? ' class="isactive"' : ''; ?>><a href="<?= Router::pathFor('Conversations.folders') ?>"><?php _e('My Folders', 'private_messages') ?></a></li>
+                                <li<?= ($page == 'blocked') ? ' class="isactive"' : ''; ?>><a href="<?= Router::pathFor('Conversations.blocked') ?>"><?= __('Blocked Users', 'private_messages') ?></a></li>
+                                <li<?= ($page == 'folders') ? ' class="isactive"' : ''; ?>><a href="<?= Router::pathFor('Conversations.folders') ?>"><?= __('My Folders', 'private_messages') ?></a></li>
                             </ul>
                         </div>
                     </div>

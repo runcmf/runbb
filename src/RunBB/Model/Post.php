@@ -130,7 +130,7 @@ class Post
 
             $question = Input::post('captcha_q') ? trim(Input::post('captcha_q')) : '';
             $answer = Input::post('captcha') ? strtoupper(trim(Input::post('captcha'))) : '';
-            $lang_antispam_questions_array = array();
+            $lang_antispam_questions_array = [];
 
             foreach ($lang_antispam_questions as $k => $v) {
                 $lang_antispam_questions_array[md5($k)] = strtoupper($v);
@@ -142,8 +142,12 @@ class Post
         }
 
         // Flood protection
-        if (Input::post('preview') != '' && User::get()->last_post != '' && (time() - User::get()->last_post) < Container::get('prefs')->get(User::get(), 'post.min_interval')) {
-            $errors[] = sprintf(__('Flood start'), Container::get('prefs')->get(User::get(), 'post.min_interval'), Container::get('prefs')->get(User::get(), 'post.min_interval') - (time() - User::get()->last_post));
+        if (Input::post('preview') != '' &&
+            User::get()->last_post != '' &&
+            (time() - User::get()->last_post) < Container::get('prefs')->get(User::get(), 'post.min_interval')) {
+            $errors[] = sprintf(__('Flood start'),
+                Container::get('prefs')->get(User::get(), 'post.min_interval'),
+                Container::get('prefs')->get(User::get(), 'post.min_interval') - (time() - User::get()->last_post));
         }
 
         // If it's a new topic
@@ -153,7 +157,8 @@ class Post
 
             if (ForumSettings::get('o_censoring') == '1') {
                 $censored_subject = Utils::trim(Utils::censor($subject));
-                $censored_subject = Container::get('hooks')->fire('model.post.check_errors_before_censored', $censored_subject);
+                $censored_subject = Container::get('hooks')
+                    ->fire('model.post.check_errors_before_censored', $censored_subject);
             }
 
             if ($subject == '') {
@@ -162,7 +167,8 @@ class Post
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !User::get()->is_admmod) {
+            } elseif (ForumSettings::get('p_subject_all_caps') == '0' &&
+                Utils::is_all_uppercase($subject) && !User::get()->is_admmod) {
                 $errors[] = __('All caps subject');
             }
 
@@ -170,7 +176,8 @@ class Post
         }
 
         if (User::get()->is_guest) {
-            $email = strtolower(Utils::trim((ForumSettings::get('p_force_guest_email') == '1') ? Input::post('req_email') : Input::post('email')));
+            $email = strtolower(Utils::trim((ForumSettings::get('p_force_guest_email') == '1') ?
+                Input::post('req_email') : Input::post('email')));
 
             if (ForumSettings::get('p_force_guest_email') == '1' || $email != '') {
                 $errors = Container::get('hooks')->fire('model.post.check_errors_before_post_email', $errors, $email);
@@ -245,7 +252,9 @@ class Post
                 $errors[] = __('No subject after censoring');
             } elseif (Utils::strlen($subject) > 70) {
                 $errors[] = __('Too long subject');
-            } elseif (ForumSettings::get('p_subject_all_caps') == '0' && Utils::is_all_uppercase($subject) && !User::get()->is_admmod) {
+            } elseif (ForumSettings::get('p_subject_all_caps') == '0' &&
+                Utils::is_all_uppercase($subject) &&
+                !User::get()->is_admmod) {
                 $errors[] = __('All caps subject');
             }
         }
@@ -256,7 +265,9 @@ class Post
         // Here we use strlen() not Utils::strlen() as we want to limit the post to FEATHER_MAX_POSTSIZE bytes, not characters
         if (strlen($message) > ForumEnv::get('FEATHER_MAX_POSTSIZE')) {
             $errors[] = sprintf(__('Too long message'), Utils::forum_number_format(ForumEnv::get('FEATHER_MAX_POSTSIZE')));
-        } elseif (ForumSettings::get('p_message_all_caps') == '0' && Utils::is_all_uppercase($message) && !User::get()->is_admmod) {
+        } elseif (ForumSettings::get('p_message_all_caps') == '0' &&
+            Utils::is_all_uppercase($message) &&
+            !User::get()->is_admmod) {
             $errors[] = __('All caps message');
         }
 
@@ -286,7 +297,7 @@ class Post
     // If the previous check went OK, setup some variables used later
     public function setup_variables($errors, $is_admmod)
     {
-        $post = array();
+        $post = [];
 
         $post = Container::get('hooks')->fire('model.post.setup_variables_start', $post, $errors, $is_admmod);
 
@@ -312,11 +323,13 @@ class Post
 
         // Validate BBCode syntax
         if (ForumSettings::get('p_message_bbcode') == '1') {
-            $post['message']  = Container::get('parser')->preparse_bbcode($post['message'], $errors);
+//            $post['message']  = Container::get('parser')->preparse_bbcode($post['message'], $errors);
+            $post['message'] = Container::get('parser')->parseForSave($post['message'], $errors);
         }
 
         // Replace four-byte characters (MySQL cannot handle them)
-        $post['message'] = Utils::strip_bad_multibyte_chars($post['message']);
+        // FIXME national symbols problem
+//        $post['message'] = Utils::strip_bad_multibyte_chars($post['message']);
 
         $post['time'] = time();
 
@@ -330,7 +343,7 @@ class Post
     {
         Container::get('hooks')->fire('model.post.setup_edit_variables_start');
 
-        $post = array();
+        $post = [];
 
         $post['hide_smilies'] = Input::post('hide_smilies') ? '1' : '0';
         $post['stick_topic'] = Input::post('stick_topic') ? '1' : '0';
@@ -343,11 +356,13 @@ class Post
 
         // Validate BBCode syntax
         if (ForumSettings::get('p_message_bbcode') == '1') {
-            $post['message'] = Container::get('parser')->preparse_bbcode($post['message'], $errors);
+//            $post['message'] = Container::get('parser')->preparse_bbcode($post['message'], $errors);
+            $post['message'] = Container::get('parser')->parseForSave($post['message'], $errors);
         }
 
         // Replace four-byte characters (MySQL cannot handle them)
-        $post['message'] = Utils::strip_bad_multibyte_chars($post['message']);
+        // FIXME national symbols problem
+//        $post['message'] = Utils::strip_bad_multibyte_chars($post['message']);
 
         // Get the subject
         if ($can_edit_subject) {
@@ -439,7 +454,7 @@ class Post
             ->limit(2)
             ->find_many();
 
-        $i = 0;
+        $last_id = $i = 0;
         foreach ($result as $cur_result) {
             if ($i == 0) {
                 $last_id = $cur_result['id'];
@@ -468,12 +483,12 @@ class Post
         if ($last_id == $post_id) {
             // If there is a $second_last_id there is more than 1 reply to the topic
             if (isset($second_last_id)) {
-                $update_topic = array(
+                $update_topic = [
                     'last_post'  => $second_posted,
                     'last_post_id'  => $second_last_id,
                     'last_poster'  => $second_poster,
                     'num_replies'  => $num_replies,
-                );
+                ];
                 \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                     ->where('id', $topic_id)
                     ->find_one()
@@ -506,15 +521,15 @@ class Post
 
         if ($can_edit_subject) {
             // Update the topic and any redirect topics
-            $where_topic = array(
-                array('id' => $cur_post['tid']),
-                array('moved_to' => $cur_post['tid'])
-            );
+            $where_topic = [
+                ['id' => $cur_post['tid']],
+                ['moved_to' => $cur_post['tid']]
+            ];
 
-            $query['update_topic'] = array(
+            $query['update_topic'] = [
                 'subject' => $post['subject'],
                 'sticky'  => $post['stick_topic']
-            );
+            ];
 
             $query = \ORM::for_table(ORM_TABLE_PREFIX.'topics')->where_any_is($where_topic)
                                             ->find_one()
@@ -532,10 +547,10 @@ class Post
 
         // Update the post
         unset($query);
-        $query['update_post'] = array(
+        $query['update_post'] = [
             'message' => $post['message'],
             'hide_smilies'  => $post['hide_smilies']
-        );
+        ];
 
         if (!Input::post('silent') || !$is_admmod) {
             $query['update_post']['edited'] = time();
@@ -546,7 +561,7 @@ class Post
                                        ->find_one()
                                        ->set($query['update_post']);
         $query = Container::get('hooks')->fireDB('model.post.edit_post_query', $query);
-        $query = $query->save();
+        $query->save();
     }
 
     public function insert_report($post_id)
@@ -590,14 +605,14 @@ class Post
         if (ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2') {
 
             // Insert the report
-            $query['insert'] = array(
+            $query['insert'] = [
                 'post_id' => $post_id,
                 'topic_id'  => $topic['topic_id'],
                 'forum_id'  => $report['forum_id'],
                 'reported_by'  => User::get()->id,
                 'created'  => time(),
                 'message'  => $reason,
-            );
+            ];
             $query = \ORM::for_table(ORM_TABLE_PREFIX.'reports')
                 ->create()
                 ->set($query['insert']);
@@ -676,15 +691,16 @@ class Post
     // Insert a reply
     public function insert_reply($post, $tid, $cur_posting, $is_subscribed)
     {
-        $new = array();
+        $new = [];
 
-        $new = Container::get('hooks')->fireDB('model.post.insert_reply_start', $new, $post, $tid, $cur_posting, $is_subscribed);
+        $new = Container::get('hooks')->fireDB('model.post.insert_reply_start',
+            $new, $post, $tid, $cur_posting, $is_subscribed);
 
         if (!User::get()->is_guest) {
             $new['tid'] = $tid;
 
             // Insert the new post
-            $query['insert'] = array(
+            $query['insert'] = [
                 'poster' => $post['username'],
                 'poster_id' => User::get()->id,
                 'poster_ip' => Utils::getIp(),
@@ -692,7 +708,7 @@ class Post
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
                 'topic_id'  => $tid,
-            );
+            ];
 
             $query = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
                         ->create()
@@ -708,10 +724,10 @@ class Post
                 // Let's do it
                 if (isset($post['subscribe']) && $post['subscribe'] && !$is_subscribed) {
 
-                    $subscription['insert'] = array(
+                    $subscription['insert'] = [
                         'user_id'   =>  User::get()->id,
                         'topic_id'  =>  $tid
-                    );
+                    ];
 
                     $subscription = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
                                         ->create()
@@ -732,14 +748,14 @@ class Post
             }
         } else {
             // It's a guest. Insert the new post
-            $query['insert'] = array(
+            $query['insert'] = [
                 'poster' => $post['username'],
                 'poster_ip' => Utils::getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
                 'topic_id'  => $tid,
-            );
+            ];
 
             if (ForumSettings::get('p_force_guest_email') == '1' || $post['email'] != '') {
                 $query['insert']['poster_email'] = $post['email'];
@@ -755,11 +771,11 @@ class Post
         }
 
         // Update topic
-        $topic['update'] = array(
+        $topic['update'] = [
             'last_post' => $post['time'],
             'last_post_id'  => $new['pid'],
             'last_poster'  => $post['username'],
-        );
+        ];
 
         $topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                     ->where('id', $tid)
@@ -767,7 +783,7 @@ class Post
                     ->set($topic['update'])
                     ->set_expr('num_replies', 'num_replies+1');
         $topic = Container::get('hooks')->fireDB('model.post.insert_reply_update_query', $topic);
-        $topic = $topic->save();
+        $topic->save();
 
         $this->search->update_search_index('post', $new['pid'], $post['message']);
 
@@ -786,8 +802,8 @@ class Post
         // Get the post time for the previous post in this topic
         $previous_post_time = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
             ->select('posted')
-                                ->where('topic_id', $tid)
-                                ->order_by_desc('id');
+            ->where('topic_id', $tid)
+            ->order_by_desc('id');
         $previous_post_time = Container::get('hooks')->fireDB('model.post.send_notifications_reply_previous', $previous_post_time);
         $previous_post_time = $previous_post_time->find_one();
 //tdie($previous_post_time->posted);
@@ -895,12 +911,12 @@ class Post
     // Insert a topic
     public function insert_topic($post, $fid)
     {
-        $new = array();
+        $new = [];
 
         $new = Container::get('hooks')->fireDB('model.post.insert_topic_start', $new, $post, $fid);
 
         // Create the topic
-        $topic['insert'] = array(
+        $topic['insert'] = [
             'poster' => $post['username'],
             'subject' => $post['subject'],
             'posted'  => $post['time'],
@@ -908,7 +924,7 @@ class Post
             'last_poster'  => $post['username'],
             'sticky'  => $post['stick_topic'],
             'forum_id'  => $fid,
-        );
+        ];
 
         $topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                     ->create()
@@ -922,10 +938,10 @@ class Post
             // To subscribe or not to subscribe, that ...
             if (ForumSettings::get('o_topic_subscriptions') == '1' && $post['subscribe']) {
 
-                $subscription['insert'] = array(
+                $subscription['insert'] = [
                     'user_id'   =>  User::get()->id,
                     'topic_id'  =>  $new['tid']
-                );
+                ];
 
                 $subscription = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
                                     ->create()
@@ -936,7 +952,7 @@ class Post
             }
 
             // Create the post ("topic post")
-            $query['insert'] = array(
+            $query['insert'] = [
                 'poster' => $post['username'],
                 'poster_id' => User::get()->id,
                 'poster_ip' => Utils::getIp(),
@@ -944,7 +960,7 @@ class Post
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
                 'topic_id'  => $new['tid'],
-            );
+            ];
 
             $query = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
                         ->create()
@@ -954,14 +970,14 @@ class Post
         } else {
             // It's a guest
             // Create the post ("topic post")
-            $query['insert'] = array(
+            $query['insert'] = [
                 'poster' => $post['username'],
                 'poster_ip' => Utils::getIp(),
                 'message' => $post['message'],
                 'hide_smilies' => $post['hide_smilies'],
                 'posted'  => $post['time'],
                 'topic_id'  => $new['tid'],
-            );
+            ];
 
             if (ForumSettings::get('p_force_guest_email') == '1' || $post['email'] != '') {
                 $query['poster_email'] = $post['email'];
@@ -977,17 +993,17 @@ class Post
 
         // Update the topic with last_post_id
         unset($topic);
-        $topic['update'] = array(
+        $topic['update'] = [
             'last_post_id'  =>  $new['pid'],
             'first_post_id' =>  $new['pid'],
-        );
+        ];
 
         $topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                     ->where('id', $new['tid'])
                     ->find_one()
                     ->set($topic['update']);
         $topic = Container::get('hooks')->fireDB('model.post.insert_topic_post_topic', $topic);
-        $topic = $topic->save();
+        $topic->save();
 
         $this->search->update_search_index('post', $new['pid'], $post['message'], $post['subject']);
 
@@ -1198,13 +1214,11 @@ class Post
     // If we are quoting a message
     public function get_quote_message($qid, $tid)
     {
-        $quote = array();
+        $retVal = '';
+        // fire hook
+        $retVal = Container::get('hooks')->fire('model.post.begin_quote_message', $retVal, $qid, $tid);
 
-        $quote = Container::get('hooks')->fire('model.post.get_quote_message', $quote, $qid, $tid);
-
-        $quote['select'] = array('poster', 'message');
-
-        $quote = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->select_many($quote['select'])
+        $quote = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->select_many(['poster', 'message'])
                      ->where('id', $qid)
                      ->where('topic_id', $tid);
         $quote = Container::get('hooks')->fireDB('model.post.get_quote_message_query', $quote);
@@ -1215,61 +1229,72 @@ class Post
         }
 
         // If the message contains a code tag we have to split it up (text within [code][/code] shouldn't be touched)
-        if (strpos($quote['message'], '[code]') !== false && strpos($quote['message'], '[/code]') !== false) {
-            list($inside, $outside) = split_text($quote['message'], '[code]', '[/code]');
-
-            $quote['message'] = implode("\1", $outside);
-        }
+//        if (strpos($quote->message, '[code]') !== false && strpos($quote->message, '[/code]') !== false) {
+//            list($inside, $outside) = split_text($quote->message, '[code]', '[/code]');
+//
+//            $quote->message = implode("\1", $outside);
+//        }
 
         // Remove [img] tags from quoted message
-        $quote['message'] = preg_replace('%\[img(?:=(?:[^\[]*?))?\]((ht|f)tps?://)([^\s<"]*?)\[/img\]%U', '\1\3', $quote['message']);
+        $quote->message = preg_replace('%\[img(?:=(?:[^\[]*?))?\]((ht|f)tps?://)([^\s<"]*?)\[/img\]%U', '\1\3',
+            $quote->message);
 
         // If we split up the message before we have to concatenate it together again (code tags)
-        if (isset($inside)) {
-            $outside = explode("\1", $quote['message']);
-            $quote['message'] = '';
-
-            $num_tokens = count($outside);
-            for ($i = 0; $i < $num_tokens; ++$i) {
-                $quote['message'] .= $outside[$i];
-                if (isset($inside[$i])) {
-                    $quote['message'] .= '[code]'.$inside[$i].'[/code]';
-                }
-            }
-
-            unset($inside);
-        }
+//        if (isset($inside)) {
+//            $outside = explode("\1", $quote->message);
+//            $quote->message = '';
+//
+//            $num_tokens = count($outside);
+//            for ($i = 0; $i < $num_tokens; ++$i) {
+//                $quote->message .= $outside[$i];
+//                if (isset($inside[$i])) {
+//                    $quote->message .= '[code]'.$inside[$i].'[/code]';
+//                }
+//            }
+//
+//            unset($inside);
+//        }
 
         if (ForumSettings::get('o_censoring') == '1') {
-            $quote['message'] = Utils::censor($quote['message']);
+            $quote->message = Utils::censor($quote->message);
         }
 
-        $quote['message'] = Utils::escape($quote['message']);
+        $quote->message = Utils::escape($quote->message);
 
-        if (ForumSettings::get('p_message_bbcode') == '1') {    // Sanitize username for inclusion within QUOTE BBCode attribute.
+        if (ForumSettings::get('p_message_bbcode') == '1') {    // Sanitize username for inclusion within QUOTE
+            // BBCode attribute.
                 //   This is a bit tricky because a username can have any "special"
                 //   characters such as backslash \ square brackets [] and quotes '".
-                if (preg_match('/[[\]\'"]/S', $quote['poster'])) {
-                    // Check if we need to quote it.
-                    // Post has special chars. Escape escapes and quotes then wrap in quotes.
-                    if (strpos($quote['poster'], '"') !== false && strpos($quote['poster'], '\'') === false) { // If there are double quotes but no single quotes, use single quotes,
-                        $quote['poster'] = Utils::escape(str_replace('\\', '\\\\', $quote['poster']));
-                        $quote['poster'] = '\''. $quote['poster'] .'#'. $qid .'\'';
-                    } else { // otherwise use double quotes.
-                        $quote['poster'] = Utils::escape(str_replace(array('\\', '"'), array('\\\\', '\\"'), $quote['poster']));
-                        $quote['poster'] = '"'. $quote['poster'] .'#'. $qid .'"';
-                    }
-                } else {
-                    $quote['poster'] = $quote['poster'] .'#'. $qid;
-                }
-            $quote = '[quote='. $quote['poster'] .']'.$quote['message'].'[/quote]'."\n";
+//                if (preg_match('/[[\]\'"]/S', $quote->poster)) {
+//                    // Check if we need to quote it.
+//                    // Post has special chars. Escape escapes and quotes then wrap in quotes.
+//                    if (strpos($quote->poster, '"') !== false && strpos($quote->poster, '\'') === false)
+//                    { // If there are double quotes but no single quotes, use single quotes,
+//                        $quote->poster = Utils::escape(str_replace('\\', '\\\\', $quote->poster));
+//                        $quote->poster = '\''. $quote->poster .'#'. $qid .'\'';
+//                    } else { // otherwise use double quotes.
+//                        $quote->poster = Utils::escape(str_replace(array('\\', '"'), array('\\\\', '\\"'),
+//                            $quote->poster));
+//                        $quote->poster = '"'. $quote->poster .'#'. $qid .'"';
+//                    }
+//                } else {
+//                    $quote->poster = $quote->poster .'#'. $qid;
+//                }
+//            $retVal = '[quote='. $quote->poster .']'.$quote->message.'[/quote]'."\n";
+
+            $retVal .= '> --- **'.$quote->poster.'** *['.__('wrote').']('.
+                Router::pathFor('viewPost', ['pid' => $qid]).'#p'.$qid.')*'."\n";
+
+            // ^ - beginning of a string. m - multiline.
+            $retVal .= preg_replace('/^/m', '>', $quote->message);
         } else {
-            $quote = '> '.$quote['poster'].' '.__('wrote')."\n\n".'> '.$quote['message']."\n";
+            $quote->message .= preg_replace('/^/m', '>', $quote->message);
+            $retVal = '> --- '.$quote->poster.' '.__('wrote')."\n".$quote->message."\n";
         }
 
-        $quote = Container::get('hooks')->fire('model.post.get_quote_message', $quote);
+        $retVal = Container::get('hooks')->fire('model.post.finish_quote_message', $retVal);
 
-        return $quote;
+        return $retVal;
     }
 
     // Get the current state of checkboxes
@@ -1354,7 +1379,7 @@ class Post
     // Display the topic review if needed
     public function topic_review($tid)
     {
-        $post_data = array();
+        $post_data = [];
 
         $post_data = Container::get('hooks')->fire('model.post.topic_review_start', $post_data, $tid);
 

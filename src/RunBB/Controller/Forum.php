@@ -20,7 +20,7 @@ class Forum
     {
         $this->model = new \RunBB\Model\Forum();
         translate('forum');
-        translate('misc');
+//        translate('misc');
     }
 
     public function display($req, $res, $args)

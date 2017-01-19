@@ -329,7 +329,7 @@ msgid "Admin"
 msgstr "Administration"
 
 msgid "Last visit"
-msgstr "Last visit: %s"
+msgstr "Last visit:"
 
 msgid "Topic searches"
 msgstr "Topics:"
@@ -422,7 +422,7 @@ msgid "Query"
 msgstr "Query"
 
 msgid "Total query time"
-msgstr "Total query time: %s"
+msgstr "Total query time:"
 
 msgid "RSS description"
 msgstr "The most recent topics at %s."

@@ -9,6 +9,8 @@
 
 namespace RunBB\Core;
 
+use RunBB\Core\Interfaces\Container;
+
 class Lister
 {
     /**
@@ -16,11 +18,20 @@ class Lister
      */
     public static function getPlugins()
     {
-        $plugins = array();
+        $plugins = [];
+
+        $cfgPlugins = ForumEnv::get('SLIM_SETTINGS')['plugins'];
 
         foreach (glob(ForumEnv::get('FORUM_ROOT').'plugins/*/featherbb.json') as $plugin_file)
         {
             $plugins[] =  json_decode(file_get_contents($plugin_file));
+        }
+        if(!empty($cfgPlugins)) {
+            foreach ($cfgPlugins as $plug) {
+                if(class_exists($plug)) {
+                    $plugins[] = json_decode($plug::getInfo());
+                }
+            }
         }
 
         return $plugins;
@@ -31,7 +42,7 @@ class Lister
      */
     public static function getOfficialPlugins()
     {
-        $plugins = array();
+        $plugins = [];
 
         // Get the official list from the website
         $content = json_decode(AdminUtils::get_content('http://featherbb.org/plugins.json'));
@@ -72,7 +83,7 @@ class Lister
      */
     public static function getLangs($folder = '')
     {
-        $langs = array();
+        $langs = [];
 
         $iterator = new \DirectoryIterator(ForumEnv::get('FORUM_ROOT').'lang/');
         foreach ($iterator as $child) {

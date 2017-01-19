@@ -19,7 +19,7 @@ if (!isset($feather)) {
 Container::get('hooks')->fire('view.header.start');
 ?>
 <!doctype html>
-<html lang="<?php _e('lang_identifier') ?>">
+<html lang="<?= __('lang_identifier') ?>">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -30,7 +30,6 @@ Container::get('hooks')->fire('view.header.start');
 <?php } ?>
     <title><?= Utils::generate_page_title($title, $page_number) ?></title>
     <link rel="shortcut icon" href="<?= Url::base_static() ?>/style/img/favicon.png" />
-    <script type="text/javascript" src="/assets/js/jquery-3.1.1.min.js"/></script>
     <!-- Theme -->
     <link rel="stylesheet" type="text/css" href="<?= Url::base_static() ?>/style/themes/<?= View::getStyle() ?>/style.css">
 <?php
@@ -41,11 +40,23 @@ foreach($assets as $type => $items) {
     }
     echo "\t".'<!-- '.ucfirst($type).' -->'."\n";
     foreach ($items as $item) {
-        echo "\t".'<link ';
+        $isJs = false;
+        if(isset($item['params']['type']) && $item['params']['type'] === 'text/javascript') {
+            $isJs = true;
+        }
+        if($isJs) {
+            echo "\t" . '<script ';
+        } else {
+            echo "\t" . '<link ';
+        }
         foreach ($item['params'] as $key => $value) {
             echo $key.'="'.$value.'" ';
         }
-        echo 'href="'.Url::base_static().'/'.$item['file'].'">'."\n";
+        if($isJs) {
+            echo 'src="' . Url::base_static() . '/' . $item['file'] . '" /></script>' . "\n";
+        } else {
+            echo 'href="' . Url::base_static() . '/' . $item['file'] . '">' . "\n";
+        }
     }
 }
 if ($admin_console) {
@@ -84,7 +95,7 @@ if (isset($required_fields)) :
                     var elem = the_form.elements[i];
                     if (elem.name && required_fields[elem.name] && !elem.value && elem.type && (/^(?:text(?:area)?|password|file)$/i.test(elem.type)))
                     {
-                        alert('"' + required_fields[elem.name] + '" <?php _e('required field') ?>');
+                        alert('"' + required_fields[elem.name] + '" <?= __('required field') ?>');
                         elem.focus();
                         return false;
                     }
@@ -163,7 +174,7 @@ echo "\t\t\t".implode("\n\t\t\t", $navlinks);
                     <div class="navbar-right">
                         <form method="get" action="<?= Router::pathFor('search'); ?>" class="nav-search">
                             <input type="hidden" name="action" value="search">
-                            <input type="text" name="keywords" size="20" maxlength="100" placeholder="<?php _e('Search') ?>">
+                            <input type="text" name="keywords" size="20" maxlength="100" placeholder="<?= __('Search') ?>">
                         </form>
                     </div>
                 </div>
@@ -186,7 +197,7 @@ if (User::get()->is_guest) { ?>
 <?php } else {
     echo "\t\t\t".'<ul class="conl">';
     echo "\n\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape(User::get()->username).'</strong></span></li>'."\n";
-    echo "\t\t\t\t".'<li><span>'.sprintf(__('Last visit'), Container::get('utils')->format_time(User::get()->last_visit)).'</span></li>'."\n";
+    echo "\t\t\t\t".'<li><span>'.__('Last visit') .' '. Container::get('utils')->format_time(User::get()->last_visit).'</span></li>'."\n";
 
     if (User::get()->is_admmod) {
         if (ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2') {
@@ -225,7 +236,7 @@ Container::get('hooks')->fire('view.header.brdwelcome');
             </div>
 <?php if (User::get()->g_read_board == '1' && ForumSettings::get('o_announcement') == '1') : ?>
             <div id="announce" class="block">
-                <div class="hd"><h2><span><?php _e('Announcement') ?></span></h2></div>
+                <div class="hd"><h2><span><?= __('Announcement') ?></span></h2></div>
                 <div class="box">
                     <div id="announce-block" class="inbox">
                         <div class="usercontent"><?= ForumSettings::get('o_announcement_message') ?></div>
@@ -246,7 +257,7 @@ Container::get('hooks')->fire('view.header.brdwelcome');
             </script>
 <?php foreach (Container::get('flash')->getMessages() as $type => $message) { ?>
             <div class="flashmsg info" data-type="<?= $type; ?>" id="flashmsg">
-                <h2><?php _e('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
+                <h2><?php __('Info') ?><span style="float:right;cursor:pointer" onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;</span></h2>
                 <p><?= Utils::escape($message[0]) ?></p>
             </div>
 <?php } ?>

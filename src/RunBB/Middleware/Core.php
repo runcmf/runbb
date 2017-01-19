@@ -10,10 +10,10 @@
 
 namespace RunBB\Middleware;
 
-use RunBB\Controller\Install;
 use RunBB\Core\Email;
 use RunBB\Core\Hooks;
-use RunBB\Core\Parser;
+//use RunBB\Core\Parser;
+use RunBB\Core\ParserS9E;
 use RunBB\Core\Plugin;
 use RunBB\Core\Url;
 use RunBB\Core\Utils;
@@ -22,7 +22,7 @@ use RunBB\Core\View;
 class Core
 {
     protected $forum_env,
-              $forum_settings, $c;
+        $forum_settings, $c;
     protected $headers = array(
         'Cache-Control' => 'no-cache, no-store, must-revalidate',
         'Pragma' => 'no-cache',
@@ -35,22 +35,23 @@ class Core
         $this->c = $c;
         // Handle empty values in data
         $data = array_merge([
-                'config_file' => 'config.php',
-                'cache_dir' => 'cache/',
-                'web_root' => '',
-                'debug'   => false
-            ],
+            'config_file' => 'config.php',
+            'cache_dir' => 'cache/',
+            'web_root' => '',
+            'debug' => false
+        ],
             $data
         );
 
         // Define some core variables
-        $this->forum_env['FORUM_ROOT'] = realpath(dirname(__FILE__).'/../').'/';
-//        $this->forum_env['FORUM_CACHE_DIR'] = is_writable($data['cache_dir']) ? realpath($data['cache_dir']).'/' : null;
+        $this->forum_env['FORUM_ROOT'] = realpath(dirname(__FILE__) . '/../') . '/';
         $this->forum_env['FORUM_CACHE_DIR'] = $data['cache_dir'];
         $this->forum_env['FORUM_CONFIG_FILE'] = $this->forum_env['FORUM_CACHE_DIR'] . $data['config_file'];
         $this->forum_env['FEATHER_DEBUG'] = $this->forum_env['FEATHER_SHOW_QUERIES'] = ($data['debug'] == 'all');
         $this->forum_env['FEATHER_SHOW_INFO'] = ($data['debug'] == 'info' || $data['debug'] == 'all');
         $this->forum_env['WEB_ROOT'] = $data['web_root'];
+        $this->forum_env['WEB_PLUGINS'] = 'plugins';
+        $this->forum_env['SLIM_SETTINGS'] = $c['settings']['runbb'];
 
         // Populate forum_env
         $this->forum_env = array_merge(self::load_default_forum_env(), $this->forum_env);
@@ -60,55 +61,63 @@ class Core
         require_once DIR . 'vendor/j4mie/idiorm/idiorm.php';
 
         // Load files
-        require $this->forum_env['FORUM_ROOT'].'Helpers/utf8/utf8.php';
-        require $this->forum_env['FORUM_ROOT'].'Core/gettext/l10n.php';
-        require $this->forum_env['FORUM_ROOT'].'Core/gettext/MO.php';
+        require $this->forum_env['FORUM_ROOT'] . 'Helpers/utf8/utf8.php';
+//        require $this->forum_env['FORUM_ROOT'].'Core/gettext/l10n.php';
+//        require $this->forum_env['FORUM_ROOT'].'Core/gettext/MO.php';
+
+        // Load Languages
+        require $this->forum_env['FORUM_ROOT'] . 'Core/gettext.php';
+        Container::set('lang', function ($container) {
+            return new \RunBB\Core\Language('RunBB');
+        });
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
+
+
     }
 
     public static function load_default_forum_env()
     {
-        return array(
-                'FORUM_ROOT' => '',
-                'FORUM_CONFIG_FILE' => 'config.php',
-                'FORUM_CACHE_DIR' => DIR . 'var/cache/',
-                'FORUM_VERSION' => '1.0.0',
-                'FORUM_NAME' => 'RunBB',
-                'FORUM_DB_REVISION' => 21,
-                'FORUM_SI_REVISION' => 2,
-                'FORUM_PARSER_REVISION' => 2,
-                'FEATHER_UNVERIFIED' => 0,
-                'FEATHER_ADMIN' => 1,
-                'FEATHER_MOD' => 2,
-                'FEATHER_GUEST' => 3,
-                'FEATHER_MEMBER' => 4,
-                'FEATHER_MAX_POSTSIZE' => 32768,
-                'FEATHER_SEARCH_MIN_WORD' => 3,
-                'FEATHER_SEARCH_MAX_WORD' => 20,
-                'FORUM_MAX_COOKIE_SIZE' => 4048,
-                'FEATHER_DEBUG' => false,
-                'FEATHER_SHOW_QUERIES' => false,
-                'FEATHER_SHOW_INFO' => false
-                );
+        return [
+            'FORUM_ROOT' => '',
+            'FORUM_CONFIG_FILE' => 'config.php',
+            'FORUM_CACHE_DIR' => DIR . 'var/cache/',
+            'FORUM_VERSION' => '1.0.0',
+            'FORUM_NAME' => 'RunBB',
+            'FORUM_DB_REVISION' => 21,
+            'FORUM_SI_REVISION' => 2,
+            'FORUM_PARSER_REVISION' => 2,
+            'FEATHER_UNVERIFIED' => 0,
+            'FEATHER_ADMIN' => 1,
+            'FEATHER_MOD' => 2,
+            'FEATHER_GUEST' => 3,
+            'FEATHER_MEMBER' => 4,
+            'FEATHER_MAX_POSTSIZE' => 32768,
+            'FEATHER_SEARCH_MIN_WORD' => 3,
+            'FEATHER_SEARCH_MAX_WORD' => 20,
+            'FORUM_MAX_COOKIE_SIZE' => 4048,
+            'FEATHER_DEBUG' => false,
+            'FEATHER_SHOW_QUERIES' => false,
+            'FEATHER_SHOW_INFO' => false
+        ];
     }
 
     public static function load_default_forum_settings()
     {
         return array(
-                // Database
-                'db_type' => 'mysqli',
-                'db_host' => '',
-                'db_name' => '',
-                'db_user' => '',
-                'db_pass' => '',
-                'db_prefix' => '',
-                // Cookies
-                'cookie_name' => 'runbb_cookie',
-                'jwt_token' => 'changeme', // MUST BE CHANGED !!!
-                'jwt_algorithm' => 'HS512'
-                );
+            // Database
+            'db_type' => 'mysqli',
+            'db_host' => '',
+            'db_name' => '',
+            'db_user' => '',
+            'db_pass' => '',
+            'db_prefix' => '',
+            // Cookies
+            'cookie_name' => 'runbb_cookie',
+            'jwt_token' => 'changeme', // MUST BE CHANGED !!!
+            'jwt_algorithm' => 'HS512'
+        );
     }
 
     public static function init_db(array $config, $log_queries = false)
@@ -116,15 +125,15 @@ class Core
         $config['db_prefix'] = (!empty($config['db_prefix'])) ? $config['db_prefix'] : '';
         switch ($config['db_type']) {
             case 'mysql':
-                \ORM::configure('mysql:host='.$config['db_host'].';dbname='.$config['db_name']);
+                \ORM::configure('mysql:host=' . $config['db_host'] . ';dbname=' . $config['db_name']);
                 \ORM::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
                 break;
             case 'sqlite';
             case 'sqlite3';
-                \ORM::configure('sqlite:./'.$config['db_name']);
+                \ORM::configure('sqlite:./' . $config['db_name']);
                 break;
             case 'pgsql':
-                \ORM::configure('pgsql:host='.$config['db_host'].'dbname='.$config['db_name']);
+                \ORM::configure('pgsql:host=' . $config['db_host'] . 'dbname=' . $config['db_name']);
                 break;
         }
         \ORM::configure('username', $config['db_user']);
@@ -133,17 +142,16 @@ class Core
         if ($log_queries) {
             \ORM::configure('logging', true);
             // Collect query info
-            \ORM::configure('logger', function($log_string, $query_time) {
-                self::$queryLog[0][] = $query_time;
-                self::$queryLog[1][] = $log_string;
+            \ORM::configure('logger', function ($query, $time) {
+                self::$queryLog[0][] = $time;
+                self::$queryLog[1][] = $query;
             });
         }
         \ORM::configure('id_column_overrides', array(
-            $config['db_prefix'].'groups' => 'g_id',
+            $config['db_prefix'] . 'groups' => 'g_id',
         ));
 
         defined('ORM_TABLE_PREFIX') || define('ORM_TABLE_PREFIX', $config['db_prefix']);
-//tdie(ORM_TABLE_PREFIX);
     }
 
     public static function getQueryLog()
@@ -178,6 +186,9 @@ class Core
 
         // Populate Slim object with forum_env vars
         Container::set('forum_env', $this->forum_env);
+
+        translate('misc');// load misc lang vars
+
         // Load RunBB utils class
         Container::set('utils', function ($container) {
             return new Utils();
@@ -222,14 +233,15 @@ class Core
         });
 
         Container::set('parser', function ($container) {
-            return new Parser();
+//            return new Parser();
+            return new ParserS9E();
         });
         // Set cookies
-        Container::set('cookie', function ($container){
+        Container::set('cookie', function ($container) {
             $request = $container->get('request');
             return new \Slim\Http\Cookies($request->getCookieParams());
         });
-        Container::set('flash', function($c) {
+        Container::set('flash', function ($c) {
             return new \Slim\Flash\Messages;
         });
 
@@ -248,8 +260,8 @@ class Core
         if (!empty($config)) {
             $this->forum_settings = array_merge(self::load_default_forum_settings(), $config);
         } else {
-            $this->c->response->withStatus(500); // Send forbidden header
-            return $this->c->response->getBody()->write('Wrong config file format');
+            $this->c['response']->withStatus(500); // Send forbidden header
+            return $this->c['response']->getBody()->write('Wrong config file format');
         }
 
         // Init DB and configure Slim
@@ -267,15 +279,50 @@ class Core
         // Set default style and assets
         Container::get('template')->setStyle(ForumSettings::get('o_default_style'));
 
-//        Container::get('template')->addAsset('js', 'assets/js/jquery-3.1.1.min.js');
-        Container::get('template')->addAsset('js', 'style/themes/'.Container::get('template')->getStyle().'/phone.min.js');
+        // load common css and js
+        Container::get('template')->addAsset(
+            'css',
+            'assets/css/font-awesome.min.css',
+            ['type' => 'text/css', 'rel' => 'stylesheet']
+        );
+        // highlight.js theme
+        Container::get('template')->addAsset(
+            'css',
+            'style/js/styles/androidstudio.css',
+            ['type' => 'text/css', 'rel' => 'stylesheet']
+        );
+        Container::get('template')->addAsset(
+            'jsTop',
+            'assets/js/jquery-3.1.1.min.js',
+            ['type' => 'text/javascript']
+        );
+        Container::get('template')->addAsset(
+            'jsTop',
+            'style/js/highlight.pack.js',
+            ['type' => 'text/javascript']
+        );
+        Container::get('template')->addAsset(
+            'js',
+            'style/themes/' . Container::get('template')->getStyle() . '/phone.min.js',
+            ['type' => 'text/javascript']
+        );
+        Container::get('template')->set(
+            'jsRAW',
+            "\t\t" . 'hljs.initHighlightingOnLoad();'
+        );
 
         // Run activated plugins
         self::loadPlugins();
 
         // Define time formats and add them to the container
-        Container::set('forum_time_formats', array(ForumSettings::get('o_time_format'), 'H:i:s', 'H:i', 'g:i:s a', 'g:i a'));
-        Container::set('forum_date_formats', array(ForumSettings::get('o_date_format'), 'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'));
+        Container::set('forum_time_formats', [
+            ForumSettings::get('o_time_format'),
+            'H:i:s', 'H:i', 'g:i:s a', 'g:i a'
+        ]);
+        Container::set('forum_date_formats', [
+            ForumSettings::get('o_date_format'),
+            'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'
+        ]);
 
         // Call RunBBAuth middleware
         return $next($req, $res);

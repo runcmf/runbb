@@ -11,18 +11,17 @@ namespace RunBB\Core;
 
 class Hooks
 {
-
     /**
      * @var array
      */
-    protected $hooks = array(
+    protected $hooks = [
         // 'slim.before' => array(array()),
         // 'slim.before.router' => array(array()),
         // 'slim.before.dispatch' => array(array()),
         // 'slim.after.dispatch' => array(array()),
         // 'slim.after.router' => array(array()),
         // 'slim.after' => array(array())
-    );
+    ];
     /**
      * Assign hook
      * @param  string   $name       The hook name
@@ -31,9 +30,9 @@ class Hooks
      */
     public function bind($name, $callable, $priority = 10)
     {
-        if (!isset($this->hooks[$name])) {
-            $this->hooks[$name] = array(array());
-        }
+//        if (!isset($this->hooks[$name])) {
+//            $this->hooks[$name] = array(array());// why empty array?
+//        }
         if (is_callable($callable)) {
             $this->hooks[$name][(int) $priority][] = $callable;
         }
@@ -59,7 +58,6 @@ class Hooks
                 return;
             }
         }
-
         if (!empty($this->hooks[$name])) {
             // Sort by priority, low to high, if there's more than one priority
             if (count($this->hooks[$name]) > 1) {
@@ -82,15 +80,25 @@ class Hooks
             // let's return the first output
             if ($count == 1 || !is_array($args[0])) {
                 return $output[0];
-            }
-            else {
+            } else {
                 $data = [];
                 // Move all the keys to the same level
-                array_walk_recursive($output, function ($v, $k) use (&$data) {
-                    $data[] = $v;
-                });
+                foreach ($output as $k => $vars) {
+                    if($k === 0) {
+                        $data = $vars;
+                        continue;
+                    }
+                    // TODO нарисовать тесты на нескольких плугах с одинаковыми хуками:
+                    // проверить если в массиве есть callable
+//                    $data = array_merge($data, $vars);
+                    $data = $data + $vars;
+                }
+//                array_walk_recursive($output, function ($v, $k) use (&$data) {
+//                    $data[] = $v;
+//                });
+                return $data;
                 // Remove any duplicate key
-                return array_unique($data);
+//                return array_unique($data, SORT_REGULAR);
             }
         }
     }

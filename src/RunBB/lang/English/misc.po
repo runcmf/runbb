@@ -223,3 +223,6 @@ msgstr "The host name is: %s"
 
 msgid "Show more users"
 msgstr "Show more users for this IP"
+
+msgid "Parser return"
+msgstr "Parser return:"

@@ -20,7 +20,7 @@ class Topic
     {
         $this->model = new \RunBB\Model\Topic();
         translate('topic');
-        translate('misc'); // To be removed
+//        translate('misc'); // To be removed
         translate('post');
     }
 
@@ -49,7 +49,8 @@ class Topic
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
-        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+        $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' &&
+                array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         // Can we or can we not post replies?
         $post_link = $this->model->get_post_link($args['id'], $cur_topic['closed'], $cur_topic['post_replies'], $is_admmod);
@@ -96,8 +97,12 @@ class Topic
             View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['id'].'&amp;type=atom', array('title' => __('Atom forum feed')));
         }
 
-        View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
+        View::setPageInfo([
+            'title' => [
+                Utils::escape(ForumSettings::get('o_board_title')),
+                Utils::escape($cur_topic['forum_name']),
+                Utils::escape($cur_topic['subject'])
+            ],
             'active_page' => 'Topic',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,
@@ -116,7 +121,7 @@ class Topic
             'lang_antispam_questions'        =>    $lang_antispam_questions,
             'url_forum'        =>    $url_forum,
             'url_topic'        =>    $url_topic,
-        ))->addTemplate('topic.php')->display();
+        ])->addTemplate('topic.php')->display();
 
         // Increment "num_views" for topic
         $this->model->increment_views($args['id']);

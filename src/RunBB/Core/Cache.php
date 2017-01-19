@@ -1,14 +1,14 @@
 <?php
 
 /**
-* Copyright (C) 2015-2016 FeatherBB
-* based on code by Christian Metz - MetzWeb Networks
-* API Documentation: https://github.com/cosenary/Simple-PHP-Cache
-* License: BSD http://www.opensource.org/licenses/bsd-license.php
-*
-* RunBB Cache class
-* Usage : $cache = new \RunBB\Cache(array('name' => , 'path' =>, 'extension' =>));
-*/
+ * Copyright (C) 2015-2016 FeatherBB
+ * based on code by Christian Metz - MetzWeb Networks
+ * API Documentation: https://github.com/cosenary/Simple-PHP-Cache
+ * License: BSD http://www.opensource.org/licenses/bsd-license.php
+ *
+ * RunBB Cache class
+ * Usage : $cache = new \RunBB\Cache(array('name' => , 'path' =>, 'extension' =>));
+ */
 
 namespace RunBB\Core;
 
@@ -17,30 +17,30 @@ use RunBB\Exception\RunBBException;
 class Cache
 {
     /**
-    * @var array
-    */
+     * @var array
+     */
     protected $settings;
 
     /**
-    * @var array
-    */
+     * @var array
+     */
     protected $cache;
 
     /**
-    * @var array
-    */
+     * @var array
+     */
     protected $filenames;
 
     /**
-    * Default constructor
-    *
-    * @param string|array [optional] $config
-    * @return void
-    */
-    public function __construct($config = array())
+     * Default constructor
+     *
+     * @param string|array [optional] $config
+     * @return void
+     */
+    public function __construct($config = [])
     {
         if (!is_array($config)) {
-            $config = array('name' => (string) $config);
+            $config = array('name' => (string)$config);
         }
         $this->settings = array_merge(self::getDefaultSettings(), $config);
         $this->setCache($this->settings['name']);
@@ -49,23 +49,23 @@ class Cache
     }
 
     /**
-    * Return default settings
-    *
-    * @return array
-    */
+     * Return default settings
+     *
+     * @return array
+     */
     protected static function getDefaultSettings()
     {
         return array('name' => 'default',
-        'path' => 'cache/',
-        'extension' => '.cache');
+            'path' => 'cache/',
+            'extension' => '.cache');
     }
 
     /**
-    * Check whether data is associated with a key
-    *
-    * @param string $key
-    * @return boolean
-    */
+     * Check whether data is associated with a key
+     *
+     * @param string $key
+     * @return boolean
+     */
     public function isCached($key)
     {
         if ($cachedData = $this->_loadCache()) {
@@ -79,41 +79,41 @@ class Cache
     }
 
     /**
-    * Store data in the cache
-    *
-    * @param string $key
-    * @param mixed $data
-    * @param integer [optional] $expires
-    * @return self
-    */
+     * Store data in the cache
+     *
+     * @param string $key
+     * @param mixed $data
+     * @param integer [optional] $expires
+     * @return self
+     */
     public function store($key, $data, $expires = 0)
     {
-        $new_data = array(
+        $new_data = [
             'time' => time(),
-            'expire' => (int) $expires,
+            'expire' => (int)$expires,
             'data' => serialize($data)
-        );
+        ];
 
         $cache = $this->_loadCache();
         if (is_array($cache)) {
-            $cache[(string) $key] = $new_data;
+            $cache[(string)$key] = $new_data;
         } else {
-            $cache = array((string) $key => $new_data);
+            $cache = array((string)$key => $new_data);
         }
         $this->_saveCache($cache);
         return $this;
     }
 
     /**
-    * Retrieve cached data by key
-    *
-    * @param string $key
-    * @param boolean [optional] $timestamp
-    * @return string
-    */
+     * Retrieve cached data by key
+     *
+     * @param string $key
+     * @param boolean [optional] $timestamp
+     * @return string
+     */
     public function retrieve($key)
     {
-        $key = (string) $key;
+        $key = (string)$key;
         if ($cache = $this->_loadCache()) {
             if (isset($cache[$key])) {
                 if (!$this->_isExpired($cache[$key]['time'], $cache[$key]['expire'])) {
@@ -125,11 +125,11 @@ class Cache
     }
 
     /**
-    * Retrieve all cached data
-    *
-    * @param boolean [optional] $meta
-    * @return array | null
-    */
+     * Retrieve all cached data
+     *
+     * @param boolean [optional] $meta
+     * @return array | null
+     */
     public function retrieveAll($raw = false)
     {
         if ($cache = $this->_loadCache()) {
@@ -147,14 +147,15 @@ class Cache
     }
 
     /**
-    * Delete cached entry by its key
-    *
-    * @param string $key
-    * @return object
-    */
+     * Delete cached entry by its key
+     *
+     * @param string $key
+     * @return object
+     * @throws RunBBException for error delete cached key.
+     */
     public function delete($key)
     {
-        $key = (string) $key;
+        $key = (string)$key;
         if ($cache = $this->_loadCache()) {
             if (isset($cache[$key])) {
                 unset($cache[$key]);
@@ -166,21 +167,21 @@ class Cache
     }
 
     /**
-    * Erase all expired entries
-    *
-    * @return object
-    */
+     * Erase all expired entries
+     *
+     * @return object
+     */
     public function deleteExpired()
     {
         $cache = $this->_loadCache();
         if (is_array($cache)) {
             $i = 0;
-            $cache = array_map(function ($value) use(& $i) {
-                        if (!$this->_isExpired($value['time'], $value['expire'])) {
-                            ++$i;
-                            return $value;
-                        }
-                        });
+            $cache = array_map(function ($value) use (& $i) {
+                if (!$this->_isExpired($value['time'], $value['expire'])) {
+                    ++$i;
+                    return $value;
+                }
+            });
             if ($i > 0) {
                 $this->_saveCache($cache);
             }
@@ -189,23 +190,24 @@ class Cache
     }
 
     /**
-    * Flush all cached entries
-    * @return object
-    */
+     * Flush all cached entries
+     * @return object
+     */
     public function flush()
     {
         $this->cache = null; // Purge cache
-        $this->_saveCache(array());
+        $this->_saveCache([]);
         return $this;
     }
 
     /**
-    * Increment key
-    * @return object
-    */
+     * Increment key
+     * @return object
+     * @throws RunBBException for cache key increment.
+     */
     public function increment($key)
     {
-        $key = (string) $key;
+        $key = (string)$key;
         if ($cache = $this->_loadCache()) {
             if (isset($cache[$key])) {
                 $tmp = unserialize($cache[$key]['data']);
@@ -221,12 +223,13 @@ class Cache
     }
 
     /**
-    * Decrement key
-    * @return object
-    */
+     * Decrement key
+     * @return object
+     * @throws RunBBException for cache key decrement.
+     */
     public function decrement($key)
     {
-        $key = (string) $key;
+        $key = (string)$key;
         if ($cache = $this->_loadCache()) {
             if (isset($cache[$key])) {
                 $tmp = unserialize($cache[$key]['data']);
@@ -242,13 +245,13 @@ class Cache
     }
 
     /**
-    * Load cache
-    * @return cache if existing or not null / null otherwise
-    */
+     * Load cache
+     * @return cache if existing or not null / null otherwise
+     */
     protected function _loadCache()
     {
         if (!is_null($this->cache))
-        return $this->cache;
+            return $this->cache;
 
         if (file_exists($this->getCacheFile())) {
             $this->cache = json_decode(file_get_contents($this->getCacheFile()), true);
@@ -258,8 +261,8 @@ class Cache
     }
 
     /**
-    * Save cache file
-    * @param $dataArray
+     * Save cache file
+     * @param $dataArray
      * @return number of bytes that were written to the file, or FALSE on failure.
      */
     protected function _saveCache(array $data)
@@ -269,12 +272,12 @@ class Cache
     }
 
     /**
-    * Check whether a timestamp is still in the duration
-    *
-    * @param integer $timestamp
-    * @param integer $expiration
-    * @return boolean
-    */
+     * Check whether a timestamp is still in the duration
+     *
+     * @param integer $timestamp
+     * @param integer $expiration
+     * @return boolean
+     */
     protected function _isExpired($timestamp, $expiration)
     {
         if ($expiration !== 0) {
@@ -284,10 +287,11 @@ class Cache
     }
 
     /**
-    * Check if a writable cache directory exists and if not create a new one
-    *
-    * @return boolean
-    */
+     * Check if a writable cache directory exists and if not create a new one
+     *
+     * @return boolean
+     * @throws RunBBException for invalid creation or readable cache directory.
+     */
     protected function _checkCacheDir()
     {
         if (!is_dir($this->getCachePath()) && !mkdir($this->getCachePath(), 0775, true)) {
@@ -301,14 +305,14 @@ class Cache
     }
 
     /**
-    * Getters and setters
-    */
+     * Getters and setters
+     */
 
     /**
-    * Get the cache directory path
-    *
-    * @return string
-    */
+     * Get the cache directory path
+     *
+     * @return string
+     */
     public function getCacheFile()
     {
         if (!isset($this->filenames[$this->settings['name']])) {
@@ -321,32 +325,32 @@ class Cache
     }
 
     /**
-    * Cache path Setter
-    *
-    * @param string $path
-    * @return object
-    */
+     * Cache path Setter
+     *
+     * @param string $path
+     * @return object
+     */
     public function setCachePath($path)
     {
         $this->settings['path'] = $path;
     }
 
     /**
-    * Cache path Getter
-    *
-    * @return string
-    */
+     * Cache path Getter
+     *
+     * @return string
+     */
     public function getCachePath()
     {
         return $this->settings['path'];
     }
 
     /**
-    * Cache name Setter
-    *
-    * @param string $name
-    * @return object
-    */
+     * Cache name Setter
+     *
+     * @param string $name
+     * @return object
+     */
     public function setCache($name)
     {
         $this->cache = null; // Purge cache as we change cache
@@ -354,41 +358,41 @@ class Cache
     }
 
     /**
-    * Cache name Getter
-    *
-    * @return void
-    */
+     * Cache name Getter
+     *
+     * @return string Cache path
+     */
     public function getCache()
     {
         return $this->settings['path'];
     }
 
     /**
-    * Cache file extension Setter
-    *
-    * @param string $ext
-    * @return object
-    */
+     * Cache file extension Setter
+     *
+     * @param string $ext
+     * @return object
+     */
     public function setCacheExtension($ext)
     {
-        $this->settings['extension']= $ext;
+        $this->settings['extension'] = $ext;
     }
 
     /**
-    * Cache file extension Getter
-    *
-    * @return string
-    */
+     * Cache file extension Getter
+     *
+     * @return string
+     */
     public function getCacheExtension()
     {
         return $this->settings['extension'];
     }
 
     /**
-    * Settings Getter
-    *
-    * @return array
-    */
+     * Settings Getter
+     *
+     * @return array
+     */
     public function getSettings()
     {
         return $this->settings;

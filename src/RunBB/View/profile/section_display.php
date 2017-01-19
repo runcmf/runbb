@@ -34,9 +34,9 @@ Container::get('hooks')->fire('view.profile.section_display.start');
         ?>
             <div class="inform">
                 <fieldset>
-                    <legend><?php _e('Style legend') ?></legend>
+                    <legend><?= __('Style legend') ?></legend>
                     <div class="infldset">
-                        <label><?php _e('Styles') ?><br />
+                        <label><?= __('Styles') ?><br />
                         <select name="form_style">
 <?php
 
@@ -62,25 +62,25 @@ Container::get('hooks')->fire('view.profile.section_display.start');
 <?php if (ForumSettings::get('o_smilies') == '1' || ForumSettings::get('o_smilies_sig') == '1' || ForumSettings::get('o_signatures') == '1' || ForumSettings::get('o_avatars') == '1' || (ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1')): ?>
             <div class="inform">
                 <fieldset>
-                    <legend><?php _e('Post display legend') ?></legend>
+                    <legend><?= __('Post display legend') ?></legend>
                     <div class="infldset">
-                        <p><?php _e('Post display info') ?></p>
+                        <p><?= __('Post display info') ?></p>
                         <div class="rbox">
 <?php if (ForumSettings::get('o_smilies') == '1' || ForumSettings::get('o_smilies_sig') == '1'): ?>                                <label><input type="checkbox" name="form_show_smilies" value="1"<?php if ($user->show_smilies == '1') {
     echo ' checked="checked"';
-} ?> /><?php _e('Show smilies') ?><br /></label>
+} ?> /><?= __('Show smilies') ?><br /></label>
 <?php endif; if (ForumSettings::get('o_signatures') == '1'): ?>                                <label><input type="checkbox" name="form_show_sig" value="1"<?php if ($user->show_sig == '1') {
     echo ' checked="checked"';
-} ?> /><?php _e('Show sigs') ?><br /></label>
+} ?> /><?= __('Show sigs') ?><br /></label>
 <?php endif; if (ForumSettings::get('o_avatars') == '1'): ?>                                <label><input type="checkbox" name="form_show_avatars" value="1"<?php if ($user->show_avatars == '1') {
     echo ' checked="checked"';
-} ?> /><?php _e('Show avatars') ?><br /></label>
+} ?> /><?= __('Show avatars') ?><br /></label>
 <?php endif; if (ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1'): ?>                                <label><input type="checkbox" name="form_show_img" value="1"<?php if ($user->show_img == '1') {
     echo ' checked="checked"';
-} ?> /><?php _e('Show images') ?><br /></label>
+} ?> /><?= __('Show images') ?><br /></label>
 <?php endif; if (ForumSettings::get('o_signatures') == '1' && ForumSettings::get('p_sig_bbcode') == '1' && ForumSettings::get('p_sig_img_tag') == '1'): ?>                                <label><input type="checkbox" name="form_show_img_sig" value="1"<?php if ($user->show_img_sig == '1') {
     echo ' checked="checked"';
-} ?> /><?php _e('Show images sigs') ?><br /></label>
+} ?> /><?= __('Show images sigs') ?><br /></label>
 <?php endif; ?>
                         </div>
                     </div>
@@ -89,15 +89,15 @@ Container::get('hooks')->fire('view.profile.section_display.start');
 <?php endif; ?>
             <div class="inform">
                 <fieldset>
-                    <legend><?php _e('Pagination legend') ?></legend>
+                    <legend><?= __('Pagination legend') ?></legend>
                     <div class="infldset">
-                        <label class="conl"><?php _e('Topics per page') ?><br /><input type="text" name="form_disp_topics" value="<?= $user->disp_topics ?>" size="6" maxlength="2" /><br /></label>
-                        <label class="conl"><?php _e('Posts per page') ?><br /><input type="text" name="form_disp_posts" value="<?= $user->disp_posts ?>" size="6" maxlength="2" /><br /></label>
-                        <p class="clearb"><?php _e('Paginate info') ?> <?php _e('Leave blank') ?></p>
+                        <label class="conl"><?= __('Topics per page') ?><br /><input type="text" name="form_disp_topics" value="<?= $user->disp_topics ?>" size="6" maxlength="2" /><br /></label>
+                        <label class="conl"><?= __('Posts per page') ?><br /><input type="text" name="form_disp_posts" value="<?= $user->disp_posts ?>" size="6" maxlength="2" /><br /></label>
+                        <p class="clearb"><?= __('Paginate info') ?> <?= __('Leave blank') ?></p>
                     </div>
                 </fieldset>
             </div>
-            <p class="buttons"><input type="submit" name="update" value="<?php _e('Submit') ?>" /> <?php _e('Instructions') ?></p>
+            <p class="buttons"><input type="submit" name="update" value="<?= __('Submit') ?>" /> <?= __('Instructions') ?></p>
         </form>
     </div>
 </div>

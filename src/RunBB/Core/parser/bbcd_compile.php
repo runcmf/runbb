@@ -168,8 +168,8 @@ $                               # Anchor to end of string.
 (?<!\s)                         # Backtrack to exclude any trailing whitespace.
 (?=\s*\[(?:\*|/list)\])         # Done once we reach a [*] or [/list].
                                 %ix',
-    'smilies'                => array(),                // Array of Smilies, each an array with filename and html.
-    'bbcd'                    => array(),                // Array of BBCode tag definitions.
+    'smilies'                => [],   // Array of Smilies, each an array with filename and html.
+    'bbcd'                    => [],  // Array of BBCode tag definitions.
 
 );
 unset($config);
@@ -181,7 +181,7 @@ if (!ini_get('allow_url_fopen')) {
 }
 
 // Validate and compute replacement texts for smilies array.
-$re_keys = array();                                    // Array of regex-safe smiley texts.
+$re_keys = [];     // Array of regex-safe smiley texts.
 $file_path = ForumEnv::get('WEB_ROOT') . 'style/img/smilies/';                // File system path to smilies.
 $url_path = Url::base();                        // Convert abs URL to relative URL.
 $url_path = preg_replace('%^https?://[^/]++(.*)$%i', '$1', $url_path) . '/style/img/smilies/';
@@ -223,9 +223,9 @@ unset($smiley_text); unset($smiley_img); unset($smilies);
 unset($w); unset($h); unset($iw); unset($ih);
 
 // Local arrays:
-$all_tags                    = array();                // array of all tag names allowed in posts
-$all_tags_re                = array();                // array of all tag names allowed in posts (preg_quoted)
-$all_block_tags                = array();                // array of all block type tag names
+$all_tags       = []; // array of all tag names allowed in posts
+$all_tags_re    = []; // array of all tag names allowed in posts (preg_quoted)
+$all_block_tags = []; // array of all block type tag names
 
 // loop through all BBCodes to pre-assemble and initialize-once global data structures
 foreach ($bbcd as $tagname => $tagdata) { // pass 1: accumulate regex pattern string fragments counting block and inline types

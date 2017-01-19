@@ -16,11 +16,11 @@ if (!isset($feather)) {
 
 ?>
 <div class="blockform">
-    <h2><span><?php _e('Permissions head') ?></span></h2>
+    <h2><span><?= __('Permissions head') ?></span></h2>
     <div class="box">
         <form method="post" action="">
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
-            <p class="submittop"><input type="submit" name="save" value="<?php _e('Save changes') ?>" /></p>
+            <p class="submittop"><input type="submit" name="save" value="<?= __('Save changes') ?>" /></p>
             <div class="inform">
                 <input type="hidden" name="form_sent" value="1" />
                 <fieldset>
@@ -70,7 +70,7 @@ if (!isset($feather)) {
                 </fieldset>
             </div>
             <?php Container::get('hooks')->fire('view.admin.plugin.private-messages.form'); ?>
-            <p class="submitend"><input type="submit" name="save" value="<?php _e('Save changes') ?>" /></p>
+            <p class="submitend"><input type="submit" name="save" value="<?= __('Save changes') ?>" /></p>
         </form>
     </div>
 </div>

@@ -19,7 +19,7 @@ Container::get('hooks')->fire('view.footer.start');
         </div>
 
         <div id="brdfooter" class="block">
-            <h2><span><?php _e('Board footer') ?></span></h2>
+            <h2><span><?= __('Board footer') ?></span></h2>
             <div class="box">
 <?php
 
@@ -74,7 +74,7 @@ if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') 
 if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) { ?>
                     <div class="conl">
                         <form id="qjump" method="get" action="">
-                            <div><label><span><?php _e('Jump to') ?><br /></span></label>
+                            <div><label><span><?= __('Jump to') ?><br /></span></label>
                                 <select name="id" onchange="window.location=(this.options[this.selectedIndex].value)">
 <?php
 print_r(User::get()->g_id);
@@ -130,18 +130,18 @@ Container::get('hooks')->fire('view.footer.feed.links');
 
 // Display debug info (if enabled/defined)
 if (!empty($exec_info)) { ?>
-    <p id="debugtime">[ <?= sprintf(__('Querytime'), round($exec_info['exec_time'], 6), $exec_info['nb_queries']).' - '.sprintf(__('Memory usage'), $exec_info['mem_usage']).' '.sprintf(__('Peak usage'), $exec_info['mem_peak_usage'])?> ]</p>
+    <p id="debugtime">[ <?= __('Querytime', round($exec_info['exec_time'], 6), $exec_info['nb_queries']).' - '.__('Memory usage', $exec_info['mem_usage']).' '.__('Peak usage', $exec_info['mem_peak_usage'])?> ]</p>
 <?php }
 if (!empty($queries_info)) { ?>
     <div id="debug" class="blocktable">
-        <h2><span><?php _e('Debug table') ?></span></h2>
+        <h2><span><?= __('Debug table') ?></span></h2>
         <div class="box">
                 <div class="inbox">
                 <table>
                     <thead>
                         <tr>
-                            <th class="tcl" scope="col"><?php _e('Query times') ?></th>
-                            <th class="tcr" scope="col"><?php _e('Query') ?></th>
+                            <th class="tcl" scope="col"><?= __('Query times') ?></th>
+                            <th class="tcr" scope="col"><?= __('Query') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -152,7 +152,7 @@ if (!empty($queries_info)) { ?>
     echo "\t\t\t\t\t\t".'</tr>'."\n";
 } ?>
                         <tr>
-                            <td class="tcl" colspan="2"><?= sprintf(__('Total query time'), round($queries_info['total_time'], 7)).' s' ?></td>
+                            <td class="tcl" colspan="2"><?= __('Total query time') .' '.round($queries_info['total_time'], 7). ' s' ?></td>
                         </tr>
                     </tbody>
                 </table>
@@ -162,12 +162,13 @@ if (!empty($queries_info)) { ?>
 <?php } ?>
 </section>
 
-<!-- JS -->
 <script>
     var baseUrl = '<?= Utils::escape(Url::base()); ?>',
         phpVars = <?= isset($jsVars) ? json_encode($jsVars) : json_encode(array()); ?>;
 <?= isset($jsRAW) ? $jsRAW : ''; ?>;
 </script>
+
+    <!-- JS -->
 <?php foreach ($assets['js'] as $script) {
     echo '<script ';
     foreach ($script['params'] as $key => $value) {
@@ -175,6 +176,7 @@ if (!empty($queries_info)) { ?>
     }
     echo 'src="'.Url::base_static().'/'.$script['file'].'"/></script>'."\n";
 } ?>
+
 <?php Container::get('hooks')->fire('view.footer.before.html.tag'); ?>
 </body>
 </html>

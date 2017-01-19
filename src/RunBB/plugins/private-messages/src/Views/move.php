@@ -3,7 +3,7 @@ use RunBB\Core\Utils;
 
 ?>
         <div class="blockform">
-            <h2><span><?php _e('Move conversations', 'private_messages') ?></span></h2>
+            <h2><span><?= __('Move conversations', 'private_messages') ?></span></h2>
             <div class="box">
                 <form method="post" action="">
                     <input type="hidden" name="topics" value="<?= implode(",",$topics); ?>" />
@@ -12,9 +12,9 @@ use RunBB\Core\Utils;
                     <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                     <div class="inform">
                         <fieldset>
-                            <legend><?php _e('Move legend'); ?></legend>
+                            <legend><?= __('Move legend'); ?></legend>
                             <div class="infldset">
-                                <label><?php _e('Move to'); ?><br>
+                                <label><?= __('Move to'); ?><br>
                                     <select name="move_to">
                                         <?php foreach ($inboxes as $key => $inbox): if($key == 1) continue; ?>
                                             <option value="<?= $key ?>"><?= Utils::escape($inbox['name']); ?></option>
@@ -24,7 +24,7 @@ use RunBB\Core\Utils;
                             </div>
                         </fieldset>
                     </div>
-                    <p class="buttons"><input type="submit" name="move" value="<?php _e('Move'); ?>" /> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
+                    <p class="buttons"><input type="submit" name="move" value="<?= __('Move'); ?>" /> <a href="javascript:history.go(-1)"><?= __('Go back') ?></a></p>
                 </form>
             </div>
         </div>

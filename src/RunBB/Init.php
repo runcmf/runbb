@@ -120,6 +120,48 @@ class Init
     {
         $c = $this->app->getContainer();
 
+        $c['errorHandler'] = function ($c) {
+            return function ($request, $response, $e) use ($c) {
+                $error = [
+                    'code' => $e->getCode(),
+                    'message' => $e->getMessage(),
+                    'back' => true,
+                ];
+
+                // Hide internal mechanism from guest
+//        if (User::get()->is_guest) {
+//            $error['message'] = 'There was an internal error'; // TODO : translation
+//        } else
+                if (User::get()->is_admmod) {
+                    // show last 5 trace lines
+                    if (count($e->getTrace()) > 1) {
+                        $trace = $e->getTrace();
+                        $msg='backtrace:<br/>';
+                        for ($i=0; $i < 5; $i++) {
+                            if(isset($trace[$i]['file'])) {
+                                $msg .= '<p>' . $i . ': file: &nbsp; &nbsp; &nbsp;' .
+                                    str_replace(DIR, '', $trace[$i]['file']) . ' [' . $trace[$i]['line'] . ']</p>';
+                            } else {
+                                $msg .= '<p>' . $i . ': ' .
+                                    'class: &nbsp;'. $trace[$i]['class'] . ' [' . $trace[$i]['function'] . ']</p>';
+                            }
+                        }
+                        $error['message'] = $error['message'] . '<br /><br />' . $msg;
+                    }
+                }
+
+                if (method_exists($e, 'hasBacklink')) {
+                    $error['back'] = $e->hasBacklink();
+                }
+
+                return View::setPageInfo([
+                    'title' => array(\RunBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')),
+                    'msg'    =>    $error['message'],
+                    'backlink'    => $error['back'],
+                ])->addTemplate('error.php')->display();
+            };
+        };
+
         $this->app->add(new \RunBB\Middleware\Csrf);
         $this->app->add(new \RunBB\Middleware\Auth);
         $this->app->add(new \RunBB\Middleware\Core($c, $c['settings']['runbb']));

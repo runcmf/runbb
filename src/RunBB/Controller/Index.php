@@ -21,7 +21,7 @@ class Index
     {
         $this->model = new \RunBB\Model\Index();
         translate('index');
-        translate('misc');
+//        translate('misc');
     }
 
     public function display($req, $res, $args)

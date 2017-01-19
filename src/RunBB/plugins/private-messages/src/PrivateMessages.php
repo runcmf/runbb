@@ -10,15 +10,10 @@
 namespace RunBB\Plugins;
 
 use RunBB\Middleware\Logged;
+use RunBB\Core\Plugin;
 
-class PrivateMessages
+class PrivateMessages extends Plugin
 {
-    protected $c;
-
-    public function __construct(\Slim\Container $c)
-    {
-        $this->c = $c;
-    }
 
     public function run()
     {
@@ -126,22 +121,29 @@ class PrivateMessages
             $installer->create_table(ForumSettings::get('db_prefix') . $table, $sql);
         }
 
-        \ORM::for_table(ORM_TABLE_PREFIX . 'groups')->raw_execute('ALTER TABLE ' . ForumSettings::get('db_prefix') . 'groups ADD `g_pm_limit` smallint(3) NOT NULL DEFAULT \'0\'');
-        \ORM::for_table(ORM_TABLE_PREFIX . 'groups')->raw_execute('ALTER TABLE ' . ForumSettings::get('db_prefix') . 'groups ADD `g_use_pm` tinyint(1) NOT NULL DEFAULT \'0\'');
-        \ORM::for_table(ORM_TABLE_PREFIX . 'groups')->raw_execute('ALTER TABLE ' . ForumSettings::get('db_prefix') . 'groups ADD `g_pm_folder_limit` int(3) NOT NULL DEFAULT \'0\'');
+        $col = \ORM::for_table(ForumSettings::get('db_prefix') . 'groups')->find_one();
+        if($col->g_pm_limit === null) {
+            \ORM::for_table(ORM_TABLE_PREFIX . 'groups')->raw_execute('ALTER TABLE ' . ForumSettings::get('db_prefix') . 'groups ADD `g_pm_limit` smallint(3) NOT NULL DEFAULT \'0\'');
+        }
+        if($col->g_use_pm === null) {
+            \ORM::for_table(ORM_TABLE_PREFIX . 'groups')->raw_execute('ALTER TABLE ' . ForumSettings::get('db_prefix') . 'groups ADD `g_use_pm` tinyint(1) NOT NULL DEFAULT \'0\'');
+        }
+        if($col->g_pm_folder_limit === null) {
+            \ORM::for_table(ORM_TABLE_PREFIX . 'groups')->raw_execute('ALTER TABLE ' . ForumSettings::get('db_prefix') . 'groups ADD `g_pm_folder_limit` int(3) NOT NULL DEFAULT \'0\'');
+        }
 
         // Create default inboxes
-        $folders = array(
+        $folders = [
             __('New', 'private_messages'),
             __('Inbox', 'private_messages'),
             __('Archived', 'private_messages')
-        );
+        ];
 
         foreach ($folders as $folder) {
-            $insert = array(
+            $insert = [
                 'name' => $folder,
                 'user_id' => 1,
-            );
+            ];
             $installer->add_data('pms_folders', $insert);
         }
     }

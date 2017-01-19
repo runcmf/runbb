@@ -42,20 +42,20 @@ if (isset($parsed_message)) : ?>
                                 <div class="clearer"></div>
                                 <label class="required"><strong>Subject <span><?= __('Required') ?></span></strong><br /></label>
                                 <input class="longinput" type="text" name="subject" placeholder="Subject" <?= (isset($subject) ? 'value="'.$subject.'"' : '')?> size="80" maxlength="70" tabindex="2" required/><br />
-                                <label class="required"><strong><?php _e('Message') ?> <span><?= __('Required') ?></span></strong><br /></label>
+                                <label class="required"><strong><?= __('Message') ?> <span><?= __('Required') ?></span></strong><br /></label>
                                 <textarea name="req_message" id="req_message" rows="20" cols="95" tabindex="2" required><?= (isset($message) ? $message : '')?></textarea><br />
                                 <ul class="bblinks">
-                                    <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?php _e('BBCode') ?>ok</a> <?php echo(ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off'); ?></span></li>
-                                    <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open (this.href); return false;"><?php _e('url tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && User::get()->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
-                                    <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?php _e('img tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1') ? __('on') : __('off'); ?></span></li>
-                                    <li><span><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?php _e('Smilies') ?></a> <?php echo(ForumSettings::get('o_smilies') == '1') ? __('on') : __('off'); ?></span></li>
+                                    <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?= __('BBCode') ?>ok</a> <?php echo(ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off'); ?></span></li>
+                                    <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open (this.href); return false;"><?= __('url tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && User::get()->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
+                                    <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?= __('img tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1') ? __('on') : __('off'); ?></span></li>
+                                    <li><span><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?= __('Smilies') ?></a> <?php echo(ForumSettings::get('o_smilies') == '1') ? __('on') : __('off'); ?></span></li>
                                 </ul>
                             </div>
                         </fieldset>
                     </div>
                     <div class="inform">
                         <fieldset>
-                            <legend><?php _e('Options') ?></legend>
+                            <legend><?= __('Options') ?></legend>
                             <div class="infldset">
                                 <div class="rbox">
                                     <label><input type="checkbox" name="smilies" value="1" tabindex="3" /><?= __('Hide smilies') ?><br /></label>
@@ -63,7 +63,11 @@ if (isset($parsed_message)) : ?>
                             </div>
                         </fieldset>
                     </div>
-                    <p class="buttons"><input type="submit" name="submit" value="<?php _e('Submit') ?>" tabindex="4" accesskey="s" /> <input type="submit" name="preview" value="<?php _e('Preview') ?>" tabindex="5" accesskey="p" /> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
+                    <p class="buttons">
+                        <input type="submit" name="submit" value="<?= __('Submit') ?>" tabindex="4" accesskey="s" />
+                        <!--<input type="submit" name="preview" value="<?= __('Preview') ?>" tabindex="5" accesskey="p" />-->
+                        <a href="javascript:history.go(-1)"><?= __('Go back') ?></a>
+                    </p>
                 </form>
             </div>
         </div>

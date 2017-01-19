@@ -149,13 +149,11 @@ class Plugins
             str_replace(['-', '_'], ' ', $args['name'])
         ));
 //        );
-        // TODO plugisn from composer with any namespaces
+        // TODO plugins from composer with any namespaces
         $new = "\\RunBB\\Plugins\\Controller\\".$formattedPluginName;
 //        $new = "\\RunBB\\Plugins\\".$formattedPluginName;
-//tdie(class_exists($new));
         if (class_exists($new)) {
             $plugin = new $new;
-//tdie($plugin);
             if (method_exists($plugin, 'info')) {
                 AdminUtils::generateAdminMenu($args['name']);
                 return $plugin->info($req, $res, $args);

@@ -254,7 +254,7 @@ class Forum
 
                 $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / User::get()->disp_posts);
 
-                if ($num_pages_topic > 1) {
+                if ($num_pages_topic > 1) {// FIXME rebuild url
                     $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_subject.'/#').' ]</span>';
                 } else {
                     $subject_multipage = null;
@@ -364,7 +364,7 @@ class Forum
 
                 $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / User::get()->disp_posts);
 
-                if ($num_pages_topic > 1) {
+                if ($num_pages_topic > 1) {// FIXME rebuild url
                     $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_topic.'/#').' ]</span>';
                 } else {
                     $subject_multipage = null;

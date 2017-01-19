@@ -4,9 +4,9 @@ use RunBB\Core\Utils;
 
 if (!empty($errors)) { ?>
             <div id="msg" class="block error">
-                <h3><?php _e('Block errors', 'private_messages') ?></h3>
+                <h3><?= __('Block errors', 'private_messages') ?></h3>
                 <div>
-                    <p><?php _e('Block error info', 'private_messages') ?></p>
+                    <p><?= __('Block error info', 'private_messages') ?></p>
                     <ul class="error-list">
 <?php foreach ($errors as $error): ?>
                         <li><strong><?= Utils::escape($error) ?></strong></li>
@@ -17,15 +17,15 @@ if (!empty($errors)) { ?>
             <br />
 <?php } ?>
             <div class="blockform">
-                <h2><span><?php _e('Add folder', 'private_messages') ?></span></h2>
+                <h2><span><?= __('Add folder', 'private_messages') ?></span></h2>
                 <div class="box">
                     <form id="folder" action="" method="post" onsubmit="return process_form(this)">
                         <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                         <div class="inform">
                             <fieldset>
-                                <legend><?php _e('Add folder', 'private_messages') ?></legend>
+                                <legend><?= __('Add folder', 'private_messages') ?></legend>
                                 <div class="infldset">
-                                    <label><?php _e('Folder name', 'private_messages') ?><br>
+                                    <label><?= __('Folder name', 'private_messages') ?><br>
                                         <input type="text" name="req_folder" size="25" value="<?= isset($folder) ? $folder : '' ?>" maxlength="30" tabindex="1" /><br />
                                     </label>
                                 </div>
@@ -40,7 +40,7 @@ $folders = $inboxes;
 // Unset default inboxes
 unset($folders['1'], $folders['2'], $folders['3']);
 if (!empty($folders)): ?>
-                <h2 class="block2"><span><?php _e('My Folders', 'private_messages') ?></span></h2>
+                <h2 class="block2"><span><?= __('My Folders', 'private_messages') ?></span></h2>
                 <div class="box">
                     <form method="post" action="">
                         <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
@@ -50,8 +50,8 @@ if (!empty($folders)): ?>
                                     <table cellspacing="0">
                                         <thead>
                                             <tr>
-                                                <th class="tcl" scope="col"><?php _e('Folder name', 'private_messages') ?></th>
-                                                <th class="hidehead" scope="col"><?php _e('Actions', 'private_messages') ?></th>
+                                                <th class="tcl" scope="col"><?= __('Folder name', 'private_messages') ?></th>
+                                                <th class="hidehead" scope="col"><?= __('Actions', 'private_messages') ?></th>
                                             </tr>
                                         </thead>
                                         <tbody>

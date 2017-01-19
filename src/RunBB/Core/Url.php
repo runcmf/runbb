@@ -594,6 +594,7 @@ class Url
     {
         $pages = [];
         $link_to_all = false;
+        $link = 'forum/'.$link; // FIXME
 
         // If $cur_page == -1, we link to all pages (used in Forum.php)
         if ($cur_page == -1) {

@@ -974,7 +974,7 @@ class Profile
 
             case 'personality':
             {
-                $form = array();
+                $form = [];
 
                 // Clean up signature from POST
                 if (ForumSettings::get('o_signatures') == '1') {
@@ -996,7 +996,7 @@ class Profile
 
                     // Validate BBCode syntax
                     if (ForumSettings::get('p_sig_bbcode') == '1') {
-                        $errors = array();
+                        $errors = [];
 
                         $form['signature'] = Container::get('parser')
                             ->preparse_bbcode($form['signature'], $errors, true);

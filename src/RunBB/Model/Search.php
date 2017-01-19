@@ -796,7 +796,7 @@ class Search
 
                 $num_pages_topic = ceil(($cur_search['num_replies'] + 1) / User::get()->disp_posts);
 
-                if ($num_pages_topic > 1) {
+                if ($num_pages_topic > 1) {// FIXME rebuild url
                     $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_search['tid'].'/'.$url_topic.'/#').' ]</span>';
                 } else {
                     $subject_multipage = null;

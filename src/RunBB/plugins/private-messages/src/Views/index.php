@@ -26,11 +26,11 @@ if (!empty($conversations)) { ?>
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th class="tcl" scope="col"><?php _e('Title') ?></th>
-                                            <th class="tc2" scope="col"><?php _e('Sender', 'private_messages') ?></th>
-                                            <th class="tc2" scope="col"><?php _e('Receiver', 'private_messages') ?></th>
-                                            <th class="tc2" scope="col"><?php _e('Replies') ?></th>
-                                            <th class="tcr" scope="col"><?php _e('Last post') ?></th>
+                                            <th class="tcl" scope="col"><?= __('Title') ?></th>
+                                            <th class="tc2" scope="col"><?= __('Sender', 'private_messages') ?></th>
+                                            <th class="tc2" scope="col"><?= __('Receiver', 'private_messages') ?></th>
+                                            <th class="tc2" scope="col"><?= __('Replies') ?></th>
+                                            <th class="tcr" scope="col"><?= __('Last post') ?></th>
                                             <th class="tcmod" scope="col">
                                                 <a href="#" onclick="return select_checkboxes('topics', this, '<input type=\'checkbox\' checked />')"><input type="checkbox" /></a>
                                             </th>
@@ -69,16 +69,16 @@ if (!empty($conversations)) { ?>
                     <div class="postlinksb">
                         <div class="inbox crumbsplus">
                             <div class="pagepost">
-                                <p class="pagelink conl"><span class="pages-label"><?php _e('Pages'); ?></span><?= $paging_links; ?></p>
+                                <p class="pagelink conl"><span class="pages-label"><?= __('Pages'); ?></span><?= $paging_links; ?></p>
                                 <p class="postlink conr">
                                     <select class="" name="action">
-                                        <option value="-1" selected><?php _e('Select action', 'private_messages') ?></option>
-                                        <option value="move"><?php _e('Move') ?></option>
-                                        <option value="delete"><?php _e('Delete') ?></option>
-                                        <option value="read"><?php _e('Mark read', 'private_messages') ?></option>
-                                        <option value="unread"><?php _e('Mark unread', 'private_messages') ?></option>
+                                        <option value="-1" selected><?= __('Select action', 'private_messages') ?></option>
+                                        <option value="move"><?= __('Move') ?></option>
+                                        <option value="delete"><?= __('Delete') ?></option>
+                                        <option value="read"><?= __('Mark read', 'private_messages') ?></option>
+                                        <option value="unread"><?= __('Mark unread', 'private_messages') ?></option>
                                     </select>
-                                    <input type="submit" name="submit" value="<?php _e('Submit') ?>" />
+                                    <input type="submit" name="submit" value="<?= __('Submit') ?>" />
                                 </p>
                             </div>
                         </div>
@@ -88,10 +88,10 @@ if (!empty($conversations)) { ?>
 
 <?php } else { ?>
             <div class="block">
-                <h2><span><?php _e('Info') ?></span></h2>
+                <h2><span><?= __('Info') ?></span></h2>
                 <div class="box">
                     <div class="inbox info">
-                        <p><?php _e('Empty inbox', 'private_messages') ?></p>
+                        <p><?= __('Empty inbox', 'private_messages') ?></p>
                     </div>
                 </div>
             </div>

@@ -202,7 +202,7 @@ class Parser
             if ($contents === null) // On error, preg_replace_callback returns NULL.
 
             { // Error #1: '(%s) Message is too long or too complex. Please shorten.'
-                $new_errors[] = sprintf(__('BBerr pcre'), preg_error());
+                $new_errors[] = sprintf(__('BBerr pcre'), $this->preg_error());
                 $contents = ''; // Zero out the contents.
             }
         }
@@ -741,7 +741,7 @@ class Parser
         if ($newtext === null)
         { // On error, preg_replace_callback returns NULL.
             // Error #1: '(%s) Message is too long or too complex. Please shorten.'
-            $errors[] = sprintf(__('BBerr pcre'), preg_error());
+            $errors[] = sprintf(__('BBerr pcre'), $this->preg_error());
             return $text;
         }
         $newtext = str_replace("\3", '[', $newtext); // Fixup CODE sections.
@@ -867,7 +867,7 @@ class Parser
      *
      * @return string
      */
-    public function preg_error()
+    private function preg_error()
     {
         $errmsg = ''; // assume no error has occured. return empty string
         switch (preg_last_error())

@@ -189,7 +189,7 @@ msgid "Last post info"
 msgstr "Last post: %s"
 
 msgid "Last visit info"
-msgstr "Last visit: %s"
+msgstr "Last visit:"
 
 msgid "Show posts"
 msgstr "Show all posts"

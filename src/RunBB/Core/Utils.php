@@ -392,4 +392,64 @@ class Utils
 
         return $remote;
     }
+
+    /**
+     * http://php.net/manual/ru/function.copy.php#91010
+     * @param $src
+     * @param $dst
+     */
+    public static function recurseCopy($src,$dst) {
+        $dir = opendir($src);
+        @mkdir($dst);
+        while(false !== ( $file = readdir($dir)) ) {
+            if (( $file != '.' ) && ( $file != '..' )) {
+                if ( is_dir($src . '/' . $file) ) {
+                    self::recurseCopy($src . '/' . $file, $dst . '/' . $file);
+                }
+                else {
+                    copy($src . '/' . $file, $dst . '/' . $file);
+                }
+            }
+        }
+        closedir($dir);
+    }
+
+    /**
+     * http://php.net/manual/ru/function.rmdir.php#110489
+     * @param $dir
+     * @return bool
+     */
+    public static function recurseDelete($dir) {
+        $files = array_diff(scandir($dir), ['.','..']);
+        foreach ($files as $file) {
+            (is_dir("$dir/$file")) ? self::recurseDelete("$dir/$file") : unlink("$dir/$file");
+        }
+        return rmdir($dir);
+    }
+
+    public static function arrayToList($data=false, $flatten=false){
+        $response = '<ul>';
+        if(false !== $data) {
+            foreach($data as $key=>$val) {
+                $response.= '<li>';
+                if(!is_array($val)) {
+                    if (is_object($val)) {
+                        $response .= json_encode((array)$val);
+                    } else {
+                        $response.= $val;
+                    }
+                } else {
+                    if(!$flatten){
+                        $response.= self::arrayToList($val);
+                    } else {
+                        // pulls the sub array into the current list context
+                        $response.= substr($response,0,strlen($response)-5) . self::arrayToList($val);
+                    }
+                }
+                $response.= '</li>';
+            }
+        }
+        $response.= '</ul>';
+        return $response;
+    }
 }

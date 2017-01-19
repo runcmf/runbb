@@ -36,7 +36,9 @@ class Cache
         $output = array();
 
         foreach ($result as $item) {
-            $output[] = ($select_censoring == 'search_for') ? '%(?<=[^\p{L}\p{N}])('.str_replace('\*', '[\p{L}\p{N}]*?', preg_quote($item['search_for'], '%')).')(?=[^\p{L}\p{N}])%iu' : $item['replace_with'];
+            $output[] = ($select_censoring == 'search_for') ? '%(?<=[^\p{L}\p{N}])('.str_replace('\*',
+                    '[\p{L}\p{N}]*?',
+                    preg_quote($item['search_for'], '%')).')(?=[^\p{L}\p{N}])%iu' : $item['replace_with'];
         }
         return $output;
     }
@@ -87,7 +89,8 @@ class Cache
                         ->select_many($select_quickjump)
                         ->inner_join(ORM_TABLE_PREFIX.'forums', array('c.id', '=', 'f.cat_id'), 'f')
 //                        ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-//                        ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.group_id', '=', $item['g_id']), null, true)
+//                        ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+// array('fp.group_id', '=', $item['g_id']), null, true)
                 ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
                     '(fp.forum_id=f.id AND fp.group_id='. (int)$item['g_id'].')', 'fp')
 //                        ->where_any_is($where_quickjump)
@@ -117,7 +120,8 @@ class Cache
         $files = new \DirectoryIterator($lang_path);
         $stopwords = array();
         foreach($files as $file) {
-            if(!$file->isDot() && $file->getBasename() != '.DS_Store' && $file->isDir() && file_exists($file->getPathName().'/stopwords.txt')) {
+            if(!$file->isDot() && $file->getBasename() != '.DS_Store' && $file->isDir() &&
+                file_exists($file->getPathName().'/stopwords.txt')) {
                 $stopwords = array_merge($stopwords, file($file->getPathName().'/stopwords.txt'));
             }
         }

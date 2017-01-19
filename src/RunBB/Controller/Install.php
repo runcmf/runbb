@@ -65,10 +65,10 @@ class Install
         $csrf = new \RunBB\Middleware\Csrf();
         $csrf->generateNewToken(Container::get('request'));
 
-        translate('install', 'RunBB', $this->install_lang);
+        translate('install');//, 'RunBB', $this->install_lang);
 
         if (Request::isPost() && empty(Input::getParsedBodyParam('choose_lang'))) {
-            $missing_fields = array();
+            $missing_fields = [];
             $data = array_map(function ($item) {
                 return Utils::escape(Utils::trim($item));
             }, Input::getParsedBodyParam('install'));
@@ -154,17 +154,19 @@ class Install
             }
         } else {
             $base_url = str_replace('index.php', '', Url::base()) . '/forum';
-            $data = array('title' => __('My RunBB Forum'),
+            $data = [
+                'title' => __('My RunBB Forum'),
                 'description' => __('Description'),
                 'base_url' => $base_url,
-                'default_lang' => $this->install_lang);
-            return View::setPageInfo(array(
+                'default_lang' => $this->install_lang
+            ];
+            return View::setPageInfo([
                 'languages' => $this->available_langs,
                 'supported_dbs' => $this->supported_dbs,
                 'dbConfig' => $this->dbConfig,
                 'data' => $data,
                 'alerts' => [],
-            ))->addTemplate('install.php')->display(false);
+            ])->addTemplate('install.php')->display(false);
         }
     }
 
@@ -180,11 +182,11 @@ class Install
             }
         }
 
-        $config = array_merge($config, array(
+        $config = array_merge($config, [
             'cookie_name' => mb_strtolower(ForumEnv::get('FORUM_NAME')).'_cookie_'.Random::key(7, false, true),
             'jwt_token' => base64_encode(Random::secure_random_bytes(64)),
             'jwt_algorithm' => 'HS512'
-        ));
+        ]);
 
         // ... And write it on disk
         if ($this->write_config($config)) {
@@ -303,8 +305,8 @@ class Install
             'o_default_style'            => $data['default_style'],
             'o_default_user_group'        => 4,
             'o_topic_review'            => 15,
-            'o_disp_topics_default'        => 30,
-            'o_disp_posts_default'        => 25,
+            'o_disp_topics_default'        => 25,
+            'o_disp_posts_default'        => 20,
             'o_indent_num_spaces'        => 4,
             'o_quote_depth'                => 3,
             'o_quickpost'                => 1,

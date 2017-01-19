@@ -82,7 +82,7 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
                     </p>
                     <div class="codebox">
                         <h4>Code: "%a_str%"</h4>
-                        <pre>%c_str%</pre>
+                        <pre class="hljs">%c_str%</pre>
                     </div>
                     <p>'
             ),
@@ -90,7 +90,7 @@ $bbcd = array( // Array of recognised BBCode tag structures (arrays).
                 'format'        => '
                     </p>
                     <div class="codebox">
-                        <pre>%c_str%</pre>
+                        <pre class="hljs">%c_str%</pre>
                     </div>
                     <p>'
             )

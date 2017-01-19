@@ -848,7 +848,7 @@ class Topic
     // Prints the posts
     public function print_posts($topic_id, $start_from, $cur_topic, $is_admmod)
     {
-        $post_data = array();
+        $post_data = [];
 
         $post_data = Container::get('hooks')->fire('model.topic.print_posts_start', $post_data, $topic_id, $start_from, $cur_topic, $is_admmod);
 

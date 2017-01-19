@@ -16,12 +16,12 @@ Container::get('hooks')->fire('view.profile.view_profile.start');
 ?>
 
 <div id="viewprofile" class="block">
-    <h2><span><?php _e('Profile') ?></span></h2>
+    <h2><span><?= __('Profile') ?></span></h2>
     <div class="box">
         <div class="fakeform">
             <div class="inform">
                 <fieldset>
-                <legend><?php _e('Section personal') ?></legend>
+                <legend><?= __('Section personal') ?></legend>
                     <div class="infldset">
                         <dl>
                             <?= implode("\n\t\t\t\t\t\t\t", $user_info['personal'])."\n" ?>
@@ -32,7 +32,7 @@ Container::get('hooks')->fire('view.profile.view_profile.start');
             </div>
 <?php if (!empty($user_info['messaging'])): ?>            <div class="inform">
                 <fieldset>
-                <legend><?php _e('Section messaging') ?></legend>
+                <legend><?= __('Section messaging') ?></legend>
                     <div class="infldset">
                         <dl>
                             <?= implode("\n\t\t\t\t\t\t\t", $user_info['messaging'])."\n" ?>
@@ -43,7 +43,7 @@ Container::get('hooks')->fire('view.profile.view_profile.start');
             </div>
 <?php endif; if (!empty($user_info['personality'])): ?>            <div class="inform">
                 <fieldset>
-                <legend><?php _e('Section personality') ?></legend>
+                <legend><?= __('Section personality') ?></legend>
                     <div class="infldset">
                         <dl>
                             <?= implode("\n\t\t\t\t\t\t\t", $user_info['personality'])."\n" ?>
@@ -54,7 +54,7 @@ Container::get('hooks')->fire('view.profile.view_profile.start');
             </div>
 <?php endif; ?>            <div class="inform">
                 <fieldset>
-                <legend><?php _e('User activity') ?></legend>
+                <legend><?= __('User activity') ?></legend>
                     <div class="infldset">
                         <dl>
                             <?= implode("\n\t\t\t\t\t\t\t", $user_info['activity'])."\n" ?>

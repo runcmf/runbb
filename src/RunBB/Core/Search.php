@@ -16,10 +16,8 @@ class Search
 {
     public function __construct()
     {
-
-
         // Make a regex that will match CJK or Hangul characters
-        define('FEATHER_CJK_HANGUL_REGEX', '[' .
+        defined('FEATHER_CJK_HANGUL_REGEX') || define('FEATHER_CJK_HANGUL_REGEX', '[' .
             '\x{1100}-\x{11FF}' .        // Hangul Jamo                            1100-11FF        (http://www.fileformat.info/info/unicode/block/hangul_jamo/index.htm)
             '\x{3130}-\x{318F}' .        // Hangul Compatibility Jamo            3130-318F        (http://www.fileformat.info/info/unicode/block/hangul_compatibility_jamo/index.htm)
             '\x{AC00}-\x{D7AF}' .        // Hangul Syllables                        AC00-D7AF        (http://www.fileformat.info/info/unicode/block/hangul_syllables/index.htm)

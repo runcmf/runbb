@@ -304,7 +304,7 @@ class Install
 
     public static function load_default_groups()
     {
-        $groups['Administrators'] = array(
+        $groups['Administrators'] = [
             'g_id' => 1,
             'g_title' => __('Administrators'),
             'g_user_title' => __('Administrator'),
@@ -328,8 +328,9 @@ class Install
             'g_search_flood' => 0,
             'g_email_flood' => 0,
             'g_report_flood' => 0,
-            'inherit' => 'a:1:{i:0;i:2;}');
-        $groups['Moderators'] = array(
+            'inherit' => 'a:1:{i:0;i:2;}'
+        ];
+        $groups['Moderators'] = [
             'g_id' => 2,
             'g_title' => __('Moderators'),
             'g_user_title' => __('Moderator'),
@@ -353,8 +354,9 @@ class Install
             'g_search_flood' => 0,
             'g_email_flood' => 0,
             'g_report_flood' => 0,
-            'inherit' => 'a:1:{i:0;i:4;}');
-        $groups['Guests'] = array(
+            'inherit' => 'a:1:{i:0;i:4;}'
+        ];
+        $groups['Guests'] = [
             'g_id' => 3,
             'g_title' => __('Guests'),
             'g_user_title' => __('Guest'),
@@ -377,8 +379,9 @@ class Install
             'g_post_flood' => 60,
             'g_search_flood' => 30,
             'g_email_flood' => 0,
-            'g_report_flood' => 0);
-        $groups['Members'] = array(
+            'g_report_flood' => 0
+        ];
+        $groups['Members'] = [
             'g_id' => 4,
             'g_title' => __('Members'),
             'g_user_title' => __('Member'),
@@ -402,24 +405,26 @@ class Install
             'g_search_flood' => 30,
             'g_email_flood' => 60,
             'g_report_flood' => 60,
-            'inherit' => 'a:1:{i:0;i:3;}');
+            'inherit' => 'a:1:{i:0;i:3;}'
+        ];
 
         return $groups;
     }
 
     public static function load_default_user()
     {
-        return $user = array(
+        return $user = [
             'group_id' => 3,
             'username' => __('Guest'),
             'password' => __('Guest'),
-            'email' => __('Guest'));
+            'email' => __('Guest')
+        ];
     }
 
     public static function load_admin_user(array $data)
     {
         $now = time();
-        return $user = array(
+        return $user = [
             'group_id' => 1,
             'username' => $data['username'],
             'password' => Random::hash($data['password']),
@@ -430,7 +435,8 @@ class Install
             'last_post' => $now,
             'registered' => $now,
             'registration_ip' => Utils::getIp(),
-            'last_visit' => $now);
+            'last_visit' => $now
+        ];
     }
 
     public static function load_mock_forum_data(array $data)

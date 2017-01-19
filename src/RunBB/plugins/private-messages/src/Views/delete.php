@@ -1,5 +1,5 @@
         <div class="blockform">
-            <h2><span><?php _e('Warning') ?></span></h2>
+            <h2><span><?= __('Warning') ?></span></h2>
             <div class="box">
                 <form method="post" action="">
                     <input type="hidden" name="topics" value="<?= implode(",",$topics); ?>" />
@@ -8,10 +8,10 @@
                     <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                     <div class="inform warning">
                         <div class="forminfo">
-                            <p><?php _e('Confirm delete', 'private_messages'); ?></p>
+                            <p><?= __('Confirm delete', 'private_messages'); ?></p>
                         </div>
                     </div>
-                    <p class="buttons"><input type="submit" name="delete" value="<?php _e('Delete'); ?>" /> <a href="javascript:history.go(-1)"><?php _e('Go back') ?></a></p>
+                    <p class="buttons"><input type="submit" name="delete" value="<?= __('Delete'); ?>" /> <a href="javascript:history.go(-1)"><?= __('Go back') ?></a></p>
                 </form>
             </div>
         </div>

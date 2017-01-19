@@ -123,7 +123,7 @@ class View
     */
     public function getTemplatesDirectory()
     {
-        $output = array();
+        $output = [];
         if (count($this->directories) > 1) {
             ksort($this->directories);
         }
@@ -167,7 +167,7 @@ class View
 
     protected function fetch($nested = true)
     {
-        $data = array();
+        $data = [];
         $data = array_merge($this->getDefaultPageInfo(), $this->data->all(), (array) $data);
         $data['feather'] = true;
         $data['assets'] = $this->getAssets();
@@ -244,10 +244,10 @@ class View
     public function addAsset($type, $asset, $params = array())
     {
         $type = (string) $type;
-        if (!in_array($type, array('js', 'css', 'feed', 'canonical', 'prev', 'next'))) {
+        if (!in_array($type, array('js', 'jsTop', 'css', 'feed', 'canonical', 'prev', 'next'))) {
             throw new RunBBException('Invalid asset type : ' . $type);
         }
-        if (in_array($type, array('js', 'css')) && !is_file(ForumEnv::get('WEB_ROOT').$asset)) {
+        if (in_array($type, array('js', 'jsTop', 'css')) && !is_file(ForumEnv::get('WEB_ROOT').$asset)) {
             throw new RunBBException('The asset file ' . $asset . ' does not exist');
         }
 
@@ -255,10 +255,10 @@ class View
         if (isset($params['title'])) {
             $params['title'] = Utils::escape($params['title']);
         }
-        $this->assets[$type][] = array(
+        $this->assets[$type][] = [
             'file' => (string) $asset,
             'params' => $params
-        );
+        ];
     }
 
     public function getAssets()
@@ -277,7 +277,7 @@ class View
 
     public function getTemplates()
     {
-        $output = array();
+        $output = [];
         if (count($this->templates) > 1) {
             ksort($this->templates);
         }

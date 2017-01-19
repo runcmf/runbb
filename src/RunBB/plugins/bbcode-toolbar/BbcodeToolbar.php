@@ -9,9 +9,9 @@
 
 namespace RunBB\Plugins;
 
-use RunBB\Core\Plugin as BasePlugin;
+use RunBB\Core\Plugin;
 
-class BbcodeToolbar extends BasePlugin
+class BbcodeToolbar extends Plugin
 {
 
     public function run()
@@ -29,25 +29,37 @@ class BbcodeToolbar extends BasePlugin
 
     public function addLanguage($data)
     {
-        translate('bbeditor', 'bbcode-toolbar', false, __DIR__.'/lang');
-        $lang_bbeditor = array(
-            'btnBold' => __('btnBold', 'bbcode-toolbar'),
-            'btnItalic' => __('btnItalic', 'bbcode-toolbar'),
-            'btnUnderline' => __('btnUnderline', 'bbcode-toolbar'),
-            'btnColor' => __('btnColor', 'bbcode-toolbar'),
-            'btnLeft' => __('btnLeft', 'bbcode-toolbar'),
-            'btnRight' => __('btnRight', 'bbcode-toolbar'),
-            'btnJustify' => __('btnJustify', 'bbcode-toolbar'),
-            'btnCenter' => __('btnCenter', 'bbcode-toolbar'),
-            'btnLink' => __('btnLink', 'bbcode-toolbar'),
-            'btnPicture' => __('btnPicture', 'bbcode-toolbar'),
-            'btnList' => __('btnList', 'bbcode-toolbar'),
-            'btnQuote' => __('btnQuote', 'bbcode-toolbar'),
-            'btnCode' => __('btnCode', 'bbcode-toolbar'),
-            'promptImage' => __('promptImage', 'bbcode-toolbar'),
-            'promptUrl' => __('promptUrl', 'bbcode-toolbar'),
-            'promptQuote' => __('promptQuote', 'bbcode-toolbar')
-        );
+        /**
+         * translate:
+         * 1 - lang file without extension
+         * 2 - domain
+         * 3 - path to lang dir
+         */
+        translate('bbeditor', 'bbcode-toolbar', __DIR__.'/lang');
+        $lang_bbeditor = [
+            'btnBold' => d__('bbcode-toolbar', 'btnBold'),// d__($domain, $original)
+            'btnItalic' => d__('bbcode-toolbar', 'btnItalic'),
+            'btnUnderline' => d__('bbcode-toolbar', 'btnUnderline'),
+            'btnColor' => d__('bbcode-toolbar', 'btnColor'),
+            'btnLeft' => d__('bbcode-toolbar', 'btnLeft'),
+            'btnRight' => d__('bbcode-toolbar', 'btnRight'),
+            'btnJustify' => d__('bbcode-toolbar', 'btnJustify'),
+            'btnCenter' => d__('bbcode-toolbar', 'btnCenter'),
+            'btnLink' => d__('bbcode-toolbar', 'btnLink'),
+            'btnPicture' => d__('bbcode-toolbar', 'btnPicture'),
+            'btnList' => d__('bbcode-toolbar', 'btnList'),
+            'btnQuote' => d__('bbcode-toolbar', 'btnQuote'),
+            'btnCode' => d__('bbcode-toolbar', 'btnCode'),
+            'promptImage' => d__('bbcode-toolbar', 'promptImage'),
+            'promptUrl' => d__('bbcode-toolbar', 'promptUrl'),
+            'promptQuote' => d__('bbcode-toolbar', 'promptQuote')
+        ];
+        $sT = '
+//        $(\'.req_message\').postEditorToolbar(\'req_message\');
+        document.addEventListener("DOMContentLoaded", function(event) {
+            postEditorToolbar(\'req_message\');
+        });';
+        $data['jsRAW'] = isset($data['jsRAW']) ? $data['jsRAW'] . $sT : $sT;// add or set
         $data['jsVars']['bbcodeToolbar'] = json_encode($lang_bbeditor);
         return $data;
     }

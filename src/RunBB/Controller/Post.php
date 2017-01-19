@@ -21,7 +21,7 @@ class Post
         translate('prof_reg');
         translate('delete');
         translate('post');
-        translate('misc');
+//        translate('misc');
         translate('register');
         translate('antispam');
         translate('bbeditor');
@@ -86,7 +86,7 @@ class Post
         }
 
         // Start with a clean slate
-        $errors = array();
+        $errors = [];
 
         $post = '';
 
@@ -108,7 +108,15 @@ class Post
 
             // Let's see if everything went right
             $errors = $this->model->check_errors_before_post($args['fid'], $args['tid'], $args['qid'], $pid, $page, $errors);
-
+            if(!empty($errors)) {
+                $errors = $errors[0];
+tdie($errors);
+//tdie(Utils::arrayToList($errors));
+                if($errors[0] === 'debug') {
+//                    throw new RunBBException(__('Parser return').'<p>'.Utils::arrayToList($errors).'</p>', 200);
+                    throw new RunBBException(__('Parser return').'<p>'.var_export($errors, true).'</p>', 200);
+                }
+            }
             // Setup some variables before post
             $post = $this->model->setup_variables($errors, $is_admmod);
 
@@ -172,7 +180,7 @@ class Post
             $form = '<form id="post" method="post" action="' .
                 Router::pathFor('newTopic', ['fid' => $args['fid']]) . '" onsubmit="return process_form(this)">';
         } else {
-            throw new  RunBBException(__('Bad request'), 404);
+            throw new RunBBException(__('Bad request'), 404);
         }
 
         $url_forum = Url::url_friendly($cur_posting['forum_name']);
@@ -270,18 +278,18 @@ class Post
         }
 
         if (Request::isPost()) {
-            $this->model->handle_deletion($is_topic_post, $args['id'], $cur_post['tid'], $cur_post['fid']);
+            return $this->model->handle_deletion($is_topic_post, $args['id'], $cur_post['tid'], $cur_post['fid']);
         }
 
         $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
-        View::setPageInfo(array(
+        View::setPageInfo([
             'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Delete post')),
             'active_page' => 'delete',
             'cur_post' => $cur_post,
             'id' => $args['id'],
             'is_topic_post' => $is_topic_post
-        ))->addTemplate('delete.php')->display();
+        ])->addTemplate('delete.php')->display();
     }
 
     public function editpost($req, $res, $args)
@@ -315,7 +323,7 @@ class Post
         }
 
         // Start with a clean slate
-        $errors = array();
+        $errors = [];
 
         if (Request::isPost()) {
             Container::get('hooks')->fire('controller.post.edit.submit', $args['id']);

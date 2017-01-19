@@ -20,11 +20,11 @@ Container::get('hooks')->fire('view.admin.plugins.start');
     <div class="box">
         <div class="inbox">
             <table class="table">
-                <caption><?php _e('Available plugins') ?></caption>
+                <caption><?= __('Available plugins') ?></caption>
                 <thead>
                     <tr>
-                        <th><?php _e('Extension') ?></th>
-                        <th><?php _e('Description') ?></th>
+                        <th><?= __('Extension') ?></th>
+                        <th><?= __('Description') ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,10 +34,10 @@ Container::get('hooks')->fire('view.admin.plugins.start');
                                 <strong><?= $plugin->title; ?></strong> <small><?= $plugin->version; ?></small>
                                 <div class="plugin-actions">
                                     <?php if (in_array($plugin->name, $activePlugins)) { ?>
-                                        <a href="<?= Router::pathFor('deactivatePlugin', ['name' => $plugin->name]) ?>"><?php _e('Deactivate') ?></a>
+                                        <a href="<?= Router::pathFor('deactivatePlugin', ['name' => $plugin->name]) ?>"><?= __('Deactivate') ?></a>
                                     <?php } else { ?>
-                                        <a href="<?= Router::pathFor('activatePlugin', ['name' => $plugin->name]) ?>"><?php _e('Activate') ?></a> <br>
-                                        <a href="<?= Router::pathFor('uninstallPlugin', ['name' => $plugin->name]) ?>"><?php _e('Uninstall') ?></a>
+                                        <a href="<?= Router::pathFor('activatePlugin', ['name' => $plugin->name]) ?>"><?= __('Activate') ?></a> <br>
+                                        <!-- <a href="<?= Router::pathFor('uninstallPlugin', ['name' => $plugin->name]) ?>"><?= __('Uninstall') ?></a> -->
                                     <?php } ?>
                                 </div>
                             </td>
@@ -55,11 +55,11 @@ Container::get('hooks')->fire('view.admin.plugins.start');
         </div>
         <div class="inbox">
             <table class="table">
-                <caption><?php _e('Available plugins') ?></caption>
+                <caption><?= __('Available plugins') ?></caption>
                 <thead>
                 <tr>
-                    <th><?php _e('Extension') ?></th>
-                    <th><?php _e('Description') ?></th>
+                    <th><?= __('Extension') ?></th>
+                    <th><?= __('Description') ?></th>
                 </tr>
                 </thead>
                 <tbody>
