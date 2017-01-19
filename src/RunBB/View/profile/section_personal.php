@@ -27,9 +27,11 @@ Container::get('hooks')->fire('view.profile.section_personal.start');
                     <div class="infldset">
                         <input type="hidden" name="form_sent" value="1" />
                         <label><?= __('Realname') ?><br /><input type="text" name="form_realname" value="<?= Utils::escape($user->realname) ?>" size="40" maxlength="40" /><br /></label>
-<?php if (isset($title_field)): ?>                            <?= $title_field ?>
+<?php if (isset($title_field)) :
+?>                            <?= $title_field ?>
 <?php endif; ?>                            <label><?= __('Location') ?><br /><input type="text" name="form_location" value="<?= Utils::escape($user->location) ?>" size="30" maxlength="30" /><br /></label>
-<?php if (User::get()->g_post_links == '1' || User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) : ?>                            <label><?= __('Website') ?><br /><input type="text" name="form_url" value="<?= Utils::escape($user->url) ?>" size="50" maxlength="80" /><br /></label>
+<?php if (User::get()->g_post_links == '1' || User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) :
+?>                            <label><?= __('Website') ?><br /><input type="text" name="form_url" value="<?= Utils::escape($user->url) ?>" size="50" maxlength="80" /><br /></label>
 <?php endif; ?>
                     </div>
                 </fieldset>

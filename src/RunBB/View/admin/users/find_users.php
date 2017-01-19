@@ -47,33 +47,34 @@ Container::get('hooks')->fire('view.admin.users.find_users.start');
                     <th class="tc4" scope="col"><?= __('Results posts head') ?></th>
                     <th class="tc5" scope="col"><?= __('Results admin note head') ?></th>
                     <th class="tcr" scope="col"><?= __('Results actions head') ?></th>
-<?php if ($can_action): ?>                    <th class="tcmod" scope="col"><?= __('Select') ?></th>
+<?php if ($can_action) :
+?>                    <th class="tcmod" scope="col"><?= __('Select') ?></th>
 <?php endif;
     ?>
                 </tr>
             </thead>
             <tbody>
 <?php
-    if (!empty($user_data)) {
-        foreach ($user_data as $user) {
-            ?>
-                <tr>
-                    <td class="tcl"><?= '<a href="'.Router::pathFor('userProfile', ['id' => $user['id']]).'">'.Utils::escape($user['username']).'</a>' ?></td>
-                    <td class="tc2"><a href="mailto:<?= Utils::escape($user['email']) ?>"><?= Utils::escape($user['email']) ?></a></td>
-                    <td class="tc3"><?= $user['user_title'] ?></td>
-                    <td class="tc4"><?= Utils::forum_number_format($user['num_posts']) ?></td>
-                    <td class="tc5"><?php echo($user['admin_note'] != '') ? Utils::escape($user['admin_note']) : '&#160;' ?></td>
-                    <td class="tcr"><?= '<a href="'.Router::pathFor('usersIpStats', ['id' => $user['id']]).'">'.__('Results view IP link').'</a> | <a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Results show posts link').'</a>' ?></td>
-<?php if ($can_action): ?>                    <td class="tcmod"><input type="checkbox" name="users[<?= $user['id'] ?>]" value="1" /></td>
+if (!empty($user_data)) {
+    foreach ($user_data as $user) {
+        ?>
+            <tr>
+                <td class="tcl"><?= '<a href="'.Router::pathFor('userProfile', ['id' => $user['id']]).'">'.Utils::escape($user['username']).'</a>' ?></td>
+                <td class="tc2"><a href="mailto:<?= Utils::escape($user['email']) ?>"><?= Utils::escape($user['email']) ?></a></td>
+                <td class="tc3"><?= $user['user_title'] ?></td>
+                <td class="tc4"><?= Utils::forum_number_format($user['num_posts']) ?></td>
+                <td class="tc5"><?php echo($user['admin_note'] != '') ? Utils::escape($user['admin_note']) : '&#160;' ?></td>
+                <td class="tcr"><?= '<a href="'.Router::pathFor('usersIpStats', ['id' => $user['id']]).'">'.__('Results view IP link').'</a> | <a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$user['id'].'">'.__('Results show posts link').'</a>' ?></td>
+<?php if ($can_action) :
+?>                    <td class="tcmod"><input type="checkbox" name="users[<?= $user['id'] ?>]" value="1" /></td>
 <?php endif;
-            ?>
-                </tr>
+        ?>
+            </tr>
 <?php
-
-        }
-    } else {
-        echo "\t\t\t\t".'<tr><td class="tcl" colspan="6">'.__('No match').'</td></tr>'."\n";
     }
+} else {
+    echo "\t\t\t\t".'<tr><td class="tcl" colspan="6">'.__('No match').'</td></tr>'."\n";
+}
 
     ?>
             </tbody>
@@ -86,9 +87,16 @@ Container::get('hooks')->fire('view.admin.users.find_users.start');
     <div class="inbox crumbsplus">
         <div class="pagepost">
             <p class="pagelink"><?= $paging_links ?></p>
-<?php if ($can_action): ?>            <p class="conr modbuttons"><a href="#" onclick="return select_checkboxes('search-users-form', this, '<?= __('Unselect all') ?>')"><?= __('Select all') ?></a> <?php if ($can_ban) : ?><input type="submit" name="ban_users" value="<?= __('Ban') ?>" /><?php endif;
-    if ($can_delete) : ?><input type="submit" name="delete_users" value="<?= __('Delete') ?>" /><?php endif;
-    if ($can_move) : ?><input type="submit" name="move_users" value="<?= __('Change group') ?>" /><?php endif;
+<?php if ($can_action) :
+?>            <p class="conr modbuttons"><a href="#" onclick="return select_checkboxes('search-users-form', this, '<?= __('Unselect all') ?>')"><?= __('Select all') ?></a> <?php if ($can_ban) :
+?><input type="submit" name="ban_users" value="<?= __('Ban') ?>" /><?php
+endif;
+if ($can_delete) :
+?><input type="submit" name="delete_users" value="<?= __('Delete') ?>" /><?php
+endif;
+if ($can_move) :
+?><input type="submit" name="move_users" value="<?= __('Change group') ?>" /><?php
+endif;
     ?></p>
 <?php endif;
     ?>

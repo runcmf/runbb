@@ -19,14 +19,6 @@ was slowly falling into abandon. I proceeded to remove all the useless (to me) c
 ```php
 $ composer require runcmf/runbb:dev-master
 ```
-add to top in dependeies
-```php
-use RunBB\Core\Interfaces\SlimStatic;
-
-SlimStatic::boot($app);
-// Allow static proxies to be called from anywhere in App
-Statical::addNamespace('*','RunBB\\*');
-```
 
 add to Settings
 ```php
@@ -39,14 +31,30 @@ return [
         ... // ...
         ... // ...
         'runbb' => [
-            'config_file' => 'config.php',
+            'config_file' => 'NameFileAsYouWant.php',
             'cache_dir' => DIR . 'var/cache/RunBB/',
             'web_root' => DIR . 'web/',// public for slim-skeleton
             'debug' => 'all',
             // 3 levels : false, info (only execution time and number of queries),
             // and all (display info + queries)
             'plugins' => [// register plugins as NameSpace\InitInfoClass
-                'simplemde' => 'SimpleMDE\SimpleMDE'
+//                'simplemde' => 'SimpleMDE\SimpleMDE'
+            ],
+            // Common load assets. Load priority seriatim. For begin live as is.
+            'commonAssets' => [
+                'css' => [
+                    'assets/css/font-awesome.min.css',
+                    'style/js/styles/androidstudio.css',// highlight.js theme
+                ],
+                'jshead' => [
+                    'assets/js/jquery-3.1.1.min.js',
+                    'style/js/highlight.pack.js',
+                ],
+                'js' => [
+//                    'assets/js/jquery-3.1.1.min.js',
+//                    'style/js/highlight.pack.js',
+                ],
+                'jsraw' => "\t\t" . 'hljs.initHighlightingOnLoad();',// init highlight.js
             ]
         ]
     ]

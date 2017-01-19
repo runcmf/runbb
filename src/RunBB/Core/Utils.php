@@ -63,7 +63,8 @@ class Utils
             $number,
             $decimals,
             __('lang_decimal_point'),
-            __('lang_thousands_sep')) : $number;
+            __('lang_thousands_sep')
+        ) : $number;
     }
 
     /**
@@ -77,10 +78,15 @@ class Utils
      * @param bool $no_text
      * @return false|string
      */
-    public static function format_time($timestamp, $date_only = false,
-                                       $date_format = null, $time_format = null,
-                                       $time_only = false, $no_text = false)
-    {
+    public static function format_time(
+        $timestamp,
+        $date_only = false,
+        $date_format = null,
+        $time_format = null,
+        $time_only = false,
+        $no_text = false
+    ) {
+    
         if ($timestamp == '') {
             return __('Never');
         }
@@ -145,7 +151,7 @@ class Utils
      */
     public static function linebreaks($str)
     {
-        return str_replace(array("\r\n", "\r"), "\n", $str);
+        return str_replace(["\r\n", "\r"], "\n", $str);
     }
 
     /**
@@ -210,7 +216,7 @@ class Utils
      */
     public static function file_size($size)
     {
-        $units = array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB');
+        $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB'];
 
         for ($i = 0; $size > 1024; $i++) {
             $size /= 1024;
@@ -228,7 +234,7 @@ class Utils
     public static function generate_page_title($page_title, $p = null)
     {
         if (!is_array($page_title)) {
-            $page_title = array($page_title);
+            $page_title = [$page_title];
         }
 
         $page_title = array_reverse($page_title);
@@ -249,13 +255,12 @@ class Utils
      *
      * @return text
      */
-    public static function generateBreadcrumbs(array $crumbs = array(), array $rightCrumb = array())
+    public static function generateBreadcrumbs(array $crumbs = [], array $rightCrumb = [])
     {
-        \View::setPageInfo(array(
+        \View::setPageInfo([
             'rightCrumb'    =>    $rightCrumb,
             'crumbs'    =>    $crumbs,
-            ), 1
-        )->addTemplate('breadcrumbs.php');
+            ], 1)->addTemplate('breadcrumbs.php');
     }
 
     /**
@@ -267,13 +272,13 @@ class Utils
      * @param int $gid
      * @return string
      */
-    public static function get_title($title='', $name='', $groupTitle='', $gid=0)
+    public static function get_title($title = '', $name = '', $groupTitle = '', $gid = 0)
     {
         static $ban_list;
 
         // If not already built in a previous call, build an array of lowercase banned usernames
         if (empty($ban_list)) {
-            $ban_list = array();
+            $ban_list = [];
             foreach (Container::get('bans') as $cur_ban) {
                 $ban_list[] = utf8_strtolower($cur_ban['username']);
             }
@@ -282,20 +287,16 @@ class Utils
         // If the user has a custom title
         if ($title != '') {
             $user_title = self::escape($title);
-        }
-        // If the user is banned
+        } // If the user is banned
         elseif (in_array(utf8_strtolower($name), $ban_list)) {
             $user_title = __('Banned');
-        }
-        // If the user group has a default user title
+        } // If the user group has a default user title
         elseif ($groupTitle != '') {
             $user_title = self::escape($groupTitle);
-        }
-        // If the user is a guest
+        } // If the user is a guest
         elseif ($gid == ForumEnv::get('FEATHER_GUEST')) {
             $user_title = __('Guest');
-        }
-        // If nothing else helps, we assign the default
+        } // If nothing else helps, we assign the default
         else {
             $user_title = __('Member');
         }
@@ -350,7 +351,7 @@ class Utils
      */
     public static function generate_avatar_markup($user_id)
     {
-        $filetypes = array('jpg', 'gif', 'png');
+        $filetypes = ['jpg', 'gif', 'png'];
         $avatar_markup = '';
 
         foreach ($filetypes as $cur_type) {
@@ -385,8 +386,7 @@ class Utils
 
         if (isset($client) && filter_var($client, FILTER_VALIDATE_IP)) {
             return $client;
-        }
-        elseif(isset($forward) && filter_var($forward, FILTER_VALIDATE_IP)) {
+        } elseif (isset($forward) && filter_var($forward, FILTER_VALIDATE_IP)) {
             return $forward;
         }
 
@@ -398,15 +398,15 @@ class Utils
      * @param $src
      * @param $dst
      */
-    public static function recurseCopy($src,$dst) {
+    public static function recurseCopy($src, $dst)
+    {
         $dir = opendir($src);
         @mkdir($dst);
-        while(false !== ( $file = readdir($dir)) ) {
+        while (false !== ( $file = readdir($dir))) {
             if (( $file != '.' ) && ( $file != '..' )) {
-                if ( is_dir($src . '/' . $file) ) {
+                if (is_dir($src . '/' . $file)) {
                     self::recurseCopy($src . '/' . $file, $dst . '/' . $file);
-                }
-                else {
+                } else {
                     copy($src . '/' . $file, $dst . '/' . $file);
                 }
             }
@@ -419,7 +419,8 @@ class Utils
      * @param $dir
      * @return bool
      */
-    public static function recurseDelete($dir) {
+    public static function recurseDelete($dir)
+    {
         $files = array_diff(scandir($dir), ['.','..']);
         foreach ($files as $file) {
             (is_dir("$dir/$file")) ? self::recurseDelete("$dir/$file") : unlink("$dir/$file");
@@ -427,23 +428,24 @@ class Utils
         return rmdir($dir);
     }
 
-    public static function arrayToList($data=false, $flatten=false){
+    public static function arrayToList($data = false, $flatten = false)
+    {
         $response = '<ul>';
-        if(false !== $data) {
-            foreach($data as $key=>$val) {
+        if (false !== $data) {
+            foreach ($data as $key => $val) {
                 $response.= '<li>';
-                if(!is_array($val)) {
+                if (!is_array($val)) {
                     if (is_object($val)) {
                         $response .= json_encode((array)$val);
                     } else {
                         $response.= $val;
                     }
                 } else {
-                    if(!$flatten){
+                    if (!$flatten) {
                         $response.= self::arrayToList($val);
                     } else {
                         // pulls the sub array into the current list context
-                        $response.= substr($response,0,strlen($response)-5) . self::arrayToList($val);
+                        $response.= substr($response, 0, strlen($response)-5) . self::arrayToList($val);
                     }
                 }
                 $response.= '</li>';

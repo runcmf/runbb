@@ -20,7 +20,7 @@
 * @package utf8
 * @subpackage strings
 */
-function utf8_str_pad($input, $length, $padStr=' ', $type=STR_PAD_RIGHT)
+function utf8_str_pad($input, $length, $padStr = ' ', $type = STR_PAD_RIGHT)
 {
     $inputLen = utf8_strlen($input);
     if ($length <= $inputLen) {

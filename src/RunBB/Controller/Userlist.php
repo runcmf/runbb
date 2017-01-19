@@ -35,7 +35,7 @@ class Userlist
 
         $username = Input::query('username') && User::get()->g_search_users == '1' ? Utils::trim(Input::query('username')) : '';
         $show_group = Input::query('show_group') ? intval(Input::query('show_group')) : -1;
-        $sort_by = Input::query('sort_by') && (in_array(Input::query('sort_by'), array('username', 'registered')) || (Input::query('sort_by') == 'num_posts' && $show_post_count)) ? Input::query('sort_by') : 'username';
+        $sort_by = Input::query('sort_by') && (in_array(Input::query('sort_by'), ['username', 'registered']) || (Input::query('sort_by') == 'num_posts' && $show_post_count)) ? Input::query('sort_by') : 'username';
         $sort_dir = Input::query('sort_dir') && Input::query('sort_dir') == 'DESC' ? 'DESC' : 'ASC';
 
         $num_users = $this->model->fetch_user_count($username, $show_group);
@@ -47,17 +47,16 @@ class Userlist
         $start_from = 50 * ($p - 1);
 
         if (User::get()->g_search_users == '1') {
-            $focus_element = array('userlist', 'username');
-        }
-        else {
-            $focus_element = array();
+            $focus_element = ['userlist', 'username'];
+        } else {
+            $focus_element = [];
         }
 
         // Generate paging links
         $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?username='.urlencode($username).'&amp;show_group='.$show_group.'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir);
 
-        View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('User list')),
+        View::setPageInfo([
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('User list')],
             'active_page' => 'userlist',
             'page_number'  =>  $p,
             'paging_links'  =>  $paging_links,
@@ -70,6 +69,6 @@ class Userlist
             'show_post_count' => $show_post_count,
             'dropdown_menu' => $this->model->generate_dropdown_menu($show_group),
             'userlist_data' => $this->model->print_users($username, $start_from, $sort_by, $sort_dir, $show_group),
-        ))->addTemplate('userlist.php')->display();
+        ])->addTemplate('userlist.php')->display();
     }
 }

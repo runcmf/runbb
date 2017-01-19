@@ -8,7 +8,7 @@ if (!empty($errors)) { ?>
                 <div>
                     <p><?= __('Block error info', 'private_messages') ?></p>
                     <ul class="error-list">
-<?php foreach ($errors as $error): ?>
+<?php foreach ($errors as $error) : ?>
                         <li><strong><?= Utils::escape($error) ?></strong></li>
 <?php endforeach; ?>
                     </ul>
@@ -40,7 +40,7 @@ if (!empty($errors)) { ?>
                         </div>
                     </form>
                 </div>
-<?php if (!empty($blocks)): ?>
+<?php if (!empty($blocks)) : ?>
                 <h2 class="block2"><span><?= __('Blocked Users', 'private_messages') ?></span></h2>
                 <div class="box">
                     <form method="post" action="">
@@ -56,7 +56,7 @@ if (!empty($errors)) { ?>
                                             </tr>
                                         </thead>
                                         <tbody>
-<?php foreach ($blocks as $bid => $block): ?>
+<?php foreach ($blocks as $bid => $block) : ?>
                                             <tr>
                                                 <td class="tcl"><strong><?= $block->username ?></strong></td>
                                                 <td><input type="submit" name="remove_block[<?= $block->block_id ?>]" value="Remove" /></td>

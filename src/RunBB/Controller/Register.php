@@ -55,10 +55,10 @@ class Register
             }
         }
 
-        View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Register')),
-                    'focus_element' => array('register', 'req_user'),
-                    'required_fields' => array('req_user' => __('Username'), 'req_password1' => __('Password'), 'req_password2' => __('Confirm pass'), 'req_email1' => __('Email'), 'req_email2' => __('Email').' 2', 'captcha' => __('Robot title')),
+        View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Register')],
+                    'focus_element' => ['register', 'req_user'],
+                    'required_fields' => ['req_user' => __('Username'), 'req_password1' => __('Password'), 'req_password2' => __('Confirm pass'), 'req_email1' => __('Email'), 'req_email2' => __('Email').' 2', 'captcha' => __('Robot title')],
                     'active_page' => 'register',
                     'is_indexed' => true,
                     'errors' => $user['errors'],
@@ -66,8 +66,7 @@ class Register
                     'languages' => \RunBB\Core\Lister::getLangs(),
                     'question' => array_keys($lang_antispam_questions),
                     'qencoded' => md5(array_keys($lang_antispam_questions)[$index_questions]),
-                )
-        )->addTemplate('register/form.php')->display();
+                ])->addTemplate('register/form.php')->display();
     }
 
     public function cancel($req, $res, $args)
@@ -95,10 +94,9 @@ class Register
             return Router::redirect(Router::pathFor('register'));
         }
 
-        View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Register'), __('Forum rules')),
+        View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Register'), __('Forum rules')],
                 'active_page' => 'register',
-            )
-        )->addTemplate('register/rules.php')->display();
+            ])->addTemplate('register/rules.php')->display();
     }
 }

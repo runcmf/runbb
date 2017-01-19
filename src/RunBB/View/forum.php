@@ -40,7 +40,8 @@ Container::get('hooks')->fire('view.forum.start');
                 <tr>
                     <th class="tcl" scope="col"><?= __('Topic') ?></th>
                     <th class="tc2" scope="col"><?= __('Replies') ?></th>
-<?php if (ForumSettings::get('o_topic_views') == '1'): ?>                    <th class="tc3" scope="col"><?= __('Views') ?></th>
+<?php if (ForumSettings::get('o_topic_views') == '1') :
+?>                    <th class="tc3" scope="col"><?= __('Views') ?></th>
 <?php endif; ?>                    <th class="tcr" scope="col"><?= __('Last post') ?></th>
                 </tr>
             </thead>
@@ -60,14 +61,14 @@ Container::get('hooks')->fire('view.forum.start');
                             </div>
                         </td>
                         <td class="tc2"><?php echo(is_null($topic['moved_to'])) ? Utils::forum_number_format($topic['num_replies']) : '-' ?></td>
-    <?php if (ForumSettings::get('o_topic_views') == '1'): ?>                    <td class="tc3"><?php echo(is_null($topic['moved_to'])) ? Utils::forum_number_format($topic['num_views']) : '-' ?></td>
+    <?php if (ForumSettings::get('o_topic_views') == '1') :
+?>                    <td class="tc3"><?php echo(is_null($topic['moved_to'])) ? Utils::forum_number_format($topic['num_views']) : '-' ?></td>
     <?php endif;
                 ?>                    <td class="tcr"><?= $topic['last_post_formatted'] ?></td>
                     </tr>
             <?php
-
             }
-            if (empty($forum_data)):
+            if (empty($forum_data)) :
             ?>
                     <tr class="rowodd inone">
                         <td class="tcl" colspan="<?php echo(ForumSettings::get('o_topic_views') == 1) ? 4 : 3 ?>">

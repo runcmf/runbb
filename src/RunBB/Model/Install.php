@@ -14,7 +14,7 @@ use RunBB\Core\Utils;
 
 class Install
 {
-    protected $database_scheme = array(
+    protected $database_scheme = [
         'bans' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `username` varchar(200) DEFAULT NULL,
@@ -265,7 +265,7 @@ class Install
             PRIMARY KEY (`id`),
             UNIQUE KEY `users_username_idx` (`username`(25)),
             KEY `users_registered_idx` (`registered`)
-        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",);
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",];
 
     public function create_table($table_name, $sql)
     {
@@ -292,8 +292,8 @@ class Install
     public function save_config(array $data)
     {
         foreach ($data as $key => $value) {
-            $this->add_data('config', array('conf_name' => $key,
-                'conf_value' => $value));
+            $this->add_data('config', ['conf_name' => $key,
+                'conf_value' => $value]);
         }
     }
 

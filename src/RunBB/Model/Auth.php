@@ -18,15 +18,15 @@ class Auth
     public static function load_user($user_id)
     {
         $user_id = (int) $user_id;
-        $result['select'] = array('u.*', 'g.*', 'o.logged', 'o.idle');
-        $result['where'] = array('u.id' => $user_id);
+        $result['select'] = ['u.*', 'g.*', 'o.logged', 'o.idle'];
+        $result['where'] = ['u.id' => $user_id];
         $result['join'] = ($user_id == 1) ? Utils::getIp() : 'u.id';
 //        $escape = ($user_id == 1) ? true : false;
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')
                 ->table_alias('u')
                 ->select_many($result['select'])
-                ->inner_join(ORM_TABLE_PREFIX.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
+                ->inner_join(ORM_TABLE_PREFIX.'groups', ['u.group_id', '=', 'g.g_id'], 'g')
 //                    ->left_outer_join(ORM_TABLE_PREFIX.'online', array('o.user_id', '=', $result['join']), 'o', $escape)
                 ->raw_join('LEFT JOIN '.ORM_TABLE_PREFIX.'online', 'o.user_id=?', 'o', [1 => $result['join']])
                 ->where($result['where']);
@@ -61,7 +61,7 @@ class Auth
 
     public static function get_user_from_email($email)
     {
-        $result['select'] = array('id', 'username', 'last_email_sent');
+        $result['select'] = ['id', 'username', 'last_email_sent'];
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')
             ->select_many($result['select'])
             ->where('email', $email);
@@ -89,11 +89,11 @@ class Auth
 
     public static function set_new_password($pass, $key, $user_id)
     {
-        $query['update'] = array(
+        $query['update'] = [
             'activate_string' => hash($pass),
             'activate_key'    => $key,
             'last_email_sent' => time(),
-        );
+        ];
 
         $query = \ORM::for_table(ORM_TABLE_PREFIX.'users')
                     ->where('id', $user_id)

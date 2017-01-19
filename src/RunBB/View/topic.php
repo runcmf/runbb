@@ -42,7 +42,7 @@ foreach ($post_data as $post) {
 }
     ?><?php if ($post_count == 1) {
     echo ' blockpost1';
-}
+    }
     ?>">
     <h2><span><span class="conr"><a href="<?= Router::pathFor('viewPost', ['pid' => $post['id']]).'#p'.$post['id'] ?>">#<?php echo($start_from + $post_count) ?></a> <?= Utils::format_time($post['posted']) ?></span></span></h2>
     <div class="box">
@@ -89,7 +89,7 @@ foreach ($post_data as $post) {
         <div class="inbox">
             <div class="postfoot clearb">
                 <div class="postfootleft"><?php if ($post['poster_id'] > 1) {
-    echo '<p>'.$post['is_online_formatted'].'</p>';
+                    echo '<p>'.$post['is_online_formatted'].'</p>';
 }
     ?></div>
 <?php if (count($post['post_actions'])) {
@@ -140,22 +140,23 @@ if ($quickpost) {
                         <input type="hidden" name="form_sent" value="1" />
                         <input type="hidden" name="pid" value="<?= Utils::escape($pid) ?>" />
                         <input type="hidden" name="page" value="<?= Utils::escape($page_number) ?>" />
-<?php if (ForumSettings::get('o_topic_subscriptions') == '1' && (User::get()->auto_notify == '1' || $cur_topic['is_subscribed'])): ?>                        <input type="hidden" name="subscribe" value="1" />
+<?php if (ForumSettings::get('o_topic_subscriptions') == '1' && (User::get()->auto_notify == '1' || $cur_topic['is_subscribed'])) :
+?>                        <input type="hidden" name="subscribe" value="1" />
 <?php endif;
 
-    if (User::get()->is_guest) {
-        $email_label = (ForumSettings::get('p_force_guest_email') == '1') ? '<strong>'.__('Email').' <span>'.__('Required').'</span></strong>' : __('Email');
-        $email_form_name = (ForumSettings::get('p_force_guest_email') == '1') ? 'req_email' : 'email';
-        ?>
-                        <label class="conl required"><strong><?= __('Guest name') ?> <span><?= __('Required') ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="<?= $cur_index++ ?>" /><br /></label>
-                        <label class="conl<?php echo(ForumSettings::get('p_force_guest_email') == '1') ? ' required' : '' ?>"><?= $email_label ?><br /><input type="text" name="<?= $email_form_name ?>" size="50" maxlength="80" tabindex="<?= $cur_index++ ?>" /><br /></label>
-                        <div class="clearer"></div>
+if (User::get()->is_guest) {
+    $email_label = (ForumSettings::get('p_force_guest_email') == '1') ? '<strong>'.__('Email').' <span>'.__('Required').'</span></strong>' : __('Email');
+    $email_form_name = (ForumSettings::get('p_force_guest_email') == '1') ? 'req_email' : 'email';
+    ?>
+                <label class="conl required"><strong><?= __('Guest name') ?> <span><?= __('Required') ?></span></strong><br /><input type="text" name="req_username" size="25" maxlength="25" tabindex="<?= $cur_index++ ?>" /><br /></label>
+                <label class="conl<?php echo(ForumSettings::get('p_force_guest_email') == '1') ? ' required' : '' ?>"><?= $email_label ?><br /><input type="text" name="<?= $email_form_name ?>" size="50" maxlength="80" tabindex="<?= $cur_index++ ?>" /><br /></label>
+                <div class="clearer"></div>
 <?php
 
-    echo "\t\t\t\t\t\t".'<div class="required"><strong>'.__('Message').' <span>'.__('Required').'</span></strong><br />';
-    } else {
-        echo "\t\t\t\t\t\t".'<div>';
-    }
+echo "\t\t\t\t\t\t".'<div class="required"><strong>'.__('Message').' <span>'.__('Required').'</span></strong><br />';
+} else {
+    echo "\t\t\t\t\t\t".'<div>';
+}
 
     ?>
 <textarea name="req_message" id="req_message" rows="7" cols="75" tabindex="<?= $cur_index++ ?>"></textarea></div>
@@ -180,8 +181,8 @@ if ($quickpost) {
                         <p><?= __('Robot info')    ?></p>
                         <label class="required"><strong><?php
                              $question = array_keys($lang_antispam_questions);
-    $qencoded = md5($question[$index_questions]);
-    echo sprintf(__('Robot question'), $question[$index_questions]);
+                        $qencoded = md5($question[$index_questions]);
+                        echo sprintf(__('Robot question'), $question[$index_questions]);
     ?>
                              <span><?= __('Required') ?></span></strong>
                              <br />

@@ -14,11 +14,11 @@ use RunBB\Core\Url;
 // or from an admin page web form) into the cache/cache_parser_data.php.
 
 // Initialize a new global parser data array $pd:
-$pd = array(
+$pd = [
     'newer_php_version'        => version_compare(PHP_VERSION, '5.2.0', '>='), // PHP version affects PCRE error checking.
     'in_signature'            => false,                // TRUE when parsing signatures, FALSE when parsing posts.
     'ipass'                    => 0,                    // Pass number (for multi-pass pre-parsing).
-    'tag_stack'                => array('_ROOT_'),        // current stack trace of tags in recursive callback
+    'tag_stack'                => ['_ROOT_'],        // current stack trace of tags in recursive callback
     'config'                => $config,                // Array of various global parser options.
 
 // -----------------------------------------------------------------------------
@@ -171,7 +171,7 @@ $                               # Anchor to end of string.
     'smilies'                => [],   // Array of Smilies, each an array with filename and html.
     'bbcd'                    => [],  // Array of BBCode tag definitions.
 
-);
+];
 unset($config);
 
 // If this server's PHP installation won't allow access to remote files,
@@ -210,17 +210,28 @@ foreach ($smilies as $smiley_text => $smiley_img) {    // Loop through all smili
     $url = htmlspecialchars($url);                    // Make sure all [&<>""] are escaped.
     $desc = file2title($smiley_img['file']);        // Convert filename to a title.
     $format = '<img width="%d" height="%d" src="%s" alt="%s" title="%s" />';
-    $pd['smilies'][$smiley_text] = array(
+    $pd['smilies'][$smiley_text] = [
         'file' => $smiley_img['file'],
         'html' => sprintf($format, $w, $h, $url, $desc, $desc)
-        );
+        ];
 }
 // Assemble "the-one-regex-to-match-them-all" (smilies that is!) 8^)
 $pd['re_smilies'] = str_replace('%smilies%', implode('|', $re_keys), $pd['re_smilies']);
-unset($re_keys); unset($file_path); unset($url_path); unset($file);
-unset($info); unset($url); unset($desc); unset($format);
-unset($smiley_text); unset($smiley_img); unset($smilies);
-unset($w); unset($h); unset($iw); unset($ih);
+unset($re_keys);
+unset($file_path);
+unset($url_path);
+unset($file);
+unset($info);
+unset($url);
+unset($desc);
+unset($format);
+unset($smiley_text);
+unset($smiley_img);
+unset($smilies);
+unset($w);
+unset($h);
+unset($iw);
+unset($ih);
 
 // Local arrays:
 $all_tags       = []; // array of all tag names allowed in posts
@@ -249,17 +260,17 @@ foreach ($bbcd as $tagname => $tagdata) { // pass 1: accumulate regex pattern st
     if (!isset($tag['nest_type'])) {
         if ($tag['html_type'] === 'inline') {
             $tag['nest_type'] = 'fix';
-        }    // default inline nest_type = fix
+        } // default inline nest_type = fix
         else {
             $tag['nest_type'] = 'err';
         }    // default block nest_type = err
     }
     if (!isset($tag['handlers'])) {
-        $tag['handlers']    = array(
-                'NO_ATTRIB'        => array(
+        $tag['handlers']    = [
+                'NO_ATTRIB'        => [
                     'format' => '<'. $tag['html_name'] .'>%c_str%</'. $tag['html_name'] .'>'
-                )
-            );
+                ]
+            ];
     }
     // Loop through attribute handlers assigning default values to a_type and c_type.
     foreach ($tag['handlers'] as $key => $value) {
@@ -267,32 +278,32 @@ foreach ($bbcd as $tagname => $tagdata) { // pass 1: accumulate regex pattern st
         // Detect when width/height types are being used.
         $w_typ = (preg_match('/%[wh]_str%/', $handler['format'])) ?  'width_height' : false;
         switch ($key) {
-        case 'ATTRIB':                            // Variable attribute handler.
-            if (!isset($handler['a_type'])) {
-                $handler['a_type'] = ($w_typ) ? $w_typ : 'text';
-            }
-            if (!isset($handler['c_type'])) {
-                $handler['c_type'] = 'text';
-            }
-            break;
+            case 'ATTRIB':                            // Variable attribute handler.
+                if (!isset($handler['a_type'])) {
+                    $handler['a_type'] = ($w_typ) ? $w_typ : 'text';
+                }
+                if (!isset($handler['c_type'])) {
+                    $handler['c_type'] = 'text';
+                }
+                break;
 
-        case 'NO_ATTRIB':                        // No attribute handler.
-            if (!isset($handler['a_type'])) {
-                $handler['a_type'] = 'none';
-            }
-            if (!isset($handler['c_type'])) {
-                $handler['c_type'] = ($w_typ) ? $w_typ : 'text';
-            }
-            break;
+            case 'NO_ATTRIB':                        // No attribute handler.
+                if (!isset($handler['a_type'])) {
+                    $handler['a_type'] = 'none';
+                }
+                if (!isset($handler['c_type'])) {
+                    $handler['c_type'] = ($w_typ) ? $w_typ : 'text';
+                }
+                break;
 
-        default:                                // Fixed attribute handlers.
-            if (!isset($handler['a_type'])) {
-                $handler['a_type'] = ($w_typ) ? $w_typ : 'text';
-            }
-            if (!isset($handler['c_type'])) {
-                $handler['c_type'] = 'text';
-            }
-            break;
+            default:                                // Fixed attribute handlers.
+                if (!isset($handler['a_type'])) {
+                    $handler['a_type'] = ($w_typ) ? $w_typ : 'text';
+                }
+                if (!isset($handler['c_type'])) {
+                    $handler['c_type'] = 'text';
+                }
+                break;
         }
         ksort($handler);
     }
@@ -315,7 +326,7 @@ foreach ($bbcd as $tagname => $tagdata) { // pass 1: accumulate regex pattern st
     }
     if ($tag['tag_type'] === 'hidden') {
         $tag['depth_max'] = 1;                        // all hidden tags max depth = 1
-        $tag['tags_allowed']            = array();    // no tags allowed in hidden tags.
+        $tag['tags_allowed']            = [];    // no tags allowed in hidden tags.
     }
     // clean excess whitespace (added for human readable formatting above) from format conversion strings
     foreach ($tag['handlers'] as $ikey => $i) {        // loop through all tag attribute handlers
@@ -326,7 +337,7 @@ foreach ($bbcd as $tagname => $tagdata) { // pass 1: accumulate regex pattern st
             // Consolidate consecutive whitespace into a single space.
             $format_str = preg_replace('/\s++/S', ' ', $format_str);
             // Clean out any old version byte marker cruft.
-            $format_str = str_replace(array("\1", "\2"), '', $format_str);
+            $format_str = str_replace(["\1", "\2"], '', $format_str);
             // Wrap all hidden chunks like so: "\1\2<tag>\1 stuff \1\2</tag>\1".
             if ($tag['tag_type'] === 'hidden' || $tag['handlers'][$ikey]['c_type'] === 'url') {
                 $format_str = "\1\2". $format_str ."\1";
@@ -334,8 +345,11 @@ foreach ($bbcd as $tagname => $tagdata) { // pass 1: accumulate regex pattern st
                 $format_str = preg_replace('/((?:<[^>]*+>)++(?:%a_str%(?:<[^>]*+>)++)?+)/S', "\1\2$1\1", $format_str);
             }
         } else {
-            exit(sprintf("Compile error! \$bbcd['%s']['handlers']['%s']['format'] format string is missing!",
-                $tagname, $ikey));
+            exit(sprintf(
+                "Compile error! \$bbcd['%s']['handlers']['%s']['format'] format string is missing!",
+                $tagname,
+                $ikey
+            ));
         }
     }
     unset($i);
@@ -347,7 +361,8 @@ $re_tag_names = empty($all_tags_re) ? '_ROOT_' : implode($all_tags_re, "|");
 $pd['re_bbcode'] = str_replace('%taglist%', $re_tag_names, $pd['re_bbcode']);
 $pd['re_bbtag'] = str_replace('%taglist%', $re_tag_names, $pd['re_bbtag']);
 
-unset($all_tags_re); unset($re_tag_names);
+unset($all_tags_re);
+unset($re_tag_names);
 
 foreach ($pd['bbcd'] as $tagname => $tagdata) { // pass 2: initialize allowed and excluded arrays
     $tag =& $pd['bbcd'][$tagname];                            // Alias to "tagname" member of global array
@@ -372,7 +387,7 @@ foreach ($pd['bbcd'] as $tagname => $tagdata) { // pass 2: initialize allowed an
         }
     }
     // Build the (shorter/faster) excluded list to be used in the code. (discard tags_allowed[]).
-    $tag['tags_excluded'] = array();
+    $tag['tags_excluded'] = [];
     foreach ($all_tags as $iname => $value) {
         if (!isset($tag['tags_allowed'][$iname])) {
             $tag['tags_excluded'][$iname] = true;
@@ -380,8 +395,8 @@ foreach ($pd['bbcd'] as $tagname => $tagdata) { // pass 2: initialize allowed an
     }
     // Hidden tags have no use for these arrays so set them to minimum.
     if ($tag['tag_type'] === 'hidden') {
-        $tag['tags_excluded'] = array();
-        $tag['tags_allowed'] = array();
+        $tag['tags_excluded'] = [];
+        $tag['tags_allowed'] = [];
     }
     unset($iname);
     unset($value);
@@ -389,7 +404,13 @@ foreach ($pd['bbcd'] as $tagname => $tagdata) { // pass 2: initialize allowed an
     unset($tag['html_name']);
     ksort($tag);
 }
-unset($i); unset($iname); unset($n); unset($re_name); unset($tagname); unset($tagdata); unset($tag);
+unset($i);
+unset($iname);
+unset($n);
+unset($re_name);
+unset($tagname);
+unset($tagdata);
+unset($tag);
 
 
 //
@@ -402,13 +423,15 @@ function file2title($file)
     // Strip off file extention.
     $title = preg_replace('/\.[^.]*$/', '', $file);
     // Convert underscores and dashes to spaces.
-    $title = str_replace(array('_', '-'), ' ', $title);
+    $title = str_replace(['_', '-'], ' ', $title);
     // Make first letter of each word uppercase.
     $title = ucwords($title);
     // Space out camelcase words.
     $title = preg_replace('/(?<=[a-z])(?=[A-Z])/', ' ', $title);
     // Make first letter of insignificant words lowercase.
-    $title = preg_replace_callback('/(?!^)\b(And|At|A|In|Is|Of|The|To)\b/i', function ($m) { return strtolower($m); }, $title);
+    $title = preg_replace_callback('/(?!^)\b(And|At|A|In|Is|Of|The|To)\b/i', function ($m) {
+        return strtolower($m);
+    }, $title);
     // Ensure this is HTML-safe (No [&<>""]).
     $title = htmlspecialchars($title);
     return $title;
@@ -425,5 +448,10 @@ $s .= "?>";
 file_put_contents(ForumEnv::get('FORUM_CACHE_DIR').'cache_parser_data.php', $s);
 
 // Clean up our global variables.
-unset($all_tags); unset($all_block_tags);
-unset($bbcd); unset($format_str); unset($handler); unset($key); unset($s);
+unset($all_tags);
+unset($all_block_tags);
+unset($bbcd);
+unset($format_str);
+unset($handler);
+unset($key);
+unset($s);

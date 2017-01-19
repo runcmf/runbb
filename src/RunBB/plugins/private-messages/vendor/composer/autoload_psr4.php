@@ -5,6 +5,6 @@
 $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
-return array(
-    'RunBB\\Plugins\\' => array($baseDir . '/src'),
-);
+return [
+    'RunBB\\Plugins\\' => [$baseDir . '/src'],
+];

@@ -29,7 +29,7 @@ class Auth
             /*
              * Extract the jwt from the Bearer
              */
-            list($jwt) = sscanf( $authCookie, 'Bearer %s');
+            list($jwt) = sscanf($authCookie, 'Bearer %s');
 
             if ($jwt) {
                 try {
@@ -40,7 +40,6 @@ class Auth
                     $token = JWT::decode($jwt, $secretKey, [ForumSettings::get('jwt_algorithm')]);
 
                     return $token;
-
                 } catch (\Firebase\JWT\ExpiredException $e) {
                     // TODO: (Optionnal) add flash message to say token has expired
                     return false;
@@ -74,17 +73,16 @@ class Auth
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                        \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', array(':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged));
+                        \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', [':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged]);
                         break;
 
                     default:
-                        \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', array(':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged));
+                        \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.$this->app->db->prefix.'online WHERE user_id=:user_id)', [':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged]);
                         break;
                 }
 
                 // Reset tracked topics
                 Track::set_tracked_topics(null);
-
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
                 if (User::get()->logged < (Container::get('now')-ForumSettings::get('o_timeout_visit'))) {
@@ -97,7 +95,7 @@ class Auth
 
                 $idle_sql = (User::get()->idle == '1') ? ', idle=0' : '';
 
-                \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('UPDATE '.ForumSettings::get('db_prefix').'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', array(':user_id' => User::get()->id));
+                \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('UPDATE '.ForumSettings::get('db_prefix').'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', [':user_id' => User::get()->id]);
 
                 // Update tracked topics with the current expire time
                 $cookie_tracked_topics = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
@@ -115,7 +113,7 @@ class Auth
     public function update_users_online()
     {
         // Fetch all online list entries that are older than "o_timeout_online"
-        $select_update_users_online = array('user_id', 'ident', 'logged', 'idle');
+        $select_update_users_online = ['user_id', 'ident', 'logged', 'idle'];
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'online')
                     ->select_many($select_update_users_online)
@@ -211,15 +209,15 @@ class Auth
     public function maintenance_message()
     {
         // Deal with newlines, tabs and multiple spaces
-        $pattern = array("\t", '  ', '  ');
-        $replace = array('&#160; &#160; ', '&#160; ', ' &#160;');
+        $pattern = ["\t", '  ', '  '];
+        $replace = ['&#160; &#160; ', '&#160; ', ' &#160;'];
         $message = str_replace($pattern, $replace, ForumSettings::get('o_maintenance_message'));
 
-        return View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Maintenance')),
+        return View::setPageInfo([
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Maintenance')],
             'msg'    =>    $message,
             'backlink'    =>   false,
-        ))->addTemplate('maintenance.php')->display();
+        ])->addTemplate('maintenance.php')->display();
     }
 
     public function __invoke($req, $res, $next)
@@ -280,17 +278,21 @@ class Auth
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                    \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('REPLACE INTO '.
-                        ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)',
-                        array(':ident' => Utils::getIp(), ':logged' => $user->logged));
+                        \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute(
+                            'REPLACE INTO '.
+                            ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)',
+                            [':ident' => Utils::getIp(), ':logged' => $user->logged]
+                        );
                         break;
 
                     default:
-                        \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('INSERT INTO '.
+                        \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute(
+                            'INSERT INTO '.
                             ForumSettings::get('db_prefix').'online (user_id, ident, logged) 
                             SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.
                             ForumSettings::get('db_prefix').'online WHERE ident=:ident)',
-                            array(':ident' => Utils::getIp(), ':logged' => $user->logged));
+                            [':ident' => Utils::getIp(), ':logged' => $user->logged]
+                        );
                         break;
                 }
             } else {

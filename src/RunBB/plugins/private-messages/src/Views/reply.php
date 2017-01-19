@@ -53,12 +53,12 @@ if (!isset($feather)) {
             </div>
         </div>
 
-<?php if (!empty($msg_data)): ?>
+<?php if (!empty($msg_data)) : ?>
         <div id="postreview">
             <h2><span><?= __('Conv review', 'private_messages') ?></span></h2>
 <?php
     $count = 1;
-    foreach ($msg_data as $msg): ?>
+foreach ($msg_data as $msg) : ?>
 
                 <div id="p<?=$msg['id']?>" class="blockpost<?= ($count % 2 == 0) ? ' roweven' : ' rowodd' ?>">
                     <div class="box roweven">
@@ -66,13 +66,13 @@ if (!isset($feather)) {
                             <div class="postbody">
                                 <div class="postleft">
                                     <dl>
-                                        <dt><strong><?= $msg['poster']?></strong></dt>
-                                        <dd><span><?= Utils::format_time($msg['sent'])?></span></dd>
+                                    <dt><strong><?= $msg['poster']?></strong></dt>
+                                    <dd><span><?= Utils::format_time($msg['sent'])?></span></dd>
                                     </dl>
                                 </div>
                                 <div class="postright">
                                     <div class="postmsg">
-                                        <p><?= Utils::escape($msg['message']) ?></p>
+                                    <p><?= Utils::escape($msg['message']) ?></p>
                                     </div>
                                 </div>
                             </div>
@@ -80,7 +80,8 @@ if (!isset($feather)) {
                         </div>
                     </div>
                 </div>
-        <?php ++$count; endforeach; ?>
+        <?php ++$count;
+endforeach; ?>
 
         </div>
         <?php endif; ?>

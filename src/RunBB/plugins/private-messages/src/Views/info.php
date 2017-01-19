@@ -34,10 +34,14 @@ if (!isset($feather)) {
                                     <th scope="row">Use private messaging</th>
                                     <td>
                                         <label class="conl"><input type="radio" name="use_pm_g<?= Utils::escape($cur_group['g_id']) ?>" value="1"
-                                        <?php if ($cur_group['g_use_pm'] == 1):  echo ' checked="checked"'; endif ?>
+                                        <?php if ($cur_group['g_use_pm'] == 1) :
+                                            echo ' checked="checked"';
+endif ?>
                                                                    tabindex="39"/>&#160;<strong>Yes</strong></label>
                                         <label class="conl"><input type="radio" name="use_pm_g<?= Utils::escape($cur_group['g_id']) ?>" value="0" tabindex="40"
-                                        <?php if ($cur_group['g_use_pm'] == 0):  echo ' checked="checked"'; endif ?>/>&#160;<strong>No</strong></label>
+                                        <?php if ($cur_group['g_use_pm'] == 0) :
+                                            echo ' checked="checked"';
+endif ?>/>&#160;<strong>No</strong></label>
                                         <span
                                             class="clearb">Allow users in this group access to private messaging.</span>
                                     </td>

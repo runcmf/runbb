@@ -33,7 +33,7 @@ Container::get('hooks')->fire('view.moderate.move_topics.start');
                         <br /></label>
                         <div class="rbox">
                             <label><input type="checkbox" name="with_redirect" value="1"<?php if ($action == 'single') {
-    echo ' checked="checked"';
+                                echo ' checked="checked"';
 } ?> /><?= __('Leave redirect') ?><br /></label>
                         </div>
                     </div>

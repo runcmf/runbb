@@ -23,23 +23,24 @@ class Core
 {
     protected $forum_env,
         $forum_settings, $c;
-    protected $headers = array(
+    protected $headers = [
         'Cache-Control' => 'no-cache, no-store, must-revalidate',
         'Pragma' => 'no-cache',
         'Content-type' => 'text/html',
-        'X-Frame-Options' => 'deny');
+        'X-Frame-Options' => 'deny'];
     protected static $queryLog = [];
 
     public function __construct(\Slim\Container $c, array $data)
     {
         $this->c = $c;
         // Handle empty values in data
-        $data = array_merge([
+        $data = array_merge(
+            [
             'config_file' => 'config.php',
             'cache_dir' => 'cache/',
             'web_root' => '',
             'debug' => false
-        ],
+            ],
             $data
         );
 
@@ -52,6 +53,12 @@ class Core
         $this->forum_env['WEB_ROOT'] = $data['web_root'];
         $this->forum_env['WEB_PLUGINS'] = 'plugins';
         $this->forum_env['SLIM_SETTINGS'] = $c['settings']['runbb'];
+        $this->forum_env['FORUM_ASSETS'] = [
+            'css' => $c['settings']['runbb']['commonAssets']['css'],
+            'jshead' => $c['settings']['runbb']['commonAssets']['jshead'],
+            'js' => $c['settings']['runbb']['commonAssets']['js'],
+            'jsraw' => $c['settings']['runbb']['commonAssets']['jsraw']
+        ];
 
         // Populate forum_env
         $this->forum_env = array_merge(self::load_default_forum_env(), $this->forum_env);
@@ -73,8 +80,6 @@ class Core
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
-
-
     }
 
     public static function load_default_forum_env()
@@ -105,7 +110,7 @@ class Core
 
     public static function load_default_forum_settings()
     {
-        return array(
+        return [
             // Database
             'db_type' => 'mysqli',
             'db_host' => '',
@@ -117,7 +122,7 @@ class Core
             'cookie_name' => 'runbb_cookie',
             'jwt_token' => 'changeme', // MUST BE CHANGED !!!
             'jwt_algorithm' => 'HS512'
-        );
+        ];
     }
 
     public static function init_db(array $config, $log_queries = false)
@@ -126,7 +131,7 @@ class Core
         switch ($config['db_type']) {
             case 'mysql':
                 \ORM::configure('mysql:host=' . $config['db_host'] . ';dbname=' . $config['db_name']);
-                \ORM::configure('driver_options', array(\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+                \ORM::configure('driver_options', [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
                 break;
             case 'sqlite';
             case 'sqlite3';
@@ -147,9 +152,9 @@ class Core
                 self::$queryLog[1][] = $query;
             });
         }
-        \ORM::configure('id_column_overrides', array(
+        \ORM::configure('id_column_overrides', [
             $config['db_prefix'] . 'groups' => 'g_id',
-        ));
+        ]);
 
         defined('ORM_TABLE_PREFIX') || define('ORM_TABLE_PREFIX', $config['db_prefix']);
     }
@@ -279,36 +284,27 @@ class Core
         // Set default style and assets
         Container::get('template')->setStyle(ForumSettings::get('o_default_style'));
 
-        // load common css and js
-        Container::get('template')->addAsset(
-            'css',
-            'assets/css/font-awesome.min.css',
-            ['type' => 'text/css', 'rel' => 'stylesheet']
-        );
-        // highlight.js theme
-        Container::get('template')->addAsset(
-            'css',
-            'style/js/styles/androidstudio.css',
-            ['type' => 'text/css', 'rel' => 'stylesheet']
-        );
-        Container::get('template')->addAsset(
-            'jsTop',
-            'assets/js/jquery-3.1.1.min.js',
-            ['type' => 'text/javascript']
-        );
-        Container::get('template')->addAsset(
-            'jsTop',
-            'style/js/highlight.pack.js',
-            ['type' => 'text/javascript']
-        );
-        Container::get('template')->addAsset(
+        // load common assets
+        foreach ($this->forum_env['FORUM_ASSETS'] as $key => $assets) {
+            if ($key === 'jsraw' || !in_array($key, ['js', 'jshead', 'css'])) {
+                continue;
+            }
+            foreach ($assets as $asset) {
+                $params = ($key === 'css') ? ['type' => 'text/css', 'rel' => 'stylesheet'] : (
+                    ($key === 'js' || $key === 'jshead') ? ['type' => 'text/javascript'] : []
+                    );
+                Container::get('template')->addAsset(
+                    $key,
+                    $asset,
+                    $params
+                );
+            }
+        }
+        Container::get('template')->set('jsraw', $this->forum_env['FORUM_ASSETS']['jsraw']);
+        Container::get('template')->addAsset(// FIXME move from theme to common ???
             'js',
             'style/themes/' . Container::get('template')->getStyle() . '/phone.min.js',
             ['type' => 'text/javascript']
-        );
-        Container::get('template')->set(
-            'jsRAW',
-            "\t\t" . 'hljs.initHighlightingOnLoad();'
         );
 
         // Run activated plugins

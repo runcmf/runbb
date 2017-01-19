@@ -28,8 +28,8 @@ class Index
     {
         Container::get('hooks')->fire('controller.index.index');
 
-        View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title'))),
+        View::setPageInfo([
+            'title' => [Utils::escape(ForumSettings::get('o_board_title'))],
             'active_page' => 'index',
             'is_indexed' => true,
             'index_data' => $this->model->print_categories_forums(),
@@ -37,7 +37,7 @@ class Index
             'online' => $this->model->fetch_users_online(),
             'forum_actions' => $this->model->get_forum_actions(),
             'cur_cat' => 0
-        ))->addTemplate('index.php')->display();
+        ])->addTemplate('index.php')->display();
     }
 
     public function rules()
@@ -48,10 +48,10 @@ class Index
             throw new  RunBBException(__('Bad request'), 404);
         }
 
-        View::setPageInfo(array(
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Forum rules')),
+        View::setPageInfo([
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Forum rules')],
             'active_page' => 'rules'
-        ))->addTemplate('misc/rules.php')->display();
+        ])->addTemplate('misc/rules.php')->display();
     }
 
     public function markread()

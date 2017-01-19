@@ -47,7 +47,7 @@ class Csrf
      *
      * @var int
      */
-     protected $strength;
+    protected $strength;
 
     /**
      * Callable to be executed if the CSRF validation fails
@@ -190,7 +190,8 @@ class Csrf
      *
      * @return RequestInterface PSR7 response object.
      */
-    public function generateNewToken(ServerRequestInterface $request) {
+    public function generateNewToken(ServerRequestInterface $request)
+    {
 
         $pair = $this->generateToken();
 

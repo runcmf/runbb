@@ -15,14 +15,14 @@
  *
  * Inspired from Luna <http://getluna.org>
  */
-function translate($mofile, $domain = 'RunBB', $path = false) {
+function translate($mofile, $domain = 'RunBB', $path = false)
+{
 
     global $l10n;
 
     if (!$path) {
         $mofile = ForumEnv::get('FORUM_ROOT').'lang/'.User::get()->language.'/'.$mofile.'.mo';
-    }
-    else {
+    } else {
 //        $mofile = ForumEnv::get('FORUM_ROOT').'lang/'.$language.'/'.$mofile.'.mo';
         $mofile = $path.'/'.User::get()->language.'/'.$mofile.'.mo';
     }
@@ -45,7 +45,8 @@ function translate($mofile, $domain = 'RunBB', $path = false) {
     return true;
 }
 
-function __($text, $domain = 'RunBB') {
+function __($text, $domain = 'RunBB')
+{
 //    return translation($text);
     $text = translation($text);
 
@@ -58,7 +59,8 @@ function __($text, $domain = 'RunBB') {
     return vsprintf($text, is_array($args[0]) ? $args[0] : $args);
 }
 
-function d__($domain = 'RunBB', $text) {
+function d__($domain = 'RunBB', $text)
+{
 //    return translation($text, $domain);
     $text = translation($text);
 
@@ -71,11 +73,13 @@ function d__($domain = 'RunBB', $text) {
     return vsprintf($text, is_array($args[0]) ? $args[0] : $args);
 }
 
-function _e($text, $domain = 'RunBB') {
+function _e($text, $domain = 'RunBB')
+{
     echo translation($text);
 }
 
-function translation($text, $domain = 'RunBB') {
+function translation($text, $domain = 'RunBB')
+{
 
     global $l10n;
 
@@ -89,4 +93,3 @@ function translation($text, $domain = 'RunBB') {
 
     return $translations;
 }
-

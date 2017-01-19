@@ -9,7 +9,6 @@
 
 namespace RunBB\Plugins\Model;
 
-
 use RunBB\Exception\RunBBException;
 
 class PrivateMessages
@@ -28,7 +27,7 @@ class PrivateMessages
 
         $output = false;
         foreach ($result as $inbox) {
-            $output[(int)$inbox['id']] = array('name' => $inbox['name']);
+            $output[(int)$inbox['id']] = ['name' => $inbox['name']];
         }
         return $output;
     }
@@ -63,12 +62,13 @@ class PrivateMessages
     public function countMessages($fid, $uid)
     {
         $where[]['d.folder_id'] = $fid;
-        if ($fid == 1)
+        if ($fid == 1) {
             $where[]['d.viewed'] = '0';
+        }
         $result = \ORM::for_table(ORM_TABLE_PREFIX . 'pms_conversations')
             ->select('id')
             ->table_alias('c')
-            ->inner_join(ORM_TABLE_PREFIX . 'pms_data', array('c.id', '=', 'd.conversation_id'), 'd')
+            ->inner_join(ORM_TABLE_PREFIX . 'pms_data', ['c.id', '=', 'd.conversation_id'], 'd')
             ->where('d.user_id', $uid)
             ->where('d.deleted', 0)
             ->where_any_is($where);
@@ -88,13 +88,15 @@ class PrivateMessages
     public function getConversations($inboxes = null, $uid = null, $limit = 50, $start = 0)
     {
         $inboxes = (array)$inboxes;
-        $where = array();
+        $where = [];
         foreach ($inboxes as $id => $inbox_id) {
             $where[]['d.folder_id'] = (int)$inbox_id;
-            if ($inbox_id == 1) $where[]['d.viewed'] = '0';
+            if ($inbox_id == 1) {
+                $where[]['d.viewed'] = '0';
+            }
         }
 
-        $select = array(
+        $select = [
             'c.id',
             'c.subject',
             'c.poster',
@@ -107,13 +109,13 @@ class PrivateMessages
             'last_poster_id' => 'u2.id',
             'last_poster_gid' => 'u2.group_id',
             'c.last_post_id',
-        );
+        ];
         $result = \ORM::for_table(ORM_TABLE_PREFIX . 'pms_conversations')
             ->select_many($select)
             ->table_alias('c')
-            ->inner_join(ORM_TABLE_PREFIX . 'pms_data', array('c.id', '=', 'd.conversation_id'), 'd')
-            ->left_outer_join(ORM_TABLE_PREFIX . 'users', array('u.id', '=', 'c.poster_id'), 'u')
-            ->left_outer_join(ORM_TABLE_PREFIX . 'users', array('u2.username', '=', 'c.last_poster'), 'u2')
+            ->inner_join(ORM_TABLE_PREFIX . 'pms_data', ['c.id', '=', 'd.conversation_id'], 'd')
+            ->left_outer_join(ORM_TABLE_PREFIX . 'users', ['u.id', '=', 'c.poster_id'], 'u')
+            ->left_outer_join(ORM_TABLE_PREFIX . 'users', ['u2.username', '=', 'c.last_poster'], 'u2')
 //            ->raw_join('LEFT JOIN '.ORM_TABLE_PREFIX.'users', 'u2.username=c.last_poster', 'u2')
             ->where('d.user_id', $uid)
             ->where('d.deleted', 0)
@@ -126,8 +128,8 @@ class PrivateMessages
         foreach ($result as $key => $conversation) {
             $receivers = \ORM::for_table(ORM_TABLE_PREFIX . 'pms_data')
                 ->table_alias('d')
-                ->select(array('d.user_id', 'u.username'))
-                ->left_outer_join(ORM_TABLE_PREFIX . 'users', array('u.id', '=', 'd.user_id'), 'u')
+                ->select(['d.user_id', 'u.username'])
+                ->left_outer_join(ORM_TABLE_PREFIX . 'users', ['u.id', '=', 'd.user_id'], 'u')
                 ->where('d.conversation_id', $conversation['id'])
                 ->find_array();
             if (is_array($receivers)) {
@@ -147,7 +149,7 @@ class PrivateMessages
         $numReplies = \ORM::for_table(ORM_TABLE_PREFIX . 'pms_conversations')
             ->table_alias('c')
             ->select('c.num_replies')
-            ->inner_join(ORM_TABLE_PREFIX . 'pms_data', array('c.id', '=', 'cd.conversation_id'), 'cd')
+            ->inner_join(ORM_TABLE_PREFIX . 'pms_data', ['c.id', '=', 'cd.conversation_id'], 'cd')
             // ->inner_join('pms_data', array('cd.user_id', '=', $uid), null, true)
             ->where('cd.user_id', $uid)
             ->where_in('c.id', $convers)
@@ -155,7 +157,7 @@ class PrivateMessages
         $numPms = ($numReplies + $numConvers);
 
         // Soft delete messages
-        \ORM::configure('id_column', array('conversation_id', 'user_id'));
+        \ORM::configure('id_column', ['conversation_id', 'user_id']);
         \ORM::for_table(ORM_TABLE_PREFIX . 'pms_data')
             ->where('user_id', $uid)
             ->where_in('conversation_id', $convers)
@@ -176,7 +178,6 @@ class PrivateMessages
             \ORM::for_table(ORM_TABLE_PREFIX . 'pms_data')->where('conversation_id', $cid)->delete_many();
             \ORM::for_table(ORM_TABLE_PREFIX . 'pms_messages')->where('conversation_id', $cid)->delete_many();
             \ORM::for_table(ORM_TABLE_PREFIX . 'pms_conversations')->where('id', $cid)->delete_many();
-
         }
     }
 
@@ -186,7 +187,7 @@ class PrivateMessages
             throw new  RunBBException(__('Wrong folder owner', 'private_messages'), 403);
         }
 
-        \ORM::configure('id_column', array('conversation_id', 'user_id'));
+        \ORM::configure('id_column', ['conversation_id', 'user_id']);
 
         return \ORM::for_table(ORM_TABLE_PREFIX . 'pms_data')
             ->where('user_id', $uid)
@@ -199,7 +200,7 @@ class PrivateMessages
     // Mark a conversation as (un)read (default to true)
     public function setViewed($conv_id, $uid, $viewed = 1)
     {
-        \ORM::configure('id_column', array('conversation_id', 'user_id'));
+        \ORM::configure('id_column', ['conversation_id', 'user_id']);
 
         return \ORM::for_table(ORM_TABLE_PREFIX . 'pms_data')
             ->where('conversation_id', $conv_id)
@@ -211,7 +212,7 @@ class PrivateMessages
 
     public function updateConversation($conv_ids, $uid, array $data)
     {
-        \ORM::configure('id_column', array('conversation_id', 'user_id'));
+        \ORM::configure('id_column', ['conversation_id', 'user_id']);
 
         $conv_ids = (array)$conv_ids;
         return \ORM::for_table(ORM_TABLE_PREFIX . 'pms_data')
@@ -222,7 +223,7 @@ class PrivateMessages
             ->save();
     }
 
-    public function addConversation(array $data = array())
+    public function addConversation(array $data = [])
     {
         $result = \ORM::for_table(ORM_TABLE_PREFIX . 'pms_conversations')
             ->create()
@@ -235,7 +236,7 @@ class PrivateMessages
     // Return false if the conv doesn't exist or if the user has no rights to access it
     public function getConversation($conv_id = null, $uid = null)
     {
-        $select = array(
+        $select = [
             'c.id',
             'c.subject',
             'c.poster',
@@ -250,24 +251,24 @@ class PrivateMessages
             'c.last_post_id',
             'c.first_post_id',
             'd.folder_id'
-        );
+        ];
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX . 'pms_conversations')
             ->select_many($select)
             ->table_alias('c')
-            ->inner_join(ORM_TABLE_PREFIX . 'pms_data', array('c.id', '=', 'd.conversation_id'), 'd')
-            ->left_outer_join(ORM_TABLE_PREFIX . 'users', array('u.id', '=', 'c.poster_id'), 'u')
-            ->left_outer_join(ORM_TABLE_PREFIX . 'users', array('u2.username', '=', 'c.last_poster'), 'u2')
+            ->inner_join(ORM_TABLE_PREFIX . 'pms_data', ['c.id', '=', 'd.conversation_id'], 'd')
+            ->left_outer_join(ORM_TABLE_PREFIX . 'users', ['u.id', '=', 'c.poster_id'], 'u')
+            ->left_outer_join(ORM_TABLE_PREFIX . 'users', ['u2.username', '=', 'c.last_poster'], 'u2')
 //            ->raw_join('LEFT JOIN '.ORM_TABLE_PREFIX.'users', 'u2.username=c.last_poster', 'u2')
-            ->where_any_is(array(array('c.poster_id' => $uid),
-                array('d.user_id' => $uid)))
+            ->where_any_is([['c.poster_id' => $uid],
+                ['d.user_id' => $uid]])
             ->where('c.id', $conv_id)
             ->find_one();
 
         return $result;
     }
 
-    public function addMessage(array $data = array(), $conv_id = null, array $uid = array())
+    public function addMessage(array $data = [], $conv_id = null, array $uid = [])
     {
         $add = \ORM::for_table(ORM_TABLE_PREFIX . 'pms_messages')
             ->create()
@@ -277,25 +278,29 @@ class PrivateMessages
 
         $update_data = ['last_post_id' => $add->id()];
         // If it is a new conversation:
-        if (!empty($uid)) $update_data['first_post_id'] = $add->id();
+        if (!empty($uid)) {
+            $update_data['first_post_id'] = $add->id();
+        }
         $update = \ORM::for_table(ORM_TABLE_PREFIX . 'pms_conversations')
             ->find_one($conv_id)
             ->set($update_data);
         // Increment replies count
-        if (empty($uid)) $update->set_expr('num_replies', 'num_replies+1');
+        if (empty($uid)) {
+            $update->set_expr('num_replies', 'num_replies+1');
+        }
         $update = $update->save();
 
-        \ORM::configure('id_column', array('conversation_id', 'user_id'));
+        \ORM::configure('id_column', ['conversation_id', 'user_id']);
 
         if (!empty($uid)) {
             // New conversation
             foreach ($uid as $user) {
                 $notifs = \ORM::for_table(ORM_TABLE_PREFIX . 'pms_data')
                     ->create()
-                    ->set(array(
+                    ->set([
                         'conversation_id' => $conv_id,
                         'user_id' => $user,
-                        'viewed' => (($user == User::get()->id) ? '1' : '0')))
+                        'viewed' => (($user == User::get()->id) ? '1' : '0')])
                     ->save();
             }
         } else {
@@ -313,12 +318,12 @@ class PrivateMessages
 
     public function getMessages($conv_id = null, $limit = 50, $start = 0)
     {
-        $select = array('m.id', 'username' => 'm.poster', 'm.poster_id', 'poster_gid' => 'u.group_id', 'u.title', 'm.message', 'm.hide_smilies', 'm.sent', 'm.conversation_id', 'g.g_id', 'g.g_user_title', 'is_online' => 'o.user_id');
+        $select = ['m.id', 'username' => 'm.poster', 'm.poster_id', 'poster_gid' => 'u.group_id', 'u.title', 'm.message', 'm.hide_smilies', 'm.sent', 'm.conversation_id', 'g.g_id', 'g.g_user_title', 'is_online' => 'o.user_id'];
         $result = \ORM::for_table(ORM_TABLE_PREFIX . 'pms_messages')
             ->table_alias('m')
             ->select_many($select)
-            ->left_outer_join(ORM_TABLE_PREFIX . 'users', array('u.id', '=', 'm.poster_id'), 'u')
-            ->inner_join(ORM_TABLE_PREFIX . 'groups', array('g.g_id', '=', 'u.group_id'), 'g')
+            ->left_outer_join(ORM_TABLE_PREFIX . 'users', ['u.id', '=', 'm.poster_id'], 'u')
+            ->inner_join(ORM_TABLE_PREFIX . 'groups', ['g.g_id', '=', 'u.group_id'], 'g')
             ->raw_join('LEFT OUTER JOIN ' . ForumSettings::get('db_prefix') . 'online', "o.user_id!=1 AND o.idle=0 AND o.user_id=u.id", 'o')
             ->where('m.conversation_id', $conv_id)
             ->order_by_asc('m.sent')
@@ -390,7 +395,7 @@ class PrivateMessages
         $result = \ORM::for_table(ORM_TABLE_PREFIX . 'pms_blocks')
             ->table_alias('b')
             ->select_many(['b.id', 'b.block_id', 'u.username', 'u.group_id'])
-            ->inner_join(ORM_TABLE_PREFIX . 'users', array('b.block_id', '=', 'u.id'), 'u')
+            ->inner_join(ORM_TABLE_PREFIX . 'users', ['b.block_id', '=', 'u.id'], 'u')
             ->where('b.user_id', $user_id)
             ->find_many();
         return $result;
@@ -407,7 +412,7 @@ class PrivateMessages
         return $result;
     }
 
-    public function addBlock(array $data = array())
+    public function addBlock(array $data = [])
     {
         $result = \ORM::for_table(ORM_TABLE_PREFIX . 'pms_blocks')
             ->create()

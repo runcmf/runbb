@@ -33,33 +33,41 @@ class Post
 //        );
 
         if ($tid) {
-            $cur_posting['select'] = array('f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics', 't.subject', 't.closed', 'is_subscribed' => 's.user_id');
+            $cur_posting['select'] = ['f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics', 't.subject', 't.closed', 'is_subscribed' => 's.user_id'];
 
             $cur_posting = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                             ->table_alias('t')
                             ->select_many($cur_posting['select'])
-                            ->inner_join(ORM_TABLE_PREFIX.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                            ->inner_join(ORM_TABLE_PREFIX.'forums', ['f.id', '=', 't.forum_id'], 'f')
 //                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
-                ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                    '(fp.forum_id=f.id AND fp.group_id='. User::get()->g_id.')', 'fp')
+                ->left_outer_join(
+                    ORM_TABLE_PREFIX.'forum_perms',
+                    '(fp.forum_id=f.id AND fp.group_id='. User::get()->g_id.')',
+                    'fp'
+                )
 //                            ->left_outer_join('topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
 //                            ->left_outer_join('topic_subscriptions', array('s.user_id', '=', User::get()->id), null, true)
-                ->left_outer_join(ORM_TABLE_PREFIX.'topic_subscriptions',
-                    '(t.id=s.topic_id AND s.user_id='.User::get()->id.')', 's')
+                ->left_outer_join(
+                    ORM_TABLE_PREFIX.'topic_subscriptions',
+                    '(t.id=s.topic_id AND s.user_id='.User::get()->id.')',
+                    's'
+                )
                             ->where_raw($cur_posting['where'])
                             ->where('t.id', $tid);
-
         } else {
-            $cur_posting['select'] = array('f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics');
+            $cur_posting['select'] = ['f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies', 'fp.post_topics'];
 
             $cur_posting = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
                             ->table_alias('f')
                             ->select_many($cur_posting['select'])
 //                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
-                ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                    '(fp.forum_id=f.id AND fp.group_id='. User::get()->g_id.')', 'fp')
+                ->left_outer_join(
+                    ORM_TABLE_PREFIX.'forum_perms',
+                    '(fp.forum_id=f.id AND fp.group_id='. User::get()->g_id.')',
+                    'fp'
+                )
                             ->where_raw($cur_posting['where'])
                             ->where('f.id', $fid);
         }
@@ -81,7 +89,7 @@ class Post
     {
         $id = Container::get('hooks')->fire('model.post.get_info_edit_start', $id);
 
-        $cur_post['select'] = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies');
+        $cur_post['select'] = ['fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_topics', 'tid' => 't.id', 't.subject', 't.posted', 't.first_post_id', 't.sticky', 't.closed', 'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies'];
 //        $cur_post['where'] = array(
 //            array('fp.read_forum' => 'IS NULL'),
 //            array('fp.read_forum' => '1')
@@ -90,12 +98,15 @@ class Post
         $cur_post = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
                     ->table_alias('p')
                     ->select_many($cur_post['select'])
-                    ->inner_join(ORM_TABLE_PREFIX.'topics', array('t.id', '=', 'p.topic_id'), 't')
-                    ->inner_join(ORM_TABLE_PREFIX.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                    ->inner_join(ORM_TABLE_PREFIX.'topics', ['t.id', '=', 'p.topic_id'], 't')
+                    ->inner_join(ORM_TABLE_PREFIX.'forums', ['f.id', '=', 't.forum_id'], 'f')
 //                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
-            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                '(fp.forum_id=f.id AND fp.group_id='. User::get()->g_id.')', 'fp')
+            ->left_outer_join(
+                ORM_TABLE_PREFIX.'forum_perms',
+                '(fp.forum_id=f.id AND fp.group_id='. User::get()->g_id.')',
+                'fp'
+            )
 //                    ->where_any_is($cur_post['where'])
                 ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
                     ->where('p.id', $id);
@@ -121,7 +132,6 @@ class Post
 
         // Antispam feature
         if (User::get()->is_guest) {
-
             // It's a guest, so we have to validate the username
             $profile = new \RunBB\Model\Profile();
             $errors = $profile->check_username(Utils::trim(Input::post('req_username')), $errors);
@@ -145,9 +155,11 @@ class Post
         if (Input::post('preview') != '' &&
             User::get()->last_post != '' &&
             (time() - User::get()->last_post) < Container::get('prefs')->get(User::get(), 'post.min_interval')) {
-            $errors[] = sprintf(__('Flood start'),
+            $errors[] = sprintf(
+                __('Flood start'),
                 Container::get('prefs')->get(User::get(), 'post.min_interval'),
-                Container::get('prefs')->get(User::get(), 'post.min_interval') - (time() - User::get()->last_post));
+                Container::get('prefs')->get(User::get(), 'post.min_interval') - (time() - User::get()->last_post)
+            );
         }
 
         // If it's a new topic
@@ -304,8 +316,7 @@ class Post
         if (!User::get()->is_guest) {
             $post['username'] = User::get()->username;
             $post['email'] = User::get()->email;
-        }
-        // Otherwise it should be in $feather ($_POST)
+        } // Otherwise it should be in $feather ($_POST)
         else {
             $post['username'] = Utils::trim(Input::post('req_username'));
             $post['email'] = strtolower(Utils::trim((ForumSettings::get('p_force_guest_email') == '1') ? Input::post('req_email') : Input::post('email')));
@@ -378,7 +389,7 @@ class Post
     {
         $id = Container::get('hooks')->fire('model.post.get_info_delete_start', $id);
 
-        $query['select'] = array('fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies');
+        $query['select'] = ['fid' => 'f.id', 'f.forum_name', 'f.moderators', 'f.redirect_url', 'fp.post_replies',  'fp.post_topics', 'tid' => 't.id', 't.subject', 't.first_post_id', 't.closed', 'p.poster', 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies'];
 //        $query['where'] = array(
 //            array('fp.read_forum' => 'IS NULL'),
 //            array('fp.read_forum' => '1')
@@ -387,12 +398,15 @@ class Post
         $query = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
             ->table_alias('p')
             ->select_many($query['select'])
-            ->inner_join(ORM_TABLE_PREFIX.'topics', array('t.id', '=', 'p.topic_id'), 't')
-            ->inner_join(ORM_TABLE_PREFIX.'forums', array('f.id', '=', 't.forum_id'), 'f')
+            ->inner_join(ORM_TABLE_PREFIX.'topics', ['t.id', '=', 'p.topic_id'], 't')
+            ->inner_join(ORM_TABLE_PREFIX.'forums', ['f.id', '=', 't.forum_id'], 'f')
 //            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
-            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                '(fp.forum_id=f.id AND fp.group_id='.User::get()->g_id.')', 'fp')
+            ->left_outer_join(
+                ORM_TABLE_PREFIX.'forum_perms',
+                '(fp.forum_id=f.id AND fp.group_id='.User::get()->g_id.')',
+                'fp'
+            )
 //            ->where_any_is($query['where'])
             ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
             ->where('p.id', $id);
@@ -419,7 +433,7 @@ class Post
             Topic::delete($tid);
             Forum::update($fid);
 
-            return Router::redirect(Router::pathFor('Forum', array('id' => $fid)), __('Topic del redirect'));
+            return Router::redirect(Router::pathFor('Forum', ['id' => $fid]), __('Topic del redirect'));
         } else {
             Container::get('hooks')->fire('model.post.handle_deletion', $tid, $fid, $id);
 
@@ -458,8 +472,7 @@ class Post
         foreach ($result as $cur_result) {
             if ($i == 0) {
                 $last_id = $cur_result['id'];
-            }
-            else {
+            } else {
                 $second_last_id = $cur_result['id'];
                 $second_poster = $cur_result['poster'];
                 $second_posted = $cur_result['posted'];
@@ -591,7 +604,7 @@ class Post
         }
 
         // Get the subject and forum ID
-        $report['select'] = array('subject', 'forum_id');
+        $report['select'] = ['subject', 'forum_id'];
         $report = \ORM::for_table(ORM_TABLE_PREFIX.'topics')->select_many($report['select'])
                                         ->where('id', $topic['topic_id']);
         $report = Container::get('hooks')->fireDB('model.post.insert_report_get_subject', $report);
@@ -603,7 +616,6 @@ class Post
 
         // Should we use the internal report handling?
         if (ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2') {
-
             // Insert the report
             $query['insert'] = [
                 'post_id' => $post_id,
@@ -659,7 +671,7 @@ class Post
     {
         $post_id = Container::get('hooks')->fire('model.post.get_info_report_start', $post_id);
 
-        $cur_post['select'] = array('fid' => 'f.id', 'f.forum_name', 'tid' => 't.id', 't.subject');
+        $cur_post['select'] = ['fid' => 'f.id', 'f.forum_name', 'tid' => 't.id', 't.subject'];
 //        $cur_post['where'] = array(
 //            array('fp.read_forum' => 'IS NULL'),
 //            array('fp.read_forum' => '1')
@@ -668,12 +680,15 @@ class Post
         $cur_post = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
                         ->table_alias('p')
                         ->select_many($cur_post['select'])
-                        ->inner_join(ORM_TABLE_PREFIX.'topics', array('t.id', '=', 'p.topic_id'), 't')
-                        ->inner_join(ORM_TABLE_PREFIX.'forums', array('f.id', '=', 't.forum_id'), 'f')
+                        ->inner_join(ORM_TABLE_PREFIX.'topics', ['t.id', '=', 'p.topic_id'], 't')
+                        ->inner_join(ORM_TABLE_PREFIX.'forums', ['f.id', '=', 't.forum_id'], 'f')
 //                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
-            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                '(fp.forum_id=f.id AND fp.group_id='. User::get()->g_id.')', 'fp')
+            ->left_outer_join(
+                ORM_TABLE_PREFIX.'forum_perms',
+                '(fp.forum_id=f.id AND fp.group_id='. User::get()->g_id.')',
+                'fp'
+            )
                         ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
                         ->where('p.id', $post_id);
         $cur_post = Container::get('hooks')->fireDB('model.post.get_info_report_query', $cur_post);
@@ -693,8 +708,14 @@ class Post
     {
         $new = [];
 
-        $new = Container::get('hooks')->fireDB('model.post.insert_reply_start',
-            $new, $post, $tid, $cur_posting, $is_subscribed);
+        $new = Container::get('hooks')->fireDB(
+            'model.post.insert_reply_start',
+            $new,
+            $post,
+            $tid,
+            $cur_posting,
+            $is_subscribed
+        );
 
         if (!User::get()->is_guest) {
             $new['tid'] = $tid;
@@ -723,7 +744,6 @@ class Post
                 // ... is the question
                 // Let's do it
                 if (isset($post['subscribe']) && $post['subscribe'] && !$is_subscribed) {
-
                     $subscription['insert'] = [
                         'user_id'   =>  User::get()->id,
                         'topic_id'  =>  $tid
@@ -737,13 +757,11 @@ class Post
 
                 // We reply and we don't want to be subscribed anymore
                 } elseif ($post['subscribe'] == '0' && $is_subscribed) {
-
                     $unsubscription = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
                                         ->where('user_id', User::get()->id)
                                         ->where('topic_id', $tid);
                     $unsubscription = Container::get('hooks')->fireDB('model.post.insert_reply_unsubscription', $unsubscription);
                     $unsubscription = $unsubscription->delete_many();
-
                 }
             }
         } else {
@@ -812,18 +830,21 @@ class Post
 //            array('fp.read_forum' => 'IS NULL'),
 //            array('fp.read_forum' => '1')
 //        );
-        $result['select'] = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
+        $result['select'] = ['u.id', 'u.email', 'u.notify_with_post', 'u.language'];
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')
                     ->table_alias('u')
                     ->select_many($result['select'])
-                    ->inner_join(ORM_TABLE_PREFIX.'topic_subscriptions', array('u.id', '=', 's.user_id'), 's')
+                    ->inner_join(ORM_TABLE_PREFIX.'topic_subscriptions', ['u.id', '=', 's.user_id'], 's')
 //                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', $cur_posting['id']), 'fp', true)
 //                    ->left_outer_join('forum_perms', array('fp.group_id', '=', 'u.group_id'))
-            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                '(fp.group_id=u.group_id AND fp.forum_id='. $cur_posting['id'].')', 'fp')
-                    ->left_outer_join(ORM_TABLE_PREFIX.'online', array('u.id', '=', 'o.user_id'), 'o')
-                    ->left_outer_join(ORM_TABLE_PREFIX.'bans', array('u.username', '=', 'b.username'), 'b')
+            ->left_outer_join(
+                ORM_TABLE_PREFIX.'forum_perms',
+                '(fp.group_id=u.group_id AND fp.forum_id='. $cur_posting['id'].')',
+                'fp'
+            )
+                    ->left_outer_join(ORM_TABLE_PREFIX.'online', ['u.id', '=', 'o.user_id'], 'o')
+                    ->left_outer_join(ORM_TABLE_PREFIX.'bans', ['u.username', '=', 'b.username'], 'b')
                     ->where_raw('COALESCE(o.logged, u.last_visit)>'.$previous_post_time->posted)
                     ->where_null('b.username')
                     ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
@@ -833,7 +854,7 @@ class Post
         $result = $result->find_many();
 
         if ($result) {
-            $notification_emails = array();
+            $notification_emails = [];
 
             $censored_message = Utils::trim(Utils::censor($post['message']));
 
@@ -844,7 +865,7 @@ class Post
             }
 
             // Loop through subscribed users and send emails
-            foreach($result as $cur_subscriber) {
+            foreach ($result as $cur_subscriber) {
                 // Is the subscription email for $cur_subscriber['language'] cached or not?
                 if (!isset($notification_emails[$cur_subscriber['language']])) {
                     if (file_exists(ForumEnv::get('FORUM_ROOT').'lang/'.$cur_subscriber['language'].'/mail_templates/new_reply.tpl')) {
@@ -937,7 +958,6 @@ class Post
         if (!User::get()->is_guest) {
             // To subscribe or not to subscribe, that ...
             if (ForumSettings::get('o_topic_subscriptions') == '1' && $post['subscribe']) {
-
                 $subscription['insert'] = [
                     'user_id'   =>  User::get()->id,
                     'topic_id'  =>  $new['tid']
@@ -948,7 +968,6 @@ class Post
                                     ->set($subscription['insert']);
                 $subscription = Container::get('hooks')->fireDB('model.post.insert_topic_subscription_member', $subscription);
                 $subscription = $subscription->save();
-
             }
 
             // Create the post ("topic post")
@@ -1024,17 +1043,20 @@ class Post
 //            array('fp.read_forum' => 'IS NULL'),
 //            array('fp.read_forum' => '1')
 //        );
-        $result['select'] = array('u.id', 'u.email', 'u.notify_with_post', 'u.language');
+        $result['select'] = ['u.id', 'u.email', 'u.notify_with_post', 'u.language'];
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')
                     ->table_alias('u')
                     ->select_many($result['select'])
-                    ->inner_join(ORM_TABLE_PREFIX.'forum_subscriptions', array('u.id', '=', 's.user_id'), 's')
+                    ->inner_join(ORM_TABLE_PREFIX.'forum_subscriptions', ['u.id', '=', 's.user_id'], 's')
 //                    ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', $cur_posting['id']), 'fp', true)
 //                    ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.group_id', '=', 'u.group_id'))
-            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                '(fp.group_id=u.group_id AND fp.forum_id='.$cur_posting['id'].')', 'fp')
-                    ->left_outer_join(ORM_TABLE_PREFIX.'bans', array('u.username', '=', 'b.username'), 'b')
+            ->left_outer_join(
+                ORM_TABLE_PREFIX.'forum_perms',
+                '(fp.group_id=u.group_id AND fp.forum_id='.$cur_posting['id'].')',
+                'fp'
+            )
+                    ->left_outer_join(ORM_TABLE_PREFIX.'bans', ['u.username', '=', 'b.username'], 'b')
                     ->where_null('b.username')
 //                    ->where_any_is($result['where'])
                 ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
@@ -1044,7 +1066,7 @@ class Post
         $result = $result->find_many();
 
         if ($result) {
-            $notification_emails = array();
+            $notification_emails = [];
 
             $censored_message = Utils::trim(Utils::censor($post['message']));
             $censored_subject = Utils::trim(Utils::censor($post['subject']));
@@ -1056,7 +1078,7 @@ class Post
             }
 
             // Loop through subscribed users and send emails
-            foreach($result as $cur_subscriber) {
+            foreach ($result as $cur_subscriber) {
                 // Is the subscription email for $cur_subscriber['language'] cached or not?
                 if (!isset($notification_emails[$cur_subscriber['language']])) {
                     if (file_exists(ForumEnv::get('FORUM_ROOT').'lang/'.$cur_subscriber['language'].'/mail_templates/new_topic.tpl')) {
@@ -1188,7 +1210,7 @@ class Post
     //
     public function split_text($text, $start, $end, $retab = true)
     {
-        $result = array(0 => array(), 1 => array()); // 0 = inside, 1 = outside
+        $result = [0 => [], 1 => []]; // 0 = inside, 1 = outside
 
         $result = Container::get('hooks')->fire('model.post.split_text_start', $result, $text, $start, $end, $retab);
 
@@ -1197,7 +1219,7 @@ class Post
         $num_parts = count($parts);
 
         // preg_split results in outside parts having even indices, inside parts having odd
-        for ($i = 0;$i < $num_parts;$i++) {
+        for ($i = 0; $i < $num_parts; $i++) {
             $result[1 - ($i % 2)][] = $parts[$i];
         }
 
@@ -1236,8 +1258,11 @@ class Post
 //        }
 
         // Remove [img] tags from quoted message
-        $quote->message = preg_replace('%\[img(?:=(?:[^\[]*?))?\]((ht|f)tps?://)([^\s<"]*?)\[/img\]%U', '\1\3',
-            $quote->message);
+        $quote->message = preg_replace(
+            '%\[img(?:=(?:[^\[]*?))?\]((ht|f)tps?://)([^\s<"]*?)\[/img\]%U',
+            '\1\3',
+            $quote->message
+        );
 
         // If we split up the message before we have to concatenate it together again (code tags)
 //        if (isset($inside)) {
@@ -1304,7 +1329,7 @@ class Post
 
         $cur_index = 1;
 
-        $checkboxes = array();
+        $checkboxes = [];
         if ($fid && $is_admmod) {
             $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.($cur_index++).'"'.(Input::post('stick_topic') ? ' checked="checked"' : '').' />'.__('Stick topic').'<br /></label>';
         }
@@ -1320,12 +1345,10 @@ class Post
                 // If it's a preview
                 if (Input::post('preview')) {
                     $subscr_checked = (Input::post('subscribe')) ? true : false;
-                }
-                // If auto subscribed
+                } // If auto subscribed
                 elseif (User::get()->auto_notify) {
                     $subscr_checked = true;
-                }
-                // If already subscribed to the topic
+                } // If already subscribed to the topic
                 elseif ($is_subscribed) {
                     $subscr_checked = true;
                 }
@@ -1345,7 +1368,7 @@ class Post
     {
         Container::get('hooks')->fire('model.post.get_checkboxes_start', $can_edit_subject, $is_admmod, $cur_post, $cur_index);
 
-        $checkboxes = array();
+        $checkboxes = [];
 
         if ($can_edit_subject && $is_admmod) {
             if (Input::post('stick_topic') || $cur_post['sticky'] == '1') {
@@ -1383,7 +1406,7 @@ class Post
 
         $post_data = Container::get('hooks')->fire('model.post.topic_review_start', $post_data, $tid);
 
-        $select_topic_review = array('poster', 'message', 'hide_smilies', 'posted');
+        $select_topic_review = ['poster', 'message', 'hide_smilies', 'posted'];
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->select_many($select_topic_review)
                     ->where('topic_id', $tid)
@@ -1391,7 +1414,7 @@ class Post
         $result = Container::get('hooks')->fire('model.post.topic_review_query', $result);
         $result = $result->find_many();
 
-        foreach($result as $cur_post) {
+        foreach ($result as $cur_post) {
             $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
             $post_data[] = $cur_post;
         }

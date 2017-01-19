@@ -13,16 +13,16 @@ use RunBB\Exception\RunBBException;
 
 class Permissions
 {
-    protected $permissions = array(),
-              $parents = array(),
-              $regexs = array();
+    protected $permissions = [],
+              $parents = [],
+              $regexs = [];
 
     public function getParents($gid = null)
     {
         $gid = (int) $gid;
         if ($gid > 0) {
             if (!isset($this->parents[$gid])) {
-                $this->parents[$gid] = array();
+                $this->parents[$gid] = [];
                 $group = \ORM::for_table(ORM_TABLE_PREFIX.'groups')->find_one($gid);
 
                 if (!$group) {
@@ -48,7 +48,7 @@ class Permissions
             throw new RunBBException('Internal error : A group cannot be a parent of itself', 500);
         }
 
-        $parents = ($this->getParents($gid)) ? $this->getParents($gid) : array();
+        $parents = ($this->getParents($gid)) ? $this->getParents($gid) : [];
 
         if (!in_array($new_parent, $parents)) {
             $this->parents[$gid][] = $new_parent;
@@ -70,9 +70,9 @@ class Permissions
             throw new RunBBException('Internal error : A group cannot be a parent of itself', 500);
         }
 
-        $parents = ($this->getParents($gid)) ? $this->getParents($gid) : array();
+        $parents = ($this->getParents($gid)) ? $this->getParents($gid) : [];
 
-        if(($key = array_search($parent, $this->parents[$gid])) !== false) {
+        if (($key = array_search($parent, $this->parents[$gid])) !== false) {
             unset($this->parents[$gid][$key]);
             $result = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
                         ->find_one($gid)
@@ -98,7 +98,6 @@ class Permissions
 
         if (!isset($this->permissions[$gid][$uid])) {
             $this->getUserPermissions($uid);
-
         }
 
         if (!isset($this->permissions[$gid][$uid][$permission])) {
@@ -113,10 +112,10 @@ class Permissions
             }
             $result = \ORM::for_table(ORM_TABLE_PREFIX.'permissions')
                         ->create()
-                        ->set(array(
+                        ->set([
                             'permission_name' => $permission,
                             'user' => $uid,
-                            'allow' => 1))
+                            'allow' => 1])
                         ->save();
             if ($result) {
                 $this->permissions[$gid][$uid][$permission] = true;
@@ -158,11 +157,11 @@ class Permissions
 
             $result = \ORM::for_table(ORM_TABLE_PREFIX.'permissions')
                         ->create()
-                        ->set(array(
+                        ->set([
                             'permission_name' => $permission,
                             'deny' => 1,
                             'user' => $uid
-                        ))
+                        ])
                         ->save();
         }
         return $this;
@@ -195,10 +194,10 @@ class Permissions
         }
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'permissions')
                     ->create()
-                    ->set(array(
+                    ->set([
                         'permission_name' => $permission,
                         'group' => $gid,
-                        'allow' => 1))
+                        'allow' => 1])
                     ->save();
         if ($result) {
             $this->permissions[$gid] = null; // Harsh, but still the fastest way to do
@@ -234,10 +233,10 @@ class Permissions
         }
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'permissions')
                     ->create()
-                    ->set(array(
+                    ->set([
                         'permission_name' => $permission,
                         'group' => $gid,
-                        'deny' => 1))
+                        'deny' => 1])
                     ->save();
         return $this;
     }
@@ -272,9 +271,9 @@ class Permissions
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
 
-        $where = array(
+        $where = [
             ['p.user' => $uid],
-            ['p.group' => $gid]);
+            ['p.group' => $gid]];
 
         if ($parents = $this->getParents($gid)) {
             foreach ($parents as $parent_id) {
@@ -285,12 +284,12 @@ class Permissions
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'permissions')
             ->table_alias('p')
             ->select_many('p.permission_name', 'p.allow', 'p.deny')
-            ->inner_join(ORM_TABLE_PREFIX.'users', array('u.id', '=', $uid), 'u', true)
+            ->inner_join(ORM_TABLE_PREFIX.'users', ['u.id', '=', $uid], 'u', true)
             ->where_any_is($where)
             ->order_by_desc('p.group') // Read groups first to allow user override
             ->find_array();
 
-        $this->permissions[$gid][$uid] = array();
+        $this->permissions[$gid][$uid] = [];
         foreach ($result as $perm) {
             if (!isset($this->permissions[$gid][$uid][$perm['permission_name']])) {
                 if ((bool) $perm['allow']) {
@@ -322,6 +321,6 @@ class Permissions
         } else {
             throw new RunBBException('Internal error : wrong user object type', 500);
         }
-        return array((int) $uid, (int) $gid);
+        return [(int) $uid, (int) $gid];
     }
 }

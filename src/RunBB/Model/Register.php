@@ -64,7 +64,7 @@ class Register
         $lang_antispam_questions = require ForumEnv::get('FORUM_ROOT').'lang/'.User::get()->language.'/antispam.php';
         $question = Input::post('captcha_q') ? trim(Input::post('captcha_q')) : '';
         $answer = Input::post('captcha') ? strtoupper(trim(Input::post('captcha'))) : '';
-        $lang_antispam_questions_array = array();
+        $lang_antispam_questions_array = [];
 
         foreach ($lang_antispam_questions as $k => $v) {
             $lang_antispam_questions_array[md5($k)] = strtoupper($v);
@@ -89,7 +89,7 @@ class Register
         }
 
         // Check if someone else already has registered with that email address
-        $dupe_list = array();
+        $dupe_list = [];
 
         $dupe_mail = \ORM::for_table(ORM_TABLE_PREFIX.'users')
                         ->select('username')
@@ -102,7 +102,7 @@ class Register
                 $user['errors'][] = __('Dupe email');
             }
 
-            foreach($dupe_mail as $cur_dupe) {
+            foreach ($dupe_mail as $cur_dupe) {
                 $dupe_list[] = $cur_dupe['username'];
             }
         }
@@ -175,10 +175,16 @@ class Register
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
                 $mail_message = str_replace('<username>', $user['username'], $mail_message);
                 $mail_message = str_replace('<email>', $user['email1'], $mail_message);
-                $mail_message = str_replace('<profile_url>',
-                    Router::pathFor('userProfile', ['id' => $new_uid]), $mail_message);
-                $mail_message = str_replace('<board_mailer>',
-                    ForumSettings::get('o_board_title'), $mail_message);
+                $mail_message = str_replace(
+                    '<profile_url>',
+                    Router::pathFor('userProfile', ['id' => $new_uid]),
+                    $mail_message
+                );
+                $mail_message = str_replace(
+                    '<board_mailer>',
+                    ForumSettings::get('o_board_title'),
+                    $mail_message
+                );
                 $mail_message = Container::get('hooks')
                     ->fire('model.register.insert_user_banned_mail_message', $mail_message);
 
@@ -202,10 +208,16 @@ class Register
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
                 $mail_message = str_replace('<username>', $user['username'], $mail_message);
                 $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
-                $mail_message = str_replace('<profile_url>',
-                    Router::pathFor('userProfile', ['id' => $new_uid]), $mail_message);
-                $mail_message = str_replace('<board_mailer>',
-                    ForumSettings::get('o_board_title'), $mail_message);
+                $mail_message = str_replace(
+                    '<profile_url>',
+                    Router::pathFor('userProfile', ['id' => $new_uid]),
+                    $mail_message
+                );
+                $mail_message = str_replace(
+                    '<board_mailer>',
+                    ForumSettings::get('o_board_title'),
+                    $mail_message
+                );
                 $mail_message = Container::get('hooks')
                     ->fire('model.register.insert_user_dupe_mail_message', $mail_message);
 
@@ -229,10 +241,16 @@ class Register
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
                 $mail_message = str_replace('<username>', $user['username'], $mail_message);
                 $mail_message = str_replace('<base_url>', Router::pathFor('home'), $mail_message);
-                $mail_message = str_replace('<profile_url>',
-                    Router::pathFor('userProfile', ['id' => $new_uid]), $mail_message);
-                $mail_message = str_replace('<admin_url>',
-                    Router::pathFor('profileSection', ['id' => $new_uid, 'section' => 'admin']), $mail_message);
+                $mail_message = str_replace(
+                    '<profile_url>',
+                    Router::pathFor('userProfile', ['id' => $new_uid]),
+                    $mail_message
+                );
+                $mail_message = str_replace(
+                    '<admin_url>',
+                    Router::pathFor('profileSection', ['id' => $new_uid, 'section' => 'admin']),
+                    $mail_message
+                );
                 $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
                 $mail_message = Container::get('hooks')
                     ->fire('model.register.insert_user_new_mail_message', $mail_message);

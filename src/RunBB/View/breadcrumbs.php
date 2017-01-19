@@ -17,7 +17,7 @@ if (!isset($feather)) {
 
 Container::get('hooks')->fire('view.breadcrumbs.start');
 
-if(!empty($crumbs)): ?>
+if (!empty($crumbs)) : ?>
             <div class="linkst">
                 <div class="inbox">
                     <ul class="crumbs">

@@ -238,16 +238,16 @@ class View
                 $value = $this->validation[$key]($value);
             }
         }
-        return array($key, $value);
+        return [$key, $value];
     }
 
-    public function addAsset($type, $asset, $params = array())
+    public function addAsset($type, $asset, $params = [])
     {
         $type = (string) $type;
-        if (!in_array($type, array('js', 'jsTop', 'css', 'feed', 'canonical', 'prev', 'next'))) {
+        if (!in_array($type, ['js', 'jshead', 'css', 'feed', 'canonical', 'prev', 'next'])) {
             throw new RunBBException('Invalid asset type : ' . $type);
         }
-        if (in_array($type, array('js', 'jsTop', 'css')) && !is_file(ForumEnv::get('WEB_ROOT').$asset)) {
+        if (in_array($type, ['js', 'jshead', 'css']) && !is_file(ForumEnv::get('WEB_ROOT').$asset)) {
             throw new RunBBException('The asset file ' . $asset . ' does not exist');
         }
 
@@ -294,7 +294,7 @@ class View
     public function addMessage($msg, $type = 'info')
     {
         if (Container::get('flash')) {
-            if (in_array($type, array('info', 'error', 'warning', 'success'))) {
+            if (in_array($type, ['info', 'error', 'warning', 'success'])) {
                 Container::get('flash')->addMessage($type, (string) $msg);
             }
         }
@@ -303,7 +303,7 @@ class View
     public function __call($method, $args)
     {
         $method = mb_substr(preg_replace_callback('/([A-Z])/', function ($c) {
-            return "_" . strtolower($c[1]);
+            return '_' . strtolower($c[1]);
         }, $method), 4);
         if (empty($args)) {
             $args = null;
@@ -321,7 +321,7 @@ class View
 
         $title = Container::get('forum_settings') ? ForumSettings::get('o_board_title') : 'RunBB';
 
-        $data = array(
+        $data = [
             'title' => Utils::escape($title),
             'page_number' => null,
             'active_page' => 'index',
@@ -336,7 +336,7 @@ class View
             'fid' => null,
             'pid' => null,
             'tid' => null,
-        );
+        ];
 
         if (is_object(User::get()) && User::get()->is_admmod) {
             $data['has_reports'] = \RunBB\Model\Admin\Reports::has_reports();
@@ -354,21 +354,21 @@ class View
 
     protected static function getDefaultParams($type)
     {
-        switch($type) {
+        switch ($type) {
             case 'js':
-                return array('type' => 'text/javascript');
+                return ['type' => 'text/javascript'];
             case 'css':
-                return array('rel' => 'stylesheet', 'type' => 'text/css');
+                return ['rel' => 'stylesheet', 'type' => 'text/css'];
             case 'feed':
-                return array('rel' => 'alternate', 'type' => 'application/atom+xml');
+                return ['rel' => 'alternate', 'type' => 'application/atom+xml'];
             case 'canonical':
-                return array('rel' => 'canonical');
+                return ['rel' => 'canonical'];
             case 'prev':
-                return array('rel' => 'prev');
+                return ['rel' => 'prev'];
             case 'next':
-                return array('rel' => 'next');
+                return ['rel' => 'next'];
             default:
-                return array();
+                return [];
         }
     }
 }

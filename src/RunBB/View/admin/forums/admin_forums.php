@@ -36,7 +36,7 @@ if (!empty($cat_list)) {
                                         <select name="cat" tabindex="1">
                                             <?php  foreach ($cat_list as $cat) {
                                                 echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cat['id'].'">'.Utils::escape($cat['cat_name']).'</option>'."\n";
-                                            } ?>
+} ?>
                                         </select>
                                         <span><?= __('Add forum help') ?></span>
                                     </td>
@@ -46,7 +46,6 @@ if (!empty($cat_list)) {
                     </fieldset>
                 </div>
 <?php
-
 } else {
     ?>
                 <div class="inform">
@@ -58,7 +57,6 @@ if (!empty($cat_list)) {
                     </fieldset>
                 </div>
 <?php
-
 }
 
 ?>
@@ -73,39 +71,39 @@ if (!empty($forum_data)) {
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
                 <p class="submittop"><input type="submit" name="update_positions" value="<?= __('Update positions') ?>" tabindex="3" /></p>
 <?php
-    foreach ($forum_data as $cat_id => $cat_data) {
-            ?>
-                <div class="inform">
-                    <fieldset>
-                        <legend><?= __('Category subhead') ?> <?= Utils::escape($cat_data['cat_name']) ?></legend>
-                        <div class="infldset">
-                            <table>
-                            <thead>
-                                <tr>
-                                    <th class="tcl"><?= __('Action') ?></th>
-                                    <th class="tc2"><?= __('Position label') ?></th>
-                                    <th class="tcr"><?= __('Forum label') ?></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-<?php
-    foreach ($cat_data['cat_forums'] as $forum) {
-        ?>
-                                <tr>
-                                    <td class="tcl"><a href="<?= Router::pathFor('editForum', ['id' => $forum['forum_id']]) ?>" tabindex="<?= $cur_index++ ?>"><?= __('Edit link') ?></a> | <a href="<?= Router::pathFor('deleteForum', ['id' => $forum['forum_id']]) ?>" tabindex="<?= $cur_index++ ?>"><?= __('Delete link') ?></a></td>
-                                    <td class="tc2"><input type="text" name="position[<?= $forum['forum_id'] ?>]" size="3" maxlength="3" value="<?= $forum['position'] ?>" tabindex="<?= $cur_index++ ?>" /></td>
-                                    <td class="tcr"><strong><?= Utils::escape($forum['forum_name']) ?></strong></td>
-                                </tr>
-<?php
-    }
+foreach ($forum_data as $cat_id => $cat_data) {
     ?>
-                            </tbody>
-                            </table>
-                        </div>
-                    </fieldset>
-                </div>
+        <div class="inform">
+            <fieldset>
+                <legend><?= __('Category subhead') ?> <?= Utils::escape($cat_data['cat_name']) ?></legend>
+                <div class="infldset">
+                    <table>
+                    <thead>
+                        <tr>
+                            <th class="tcl"><?= __('Action') ?></th>
+                            <th class="tc2"><?= __('Position label') ?></th>
+                            <th class="tcr"><?= __('Forum label') ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
 <?php
-    }
+foreach ($cat_data['cat_forums'] as $forum) {
+    ?>
+                            <tr>
+                                <td class="tcl"><a href="<?= Router::pathFor('editForum', ['id' => $forum['forum_id']]) ?>" tabindex="<?= $cur_index++ ?>"><?= __('Edit link') ?></a> | <a href="<?= Router::pathFor('deleteForum', ['id' => $forum['forum_id']]) ?>" tabindex="<?= $cur_index++ ?>"><?= __('Delete link') ?></a></td>
+                                <td class="tc2"><input type="text" name="position[<?= $forum['forum_id'] ?>]" size="3" maxlength="3" value="<?= $forum['position'] ?>" tabindex="<?= $cur_index++ ?>" /></td>
+                                <td class="tcr"><strong><?= Utils::escape($forum['forum_name']) ?></strong></td>
+                            </tr>
+<?php
+}
+?>
+                    </tbody>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+<?php
+}
 ?>
                 <p class="submitend"><input type="submit" name="update_positions" value="<?= __('Update positions') ?>" tabindex="<?= $cur_index++ ?>" /></p>
             </form>
@@ -114,6 +112,6 @@ if (!empty($forum_data)) {
     <div class="clearer"></div>
 </div>
 <?php
-    }
+}
 
 Container::get('hooks')->fire('view.admin.forums.admin_forums.end');

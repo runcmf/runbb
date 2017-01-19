@@ -13,11 +13,10 @@ use RunBB\Exception\RunBBException;
 
 class Preferences
 {
-    protected $preferences = array();
+    protected $preferences = [];
 
     public function __construct()
     {
-
     }
 
     // Add / Update
@@ -45,11 +44,11 @@ class Preferences
             } else {
                 \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
                     ->create()
-                    ->set(array(
+                    ->set([
                         'preference_name' => $pref_name,
                         'preference_value' => $pref_value,
                         'user' => $uid
-                    ))
+                    ])
                     ->save();
             }
             $this->preferences[$gid][$uid][$pref_name] = $pref_value;
@@ -79,11 +78,11 @@ class Preferences
             } else {
                 \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
                     ->create()
-                    ->set(array(
+                    ->set([
                         'preference_name' => (string) $pref_name,
                         'preference_value' => (string) $pref_value,
                         'group' => $gid
-                    ))
+                    ])
                     ->save();
             }
             unset($this->preferences[$gid]);
@@ -109,11 +108,11 @@ class Preferences
             } else {
                 \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
                     ->create()
-                    ->set(array(
+                    ->set([
                         'preference_name' => (string) $pref_name,
                         'preference_value' => (string) $pref_value,
                         'default' => 1
-                    ))
+                    ])
                     ->save();
             }
             unset($this->preferences);
@@ -219,16 +218,16 @@ class Preferences
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
                     ->table_alias('p')
-                    ->where_any_is(array(
-                        array('p.user' => $uid),
-                        array('p.group' => $gid),
-                        array('p.default' => 1),
-                    ))
+                    ->where_any_is([
+                        ['p.user' => $uid],
+                        ['p.group' => $gid],
+                        ['p.default' => 1],
+                    ])
                     ->order_by_desc('p.default')
                     ->order_by_asc('p.user')
                     ->find_array();
 
-        $this->preferences[$gid][$uid] = array();
+        $this->preferences[$gid][$uid] = [];
         foreach ($result as $pref) {
             $this->preferences[$gid][$uid][(string) $pref['preference_name']] = $pref['preference_value'];
         }
@@ -250,6 +249,6 @@ class Preferences
         } else {
             throw new RunBBException('Internal error : wrong user object type', 500);
         }
-        return array((int) $uid, (int) $gid);
+        return [(int) $uid, (int) $gid];
     }
 }

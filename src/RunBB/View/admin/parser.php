@@ -36,7 +36,7 @@ Container::get('hooks')->fire('view.admin.parser.start');
                                     <th scope="row"><?= $lang_admin_parser['textile'] ?></th>
                                     <td colspan="2">
                                         <input type="radio" name="config[textile]" value="1"<?php if ($config['textile']) {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="config[textile]" value="0"<?php if (!$config['textile']) {
     echo ' checked="checked"';
 } ?> /> <strong><?= __('No') ?></strong>
@@ -49,7 +49,7 @@ Container::get('hooks')->fire('view.admin.parser.start');
                                     <th scope="row"><?= $lang_admin_parser['quote_links'] ?></th>
                                     <td colspan="2">
                                         <input type="radio" name="config[quote_links]" value="1"<?php if ($config['quote_links']) {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="config[quote_links]" value="0"<?php if (!$config['quote_links']) {
     echo ' checked="checked"';
 } ?> /> <strong><?= __('No') ?></strong>
@@ -62,7 +62,7 @@ Container::get('hooks')->fire('view.admin.parser.start');
                                     <th scope="row"><?= $lang_admin_parser['quote_imgs'] ?></th>
                                     <td colspan="2">
                                         <input type="radio" name="config[quote_imgs]" value="1"<?php if ($config['quote_imgs']) {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="config[quote_imgs]" value="0"<?php if (!$config['quote_imgs']) {
     echo ' checked="checked"';
 } ?> /> <strong><?= __('No') ?></strong>
@@ -75,7 +75,7 @@ Container::get('hooks')->fire('view.admin.parser.start');
                                     <th scope="row"><?= $lang_admin_parser['click_imgs'] ?></th>
                                     <td colspan="2">
                                         <input type="radio" name="config[click_imgs]" value="1"<?php if ($config['click_imgs']) {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="config[click_imgs]" value="0"<?php if (!$config['click_imgs']) {
     echo ' checked="checked"';
 } ?> /> <strong><?= __('No') ?></strong>
@@ -89,12 +89,12 @@ Container::get('hooks')->fire('view.admin.parser.start');
                                     <th scope="row"><?= $lang_admin_parser['valid_imgs'] ?></th>
                                     <td colspan="2">
                                         <input type="radio" name="config[valid_imgs]" value="1"<?php if ($config['valid_imgs']) {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } if (!ini_get('allow_url_fopen')) {
     echo(' disabled="disabled" title="'. Utils::escape($lang_admin_parser['unavailable']) .'"');
 } ?> /> <strong><?= __('Yes') ?></strong>
                                         <input type="radio" name="config[valid_imgs]" value="0"<?php if (!$config['valid_imgs']) {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } if (!ini_get('allow_url_fopen')) {
     echo(' disabled="disabled" title="'. Utils::escape($lang_admin_parser['unavailable']) .'"');
 } ?> /> <strong><?= __('No') ?></strong>
@@ -105,7 +105,7 @@ Container::get('hooks')->fire('view.admin.parser.start');
                                     <th scope="row"><?= $lang_admin_parser['max_size'] ?></th>
                                     <td colspan="2">
                                         <input type="text" name="config[max_size]" size="10" maxlength="8" value="<?php echo($config['max_size'])?>"<?php if (!ini_get('allow_url_fopen')) {
-    echo(' disabled="disabled" title="'. Utils::escape($lang_admin_parser['unavailable']) .'"');
+                                            echo(' disabled="disabled" title="'. Utils::escape($lang_admin_parser['unavailable']) .'"');
 } ?> />
                                     </td>
                                     <td><span><?= $lang_admin_parser['max_size help'] ?></span></td>
@@ -163,36 +163,35 @@ Container::get('hooks')->fire('view.admin.parser.start');
                             </thead>
                             <tbody>
 <?php
-    foreach ($smilies as $key => $value) {
-        $i++;
-        $oldfile = $value['file'];
-        ?>
-                                <tr>
-                                    <td><input type="text" name="smiley_text[<?php echo($i);
+foreach ($smilies as $key => $value) {
+    $i++;
+    $oldfile = $value['file'];
+    ?>
+                        <tr>
+                            <td><input type="text" name="smiley_text[<?php echo($i);
         ?>]" value="<?php echo(Utils::escape($key));
-        ?>" size="20" maxlength="80" /></td>
-                                    <td>
-                                        <select name="smiley_file[<?php echo($i);
+?>" size="20" maxlength="80" /></td>
+                            <td>
+                                <select name="smiley_file[<?php echo($i);
         ?>]">
 <?php
-        foreach ($smiley_files as $file) {
-            if ($file === $oldfile) {
-                echo("\t\t\t\t\t\t\t\t\t\t\t<option selected=\"selected\">" . $file . "</option>\n");
-            } else {
-                echo("\t\t\t\t\t\t\t\t\t\t\t<option>" . $file . "</option>\n");
-            }
-        }
-        ?>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <?php echo($value['html']);
-        ?>
-                                    </td>
-                                </tr>
-<?php
-
+foreach ($smiley_files as $file) {
+    if ($file === $oldfile) {
+        echo("\t\t\t\t\t\t\t\t\t\t\t<option selected=\"selected\">" . $file . "</option>\n");
+    } else {
+        echo("\t\t\t\t\t\t\t\t\t\t\t<option>" . $file . "</option>\n");
     }
+}
+?>
+                                </select>
+                            </td>
+                            <td>
+                                <?php echo($value['html']);
+        ?>
+                            </td>
+                        </tr>
+<?php
+}
 ?>
                                 <tr>
                                     <td><input type="text" name="smiley_text[<?php echo(++$i); ?>]" value="" size="20" maxlength="80" /><br />New smiley text</td>
@@ -200,9 +199,9 @@ Container::get('hooks')->fire('view.admin.parser.start');
                                         <select name="smiley_file[<?php echo($i); ?>]">
                                             <option selected="selected">select new file</option>
 <?php
-        foreach ($smiley_files as $file) {
-            echo("\t\t\t\t\t\t\t\t\t\t\t<option>" . $file . "</option>\n");
-        }
+foreach ($smiley_files as $file) {
+    echo("\t\t\t\t\t\t\t\t\t\t\t<option>" . $file . "</option>\n");
+}
 ?>
                                         </select><br /><?php echo($lang_admin_parser['New smiley image']); ?>
                                     </td>
@@ -210,18 +209,18 @@ Container::get('hooks')->fire('view.admin.parser.start');
                                 </tr>
                                 <tr>
                                     <th scope="row"><?php echo($lang_admin_parser['smiley_upload']); ?></th>
- <?php if (ini_get('file_uploads')) {
+    <?php if (ini_get('file_uploads')) {
     ?>
                                     <td><input type="hidden" name="MAX_FILE_SIZE" value="<?= ForumSettings::get('o_avatars_size') ?>" />
                                         <input type="file" name="new_smiley" id="upload_smiley" /></td>
                                     <td><input type="submit" name="upload" value="<?php echo($lang_admin_parser['upload_button']);
     ?>" /></td>
-<?php 
+<?php
 } else {
     ?>
                                     <td colspan="2"><?php echo($lang_admin_parser['upload_off']);
     ?></td>
-<?php 
+<?php
 } ?>
                                 </tr>
                             </tbody>
@@ -259,31 +258,31 @@ foreach ($bbcd as $tagname => $tagdata) {
     ?>"><?php echo('['. $tagname .']') ?></th>
                                     <td>
                                         <input type="radio" name="<?php echo($tagname) ?>_in_post" value="1"<?php if ($bbcd[$tagname]['in_post']) {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 }
     ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="<?php echo($tagname) ?>_in_post" value="0"<?php if (!$bbcd[$tagname]['in_post']) {
     echo ' checked="checked"';
-}
+    }
     ?> /> <strong><?= __('No') ?></strong>
                                     </td>
                                     <td>
                                         <input type="radio" name="<?php echo($tagname) ?>_in_sig" value="1"<?php if ($bbcd[$tagname]['in_sig']) {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 }
     ?> /> <strong><?= __('Yes') ?></strong>   <input type="radio" name="<?php echo($tagname) ?>_in_sig" value="0"<?php if (!$bbcd[$tagname]['in_sig']) {
     echo ' checked="checked"';
-}
+    }
     ?> /> <strong><?= __('No') ?></strong>
                                     </td>
                                     <td>
                                         <input type="text" size="10" name="<?php echo($tagname) ?>_depth_max" value="<?php echo($bbcd[$tagname]['depth_max']);
     ?>" <?php if ($tagdata['html_type'] === 'inline' || $tagdata['tag_type'] === 'hidden') {
     echo(' disabled="disabled" style="display: none;"');
-}
+    }
     ?> />
                                     </td>
                                 </tr>
-<?php 
+<?php
 } ?>
                             </tbody>
                             </table>

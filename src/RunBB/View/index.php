@@ -16,7 +16,7 @@ if (!isset($feather)) {
 
 Container::get('hooks')->fire('view.index.start');
 
-if (empty($index_data)): ?>
+if (empty($index_data)) : ?>
     <div id="idx0" class="block"><div class="box"><div class="inbox"><p><?= __('Empty board') ?></p></div></div></div>
 <?php endif;
 foreach ($index_data as $forum) {
@@ -28,7 +28,7 @@ foreach ($index_data as $forum) {
         </div>
     </div>
     </div>
-    <?php endif;
+    <?php                                                                                                                                                                                                                 endif;
     ?>
     <div id="idx<?= $forum->cid ?>" class="blocktable">
     <h2><span><?= Utils::escape($forum->cat_name) ?></span></h2>
@@ -62,7 +62,6 @@ foreach ($index_data as $forum) {
                     <td class="tcr"><?= $forum->last_post_formatted ?></td>
                 </tr>
     <?php
-
 }
 if ($cur_cat > 0) :
     ?>

@@ -6,7 +6,7 @@ use RunBB\Core\Utils;
             <h2><span><?= __('Move conversations', 'private_messages') ?></span></h2>
             <div class="box">
                 <form method="post" action="">
-                    <input type="hidden" name="topics" value="<?= implode(",",$topics); ?>" />
+                    <input type="hidden" name="topics" value="<?= implode(",", $topics); ?>" />
                     <input name="move_comply" value="1" type="hidden" />
                     <input name="action" value="move" type="hidden" />
                     <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
@@ -16,7 +16,10 @@ use RunBB\Core\Utils;
                             <div class="infldset">
                                 <label><?= __('Move to'); ?><br>
                                     <select name="move_to">
-                                        <?php foreach ($inboxes as $key => $inbox): if($key == 1) continue; ?>
+                                        <?php foreach ($inboxes as $key => $inbox) :
+                                            if ($key == 1) {
+                                                continue;
+                                            } ?>
                                             <option value="<?= $key ?>"><?= Utils::escape($inbox['name']); ?></option>
                                         <?php endforeach; ?>
                                     </select>

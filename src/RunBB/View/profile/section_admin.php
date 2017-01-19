@@ -26,61 +26,58 @@ Container::get('hooks')->fire('view.profile.section_admin.start');
                     <fieldset>
 <?php
 
-        if (User::get()->g_moderator == '1') {
-            ?>
-                        <legend><?= __('Delete ban legend') ?></legend>
-                        <div class="infldset">
-                            <p><input type="submit" name="ban" value="<?= __('Ban user') ?>" /></p>
-                        </div>
-                    </fieldset>
-                </div>
+if (User::get()->g_moderator == '1') {
+    ?>
+        <legend><?= __('Delete ban legend') ?></legend>
+        <div class="infldset">
+            <p><input type="submit" name="ban" value="<?= __('Ban user') ?>" /></p>
+        </div>
+    </fieldset>
+</div>
 <?php
-
-        } else {
-            if (User::get()->id != $id) {
-                ?>
-                        <legend><?= __('Group membership legend') ?></legend>
-                        <div class="infldset">
-                            <select id="group_id" name="group_id">
-                                                            <?= $group_list ?>
-                            </select>
-                            <input type="submit" name="update_group_membership" value="<?= __('Save') ?>" />
-                        </div>
-                    </fieldset>
+} else {
+    if (User::get()->id != $id) {
+        ?>
+                <legend><?= __('Group membership legend') ?></legend>
+                <div class="infldset">
+                    <select id="group_id" name="group_id">
+                                                    <?= $group_list ?>
+                    </select>
+                    <input type="submit" name="update_group_membership" value="<?= __('Save') ?>" />
+                </div>
+            </fieldset>
                 </div>
                 <div class="inform">
-                    <fieldset>
+            <fieldset>
+<?php
+    }
+
+    ?>
+        <legend><?= __('Delete ban legend') ?></legend>
+        <div class="infldset">
+            <input type="submit" name="delete_user" value="<?= __('Delete user') ?>" /> <input type="submit" name="ban" value="<?= __('Ban user') ?>" />
+        </div>
+    </fieldset>
+</div>
 <?php
 
-            }
-
-            ?>
-                        <legend><?= __('Delete ban legend') ?></legend>
-                        <div class="infldset">
-                            <input type="submit" name="delete_user" value="<?= __('Delete user') ?>" /> <input type="submit" name="ban" value="<?= __('Ban user') ?>" />
-                        </div>
-                    </fieldset>
-                </div>
+if ($user->g_moderator == '1' || $user->g_id == ForumEnv::get('FEATHER_ADMIN')) {
+    ?>
+    <div class="inform">
+<fieldset>
+    <legend><?= __('Set mods legend') ?></legend>
+    <div class="infldset">
+        <p><?= __('Moderator in info') ?></p>
+                                    <?= $forum_list ?>
+            </div>
+        </div>
+        <br class="clearb" /><input type="submit" name="update_forums" value="<?= __('Update forums') ?>" />
+    </div>
+</fieldset>
+        </div>
 <?php
-
-            if ($user->g_moderator == '1' || $user->g_id == ForumEnv::get('FEATHER_ADMIN')) {
-                ?>
-                <div class="inform">
-                    <fieldset>
-                        <legend><?= __('Set mods legend') ?></legend>
-                        <div class="infldset">
-                            <p><?= __('Moderator in info') ?></p>
-                                                        <?= $forum_list ?>
-                                </div>
-                            </div>
-                            <br class="clearb" /><input type="submit" name="update_forums" value="<?= __('Update forums') ?>" />
-                        </div>
-                    </fieldset>
-                </div>
-<?php
-
-            }
-        }
+}
+}
 
 ?>
             </form>

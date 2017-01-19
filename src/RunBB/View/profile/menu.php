@@ -21,31 +21,33 @@ Container::get('hooks')->fire('view.profile.menu.start');
             <div class="inbox">
                 <ul>
                     <li<?php if ($page == 'essentials') {
-    echo ' class="isactive"';
+                        echo ' class="isactive"';
 }
     ?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'essentials']) ?>"><?= __('Section essentials') ?></a></li>
                     <li<?php if ($page == 'personal') {
-    echo ' class="isactive"';
+                        echo ' class="isactive"';
 }
     ?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'personal']) ?>"><?= __('Section personal') ?></a></li>
                     <li<?php if ($page == 'messaging') {
-    echo ' class="isactive"';
+                        echo ' class="isactive"';
 }
     ?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'messaging']) ?>"><?= __('Section messaging') ?></a></li>
-<?php if (ForumSettings::get('o_avatars') == '1' || ForumSettings::get('o_signatures') == '1'): ?>                    <li<?php if ($page == 'personality') {
+<?php if (ForumSettings::get('o_avatars') == '1' || ForumSettings::get('o_signatures') == '1') :
+?>                    <li<?php if ($page == 'personality') {
     echo ' class="isactive"';
 }
     ?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'personality']) ?>"><?= __('Section personality') ?></a></li>
 <?php endif;
     ?>                    <li<?php if ($page == 'display') {
     echo ' class="isactive"';
-}
+    }
     ?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'display']) ?>"><?= __('Section display') ?></a></li>
                     <li<?php if ($page == 'privacy') {
-    echo ' class="isactive"';
+                        echo ' class="isactive"';
 }
     ?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'privacy']) ?>"><?= __('Section privacy') ?></a></li>
-<?php if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && User::get()->g_mod_ban_users == '1')): ?>                    <li<?php if ($page == 'admin') {
+<?php if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' && User::get()->g_mod_ban_users == '1')) :
+?>                    <li<?php if ($page == 'admin') {
     echo ' class="isactive"';
 }
     ?>><a href="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'admin']) ?>"><?= __('Section admin') ?></a></li>

@@ -41,7 +41,7 @@ class Plugins
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_AUTOREFERER, true);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER,true);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
@@ -57,7 +57,7 @@ class Plugins
 
         $zip = new ZipArchive;
 
-        if($zip->open($zipFile) != true){
+        if ($zip->open($zipFile) != true) {
             throw new  RunBBException(__('Bad request'), 400);
         }
 
@@ -76,24 +76,23 @@ class Plugins
     {
         Container::get('hooks')->fire('controller.admin.plugins.index');
 
-        View::addAsset('js', 'style/imports/common.js', array('type' => 'text/javascript'));
+        View::addAsset('js', 'style/imports/common.js', ['type' => 'text/javascript']);
 
         $availablePlugins = Lister::getPlugins();
-        $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : array();
+        $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : [];
 
         $officialPlugins = [];//Lister::getOfficialPlugins();
 
         AdminUtils::generateAdminMenu('plugins');
 
-        View::setPageInfo(array(
+        View::setPageInfo([
             'admin_console' => true,
             'active_page' => 'admin',
             'availablePlugins'    =>    $availablePlugins,
             'activePlugins'    =>    $activePlugins,
             'officialPlugins'    =>    $officialPlugins,
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')),
-            )
-        )->addTemplate('admin/plugins.php')->display();
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')],
+            ])->addTemplate('admin/plugins.php')->display();
     }
 
     public function activate($req, $res, $args)
@@ -119,7 +118,7 @@ class Plugins
 
         $this->model->deactivate($args['name']);
         // // Plugin has been deactivated, confirm and redirect
-        return Router::redirect(Router::pathFor('adminPlugins'), array('warning', 'Plugin deactivated!'));
+        return Router::redirect(Router::pathFor('adminPlugins'), ['warning', 'Plugin deactivated!']);
     }
 
     public function uninstall($req, $res, $args)
@@ -132,7 +131,7 @@ class Plugins
 
         $this->model->uninstall($args['name']);
         // Plugin has been deactivated, confirm and redirect
-        return Router::redirect(Router::pathFor('adminPlugins'), array('warning', 'Plugin uninstalled!'));
+        return Router::redirect(Router::pathFor('adminPlugins'), ['warning', 'Plugin uninstalled!']);
     }
 
     /**
@@ -146,8 +145,8 @@ class Plugins
         // camel case
         $formattedPluginName = //lcfirst(
             str_replace(' ', '', ucwords(
-            str_replace(['-', '_'], ' ', $args['name'])
-        ));
+                str_replace(['-', '_'], ' ', $args['name'])
+            ));
 //        );
         // TODO plugins from composer with any namespaces
         $new = "\\RunBB\\Plugins\\Controller\\".$formattedPluginName;
@@ -157,15 +156,11 @@ class Plugins
             if (method_exists($plugin, 'info')) {
                 AdminUtils::generateAdminMenu($args['name']);
                 return $plugin->info($req, $res, $args);
-            }
-            else {
+            } else {
                 throw new  RunBBException(__('Bad request'), 400);
             }
-        }
-        else {
+        } else {
             throw new  RunBBException(__('Bad request'), 400);
         }
-
     }
-
 }

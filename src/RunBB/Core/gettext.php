@@ -24,12 +24,11 @@
 function translate($mofile, $domain = 'RunBB', $path = false)
 {
     $lng = (!User::get(null)) ? 'English' : User::get()->language;
-    // FIXME while debug used .po
+    // FIXME while debug .po used
     if (!$path) {
 //        $mofile = ForumEnv::get('FORUM_ROOT').'lang/'. $lng .'/'.$mofile.'.mo';
         $mofile = ForumEnv::get('FORUM_ROOT') . 'lang/' . $lng . '/' . $mofile . '.po';
-    }
-    else {
+    } else {
 //        $mofile = $path.'/'. $lng .'/'.$mofile.'.mo';
         $mofile = $path.'/'.$lng.'/'.$mofile.'.po';
     }
@@ -42,11 +41,3 @@ function translate($mofile, $domain = 'RunBB', $path = false)
 
     return true;
 }
-
-
-// FIXME rebuild to __()
-//function _e($text, $domain = 'RunBB')
-//{
-//    echo Container::get('lang')->gettext($text, $domain);
-//}
-

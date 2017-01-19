@@ -23,15 +23,15 @@ if (!isset($feather)) {
                         <div class="inbox">
                             <ul>
 <?php
-if(!empty($inboxes)):
+if (!empty($inboxes)) :
     $totalMsg = 0;
-    foreach ($inboxes as $iid => $inbox):
+    foreach ($inboxes as $iid => $inbox) :
         $totalMsg += $inbox['nb_msg'];
 ?>
                                     <li<?= ($page == $inbox['name']) ? ' class="isactive"' : ''; ?>>
                                         <a href="<?= Router::pathFor('Conversations.home', ['inbox_id' => $iid]) ?>"><?= Utils::escape($inbox['name']) ?><?= (intval($inbox['nb_msg']) > 0) ? ' ('.$inbox['nb_msg'].')' : ''; ?></a>
                                     </li>
-<?php endforeach;
+<?php                                                                                                         endforeach;
 endif; ?>
                             </ul>
                         </div>

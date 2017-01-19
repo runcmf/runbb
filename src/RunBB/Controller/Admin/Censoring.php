@@ -27,27 +27,22 @@ class Censoring
         // Add a censor word
         if (Input::post('add_word')) {
             return $this->model->add_word();
-        }
-
-        // Update a censor word
+        } // Update a censor word
         elseif (Input::post('update')) {
             return $this->model->update_word();
-        }
-
-        // Remove a censor word
+        } // Remove a censor word
         elseif (Input::post('remove')) {
             return $this->model->remove_word();
         }
 
         AdminUtils::generateAdminMenu('censoring');
 
-        return View::setPageInfo(array(
-                'title'    =>    array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Censoring')),
-                'focus_element'    =>    array('censoring', 'new_search_for'),
+        return View::setPageInfo([
+                'title'    =>    [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Censoring')],
+                'focus_element'    =>    ['censoring', 'new_search_for'],
                 'active_page'    =>    'admin',
                 'admin_console'    =>    true,
                 'word_data'    =>    $this->model->get_words(),
-            )
-        )->addTemplate('admin/censoring.php')->display();
+            ])->addTemplate('admin/censoring.php')->display();
     }
 }

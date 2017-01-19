@@ -2,7 +2,7 @@
             <h2><span><?= __('Warning') ?></span></h2>
             <div class="box">
                 <form method="post" action="">
-                    <input type="hidden" name="topics" value="<?= implode(",",$topics); ?>" />
+                    <input type="hidden" name="topics" value="<?= implode(",", $topics); ?>" />
                     <input name="delete_comply" value="1" type="hidden" />
                     <input name="action" value="delete" type="hidden" />
                     <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">

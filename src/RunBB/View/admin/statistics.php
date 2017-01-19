@@ -26,7 +26,8 @@ Container::get('hooks')->fire('view.admin.statistics.start');
                     <dd>
                         <?php printf(__('Server load data')."\n", $server_load, $num_online) ?>
                     </dd>
-<?php if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')): ?>                    <dt><?= __('Environment label') ?></dt>
+<?php if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) :
+?>                    <dt><?= __('Environment label') ?></dt>
                     <dd>
                         <?php printf(__('Environment data OS'), PHP_OS) ?><br />
                         <?php printf(__('Environment data version'), phpversion(), '<a href="'.Router::pathFor('phpInfo').'">'.__('Show info').'</a>') ?><br />
@@ -34,7 +35,8 @@ Container::get('hooks')->fire('view.admin.statistics.start');
                     </dd>
                     <dt><?= __('Database label') ?></dt>
                     <dd>
-<?php if (isset($total_records) && isset($total_size)): ?>                        <?php printf(__('Database data rows')."\n", Utils::forum_number_format($total_records)) ?>
+<?php if (isset($total_records) && isset($total_size)) :
+?>                        <?php printf(__('Database data rows')."\n", Utils::forum_number_format($total_records)) ?>
                         <br /><?php printf(__('Database data size')."\n", $total_size) ?>
 <?php endif; ?>                    </dd>
 <?php endif; ?>

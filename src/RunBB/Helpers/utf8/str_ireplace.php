@@ -21,7 +21,7 @@
 * @package utf8
 * @subpackage strings
 */
-function utf8_ireplace($search, $replace, $str, $count=null)
+function utf8_ireplace($search, $replace, $str, $count = null)
 {
     if (!is_array($search)) {
         $slen = strlen($search);

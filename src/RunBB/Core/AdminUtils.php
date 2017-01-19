@@ -21,12 +21,11 @@ class AdminUtils
         // See if there are any plugins that want to display in the menu
         $plugins = self::adminPluginsMenu($is_admin);
 
-        \View::setPageInfo(array(
+        \View::setPageInfo([
             'page'    =>    $page,
             'is_admin'    =>    $is_admin,
             'plugins'    =>    $plugins,
-            ), 1
-        )->addTemplate('admin/menu.php');
+            ], 1)->addTemplate('admin/menu.php');
     }
 
     /**
@@ -59,12 +58,15 @@ class AdminUtils
     /**
      * Delete a folder and all its content
      */
-    public static function delete_folder($dirPath) {
+    public static function delete_folder($dirPath)
+    {
         $it = new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::SKIP_DOTS);
-        $files = new RecursiveIteratorIterator($it,
-            RecursiveIteratorIterator::CHILD_FIRST);
-        foreach($files as $file) {
-            if ($file->isDir()){
+        $files = new RecursiveIteratorIterator(
+            $it,
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+        foreach ($files as $file) {
+            if ($file->isDir()) {
                 rmdir($file->getRealPath());
             } else {
                 unlink($file->getRealPath());

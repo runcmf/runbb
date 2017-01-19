@@ -22,17 +22,20 @@ Container::get('hooks')->fire('view.profile.section_personality.start');
         <form id="profile4" method="post" action="<?= Router::pathFor('profileSection', ['id' => $id, 'section' => 'personality']) ?>">
             <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
             <div><input type="hidden" name="form_sent" value="1" /></div>
-<?php if (ForumSettings::get('o_avatars') == '1'): ?>                <div class="inform">
+<?php if (ForumSettings::get('o_avatars') == '1') :
+?>                <div class="inform">
                 <fieldset id="profileavatar">
                     <legend><?= __('Avatar legend') ?></legend>
                     <div class="infldset">
-<?php if ($user_avatar): ?>                            <div class="useravatar"><?= $user_avatar ?></div>
+<?php if ($user_avatar) :
+?>                            <div class="useravatar"><?= $user_avatar ?></div>
 <?php endif; ?>                            <p><?= __('Avatar info') ?></p>
                         <p class="clearb actions"><?= $avatar_field ?></p>
                     </div>
                 </fieldset>
             </div>
-<?php endif; if (ForumSettings::get('o_signatures') == '1'): ?>                <div class="inform">
+<?php endif; if (ForumSettings::get('o_signatures') == '1') :
+?>                <div class="inform">
                 <fieldset>
                     <legend><?= __('Signature legend') ?></legend>
                     <div class="infldset">

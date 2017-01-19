@@ -25,8 +25,8 @@ class Censoring
             throw new  RunBBException(__('Must enter word message'), 400);
         }
 
-        $set_search_word = array('search_for' => $search_for,
-                                'replace_with' => $replace_with);
+        $set_search_word = ['search_for' => $search_for,
+                                'replace_with' => $replace_with];
 
         $set_search_word = Container::get('hooks')->fire('model.admin.censoring.add_censoring_word_data', $set_search_word);
 
@@ -53,8 +53,8 @@ class Censoring
             throw new  RunBBException(__('Must enter word message'), 400);
         }
 
-        $set_search_word = array('search_for' => $search_for,
-                                'replace_with' => $replace_with);
+        $set_search_word = ['search_for' => $search_for,
+                                'replace_with' => $replace_with];
 
         $set_search_word = Container::get('hooks')->fire('model.admin.censoring.update_censoring_word_start', $set_search_word);
 
@@ -83,12 +83,12 @@ class Censoring
         Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
         Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
 
-        return Router::redirect(Router::pathFor('adminCensoring'),  __('Word removed redirect'));
+        return Router::redirect(Router::pathFor('adminCensoring'), __('Word removed redirect'));
     }
 
     public function get_words()
     {
-        $word_data = array();
+        $word_data = [];
 
         $word_data = \ORM::for_table(ORM_TABLE_PREFIX.'censoring')
                         ->order_by_asc('id');

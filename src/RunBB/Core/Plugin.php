@@ -21,7 +21,7 @@ class Plugin
     public function getActivePlugins()
     {
         $activePlugins = Container::get('cache')->isCached('activePlugins') ?
-            Container::get('cache')->retrieve('activePlugins') : array();
+            Container::get('cache')->retrieve('activePlugins') : [];
 
         return $activePlugins;
     }
@@ -129,10 +129,10 @@ class Plugin
             return $class;
         }
         // check new system
-        if(array_key_exists($plugin, ForumEnv::get('SLIM_SETTINGS')['plugins'])) {
+        if (array_key_exists($plugin, ForumEnv::get('SLIM_SETTINGS')['plugins'])) {
             $class = ForumEnv::get('SLIM_SETTINGS')['plugins'][$plugin];
             // check class registered
-            if(class_exists($class)) {
+            if (class_exists($class)) {
                 $class = new $class($this->c);
                 return $class;
             }
@@ -144,8 +144,11 @@ class Plugin
     // Clean a Simple Plugin's parent folder name to load it
     protected function getNamespace($path)
     {
-        return str_replace(" ", "", str_replace("/", "\\", ucwords(str_replace('-', ' ',
-            str_replace('/ ', '/', ucwords(str_replace('/', '/ ', $path)))))));
+        return str_replace(" ", "", str_replace("/", "\\", ucwords(str_replace(
+            '-',
+            ' ',
+            str_replace('/ ', '/', ucwords(str_replace('/', '/ ', $path)))
+        ))));
     }
 
     // For plugins that don't need to provide a Composer autoloader, check if it can be loaded
@@ -154,5 +157,4 @@ class Plugin
         return ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $plugin .
             DIRECTORY_SEPARATOR . $this->getNamespace($plugin) . '.php';
     }
-
 }

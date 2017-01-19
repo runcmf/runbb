@@ -76,7 +76,7 @@ class MO extends GettextTranslations
     {
         $entries = array_filter(
             $this->entries,
-            array($this, 'is_entry_good_for_export')
+            [$this, 'is_entry_good_for_export']
         );
         ksort($entries);
         $magic = 0x950412de;
@@ -88,15 +88,15 @@ class MO extends GettextTranslations
         $hash_addr = $translations_lenghts_addr + 8 * $total;
         $current_addr = $hash_addr;
         fwrite($fh, pack(
-                'V*',
-                $magic,
-                $revision,
-                $total,
-                $originals_lenghts_addr,
-                $translations_lenghts_addr,
-                $size_of_hash,
-                $hash_addr
-            ));
+            'V*',
+            $magic,
+            $revision,
+            $total,
+            $originals_lenghts_addr,
+            $translations_lenghts_addr,
+            $size_of_hash,
+            $hash_addr
+        ));
         fseek($fh, $originals_lenghts_addr);
 
         // headers' msgid is an empty string
@@ -117,8 +117,8 @@ class MO extends GettextTranslations
         fwrite($fh, pack(
             'VV',
             $reader->strlen($exported_headers),
-            $current_addr)
-        );
+            $current_addr
+        ));
         $current_addr += strlen($exported_headers) + 1;
         $translations_table = $exported_headers . chr(0);
 
@@ -280,7 +280,8 @@ class MO extends GettextTranslations
      *                            0x00 as a plural translations separator
      * @retrun EntryTranslations New entry
      */
-    public static function &make_entry($original, $translation) {
+    public static function &make_entry($original, $translation)
+    {
         $entry = new EntryTranslations();
         // look for context
         $parts = explode(chr(4), $original);

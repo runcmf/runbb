@@ -56,6 +56,7 @@
 -----------------------------------------------------------------------------*/
 
 namespace RunBB;
+
 use RunBB\Core\Cache;
 use RunBB\Core\Url;
 use RunBB\Core\Utils;
@@ -75,9 +76,9 @@ require 'vendor/autoload.php';
 $feather = new \Slim\App();
 $feather->add(new \RunBB\Middleware\Csrf());
 
-$feather_settings = array('config_file' => 'RunBB/config.php',
+$feather_settings = ['config_file' => 'RunBB/config.php',
     'cache_dir' => 'cache/',
-    'debug' => 'all'); // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
+    'debug' => 'all']; // 3 levels : false, info (only execution time and number of queries), and all (display info + queries)
 $feather->add(new \RunBB\Middleware\Auth());
 $feather->add(new \RunBB\Middleware\Core($feather_settings));
 
@@ -142,14 +143,14 @@ function set_default_user()
     $remote_addr = Utils::getIp();
 
     // Fetch guest user
-    $select_set_default_user = array('u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search');
-    $where_set_default_user = array('u.id' => '1');
+    $select_set_default_user = ['u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search'];
+    $where_set_default_user = ['u.id' => '1'];
 
     $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')
         ->table_alias('u')
         ->select_many($select_set_default_user)
-        ->inner_join(ORM_TABLE_PREFIX.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
-        ->left_outer_join(ORM_TABLE_PREFIX.'online', array('o.ident', '=', $remote_addr), 'o', true)
+        ->inner_join(ORM_TABLE_PREFIX.'groups', ['u.group_id', '=', 'g.g_id'], 'g')
+        ->left_outer_join(ORM_TABLE_PREFIX.'online', ['o.ident', '=', $remote_addr], 'o', true)
         ->where($where_set_default_user)
         ->find_result_set();
 
@@ -171,11 +172,11 @@ function set_default_user()
             case 'mysqli_innodb':
             case 'sqlite':
             case 'sqlite3':
-                \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', array(':ident' => $remote_addr, ':logged' => User::get()->logged));
+                \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)', [':ident' => $remote_addr, ':logged' => User::get()->logged]);
                 break;
 
             default:
-                \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE ident=:ident)', array(':ident' => $remote_addr, ':logged' => User::get()->logged));
+                \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ForumSettings::get('db_prefix').'online WHERE ident=:ident)', [':ident' => $remote_addr, ':logged' => User::get()->logged]);
                 break;
         }
     } else {
@@ -203,24 +204,24 @@ function set_default_user()
 function authenticate_user($user, $password, $password_is_hash = false)
 {
     // Check if there's a user matching $user and $password
-    $select_check_cookie = array('u.*', 'g.*', 'o.logged', 'o.idle');
+    $select_check_cookie = ['u.*', 'g.*', 'o.logged', 'o.idle'];
 
     $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')
                 ->table_alias('u')
                 ->select_many($select_check_cookie)
-                ->inner_join(ORM_TABLE_PREFIX.'groups', array('u.group_id', '=', 'g.g_id'), 'g')
-                ->left_outer_join(ORM_TABLE_PREFIX.'online', array('o.user_id', '=', 'u.id'), 'o');
+                ->inner_join(ORM_TABLE_PREFIX.'groups', ['u.group_id', '=', 'g.g_id'], 'g')
+                ->left_outer_join(ORM_TABLE_PREFIX.'online', ['o.user_id', '=', 'u.id'], 'o');
 
     if (is_int($user)) {
         $result = $result->where('u.id', intval($user));
-    }
-    else {
+    } else {
         $result = $result->where('u.username', $user);
     }
 
     $result = $result->find_result_set();
 
-    foreach ($result as User::get());
+    foreach ($result as User::get()) {
+    }
 
     if (!isset(User::get()->id) ||
         ($password_is_hash && $password != User::get()->password) ||
@@ -444,7 +445,7 @@ function output_html($feed)
 if ($action == 'feed') {
     // Determine what type of feed to output
     $type = isset($_GET['type']) ? strtolower($_GET['type']) : 'html';
-    if (!in_array($type, array('html', 'rss', 'atom', 'xml'))) {
+    if (!in_array($type, ['html', 'rss', 'atom', 'xml'])) {
         $type = 'html';
     }
 
@@ -458,7 +459,7 @@ if ($action == 'feed') {
         $tid = intval($_GET['tid']);
 
         // Fetch topic subject
-        $select_show_recent_topics = array('t.subject', 't.first_post_id');
+        $select_show_recent_topics = ['t.subject', 't.first_post_id'];
 //        $where_show_recent_topics = array(
 //            array('fp.read_forum' => 'IS NULL'),
 //            array('fp.read_forum' => '1')
@@ -468,8 +469,11 @@ if ($action == 'feed') {
                         ->select_many($select_show_recent_topics)
 //                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
 //                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
-            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')', 'fp')
+            ->left_outer_join(
+                ORM_TABLE_PREFIX.'forum_perms',
+                '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
+                'fp'
+            )
 //                        ->where_any_is($where_show_recent_topics)
                 ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
                         ->where_null('t.moved_to')
@@ -486,21 +490,21 @@ if ($action == 'feed') {
         }
 
         // Setup the feed
-        $feed = array(
+        $feed = [
             'title'        =>    ForumSettings::get('o_board_title').__('Title separator').$cur_topic['subject'],
             'link'         =>    Url::get('topic/'.$tid.'/'.Url::url_friendly($cur_topic['subject']).'/'),
             'description'  =>    sprintf(__('RSS description topic'), $cur_topic['subject']),
-            'items'        =>    array(),
+            'items'        =>    [],
             'type'         =>    'posts'
-        );
+        ];
 
         // Fetch $show posts
-        $select_print_posts = array('p.id', 'p.poster', 'p.message', 'p.hide_smilies', 'p.posted', 'p.poster_email', 'p.poster_id', 'u.email_setting', 'u.email');
+        $select_print_posts = ['p.id', 'p.poster', 'p.message', 'p.hide_smilies', 'p.posted', 'p.poster_email', 'p.poster_id', 'u.email_setting', 'u.email'];
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
             ->table_alias('p')
             ->select_many($select_print_posts)
-            ->inner_join(ORM_TABLE_PREFIX.'users', array('u.id', '=', 'p.poster_id'), 'u')
+            ->inner_join(ORM_TABLE_PREFIX.'users', ['u.id', '=', 'p.poster_id'], 'u')
             ->where('p.topic_id', $tid)
             ->order_by_desc('p.posted')
             ->limit($show)
@@ -509,16 +513,16 @@ if ($action == 'feed') {
         foreach ($result as $cur_post) {
             $cur_post['message'] = parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
-            $item = array(
+            $item = [
                 'id'          =>    $cur_post['id'],
                 'title'       =>    $cur_topic['first_post_id'] == $cur_post['id'] ? $cur_topic['subject'] : __('RSS reply').$cur_topic['subject'],
                 'link'        =>    Url::get('post/'.$cur_post['id'].'/#p'.$cur_post['id']),
                 'description' =>    $cur_post['message'],
-                'author'      =>    array(
+                'author'      =>    [
                     'name'    => $cur_post['poster'],
-                ),
+                ],
                 'pubdate'     =>    $cur_post['posted']
-            );
+            ];
 
             if ($cur_post['poster_id'] > 1) {
                 if ($cur_post['email_setting'] == '0' && !User::get()->is_guest) {
@@ -561,8 +565,11 @@ if ($action == 'feed') {
                 $cur_topic = \ORM::for_table(ORM_TABLE_PREFIX.'forums')->table_alias('f')
 //                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
-                    ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                        '(fp.forum_id=f.id AND fp.group_id='.User::get()->g_id.')', 'fp')
+                    ->left_outer_join(
+                        ORM_TABLE_PREFIX.'forum_perms',
+                        '(fp.forum_id=f.id AND fp.group_id='.User::get()->g_id.')',
+                        'fp'
+                    )
 //                    ->where_any_is($where_show_forum_name)
                         ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
                     ->where('f.id', $fids[0])
@@ -598,28 +605,31 @@ if ($action == 'feed') {
         $now = time();
         if (!isset($feed) || $cache_expire < $now) {
             // Setup the feed
-            $feed = array(
+            $feed = [
                 'title'        =>    ForumSettings::get('o_board_title').$forum_name,
                 'link'            =>    '/index.php',
                 'description'    =>    sprintf(__('RSS description'), ForumSettings::get('o_board_title')),
-                'items'            =>    array(),
+                'items'            =>    [],
                 'type'            =>    'topics'
-            );
+            ];
 
             // Fetch $show topics
-            $select_print_posts = array('t.id', 't.poster', 't.subject', 't.posted', 't.last_post', 't.last_poster', 'p.message', 'p.hide_smilies', 'u.email_setting', 'u.email', 'p.poster_id', 'p.poster_email');
+            $select_print_posts = ['t.id', 't.poster', 't.subject', 't.posted', 't.last_post', 't.last_poster', 'p.message', 'p.hide_smilies', 'u.email_setting', 'u.email', 'p.poster_id', 'p.poster_email'];
 //            $where_print_posts = array(
 //                array('fp.read_forum' => 'IS NULL'),
 //                array('fp.read_forum' => '1')
 //            );
 
             $result = $result->select_many($select_print_posts)
-                        ->inner_join(ORM_TABLE_PREFIX.'posts', array('p.id', '=', ($order_posted ? 't.first_post_id' : 't.last_post_id')), 'p')
-                        ->inner_join(ORM_TABLE_PREFIX.'users', array('u.id', '=', 'p.poster_id'), 'u')
+                        ->inner_join(ORM_TABLE_PREFIX.'posts', ['p.id', '=', ($order_posted ? 't.first_post_id' : 't.last_post_id')], 'p')
+                        ->inner_join(ORM_TABLE_PREFIX.'users', ['u.id', '=', 'p.poster_id'], 'u')
 //                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
 //                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
-                ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                    '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')', 'fp')
+                ->left_outer_join(
+                    ORM_TABLE_PREFIX.'forum_perms',
+                    '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
+                    'fp'
+                )
 //                        ->where_any_is($where_print_posts)
                     ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
                         ->where_null('t.moved_to')
@@ -634,16 +644,16 @@ if ($action == 'feed') {
 
                 $cur_topic['message'] = parse_message($cur_topic['message'], $cur_topic['hide_smilies']);
 
-                $item = array(
+                $item = [
                     'id'            =>    $cur_topic['id'],
                     'title'            =>    $cur_topic['subject'],
                     'link'            =>    Url::get('topic/'.$cur_topic['id'].'/'.url_friendly($cur_topic['subject']).'/').($order_posted ? '' : '/action/new/'),
                     'description'    =>    $cur_topic['message'],
-                    'author'        =>    array(
+                    'author'        =>    [
                         'name'    => $order_posted ? $cur_topic['poster'] : $cur_topic['last_poster']
-                    ),
+                    ],
                     'pubdate'        =>    $order_posted ? $cur_topic['posted'] : $cur_topic['last_post']
-                );
+                ];
 
                 if ($cur_topic['poster_id'] > 1) {
                     if ($cur_topic['email_setting'] == '0' && !User::get()->is_guest) {
@@ -690,17 +700,14 @@ if ($action == 'feed') {
     }
 
     exit;
-}
-
-// Show users online
+} // Show users online
 elseif ($action == 'online' || $action == 'online_full') {
-
     // Fetch users online info and generate strings for output
     $num_guests = $num_users = 0;
-    $users = array();
+    $users = [];
 
-    $select_fetch_users_online = array('user_id', 'ident');
-    $where_fetch_users_online = array('idle' => '0');
+    $select_fetch_users_online = ['user_id', 'ident'];
+    $where_fetch_users_online = ['idle' => '0'];
     $order_by_fetch_users_online = 'ident';
 
     $result = \ORM::for_table(ORM_TABLE_PREFIX.'online')
@@ -733,11 +740,8 @@ elseif ($action == 'online' || $action == 'online_full') {
     }
 
     exit;
-}
-
-// Show board statistics
+} // Show board statistics
 elseif ($action == 'stats') {
-
     if (!Container::get('cache')->isCached('users_info')) {
         Container::get('cache')->store('users_info', Cache::get_users_info());
     }

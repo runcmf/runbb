@@ -43,16 +43,16 @@ if (!empty($errors)) :
             <p><?= __('Post errors info') ?></p>
             <ul class="error-list">
 <?php
-    foreach ($errors as $cur_error) {
-        echo "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
-    }
+foreach ($errors as $cur_error) {
+    echo "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
+}
 ?>
             </ul>
         </div>
     </div>
 </div>
 <?php
-elseif (Input::post('preview')):
+elseif (Input::post('preview')) :
 ?>
 <div id="postpreview" class="blockpost">
     <h2><span><?= __('Post preview') ?></span></h2>
@@ -81,7 +81,8 @@ endif;
                     <legend><?= __('Edit post legend') ?></legend>
                     <input type="hidden" name="form_sent" value="1" />
                     <div class="infldset txtarea">
-<?php if ($can_edit_subject): ?>                        <label class="required"><strong><?= __('Subject') ?> <span><?= __('Required') ?></span></strong><br />
+<?php if ($can_edit_subject) :
+?>                        <label class="required"><strong><?= __('Subject') ?> <span><?= __('Required') ?></span></strong><br />
                         <input class="longinput" type="text" name="req_subject" size="80" maxlength="70" tabindex="<?= $cur_index++ ?>" value="<?= Utils::escape(Input::post('req_subject') ? Input::post('req_subject') : $cur_post['subject']) ?>" /><br /></label>
 <?php endif; ?>                        <label class="required"><strong><?= __('Message') ?> <span><?= __('Required') ?></span></strong><br />
 <!--
@@ -102,7 +103,7 @@ endif;
                 </fieldset>
             </div>
 <?php
-if (!empty($checkboxes)):
+if (!empty($checkboxes)) :
 ?>
             <div class="inform">
                 <fieldset>

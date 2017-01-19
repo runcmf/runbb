@@ -27,9 +27,9 @@ if (!empty($errors)) {
             <ul class="error-list">
 <?php
 
-    foreach ($errors as $cur_error) {
-        echo "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
-    }
+foreach ($errors as $cur_error) {
+    echo "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
+}
     ?>
             </ul>
         </div>
@@ -37,7 +37,6 @@ if (!empty($errors)) {
 </div>
 
 <?php
-
 }
 ?>
 <div id="regform" class="blockform">
@@ -58,20 +57,21 @@ if (!empty($errors)) {
                         <input type="hidden" name="username" value="" />
                         <input type="hidden" name="password" value="" />
                         <label class="required"><strong><?= __('Username') ?> <span><?= __('Required') ?></span></strong><br /><input type="text" name="req_user" value="<?php if (Input::post('req_user')) {
-    echo Utils::escape(Input::post('req_user'));
+                            echo Utils::escape(Input::post('req_user'));
 } ?>" size="25" maxlength="25" /><br /></label>
                     </div>
                 </fieldset>
             </div>
-<?php if (ForumSettings::get('o_regs_verify') == '0'): ?>            <div class="inform">
+<?php if (ForumSettings::get('o_regs_verify') == '0') :
+?>            <div class="inform">
                 <fieldset>
                     <legend><?= __('Pass legend') ?></legend>
                     <div class="infldset">
                         <label class="conl required"><strong><?= __('Password') ?> <span><?= __('Required') ?></span></strong><br /><input type="password" name="req_password1" value="<?php if (Input::post('req_password1')) {
-    echo Utils::escape(Input::post('req_password1'));
+                            echo Utils::escape(Input::post('req_password1'));
 } ?>" size="16" /><br /></label>
                         <label class="conl required"><strong><?= __('Confirm pass') ?> <span><?= __('Required') ?></span></strong><br /><input type="password" name="req_password2" value="<?php if (Input::post('req_password2')) {
-    echo Utils::escape(Input::post('req_password2'));
+                            echo Utils::escape(Input::post('req_password2'));
 } ?>" size="16" /><br /></label>
                         <p class="clearb"><?= __('Pass info') ?></p>
                     </div>
@@ -81,47 +81,48 @@ if (!empty($errors)) {
                 <fieldset>
                     <legend><?php echo(ForumSettings::get('o_regs_verify') == '1') ? __('Email legend 2') : __('Email legend') ?></legend>
                     <div class="infldset">
-<?php if (ForumSettings::get('o_regs_verify') == '1'): ?>                        <p><?= __('Email info') ?></p>
+<?php if (ForumSettings::get('o_regs_verify') == '1') :
+?>                        <p><?= __('Email info') ?></p>
 <?php endif; ?>                        <label class="required"><strong><?= __('Email') ?> <span><?= __('Required') ?></span></strong><br />
                         <input type="text" name="req_email1" value="<?php if (Input::post('req_email1')) {
-    echo Utils::escape(Input::post('req_email1'));
+                            echo Utils::escape(Input::post('req_email1'));
 } ?>" size="50" maxlength="80" /><br /></label>
-<?php if (ForumSettings::get('o_regs_verify') == '1'): ?>                        <label class="required"><strong><?= __('Confirm email') ?> <span><?= __('Required') ?></span></strong><br />
+<?php if (ForumSettings::get('o_regs_verify') == '1') :
+?>                        <label class="required"><strong><?= __('Confirm email') ?> <span><?= __('Required') ?></span></strong><br />
                         <input type="text" name="req_email2" value="<?php if (Input::post('req_email2')) {
-    echo Utils::escape(Input::post('req_email2'));
+                            echo Utils::escape(Input::post('req_email2'));
 } ?>" size="50" maxlength="80" /><br /></label>
 <?php endif; ?>                    </div>
                 </fieldset>
             </div>
 <?php
         // Only display the language selection box if there's more than one language available
-        if (count($languages) > 1) {
-            ?>
-            <div class="inform">
-                <fieldset>
-                    <legend><?= __('Localisation legend') ?></legend>
-                    <div class="infldset">
-                            <label><?= __('Language') ?>
-                            <br /><select name="language">
+if (count($languages) > 1) {
+    ?>
+    <div class="inform">
+<fieldset>
+    <legend><?= __('Localisation legend') ?></legend>
+    <div class="infldset">
+            <label><?= __('Language') ?>
+            <br /><select name="language">
 <?php
 
-            foreach ($languages as $temp) {
-                if (ForumSettings::get('o_default_lang') == $temp) {
-                    echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
-                } else {
-                    echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
-                }
-            }
+foreach ($languages as $temp) {
+    if (ForumSettings::get('o_default_lang') == $temp) {
+        echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.$temp.'</option>'."\n";
+    } else {
+        echo "\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.$temp.'</option>'."\n";
+    }
+}
 
-            ?>
-                            </select>
-                            <br /></label>
-                    </div>
-                </fieldset>
-            </div>
+?>
+            </select>
+            <br /></label>
+    </div>
+</fieldset>
+</div>
 <?php
-
-        }
+}
 ?>
             <div class="inform">
                 <fieldset>

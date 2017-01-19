@@ -64,7 +64,7 @@ class PrivateMessages extends Plugin
     {
         translate('private_messages', 'private-messages', ForumSettings::get('o_default_lang'));
 
-        $database_scheme = array(
+        $database_scheme = [
             'pms_data' => "CREATE TABLE IF NOT EXISTS %t% (
                 `conversation_id` int(10) unsigned NOT NULL,
                 `user_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -113,7 +113,7 @@ class PrivateMessages extends Plugin
                 `block_id` int(10) NOT NULL DEFAULT '0',
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
-        );
+        ];
 
         // Create tables
         $installer = new \RunBB\Model\Install();
@@ -122,13 +122,13 @@ class PrivateMessages extends Plugin
         }
 
         $col = \ORM::for_table(ForumSettings::get('db_prefix') . 'groups')->find_one();
-        if($col->g_pm_limit === null) {
+        if ($col->g_pm_limit === null) {
             \ORM::for_table(ORM_TABLE_PREFIX . 'groups')->raw_execute('ALTER TABLE ' . ForumSettings::get('db_prefix') . 'groups ADD `g_pm_limit` smallint(3) NOT NULL DEFAULT \'0\'');
         }
-        if($col->g_use_pm === null) {
+        if ($col->g_use_pm === null) {
             \ORM::for_table(ORM_TABLE_PREFIX . 'groups')->raw_execute('ALTER TABLE ' . ForumSettings::get('db_prefix') . 'groups ADD `g_use_pm` tinyint(1) NOT NULL DEFAULT \'0\'');
         }
-        if($col->g_pm_folder_limit === null) {
+        if ($col->g_pm_folder_limit === null) {
             \ORM::for_table(ORM_TABLE_PREFIX . 'groups')->raw_execute('ALTER TABLE ' . ForumSettings::get('db_prefix') . 'groups ADD `g_pm_folder_limit` int(3) NOT NULL DEFAULT \'0\'');
         }
 
@@ -169,5 +169,4 @@ class PrivateMessages extends Plugin
             }
         }
     }
-
 }

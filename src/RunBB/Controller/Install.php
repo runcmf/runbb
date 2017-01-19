@@ -77,7 +77,7 @@ class Install
                 // Handle empty fields
                 if (empty($value)) {
                     // If the field is required, or if user and pass are missing even though mysql or pgsql are selected as DB
-                    if (!in_array($field, $this->optional_fields) || (in_array($field, array('db_user')) && in_array($data['db_type'], array('mysql', 'pgsql')))) {
+                    if (!in_array($field, $this->optional_fields) || (in_array($field, ['db_user']) && in_array($data['db_type'], ['mysql', 'pgsql']))) {
                         $missing_fields[] = $field;
                     }
                 }
@@ -140,16 +140,16 @@ class Install
 
             // End validation and check errors
             if (!empty($this->errors)) {
-                return View::setPageInfo(array(
+                return View::setPageInfo([
                     'languages' => $this->available_langs,
                     'supported_dbs' => $this->supported_dbs,
 //                    'dbConfig' => $this->dbConfig,
                     'data' => $data,
                     'errors' => $this->errors,
-                ))->addTemplate('install.php')->display(false);
+                ])->addTemplate('install.php')->display(false);
             } else {
                 $data['default_style'] = $this->default_style;
-                $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), array('on', 'true', '1')) ? 1 : 0;
+                $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), ['on', 'true', '1']) ? 1 : 0;
                 return $this->create_config($data);
             }
         } else {
@@ -175,7 +175,7 @@ class Install
         Container::get('hooks')->fire('controller.install.create_config');
 
         // Generate config ...
-        $config = array();
+        $config = [];
         foreach ($data as $key => $value) {
             if (in_array($key, $this->config_keys)) {
                 $config[$key] = $value;
@@ -221,11 +221,11 @@ class Install
             $this->model->add_data('groups', $group_data);
         }
 
-        Container::get('perms')->allowGroup(3, array('forum.read', 'users.view', 'search.topics', 'search.users'));
-        Container::get('perms')->allowGroup(4, array('topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'email.send'));
-        Container::get('perms')->allowGroup(2, array('mod.*', 'board.title.set'));
-        Container::get('perms')->allowGroup(1, array('board.*'));
-        Container::get('prefs')->set(array(
+        Container::get('perms')->allowGroup(3, ['forum.read', 'users.view', 'search.topics', 'search.users']);
+        Container::get('perms')->allowGroup(4, ['topic.reply', 'topic.post', 'topic.delete', 'post.delete', 'post.edit', 'email.send']);
+        Container::get('perms')->allowGroup(2, ['mod.*', 'board.title.set']);
+        Container::get('perms')->allowGroup(1, ['board.*']);
+        Container::get('prefs')->set([
             'post.min_interval' => 60,
             'search.min_interval' => 30,
             'email.min_interval' => 60,
@@ -237,13 +237,13 @@ class Install
             'core.style' => $data['default_style'],
             'smilies.post.show' => 1,
             'smilies.signature.show' => 1,
-        ));
-        Container::get('prefs')->setGroup(2, array(
+        ]);
+        Container::get('prefs')->setGroup(2, [
             'post.min_interval' => 0,
             'search.min_interval' => 0,
             'email.min_interval' => 0,
             'report.min_interval' => 0
-        ));
+        ]);
 
 
         // Populate user table with default values
@@ -281,7 +281,7 @@ class Install
     {
         Container::get('hooks')->fire('controller.install.load_default_config');
 
-        return array(
+        return [
             'o_cur_version'                => ForumEnv::get('FORUM_VERSION'),
             'o_database_revision'        => ForumEnv::get('FORUM_DB_REVISION'),
             'o_searchindex_revision'    => ForumEnv::get('FORUM_SI_REVISION'),
@@ -359,6 +359,6 @@ class Install
             'p_allow_banned_email'        => 1,
             'p_allow_dupe_email'        => 0,
             'p_force_guest_email'        => 1
-        );
+        ];
     }
 }

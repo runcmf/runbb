@@ -17,8 +17,8 @@ class Forums
 
     public function add_forum($cat_id, $forum_name)
     {
-        $set_add_forum = array('forum_name' => $forum_name,
-                                'cat_id' => $cat_id);
+        $set_add_forum = ['forum_name' => $forum_name,
+                                'cat_id' => $cat_id];
 
         $set_add_forum = Container::get('hooks')->fire('model.admin.forums.add_forum', $set_add_forum);
 
@@ -66,7 +66,7 @@ class Forums
         // Delete orphaned redirect topics
         $orphans = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                     ->table_alias('t1')
-                    ->left_outer_join(ORM_TABLE_PREFIX.'topics', array('t1.moved_to', '=', 't2.id'), 't2')
+                    ->left_outer_join(ORM_TABLE_PREFIX.'topics', ['t1.moved_to', '=', 't2.id'], 't2')
                     ->where_null('t2.id')
                     ->where_not_null('t1.moved_to');
         $orphans = Container::get('hooks')->fireDB('model.admin.forums.delete_orphan_redirect_topics_query', $orphans);
@@ -91,15 +91,15 @@ class Forums
 
     public function get_forums()
     {
-        $forum_data = array();
+        $forum_data = [];
         $forum_data = Container::get('hooks')->fire('model.admin.forums.get_forums_start', $forum_data);
 
-        $select_get_forums = array('cid' => 'c.id', 'c.cat_name', 'cat_position' => 'c.disp_position', 'fid' => 'f.id', 'f.forum_name', 'forum_position' => 'f.disp_position');
+        $select_get_forums = ['cid' => 'c.id', 'c.cat_name', 'cat_position' => 'c.disp_position', 'fid' => 'f.id', 'f.forum_name', 'forum_position' => 'f.disp_position'];
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'categories')
                     ->table_alias('c')
                     ->select_many($select_get_forums)
-                    ->inner_join(ORM_TABLE_PREFIX.'forums', array('c.id', '=', 'f.cat_id'), 'f')
+                    ->inner_join(ORM_TABLE_PREFIX.'forums', ['c.id', '=', 'f.cat_id'], 'f')
                     ->order_by_asc('f.disp_position')
                     ->order_by_asc('c.disp_position');
         $result = Container::get('hooks')->fireDB('model.admin.forums.get_forums_query', $result);
@@ -107,13 +107,13 @@ class Forums
 
         foreach ($result as $forum) {
             if (!isset($forum_data[$forum['cid']])) {
-                $forum_data[$forum['cid']] = array('cat_name' => $forum['cat_name'],
+                $forum_data[$forum['cid']] = ['cat_name' => $forum['cat_name'],
                                                    'cat_position' => $forum['cat_position'],
-                                                   'cat_forums' => array());
+                                                   'cat_forums' => []];
             }
-            $forum_data[$forum['cid']]['cat_forums'][] = array('forum_id' => $forum['fid'],
+            $forum_data[$forum['cid']]['cat_forums'][] = ['forum_id' => $forum['fid'],
                                                                'forum_name' => $forum['forum_name'],
-                                                               'position' => $forum['forum_position']);
+                                                               'position' => $forum['forum_position']];
         }
 
         $forum_data = Container::get('hooks')->fire('model.admin.forums.get_forums', $forum_data);
@@ -136,10 +136,10 @@ class Forums
 
     public function get_permissions($forum_id)
     {
-        $perm_data = array();
+        $perm_data = [];
         $forum_id = Container::get('hooks')->fire('model.admin.forums.get_permissions_start', $forum_id);
 
-        $select_permissions = array('g.g_id', 'g.g_title', 'g.g_read_board', 'g.g_post_replies', 'g.g_post_topics', 'fp.read_forum', 'fp.post_replies', 'fp.post_topics');
+        $select_permissions = ['g.g_id', 'g.g_title', 'g.g_read_board', 'g.g_post_replies', 'g.g_post_topics', 'fp.read_forum', 'fp.post_replies', 'fp.post_topics'];
 
         $permissions = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
                         ->table_alias('g')
@@ -150,7 +150,7 @@ class Forums
         $permissions = Container::get('hooks')->fireDB('model.admin.forums.get_permissions_query', $permissions);
         $permissions = $permissions->find_many();
 
-        foreach($permissions as $cur_perm) {
+        foreach ($permissions as $cur_perm) {
             $cur_perm['read_forum'] = ($cur_perm['read_forum'] != '0') ? true : false;
             $cur_perm['post_replies'] = (($cur_perm['g_post_replies'] == '0' && $cur_perm['post_replies'] == '1') || ($cur_perm['g_post_replies'] == '1' && $cur_perm['post_replies'] != '0')) ? true : false;
             $cur_perm['post_topics'] = (($cur_perm['g_post_topics'] == '0' && $cur_perm['post_topics'] == '1') || ($cur_perm['g_post_topics'] == '1' && $cur_perm['post_topics'] != '0')) ? true : false;
@@ -169,7 +169,7 @@ class Forums
 
     public function get_default_group_permissions($fetch_admin = true)
     {
-        $select_get_default_group_permissions = array('g_id', 'g_read_board', 'g_post_replies', 'g_post_topics');
+        $select_get_default_group_permissions = ['g_id', 'g_read_board', 'g_post_replies', 'g_post_topics'];
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
                     ->select_many($select_get_default_group_permissions);
@@ -200,7 +200,6 @@ class Forums
                     ->set($permissions_data)
                     ->save();
         }
-
     }
 
     public function delete_permissions($forum_id, $group_id = null)

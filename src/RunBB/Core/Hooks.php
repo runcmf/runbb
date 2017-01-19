@@ -53,8 +53,7 @@ class Hooks
             //$this->hooks[$name] = array(array());
             if (isset($args[0])) {
                 return $args[0];
-            }
-            else {
+            } else {
                 return;
             }
         }
@@ -84,7 +83,7 @@ class Hooks
                 $data = [];
                 // Move all the keys to the same level
                 foreach ($output as $k => $vars) {
-                    if($k === 0) {
+                    if ($k === 0) {
                         $data = $vars;
                         continue;
                     }
@@ -124,7 +123,7 @@ class Hooks
                 ksort($this->hooks[$name]);
             }
 
-            $output = array();
+            $output = [];
 
             foreach ($this->hooks[$name] as $priority) {
                 if (!empty($priority)) {
@@ -170,10 +169,10 @@ class Hooks
     public function clearHooks($name = null)
     {
         if (!is_null($name) && isset($this->hooks[(string) $name])) {
-            $this->hooks[(string) $name] = array(array());
+            $this->hooks[(string) $name] = [[]];
         } else {
             foreach ($this->hooks as $key => $value) {
-                $this->hooks[$key] = array(array());
+                $this->hooks[$key] = [[]];
             }
         }
     }

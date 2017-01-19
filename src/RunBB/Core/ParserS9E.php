@@ -27,7 +27,7 @@ class ParserS9E
     {
         $this->cacheDir = ForumEnv::get('FORUM_CACHE_DIR').'/parser';
 
-        if(is_file($this->cacheDir.'/s9eparser.php') && is_file($this->cacheDir.'/s9erenderer.php')) {
+        if (is_file($this->cacheDir.'/s9eparser.php') && is_file($this->cacheDir.'/s9erenderer.php')) {
             $this->parser = unserialize(file_get_contents($this->cacheDir.'/s9eparser.php'));
             $this->renderer = unserialize(file_get_contents($this->cacheDir.'/s9erenderer.php'));
         } else {
@@ -75,16 +75,26 @@ class ParserS9E
         $configurator->Emoticons->add(':cool:', '<img src="/assets/img/smilies/cool.png" alt=":cool:" title="Cool">');
         $configurator->Emoticons->add('8)', '<img src="/assets/img/smilies/cool.png" alt="8)" title="Cool">');
         $configurator->Emoticons->add(':8', '<img src="/assets/img/smilies/desire.png" alt=":8" title="Desire">');
-        $configurator->Emoticons->add(':cry:',
-            '<img src="/assets/img/smilies/cry.png" alt=":cry:" title="Crying or Very Sad">');
-        $configurator->Emoticons->add(':oops:',
-            '<img src="/assets/img/smilies/oops.png" alt=":oops:" title="Embaressed">');
-        $configurator->Emoticons->add(':evil:',
-            '<img src="/assets/img/smilies/evil.png" alt=":evil:" title="Evil or Very Mad">');
-        $configurator->Emoticons->add(':pint:',
-            '<img src="/assets/img/smilies/pint.png" alt=":pint:" title="Another pint of beer">');
-        $configurator->Emoticons->add(':blah:',
-            '<img src="/assets/img/smilies/bl   ah.png" alt=":blah:" title="Blah!!!">');
+        $configurator->Emoticons->add(
+            ':cry:',
+            '<img src="/assets/img/smilies/cry.png" alt=":cry:" title="Crying or Very Sad">'
+        );
+        $configurator->Emoticons->add(
+            ':oops:',
+            '<img src="/assets/img/smilies/oops.png" alt=":oops:" title="Embaressed">'
+        );
+        $configurator->Emoticons->add(
+            ':evil:',
+            '<img src="/assets/img/smilies/evil.png" alt=":evil:" title="Evil or Very Mad">'
+        );
+        $configurator->Emoticons->add(
+            ':pint:',
+            '<img src="/assets/img/smilies/pint.png" alt=":pint:" title="Another pint of beer">'
+        );
+        $configurator->Emoticons->add(
+            ':blah:',
+            '<img src="/assets/img/smilies/bl   ah.png" alt=":blah:" title="Blah!!!">'
+        );
         $configurator->Emoticons->add(':stop:', '<img src="/assets/img/smilies/stop.png" alt=":stop:" title="Stop">');
 
         $configurator->registeredVars['cacheDir'] = ForumEnv::get('FORUM_CACHE_DIR');
@@ -95,7 +105,7 @@ class ParserS9E
         // We save the parser and the renderer to the disk for easy reuse
         $this->checkCacheDir($this->cacheDir);
 
-        file_put_contents($this->cacheDir.'/s9eparser.php',   serialize($parser));
+        file_put_contents($this->cacheDir.'/s9eparser.php', serialize($parser));
         file_put_contents($this->cacheDir.'/s9erenderer.php', serialize($renderer));
 
         $this->parser = $parser;
@@ -204,7 +214,7 @@ class ParserS9E
         $xml  = $this->parser->parse($text);
         $html = $this->renderer->render($xml);
         $parerErrors = $this->parser->getLogger()->get();
-        if(empty($parerErrors)) {
+        if (empty($parerErrors)) {
 //            return \s9e\TextFormatter\Unparser::unparse($xml);
             return $text;
         } else {
@@ -229,7 +239,7 @@ class ParserS9E
         $html = $this->renderer->render($xml);
         $parerErrors = $this->parser->getLogger()->get();
 
-        if(empty($parerErrors)) {
+        if (empty($parerErrors)) {
             return $html;
         } else {
             $errors = array_merge($errors, $parerErrors);

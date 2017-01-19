@@ -21,37 +21,46 @@ class Forum
     {
         $id = Container::get('hooks')->fire('model.forum.get_info_forum_start', $id);
 
-        $cur_forum['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $cur_forum['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
 
         if (!User::get()->is_guest) {
-            $cur_forum['select'] = array('f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics', 'is_subscribed' => 's.user_id');
+            $cur_forum['select'] = ['f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics', 'is_subscribed' => 's.user_id'];
 
             $cur_forum = \ORM::for_table(ORM_TABLE_PREFIX.'forums')->table_alias('f')
                             ->select_many($cur_forum['select'])
 //                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_subscriptions', array('f.id', '=', 's.forum_id'), 's')
 //                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_subscriptions', array('s.user_id', '=', User::get()->id), null, true)
-                    ->left_outer_join(ORM_TABLE_PREFIX.'forum_subscriptions',
-                        '(f.id = s.forum_id AND s.user_id = '.User::get()->id.')', 's')
+                    ->left_outer_join(
+                        ORM_TABLE_PREFIX.'forum_subscriptions',
+                        '(f.id = s.forum_id AND s.user_id = '.User::get()->id.')',
+                        's'
+                    )
 //                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
-                ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                    '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')', 'fp')
+                ->left_outer_join(
+                    ORM_TABLE_PREFIX.'forum_perms',
+                    '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
+                    'fp'
+                )
                 ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
 //                ->where_any_is($cur_forum['where'])
                             ->where('f.id', $id);
         } else {
-            $cur_forum['select'] = array('f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics');
+            $cur_forum['select'] = ['f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics'];
 
             $cur_forum = \ORM::for_table(ORM_TABLE_PREFIX.'forums')->table_alias('f')
                             ->select_many($cur_forum['select'])
                             ->select_expr(0, 'is_subscribed')
 //                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
-                ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                    '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')', 'fp')
+                ->left_outer_join(
+                    ORM_TABLE_PREFIX.'forum_perms',
+                    '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
+                    'fp'
+                )
 //                            ->where_any_is($cur_forum['where'])
                 ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
                             ->where('f.id', $id);
@@ -113,7 +122,7 @@ class Forum
     // Returns forum action
     public function get_forum_actions($forum_id, $subscriptions, $is_subscribed)
     {
-        $forum_actions = array();
+        $forum_actions = [];
 
         $forum_actions = Container::get('hooks')->fire('model.forum.get_page_head_start', $forum_actions, $forum_id, $subscriptions, $is_subscribed);
 
@@ -156,19 +165,19 @@ class Forum
         $result = Container::get('hooks')->fire('model.forum.print_topics_ids_query', $result);
         $result = $result->find_many();
 
-        $forum_data = array();
+        $forum_data = [];
 
         // If there are topics in this forum
         if ($result) {
-            $topic_ids = array();
-            foreach($result as $cur_topic_id) {
+            $topic_ids = [];
+            foreach ($result as $cur_topic_id) {
                 $topic_ids[] = $cur_topic_id['id'];
             }
 
             // Fetch list of topics to display on this page
             if (User::get()->is_guest || ForumSettings::get('o_show_dot') == '0') {
                 // Without "the dot"
-                $result['select'] = array('id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to');
+                $result['select'] = ['id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to'];
 
                 $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                             ->select_many($result['select'])
@@ -178,15 +187,18 @@ class Forum
                             ->order_by_desc('id');
             } else {
                 // With "the dot"
-                $result['select'] = array('has_posted' => 'p.poster_id', 't.id', 't.subject', 't.poster', 't.posted', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_views', 't.num_replies', 't.closed', 't.sticky', 't.moved_to');
+                $result['select'] = ['has_posted' => 'p.poster_id', 't.id', 't.subject', 't.poster', 't.posted', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_views', 't.num_replies', 't.closed', 't.sticky', 't.moved_to'];
 
                 $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                             ->table_alias('t')
                             ->select_many($result['select'])
 //                            ->left_outer_join(ORM_TABLE_PREFIX.'posts', array('t.id', '=', 'p.topic_id'), 'p')
 //                            ->left_outer_join(ORM_TABLE_PREFIX.'posts', array('p.poster_id', '=', User::get()->id), null, true)
-                    ->left_outer_join(ORM_TABLE_PREFIX.'posts',
-                        '(t.id = p.topic_id AND p.poster_id = '.User::get()->id.')', 'p')
+                    ->left_outer_join(
+                        ORM_TABLE_PREFIX.'posts',
+                        '(t.id = p.topic_id AND p.poster_id = '.User::get()->id.')',
+                        'p'
+                    )
                             ->where_in('t.id', $topic_ids)
                             ->group_by('t.id')
                             ->order_by_desc('sticky')
@@ -200,7 +212,7 @@ class Forum
             $topic_count = 0;
             foreach ($result as $cur_topic) {
                 ++$topic_count;
-                $status_text = array();
+                $status_text = [];
                 $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
                 $cur_topic['icon_type'] = 'icon';
                 $url_subject = Url::url_friendly($cur_topic['subject']);
@@ -279,7 +291,7 @@ class Forum
     {
         Container::get('hooks')->fire('model.forum.display_topics_start', $fid, $sort_by, $start_from);
 
-        $topic_data = array();
+        $topic_data = [];
 
         // Get topic/forum tracking data
         if (!User::get()->is_guest) {
@@ -297,14 +309,13 @@ class Forum
 
         // If there are topics in this forum
         if ($result) {
-
             foreach ($result as $id) {
                 $topic_ids[] = $id['id'];
             }
 
             unset($result);
             // Select topics
-            $result['select'] = array('id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to');
+            $result['select'] = ['id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to'];
             $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')->select_many($result['select'])
                         ->where_in('id', $topic_ids)
                         ->order_by_desc('sticky')
@@ -314,9 +325,9 @@ class Forum
             $result = $result->find_many();
 
             $topic_count = 0;
-            foreach($result as $cur_topic) {
+            foreach ($result as $cur_topic) {
                 ++$topic_count;
-                $status_text = array();
+                $status_text = [];
                 $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
                 $cur_topic['icon_type'] = 'icon';
                 $url_topic = Url::url_friendly($cur_topic['subject']);
@@ -401,7 +412,7 @@ class Forum
 
         $num_posts = $num_replies + $num_topics; // $num_posts is only the sum of all replies (we have to add the topic posts)
 
-        $select_update_forum = array('last_post', 'last_post_id', 'last_poster');
+        $select_update_forum = ['last_post', 'last_post_id', 'last_poster'];
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')->select_many($select_update_forum)
                     ->where('forum_id', $forum_id)
@@ -411,22 +422,22 @@ class Forum
 
         if ($result) {
             // There are topics in the forum
-            $insert_update_forum = array(
+            $insert_update_forum = [
                 'num_topics' => $num_topics,
                 'num_posts'  => $num_posts,
                 'last_post'  => $result['last_post'],
                 'last_post_id'  => $result['last_post_id'],
                 'last_poster'  => $result['last_poster'],
-            );
+            ];
         } else {
             // There are no topics
-            $insert_update_forum = array(
+            $insert_update_forum = [
                 'num_topics' => $num_topics,
                 'num_posts'  => $num_posts,
                 'last_post'  => 'NULL',
                 'last_post_id'  => 'NULL',
                 'last_poster'  => 'NULL',
-            );
+            ];
         }
         \ORM::for_table(ORM_TABLE_PREFIX.'forums')
             ->where('id', $forum_id)
@@ -470,17 +481,20 @@ class Forum
         }
 
         // Make sure the user can view the forum
-        $authorized['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $authorized['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
 
         $authorized = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
                         ->table_alias('f')
 //                        ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                        ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
-            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')', 'fp')
+            ->left_outer_join(
+                ORM_TABLE_PREFIX.'forum_perms',
+                '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
+                'fp'
+            )
 //                        ->where_any_is($authorized['where'])
                 ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
                         ->where('f.id', $forum_id);
@@ -502,10 +516,10 @@ class Forum
         }
 
         // Insert the subscription
-        $subscription['insert'] = array(
+        $subscription['insert'] = [
             'user_id' => User::get()->id,
             'forum_id'  => $forum_id
-        );
+        ];
         $subscription = \ORM::for_table(ORM_TABLE_PREFIX.'forum_subscriptions')
                             ->create()
                             ->set($subscription['insert']);
@@ -583,7 +597,7 @@ class Forum
         $find_ids = Container::get('hooks')->fireDB('model.forum.delete_topics_find_ids', $find_ids);
         $find_ids = $find_ids->find_many();
 
-        $ids_post = array();
+        $ids_post = [];
 
         foreach ($find_ids as $id) {
             $ids_post[] = $id['id'];
@@ -680,10 +694,10 @@ class Forum
 
         // If users subscribed to one of the topics, keep subscription for merged topic
         foreach ($subscribed_users as $cur_user_id) {
-            $subscriptions['insert'] = array(
+            $subscriptions['insert'] = [
                 'topic_id'  =>  $merge_to_tid,
                 'user_id'   =>  $cur_user_id,
-            );
+            ];
             // Insert the subscription
             $subscriptions = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
                                 ->create()
@@ -706,7 +720,7 @@ class Forum
         $num_replies = Container::get('hooks')->fire('model.forum.merge_topics_num_replies', $num_replies);
 
         // Get last_post, last_post_id and last_poster
-        $last_post['select'] = array('posted', 'id', 'poster');
+        $last_post['select'] = ['posted', 'id', 'poster'];
 
         $last_post = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
                         ->select_many($last_post['select'])
@@ -716,12 +730,12 @@ class Forum
         $last_post = $last_post->find_one();
 
         // Update topic
-        $update_topic['insert'] = array(
+        $update_topic['insert'] = [
             'num_replies' => $num_replies,
             'last_post'  => $last_post['posted'],
             'last_post_id'  => $last_post['id'],
             'last_poster'  => $last_post['poster'],
-        );
+        ];
 
         $topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                     ->where('id', $merge_to_tid)

@@ -40,7 +40,7 @@ class Cache
     public function __construct($config = [])
     {
         if (!is_array($config)) {
-            $config = array('name' => (string)$config);
+            $config = ['name' => (string)$config];
         }
         $this->settings = array_merge(self::getDefaultSettings(), $config);
         $this->setCache($this->settings['name']);
@@ -55,9 +55,9 @@ class Cache
      */
     protected static function getDefaultSettings()
     {
-        return array('name' => 'default',
+        return ['name' => 'default',
             'path' => 'cache/',
-            'extension' => '.cache');
+            'extension' => '.cache'];
     }
 
     /**
@@ -98,7 +98,7 @@ class Cache
         if (is_array($cache)) {
             $cache[(string)$key] = $new_data;
         } else {
-            $cache = array((string)$key => $new_data);
+            $cache = [(string)$key => $new_data];
         }
         $this->_saveCache($cache);
         return $this;
@@ -134,7 +134,7 @@ class Cache
     {
         if ($cache = $this->_loadCache()) {
             if (!$raw) {
-                $results = array();
+                $results = [];
                 foreach ($cache as $key => $value) {
                     $results[$key] = unserialize($value['data']);
                 }
@@ -250,8 +250,9 @@ class Cache
      */
     protected function _loadCache()
     {
-        if (!is_null($this->cache))
+        if (!is_null($this->cache)) {
             return $this->cache;
+        }
 
         if (file_exists($this->getCacheFile())) {
             $this->cache = json_decode(file_get_contents($this->getCacheFile()), true);

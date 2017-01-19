@@ -34,17 +34,17 @@ Container::get('hooks')->fire('view.header.start');
     <link rel="stylesheet" type="text/css" href="<?= Url::base_static() ?>/style/themes/<?= View::getStyle() ?>/style.css">
 <?php
 
-foreach($assets as $type => $items) {
+foreach ($assets as $type => $items) {
     if ($type == 'js') {
         continue;
     }
     echo "\t".'<!-- '.ucfirst($type).' -->'."\n";
     foreach ($items as $item) {
         $isJs = false;
-        if(isset($item['params']['type']) && $item['params']['type'] === 'text/javascript') {
+        if (isset($item['params']['type']) && $item['params']['type'] === 'text/javascript') {
             $isJs = true;
         }
-        if($isJs) {
+        if ($isJs) {
             echo "\t" . '<script ';
         } else {
             echo "\t" . '<link ';
@@ -52,7 +52,7 @@ foreach($assets as $type => $items) {
         foreach ($item['params'] as $key => $value) {
             echo $key.'="'.$value.'" ';
         }
-        if($isJs) {
+        if ($isJs) {
             echo 'src="' . Url::base_static() . '/' . $item['file'] . '" /></script>' . "\n";
         } else {
             echo 'href="' . Url::base_static() . '/' . $item['file'] . '">' . "\n";
@@ -79,14 +79,14 @@ if (isset($required_fields)) :
                 <?php
                     // Output a JavaScript object with localised field names
                     $tpl_temp = count($required_fields);
-                    foreach ($required_fields as $elem_orig => $elem_trans) {
-                        echo "\"".$elem_orig.'": "'.addslashes(str_replace('&#160;', ' ', $elem_trans));
-                        if (--$tpl_temp) {
-                            echo "\", ";
-                        } else {
-                            echo "\"\n\t\t\t\t};\n";
-                        }
+                foreach ($required_fields as $elem_orig => $elem_trans) {
+                    echo "\"".$elem_orig.'": "'.addslashes(str_replace('&#160;', ' ', $elem_trans));
+                    if (--$tpl_temp) {
+                        echo "\", ";
+                    } else {
+                        echo "\"\n\t\t\t\t};\n";
                     }
+                }
                     ?>
             if (document.all || document.getElementById)
             {
@@ -162,7 +162,7 @@ if (User::get()->g_read_board == '1' && ($extraLinks != '')) {
         // Insert any additional links into the $links array (at the correct index)
         $num_links = count($results[1]);
         for ($i = 0; $i < $num_links; ++$i) {
-            array_splice($navlinks, $results[1][$i], 0, array('<li id="navextra'.($i + 1).'"'.(($active_page == 'navextra'.($i + 1)) ? ' class="isactive"' : '').'>'.$results[2][$i].'</li>'));
+            array_splice($navlinks, $results[1][$i], 0, ['<li id="navextra'.($i + 1).'"'.(($active_page == 'navextra'.($i + 1)) ? ' class="isactive"' : '').'>'.$results[2][$i].'</li>']);
         }
     }
 }

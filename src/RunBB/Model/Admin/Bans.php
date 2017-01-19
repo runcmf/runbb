@@ -18,7 +18,7 @@ class Bans
 {
     public function add_ban_info($id = null)
     {
-        $ban = array();
+        $ban = [];
 
         $id = Container::get('hooks')->fire('model.admin.bans.add_ban_info_start', $id);
 
@@ -29,7 +29,7 @@ class Bans
                 throw new  RunBBException(__('Bad request'), 404);
             }
 
-            $select_add_ban_info = array('group_id', 'username', 'email');
+            $select_add_ban_info = ['group_id', 'username', 'email'];
             $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')->select_many($select_add_ban_info)
                         ->where('id', $ban['user_id']);
 
@@ -49,7 +49,7 @@ class Bans
             $ban['ban_user'] = Utils::trim(Input::post('new_ban_user'));
 
             if ($ban['ban_user'] != '') {
-                $select_add_ban_info = array('id', 'group_id', 'username', 'email');
+                $select_add_ban_info = ['id', 'group_id', 'username', 'email'];
                 $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')->select_many($select_add_ban_info)
                     ->where('username', $ban['ban_user'])
                     ->where_gt('id', 1);
@@ -109,13 +109,13 @@ class Bans
 
     public function edit_ban_info($id)
     {
-        $ban = array();
+        $ban = [];
 
         $id = Container::get('hooks')->fire('model.admin.bans.edit_ban_info_start', $id);
 
         $ban['id'] = $id;
 
-        $select_edit_ban_info = array('username', 'ip', 'email', 'message', 'expire');
+        $select_edit_ban_info = ['username', 'ip', 'email', 'message', 'expire'];
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'bans')->select_many($select_edit_ban_info)
             ->where('id', $ban['id']);
 
@@ -249,13 +249,13 @@ class Bans
         $ban_email = ($ban_email != '') ? $ban_email : 'NULL';
         $ban_message = ($ban_message != '') ? $ban_message : 'NULL';
 
-        $insert_update_ban = array(
+        $insert_update_ban = [
             'username'  =>  $ban_user,
             'ip'        =>  $ban_ip,
             'email'     =>  $ban_email,
             'message'   =>  $ban_message,
             'expire'    =>  $ban_expire,
-        );
+        ];
 
         $insert_update_ban = Container::get('hooks')->fire('model.admin.bans.insert_ban_data', $insert_update_ban);
 
@@ -267,7 +267,6 @@ class Bans
                 ->set($insert_update_ban)
                 ->save();
         } else {
-
             $result = \ORM::for_table(ORM_TABLE_PREFIX.'bans')
                 ->where('id', Input::post('ban_id'))
                 ->find_one()
@@ -298,16 +297,16 @@ class Bans
 
     public function find_ban($start_from = false)
     {
-        $ban_info = array();
+        $ban_info = [];
 
         Container::get('hooks')->fire('model.admin.bans.find_ban_start');
 
         // trim() all elements in $form
-        $ban_info['conditions'] = $ban_info['query_str'] = array();
+        $ban_info['conditions'] = $ban_info['query_str'] = [];
 
         $expire_after = Input::query('expire_after') ? Utils::trim(Input::query('expire_after')) : '';
         $expire_before = Input::query('expire_before') ? Utils::trim(Input::query('expire_before')) : '';
-        $ban_info['order_by'] = Input::query('order_by') && in_array(Input::query('order_by'), array('username', 'ip', 'email', 'expire')) ? 'b.'.Input::query('order_by') : 'b.username';
+        $ban_info['order_by'] = Input::query('order_by') && in_array(Input::query('order_by'), ['username', 'ip', 'email', 'expire']) ? 'b.'.Input::query('order_by') : 'b.username';
         $ban_info['direction'] = Input::query('direction') && Input::query('direction') == 'DESC' ? 'DESC' : 'ASC';
 
         $ban_info['query_str'][] = 'order_by='.$ban_info['order_by'];
@@ -361,11 +360,11 @@ class Bans
 
         // Fetch ban count
         if (is_numeric($start_from)) {
-            $ban_info['data'] = array();
-            $select_bans = array('b.id', 'b.username', 'b.ip', 'b.email', 'b.message', 'b.expire', 'b.ban_creator', 'ban_creator_username' => 'u.username');
+            $ban_info['data'] = [];
+            $select_bans = ['b.id', 'b.username', 'b.ip', 'b.email', 'b.message', 'b.expire', 'b.ban_creator', 'ban_creator_username' => 'u.username'];
 
             $result = $result->select_many($select_bans)
-                             ->left_outer_join(ORM_TABLE_PREFIX.'users', array('b.ban_creator', '=', 'u.id'), 'u')
+                             ->left_outer_join(ORM_TABLE_PREFIX.'users', ['b.ban_creator', '=', 'u.id'], 'u')
                              ->orderByExpr($ban_info['order_by'].' '.$ban_info['direction'])
                              ->offset($start_from)
                              ->limit(50)
@@ -374,8 +373,7 @@ class Bans
             foreach ($result as $cur_ban) {
                 $ban_info['data'][] = $cur_ban;
             }
-        }
-        else {
+        } else {
             $ban_info['num_bans'] = $result->count('id');
         }
 

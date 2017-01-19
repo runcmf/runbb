@@ -6,26 +6,25 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit6e6e3188e82ec5b8cf53709fb56e59db
 {
-    public static $prefixLengthsPsr4 = array (
-        'R' => 
-        array (
+    public static $prefixLengthsPsr4 =  [
+        'R' =>
+         [
             'RunBB\\Plugins\\' => 14,
-        ),
-    );
+         ],
+    ];
 
-    public static $prefixDirsPsr4 = array (
-        'RunBB\\Plugins\\' => 
-        array (
+    public static $prefixDirsPsr4 =  [
+        'RunBB\\Plugins\\' =>
+         [
             0 => __DIR__ . '/../..' . '/src',
-        ),
-    );
+         ],
+    ];
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit6e6e3188e82ec5b8cf53709fb56e59db::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit6e6e3188e82ec5b8cf53709fb56e59db::$prefixDirsPsr4;
-
         }, null, ClassLoader::class);
     }
 }

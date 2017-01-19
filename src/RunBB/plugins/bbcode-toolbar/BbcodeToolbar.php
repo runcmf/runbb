@@ -59,18 +59,17 @@ class BbcodeToolbar extends Plugin
         document.addEventListener("DOMContentLoaded", function(event) {
             postEditorToolbar(\'req_message\');
         });';
-        $data['jsRAW'] = isset($data['jsRAW']) ? $data['jsRAW'] . $sT : $sT;// add or set
+        $data['jsraw'] = isset($data['jsraw']) ? $data['jsraw'] . $sT : $sT;// add or set
         $data['jsVars']['bbcodeToolbar'] = json_encode($lang_bbeditor);
         return $data;
     }
 
     public function addToolbar()
     {
-        View::addAsset('css', 'plugins/bbcode-toolbar/assets/bbeditor.css', array('type' => 'text/css', 'rel' => 'stylesheet'));
-        View::addAsset('css', 'plugins/bbcode-toolbar/assets/colorPicker.css', array('type' => 'text/css', 'rel' => 'stylesheet'));
-        View::addAsset('js', 'plugins/bbcode-toolbar/assets/bbeditor.js', array('type' => 'text/javascript'));
-        View::addAsset('js', 'plugins/bbcode-toolbar/assets/colorPicker.js', array('type' => 'text/javascript'));
+        View::addAsset('css', 'plugins/bbcode-toolbar/assets/bbeditor.css', ['type' => 'text/css', 'rel' => 'stylesheet']);
+        View::addAsset('css', 'plugins/bbcode-toolbar/assets/colorPicker.css', ['type' => 'text/css', 'rel' => 'stylesheet']);
+        View::addAsset('js', 'plugins/bbcode-toolbar/assets/bbeditor.js', ['type' => 'text/javascript']);
+        View::addAsset('js', 'plugins/bbcode-toolbar/assets/colorPicker.js', ['type' => 'text/javascript']);
         return true;
     }
-
 }

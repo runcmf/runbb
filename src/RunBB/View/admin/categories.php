@@ -41,7 +41,8 @@ Container::get('hooks')->fire('view.admin.categories.start');
             </form>
         </div>
 
-<?php if (!empty($cat_list)): ?>        <h2 class="block2"><span><?= __('Delete categories head') ?></span></h2>
+<?php if (!empty($cat_list)) :
+?>        <h2 class="block2"><span><?= __('Delete categories head') ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('deleteCategory') ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
@@ -56,9 +57,9 @@ Container::get('hooks')->fire('view.admin.categories.start');
                                         <select name="cat_to_delete" tabindex="3">
 <?php
 
-    foreach ($cat_list as $cur_cat) {
-        echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'">'.Utils::escape($cur_cat['cat_name']).'</option>'."\n";
-    }
+foreach ($cat_list as $cur_cat) {
+    echo "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_cat['id'].'">'.Utils::escape($cur_cat['cat_name']).'</option>'."\n";
+}
 
 ?>
                                         </select>
@@ -73,7 +74,8 @@ Container::get('hooks')->fire('view.admin.categories.start');
         </div>
 <?php endif; ?>
 
-<?php if (!empty($cat_list)): ?>        <h2 class="block2"><span><?= __('Edit categories head') ?></span></h2>
+<?php if (!empty($cat_list)) :
+?>        <h2 class="block2"><span><?= __('Edit categories head') ?></span></h2>
         <div class="box">
             <form method="post" action="<?= Router::pathFor('editCategory') ?>">
                 <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
@@ -91,15 +93,14 @@ Container::get('hooks')->fire('view.admin.categories.start');
                             <tbody>
 <?php
 
-    foreach ($cat_list as $cur_cat) {
-        ?>
-                                <tr>
-                                    <td class="tcl"><input type="text" name="cat[<?= $cur_cat['id'] ?>][name]" value="<?= Utils::escape($cur_cat['cat_name']) ?>" size="35" maxlength="80" /></td>
-                                    <td><input type="text" name="cat[<?= $cur_cat['id'] ?>][order]" value="<?= $cur_cat['disp_position'] ?>" size="3" maxlength="3" /></td>
-                                </tr>
+foreach ($cat_list as $cur_cat) {
+    ?>
+                        <tr>
+                            <td class="tcl"><input type="text" name="cat[<?= $cur_cat['id'] ?>][name]" value="<?= Utils::escape($cur_cat['cat_name']) ?>" size="35" maxlength="80" /></td>
+                            <td><input type="text" name="cat[<?= $cur_cat['id'] ?>][order]" value="<?= $cur_cat['disp_position'] ?>" size="3" maxlength="3" /></td>
+                        </tr>
 <?php
-
-    }
+}
 
 ?>
                             </tbody>

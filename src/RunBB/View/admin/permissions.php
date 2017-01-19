@@ -31,10 +31,10 @@ Container::get('hooks')->fire('view.admin.permissions.start');
                                     <th scope="row"><?= __('BBCode label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="form[message_bbcode]" value="1"<?php if (ForumSettings::get('p_message_bbcode') == '1') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('Yes') ?></strong></label>
                                         <label class="conl"><input type="radio" name="form[message_bbcode]" value="0"<?php if (ForumSettings::get('p_message_bbcode') == '0') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('BBCode help') ?></span>
                                     </td>
@@ -43,10 +43,10 @@ Container::get('hooks')->fire('view.admin.permissions.start');
                                     <th scope="row"><?= __('Image tag label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="form[message_img_tag]" value="1"<?php if (ForumSettings::get('p_message_img_tag') == '1') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('Yes') ?></strong></label>
                                         <label class="conl"><input type="radio" name="form[message_img_tag]" value="0"<?php if (ForumSettings::get('p_message_img_tag') == '0') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Image tag help') ?></span>
                                     </td>
@@ -55,10 +55,10 @@ Container::get('hooks')->fire('view.admin.permissions.start');
                                     <th scope="row"><?= __('All caps message label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="form[message_all_caps]" value="1"<?php if (ForumSettings::get('p_message_all_caps') == '1') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('Yes') ?></strong></label>
                                         <label class="conl"><input type="radio" name="form[message_all_caps]" value="0"<?php if (ForumSettings::get('p_message_all_caps') == '0') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('All caps message help') ?></span>
                                     </td>
@@ -67,10 +67,10 @@ Container::get('hooks')->fire('view.admin.permissions.start');
                                     <th scope="row"><?= __('All caps subject label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="form[subject_all_caps]" value="1"<?php if (ForumSettings::get('p_subject_all_caps') == '1') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('Yes') ?></strong></label>
                                         <label class="conl"><input type="radio" name="form[subject_all_caps]" value="0"<?php if (ForumSettings::get('p_subject_all_caps') == '0') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('All caps subject help') ?></span>
                                     </td>
@@ -79,10 +79,10 @@ Container::get('hooks')->fire('view.admin.permissions.start');
                                     <th scope="row"><?= __('Require e-mail label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="form[force_guest_email]" value="1"<?php if (ForumSettings::get('p_force_guest_email') == '1') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('Yes') ?></strong></label>
                                         <label class="conl"><input type="radio" name="form[force_guest_email]" value="0"<?php if (ForumSettings::get('p_force_guest_email') == '0') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Require e-mail help') ?></span>
                                     </td>
@@ -100,10 +100,10 @@ Container::get('hooks')->fire('view.admin.permissions.start');
                                     <th scope="row"><?= __('BBCode sigs label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="form[sig_bbcode]" value="1"<?php if (ForumSettings::get('p_sig_bbcode') == '1') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('Yes') ?></strong></label>
                                         <label class="conl"><input type="radio" name="form[sig_bbcode]" value="0"<?php if (ForumSettings::get('p_sig_bbcode') == '0') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('BBCode sigs help') ?></span>
                                     </td>
@@ -112,10 +112,10 @@ Container::get('hooks')->fire('view.admin.permissions.start');
                                     <th scope="row"><?= __('Image tag sigs label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="form[sig_img_tag]" value="1"<?php if (ForumSettings::get('p_sig_img_tag') == '1') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('Yes') ?></strong></label>
                                         <label class="conl"><input type="radio" name="form[sig_img_tag]" value="0"<?php if (ForumSettings::get('p_sig_img_tag') == '0') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Image tag sigs help') ?></span>
                                     </td>
@@ -124,10 +124,10 @@ Container::get('hooks')->fire('view.admin.permissions.start');
                                     <th scope="row"><?= __('All caps sigs label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="form[sig_all_caps]" value="1"<?php if (ForumSettings::get('p_sig_all_caps') == '1') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('Yes') ?></strong></label>
                                         <label class="conl"><input type="radio" name="form[sig_all_caps]" value="0"<?php if (ForumSettings::get('p_sig_all_caps') == '0') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('All caps sigs help') ?></span>
                                     </td>
@@ -159,10 +159,10 @@ Container::get('hooks')->fire('view.admin.permissions.start');
                                     <th scope="row"><?= __('Banned e-mail label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="form[allow_banned_email]" value="1"<?php if (ForumSettings::get('p_allow_banned_email') == '1') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('Yes') ?></strong></label>
                                         <label class="conl"><input type="radio" name="form[allow_banned_email]" value="0"<?php if (ForumSettings::get('p_allow_banned_email') == '0') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Banned e-mail help') ?></span>
                                     </td>
@@ -171,10 +171,10 @@ Container::get('hooks')->fire('view.admin.permissions.start');
                                     <th scope="row"><?= __('Duplicate e-mail label') ?></th>
                                     <td>
                                         <label class="conl"><input type="radio" name="form[allow_dupe_email]" value="1"<?php if (ForumSettings::get('p_allow_dupe_email') == '1') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('Yes') ?></strong></label>
                                         <label class="conl"><input type="radio" name="form[allow_dupe_email]" value="0"<?php if (ForumSettings::get('p_allow_dupe_email') == '0') {
-    echo ' checked="checked"';
+                                            echo ' checked="checked"';
 } ?> />&#160;<strong><?= __('No') ?></strong></label>
                                         <span class="clearb"><?= __('Duplicate e-mail help') ?></span>
                                     </td>

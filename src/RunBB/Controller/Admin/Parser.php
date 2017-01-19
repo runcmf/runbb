@@ -49,7 +49,6 @@ class Parser
         $count = count($bbcd);
 
         if (Input::post('form_sent')) {
-
             // Upload new smiley image to style/img/smilies
             if (Input::post('upload') && isset($_FILES['new_smiley']) && isset($_FILES['new_smiley']['error'])) {
                 $f = $_FILES['new_smiley'];
@@ -76,13 +75,19 @@ class Parser
                         }
                         break;
                     case 1: // case 1 similar to case 2 so fall through...
-                    case 2: throw new  RunBBException($lang_admin_parser['upload_err_2'], 400);    // File exceeds MAX_FILE_SIZE.
-                    case 3: throw new  RunBBException($lang_admin_parser['upload_err_5'], 400);    // File only partially uploaded.
+                    case 2:
+                        throw new  RunBBException($lang_admin_parser['upload_err_2'], 400);    // File exceeds MAX_FILE_SIZE.
+                    case 3:
+                        throw new  RunBBException($lang_admin_parser['upload_err_5'], 400);    // File only partially uploaded.
                     //        case 4: break; // No error. Normal response when this form element left empty
-                    case 4: throw new  RunBBException($lang_admin_parser['upload_err_6'], 400);    // No filename.
-                    case 6: throw new  RunBBException($lang_admin_parser['upload_err_7'], 500);    // No temp folder.
-                    case 7: throw new  RunBBException($lang_admin_parser['upload_err_8'], 500);    // Cannot write to disk.
-                    default: throw new  RunBBException($lang_admin_parser['upload_err_9'], 500);        // Generic/unknown error
+                    case 4:
+                        throw new  RunBBException($lang_admin_parser['upload_err_6'], 400);    // No filename.
+                    case 6:
+                        throw new  RunBBException($lang_admin_parser['upload_err_7'], 500);    // No temp folder.
+                    case 7:
+                        throw new  RunBBException($lang_admin_parser['upload_err_8'], 500);    // Cannot write to disk.
+                    default:
+                        throw new  RunBBException($lang_admin_parser['upload_err_9'], 500);        // Generic/unknown error
                 }
             }
 
@@ -186,10 +191,10 @@ class Parser
                 $sfile = Input::post('smiley_file');
                 $len = count($stext);
                 $good = '';
-                $smilies = array();
+                $smilies = [];
                 for ($i = 0; $i < $len; ++$i) { // Loop through all posted smileys.
                     if ($stext[$i] && $sfile !== 'select new file') {
-                        $smilies[$stext[$i]] = array('file' => $sfile[$i]);
+                        $smilies[$stext[$i]] = ['file' => $sfile[$i]];
                     }
                 }
             }
@@ -200,8 +205,8 @@ class Parser
 
         AdminUtils::generateAdminMenu('parser');
 
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Parser')),
+        return View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Parser')],
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'lang_admin_parser'    =>    $lang_admin_parser,
@@ -210,7 +215,6 @@ class Parser
                 'config' => $config,
                 'smilies' =>    $smilies,
                 'i'     =>  -1,
-            )
-        )->addTemplate('admin/parser.php')->display();
+            ])->addTemplate('admin/parser.php')->display();
     }
 }

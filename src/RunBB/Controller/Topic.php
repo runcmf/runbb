@@ -48,7 +48,7 @@ class Topic
         $cur_topic = $this->model->get_info_topic($args['id']);
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
-        $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : array();
+        $mods_array = ($cur_topic['moderators'] != '') ? unserialize($cur_topic['moderators']) : [];
         $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' &&
                 array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
@@ -92,9 +92,9 @@ class Topic
         }
 
         if (ForumSettings::get('o_feed_type') == '1') {
-            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['id'].'&amp;type=rss', array('title' => __('RSS forum feed')));
+            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['id'].'&amp;type=rss', ['title' => __('RSS forum feed')]);
         } elseif (ForumSettings::get('o_feed_type') == '2') {
-            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['id'].'&amp;type=atom', array('title' => __('Atom forum feed')));
+            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['id'].'&amp;type=atom', ['title' => __('Atom forum feed')]);
         }
 
         View::setPageInfo([
@@ -192,22 +192,21 @@ class Topic
 
         if ($new_fid = Input::post('move_to_forum')) {
             $this->model->move_to($args['fid'], $new_fid, $args['tid']);
-            return Router::redirect(Router::pathFor('Topic', array('id' => $args['tid'], 'name' => $args['name'])), __('Move topic redirect'));
+            return Router::redirect(Router::pathFor('Topic', ['id' => $args['tid'], 'name' => $args['name']]), __('Move topic redirect'));
         }
 
         // Check if there are enough forums to move the topic
-        if ( !$this->model->check_move_possible() ) {
+        if (!$this->model->check_move_possible()) {
             throw new  RunBBException(__('Nowhere to move'), 403);
         }
 
-        View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
+        View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
                 'active_page' => 'moderate',
                 'action'    =>    'single',
                 'topics'    =>    $args['tid'],
                 'list_forums'   => $this->model->get_forum_list_move($args['fid']),
-            )
-        )->addTemplate('moderate/move_topics.php')->display();
+            ])->addTemplate('moderate/move_topics.php')->display();
     }
 
     public function moderate($req, $res, $args)
@@ -217,7 +216,7 @@ class Topic
         // Make sure that only admmods allowed access this page
         $forumModel = new \RunBB\Model\Forum();
         $moderators = $forumModel->get_moderators($args['id']);
-        $mods_array = ($moderators != '') ? unserialize($moderators) : array();
+        $mods_array = ($moderators != '') ? unserialize($moderators) : [];
 
         if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))) {
             throw new  RunBBException(__('No permission'), 403);
@@ -235,33 +234,27 @@ class Topic
         // Delete one or more posts
         if (Input::post('delete_posts_comply')) {
             return $this->model->delete_posts($args['id'], $args['fid']);
-        }
-        else if (Input::post('delete_posts')) {
+        } elseif (Input::post('delete_posts')) {
                 $posts = $this->model->delete_posts($args['id'], $args['fid']);
 
-                View::setPageInfo(array(
-                        'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
+                View::setPageInfo([
+                        'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
                         'active_page' => 'moderate',
                         'posts' => $posts,
-                    )
-                )->addTemplate('moderate/delete_posts.php')->display();
-        }
-        else if (Input::post('split_posts_comply')) {
+                    ])->addTemplate('moderate/delete_posts.php')->display();
+        } elseif (Input::post('split_posts_comply')) {
             return $this->model->split_posts($args['id'], $args['fid'], $p);
-        }
-        else if (Input::post('split_posts')) {
-            View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')),
-                    'focus_element' => array('subject','new_subject'),
+        } elseif (Input::post('split_posts')) {
+            View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
+                    'focus_element' => ['subject','new_subject'],
                     'page' => $p,
                     'active_page' => 'moderate',
                     'id' => $args['id'],
                     'posts' => $this->model->split_posts($args['id'], $args['fid'], $p),
                     'list_forums' => $this->model->get_forum_list_split($args['fid']),
-                )
-            )->addTemplate('moderate/split_posts.php')->display();
-        }
-        else {
+                ])->addTemplate('moderate/split_posts.php')->display();
+        } else {
             // Show the moderate posts view
 
             // Used to disable the Move and Delete buttons if there are no replies to this topic
@@ -275,8 +268,8 @@ class Topic
                 $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
             }
 
-            View::setPageInfo(array(
-                    'title' => array(Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])),
+            View::setPageInfo([
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_topic['forum_name']), Utils::escape($cur_topic['subject'])],
                     'page' => $p,
                     'active_page' => 'moderate',
                     'cur_topic' => $cur_topic,
@@ -288,8 +281,7 @@ class Topic
                     'post_data' => $this->model->display_posts_moderate($args['id'], $start_from),
                     'button_status' => $button_status,
                     'start_from' => $start_from,
-                )
-            )->addTemplate('moderate/posts_view.php')->display();
+                ])->addTemplate('moderate/posts_view.php')->display();
         }
     }
 

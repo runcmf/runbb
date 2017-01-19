@@ -40,7 +40,7 @@ Container::get('hooks')->fire('view.install.start');
 
             <section class="container">
                 <div id="brdmain">
-                    <?php if (count($languages) > 1): ?>
+                    <?php if (count($languages) > 1) : ?>
                         <div class="blockform">
                             <h2><span><?= __('Choose install language') ?></span></h2>
                             <div class="box">
@@ -78,13 +78,13 @@ Container::get('hooks')->fire('view.install.start');
                                 <form id="install" method="post" action="">
                                     <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
                                     <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
-                                    <?php if (!empty($errors)): ?>
+                                    <?php if (!empty($errors)) : ?>
                                         <div class="inform">
                                             <div class="forminfo error-info">
                                                 <h3><?= __('Errors') ?></h3>
                                                 <ul class="error-list">
                                                     <?php
-                                                    $errors = (!is_array($errors)) ? array($errors) : $errors;
+                                                    $errors = (!is_array($errors)) ? [$errors] : $errors;
                                                     foreach ($errors as $error) {
                                                         echo "\t\t\t\t\t\t".'<li><strong>'.$error.'</strong></li>'."\n";
                                                     }
@@ -108,7 +108,7 @@ Container::get('hooks')->fire('view.install.start');
                                                     <?php
 
                                                     foreach ($supported_dbs as $id => $db_type) {
-                                                        if(in_array($id, $dbConfig)) {
+                                                        if (in_array($id, $dbConfig)) {
                                                             echo "\t\t\t\t\t\t\t".'<option value="'.$id.'" selected="selected">'.$db_type.'</option>'."\n";
                                                         } else {
                                                             echo "\t\t\t\t\t\t\t".'<option value="'.$id.'">'.$db_type.'</option>'."\n";

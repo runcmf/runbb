@@ -64,15 +64,14 @@ if (!empty($word_data)) {
                             <tbody>
 <?php
 
-    foreach ($word_data as $word) {
-        echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$word['id'].']" value="'.Utils::escape($word['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$word['id'].']" value="'.Utils::escape($word['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$word['id'].']" value="'.__('Update').'" />&#160;<input type="submit" name="remove['.$word['id'].']" value="'.__('Remove').'" /></td></tr>'."\n";
-    }
+foreach ($word_data as $word) {
+    echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$word['id'].']" value="'.Utils::escape($word['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$word['id'].']" value="'.Utils::escape($word['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$word['id'].']" value="'.__('Update').'" />&#160;<input type="submit" name="remove['.$word['id'].']" value="'.__('Remove').'" /></td></tr>'."\n";
+}
 
     ?>
                             </tbody>
                             </table>
 <?php
-
 } else {
     echo "\t\t\t\t\t\t\t".'<p>'.__('No words in list').'</p>'."\n";
 }

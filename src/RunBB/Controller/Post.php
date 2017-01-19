@@ -92,7 +92,6 @@ class Post
 
         // Did someone just hit "Submit" or "Preview"?
         if (Request::isPost()) {
-
             // Include $pid and $page if needed for confirm_referrer function called in check_errors_before_post()
             if (Input::post('pid')) {
                 $pid = Input::post('pid');
@@ -108,11 +107,11 @@ class Post
 
             // Let's see if everything went right
             $errors = $this->model->check_errors_before_post($args['fid'], $args['tid'], $args['qid'], $pid, $page, $errors);
-            if(!empty($errors)) {
+            if (!empty($errors)) {
                 $errors = $errors[0];
-tdie($errors);
+                tdie($errors);
 //tdie(Utils::arrayToList($errors));
-                if($errors[0] === 'debug') {
+                if ($errors[0] === 'debug') {
 //                    throw new RunBBException(__('Parser return').'<p>'.Utils::arrayToList($errors).'</p>', 200);
                     throw new RunBBException(__('Parser return').'<p>'.var_export($errors, true).'</p>', 200);
                 }
@@ -153,8 +152,10 @@ tdie($errors);
                     $this->model->increment_post_count($post, $new['tid']);
                 }
 
-                return Router::redirect(Router::pathFor('viewPost', ['pid' => $new['pid']]) . '#p' . $new['pid'],
-                    __('Post redirect'));
+                return Router::redirect(
+                    Router::pathFor('viewPost', ['pid' => $new['pid']]) . '#p' . $new['pid'],
+                    __('Post redirect')
+                );
             }
         }
 
@@ -221,8 +222,8 @@ tdie($errors);
             $post_data = '';
         }
 
-        return View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), $action),
+        return View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), $action],
                 'required_fields' => $required_fields,
                 'focus_element' => $focus_element,
                 'active_page' => 'post',
@@ -240,8 +241,7 @@ tdie($errors);
                 'url_topic' => $url_topic,
                 'quote' => $quote,
                 'errors' => $errors,
-            )
-        )->addTemplate('post.php')->display();
+            ])->addTemplate('post.php')->display();
     }
 
     public function delete($req, $res, $args)
@@ -284,7 +284,7 @@ tdie($errors);
         $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
 
         View::setPageInfo([
-            'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Delete post')),
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Delete post')],
             'active_page' => 'delete',
             'cur_post' => $cur_post,
             'id' => $args['id'],
@@ -300,7 +300,7 @@ tdie($errors);
         $cur_post = $this->model->get_info_edit($args['id']);
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
-        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : array();
+        $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : [];
         $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') ||
             (User::get()->g_moderator == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
@@ -340,8 +340,10 @@ tdie($errors);
                 // Edit the post
                 $this->model->edit_post($args['id'], $can_edit_subject, $post, $cur_post, $is_admmod);
 
-                return Router::redirect(Router::pathFor('viewPost', ['pid' => $args['id']]) . '#p' . $args['id'],
-                    __('Post redirect'));
+                return Router::redirect(
+                    Router::pathFor('viewPost', ['pid' => $args['id']]) . '#p' . $args['id'],
+                    __('Post redirect')
+                );
             }
         } else {
             $post = '';
@@ -365,8 +367,7 @@ tdie($errors);
                 'checkboxes' => $this->model->get_edit_checkboxes($can_edit_subject, $is_admmod, $cur_post, 1),
                 'can_edit_subject' => $can_edit_subject,
                 'post' => $post,
-            ]
-        )->addTemplate('edit.php')->display();
+            ])->addTemplate('edit.php')->display();
     }
 
     public function report($req, $res, $args)
@@ -387,8 +388,8 @@ tdie($errors);
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Report post')],
             'active_page' => 'report',
-            'required_fields' => array('req_reason' => __('Reason')),
-            'focus_element' => array('report', 'req_reason'),
+            'required_fields' => ['req_reason' => __('Reason')],
+            'focus_element' => ['report', 'req_reason'],
             'id' => $args['id'],
             'cur_post' => $cur_post
         ])->addTemplate('misc/report.php')->display();

@@ -29,27 +29,29 @@ Container::get('hooks')->fire('view.profile.section_privacy.start');
                         <p><?= __('Email setting info') ?></p>
                         <div class="rbox">
                             <label><input type="radio" name="form_email_setting" value="0"<?php if ($user->email_setting == '0') {
-    echo ' checked="checked"';
+                                echo ' checked="checked"';
 } ?> /><?= __('Email setting 1') ?><br /></label>
                             <label><input type="radio" name="form_email_setting" value="1"<?php if ($user->email_setting == '1') {
-    echo ' checked="checked"';
+                                echo ' checked="checked"';
 } ?> /><?= __('Email setting 2') ?><br /></label>
                             <label><input type="radio" name="form_email_setting" value="2"<?php if ($user->email_setting == '2') {
-    echo ' checked="checked"';
+                                echo ' checked="checked"';
 } ?> /><?= __('Email setting 3') ?><br /></label>
                         </div>
                     </div>
                 </fieldset>
             </div>
-<?php if (ForumSettings::get('o_forum_subscriptions') == '1' || ForumSettings::get('o_topic_subscriptions') == '1'): ?>                <div class="inform">
+<?php if (ForumSettings::get('o_forum_subscriptions') == '1' || ForumSettings::get('o_topic_subscriptions') == '1') :
+?>                <div class="inform">
                 <fieldset>
                     <legend><?= __('Subscription legend') ?></legend>
                     <div class="infldset">
                         <div class="rbox">
                             <label><input type="checkbox" name="form_notify_with_post" value="1"<?php if ($user->notify_with_post == '1') {
-    echo ' checked="checked"';
+                                echo ' checked="checked"';
 } ?> /><?= __('Notify full') ?><br /></label>
-<?php if (ForumSettings::get('o_topic_subscriptions') == '1'): ?>                                <label><input type="checkbox" name="form_auto_notify" value="1"<?php if ($user->auto_notify == '1') {
+<?php if (ForumSettings::get('o_topic_subscriptions') == '1') :
+?>                                <label><input type="checkbox" name="form_auto_notify" value="1"<?php if ($user->auto_notify == '1') {
     echo ' checked="checked"';
 } ?> /><?= __('Auto notify full') ?><br /></label>
 <?php endif; ?>

@@ -19,18 +19,20 @@
     var textarea = document.getElementById('req_message');
 
     if (textarea) {
-        textarea.insertAdjacentHTML( 'beforeBegin', postEditorToolbar('req_message') );
+        textarea.insertAdjacentHTML('beforeBegin', postEditorToolbar('req_message'));
 
         // Close color picker content on color selected
         var colorCells = document.getElementById('colorbox').getElementsByTagName("b");
-        for(var i=0; i<colorCells.length; i++) {
-            colorCells[i].onclick=function(event) { toggleColorpicker() }
+        for (var i=0; i<colorCells.length; i++) {
+            colorCells[i].onclick=function (event) {
+                toggleColorpicker() }
         }
     }
 
 }());
 
-function postEditorToolbar(obj) {
+function postEditorToolbar(obj)
+{
     // Get translations from js block in footer
     var langBbeditor = JSON.parse(phpVars.bbcodeToolbar),
         output = '';
@@ -75,7 +77,8 @@ function postEditorToolbar(obj) {
 
     return output;
 }
-function doImage(obj) {
+function doImage(obj)
+{
     var textarea = document.getElementById(obj),
         langBbeditor = JSON.parse(phpVars.bbcodeToolbar);
     var url = prompt(langBbeditor.promptImage, 'http://'),
@@ -83,7 +86,6 @@ function doImage(obj) {
         scrollLeft = textarea.scrollLeft;
 
     if (url != '' && url != null) {
-
         if (document.selection) {
             textarea.focus();
             var sel = document.selection.createRange();
@@ -104,7 +106,8 @@ function doImage(obj) {
 
 }
 
-function doURL(obj) {
+function doURL(obj)
+{
     var textarea = document.getElementById(obj),
         langBbeditor = JSON.parse(phpVars.bbcodeToolbar);
     var url = prompt(langBbeditor.promptUrl, 'http://'),
@@ -112,7 +115,6 @@ function doURL(obj) {
         scrollLeft = textarea.scrollLeft;
 
     if (url != '' && url != null) {
-
         if (document.selection) {
             textarea.focus();
             var sel = document.selection.createRange();
@@ -122,7 +124,6 @@ function doURL(obj) {
             } else {
                 sel.text = '[url=' + url + ']' + sel.text + '[/url]';
             }
-
         } else {
             var len = textarea.value.length,
                 start = textarea.selectionStart,
@@ -145,7 +146,8 @@ function doURL(obj) {
     }
 }
 
-function doQuote(obj) {
+function doQuote(obj)
+{
     var langBbeditor = JSON.parse(phpVars.bbcodeToolbar),
         author = prompt(langBbeditor.promptQuote),
         openTag = (author != '' && author != null) ? '[quote='+author+']' : '[quote]';
@@ -153,7 +155,8 @@ function doQuote(obj) {
     doAddTags(openTag,'[/quote]',obj)
 }
 
-function doAddTags(tag1, tag2, obj) {
+function doAddTags(tag1, tag2, obj)
+{
     var textarea = document.getElementById(obj);
     // Code for IE
     if (document.selection) {
@@ -182,11 +185,11 @@ function doAddTags(tag1, tag2, obj) {
             textarea.scrollTop = scrollTop;
             textarea.scrollLeft = scrollLeft;
         }
-
     }
 }
 
-function doList(tag1, tag2, obj) {
+function doList(tag1, tag2, obj)
+{
     var textarea = document.getElementById(obj);
     // Code for IE
     if (document.selection) {
@@ -198,10 +201,8 @@ function doList(tag1, tag2, obj) {
             list[i] = '[*]' + list[i] + '[/*]';
         }
         sel.text = tag1 + '\n' + list.join("\n") + '\n' + tag2;
-    } else
-    // Code for Firefox
+    } else // Code for Firefox
     {
-
         var len = textarea.value.length;
         var start = textarea.selectionStart;
         var end = textarea.selectionEnd;
@@ -229,12 +230,14 @@ function doList(tag1, tag2, obj) {
 // Custom adds :
 
 // Show or hide color picker content
-function toggleColorpicker() {
+function toggleColorpicker()
+{
     var colorpicker = document.getElementById('colorpicker'),
         display = (colorpicker.offsetParent === null) ? 'inline-block' : 'none';
     colorpicker.style.display=display;
 }
-function OnCustomColorChanged(selectedColor, selectedColorTitle, colorPickerIndex) {
+function OnCustomColorChanged(selectedColor, selectedColorTitle, colorPickerIndex)
+{
     var textarea = document.getElementById('req_message');
     var scrollTop = textarea.scrollTop;
     var scrollLeft = textarea.scrollLeft;

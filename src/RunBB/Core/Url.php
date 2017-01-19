@@ -603,7 +603,7 @@ class Url
         }
 
         if ($num_pages <= 1) {
-            $pages = array('<strong class="item1">1</strong>');
+            $pages = ['<strong class="item1">1</strong>'];
         } else {
             // Add a previous page link
             if ($num_pages > 1 && $cur_page > 1) {
@@ -625,8 +625,11 @@ class Url
                 if ($current < 1 || $current > $num_pages) {
                     continue;
                 } elseif ($current != $cur_page || $link_to_all) {
-                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.str_replace('#', '',
-                            self::get_sublink($link, 'page/$1', $current, $args)).'">'.
+                    $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.str_replace(
+                        '#',
+                        '',
+                        self::get_sublink($link, 'page/$1', $current, $args)
+                    ).'">'.
                         Utils::forum_number_format($current).'</a>';
                 } else {
                     $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.
@@ -675,7 +678,7 @@ class Url
         }
 
         if ($num_pages <= 1) {
-            $pages = array('<strong class="item1">1</strong>');
+            $pages = ['<strong class="item1">1</strong>'];
         } else {
             // Add a previous page link
             if ($num_pages > 1 && $cur_page > 1) {
@@ -735,7 +738,7 @@ class Url
     {
         $str = strtr($str, self::$url_replace);
         $str = strtolower(utf8_decode($str));
-        $str = Utils::trim(preg_replace(array('/[^a-z0-9\s]/', '/[\s]+/'), array('', '-'), $str), '-');
+        $str = Utils::trim(preg_replace(['/[^a-z0-9\s]/', '/[\s]+/'], ['', '-'], $str), '-');
 
         if (empty($str)) {
             $str = 'view';
@@ -798,8 +801,11 @@ class Url
             }
         }
 
-        $gen_link = $base_url.'/'.str_replace('#', str_replace('$1', str_replace('$1', $subarg, $sublink), '$1/'),
-                $gen_link);
+        $gen_link = $base_url.'/'.str_replace(
+            '#',
+            str_replace('$1', str_replace('$1', $subarg, $sublink), '$1/'),
+            $gen_link
+        );
 
         return $gen_link;
     }

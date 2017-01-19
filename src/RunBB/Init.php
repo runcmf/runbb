@@ -18,10 +18,11 @@
 
 namespace RunBB;
 
-use \RunBB\Middleware\Logged as IsLogged;
-use \RunBB\Middleware\ReadBoard as CanReadBoard;
-use \RunBB\Middleware\Admin as IsAdmin;
-use \RunBB\Middleware\AdminModo as IsAdmMod;
+use RunBB\Core\Interfaces\SlimStatic;
+use RunBB\Middleware\Logged as IsLogged;
+use RunBB\Middleware\ReadBoard as CanReadBoard;
+use RunBB\Middleware\Admin as IsAdmin;
+use RunBB\Middleware\AdminModo as IsAdmMod;
 
 class Init
 {
@@ -30,6 +31,10 @@ class Init
     public function __construct($app)
     {
         $this->app = $app;
+
+        SlimStatic::boot($app);
+        // Allow static proxies to be called from anywhere in App
+        Statical::addNamespace('*', 'RunBB\\*');
     }
 
     public function init()
@@ -138,7 +143,7 @@ class Init
                         $trace = $e->getTrace();
                         $msg='backtrace:<br/>';
                         for ($i=0; $i < 5; $i++) {
-                            if(isset($trace[$i]['file'])) {
+                            if (isset($trace[$i]['file'])) {
                                 $msg .= '<p>' . $i . ': file: &nbsp; &nbsp; &nbsp;' .
                                     str_replace(DIR, '', $trace[$i]['file']) . ' [' . $trace[$i]['line'] . ']</p>';
                             } else {
@@ -155,7 +160,7 @@ class Init
                 }
 
                 return View::setPageInfo([
-                    'title' => array(\RunBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')),
+                    'title' => [\RunBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')],
                     'msg'    =>    $error['message'],
                     'backlink'    => $error['back'],
                 ])->addTemplate('error.php')->display();
@@ -188,14 +193,13 @@ class Init
 
     private function registerAdminRoute()
     {
-//        $this->app->group(self::getAdminUrl(), function () {
         Route::group(self::getAdminUrl(), function () {
             // Admin index
             $this->get('[/action/{action}]', '\RunBB\Controller\Admin\Index:display')->setName('adminAction');
             Route::get('/index', '\RunBB\Controller\Admin\Index:display')->setName('adminIndex');
 
             // Admin bans
-            Route::group('/bans', function() {
+            Route::group('/bans', function () {
                 Route::get('', '\RunBB\Controller\Admin\Bans:display')->setName('adminBans');
                 Route::get('/delete/{id:[0-9]+}', '\RunBB\Controller\Admin\Bans:delete')->setName('deleteBan');
                 Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\RunBB\Controller\Admin\Bans:edit')->setName('editBan');
@@ -206,7 +210,7 @@ class Init
             Route::map(['GET', 'POST'], '/options', '\RunBB\Controller\Admin\Options:display')->add(new IsAdmin)->setName('adminOptions');
 
             // Admin categories
-            Route::group('/categories', function() {
+            Route::group('/categories', function () {
                 Route::get('', '\RunBB\Controller\Admin\Categories:display')->setName('adminCategories');
                 Route::post('/add', '\RunBB\Controller\Admin\Categories:add')->setName('addCategory');
                 Route::post('/edit', '\RunBB\Controller\Admin\Categories:edit')->setName('editCategory');
@@ -227,7 +231,7 @@ class Init
             Route::get('/phpinfo', '\RunBB\Controller\Admin\Statistics:phpinfo')->setName('phpInfo');
 
             // Admin forums
-            Route::group('/forums', function() {
+            Route::group('/forums', function () {
                 Route::map(['GET', 'POST'], '', '\RunBB\Controller\Admin\Forums:display')->setName('adminForums');
                 Route::post('/add', '\RunBB\Controller\Admin\Forums:add')->setName('addForum');
                 Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\RunBB\Controller\Admin\Forums:edit')->setName('editForum');
@@ -235,7 +239,7 @@ class Init
             })->add(new IsAdmin);
 
             // Admin groups
-            Route::group('/groups', function() {
+            Route::group('/groups', function () {
                 Route::map(['GET', 'POST'], '', '\RunBB\Controller\Admin\Groups:display')->setName('adminGroups');
                 Route::map(['GET', 'POST'], '/add', '\RunBB\Controller\Admin\Groups:addedit')->setName('addGroup');
                 Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}', '\RunBB\Controller\Admin\Groups:addedit')->setName('editGroup');
@@ -243,7 +247,7 @@ class Init
             })->add(new IsAdmin);
 
             // Admin plugins
-            Route::group('/plugins', function() {
+            Route::group('/plugins', function () {
                 Route::map(['GET', 'POST'], '', '\RunBB\Controller\Admin\Plugins:index')->setName('adminPlugins');
                 Route::map(['GET', 'POST'], '/info/{name:[\w\-]+}', '\RunBB\Controller\Admin\Plugins:info')->setName('infoPlugin');
                 Route::get('/activate/{name:[\w\-]+}', '\RunBB\Controller\Admin\Plugins:activate')->setName('activatePlugin');
@@ -259,7 +263,7 @@ class Init
             Route::map(['GET', 'POST'], '/parser', '\RunBB\Controller\Admin\Parser:display')->add(new IsAdmin)->setName('adminParser');
 
             // Admin users
-            Route::group('/users', function() {
+            Route::group('/users', function () {
                 Route::map(['GET', 'POST'], '', '\RunBB\Controller\Admin\Users:display')->setName('adminUsers');
                 Route::get('/ip-stats/id/{id:[0-9]+}', '\RunBB\Controller\Admin\Users:ipstats')->setName('usersIpStats');
                 Route::get('/show-users', '\RunBB\Controller\Admin\Users:showusers')->setName('usersIpShow');
@@ -272,7 +276,7 @@ class Init
 //        $this->app->map(['GET', 'POST'], '/install', '\RunBB\Controller\Install:run')->setName('install');
         $this->app->group('/forum', function () {
             // Forum
-            Route::group('', function() {
+            Route::group('', function () {
                 // Index
                 $this->get('', '\RunBB\Controller\Index:display')->add(new CanReadBoard)->setName('home');
 
@@ -288,7 +292,7 @@ class Init
             $this->get('/rules', '\RunBB\Controller\Index:rules')->setName('rules');
             $this->get('/mark-read', '\RunBB\Controller\Index:markread')->add(new IsLogged)->setName('markRead');
             // Topic
-            Route::group('/topic', function() {
+            Route::group('/topic', function () {
                 Route::get('/{id:[0-9]+}[/{name:[\w\-]+}]', '\RunBB\Controller\Topic:display')->setName('Topic');
                 Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\RunBB\Controller\Topic:display')->setName('TopicPaginate');
                 Route::get('/{id:[0-9]+}/action/{action:[\w\-]+}', '\RunBB\Controller\Topic:action')->setName('topicAction');
@@ -303,7 +307,7 @@ class Init
                 Route::get('/{id:[0-9]+}/action/{action}', '\RunBB\Controller\Topic{action}')->setName('topicAction');
             })->add(new CanReadBoard);
             // Post routes
-            Route::group('/post', function() {
+            Route::group('/post', function () {
                 Route::get('/{pid:[0-9]+}', '\RunBB\Controller\Topic:viewpost')->setName('viewPost');
                 Route::map(['GET', 'POST'], '/new-topic/{fid:[0-9]+}', '\RunBB\Controller\Post:newpost')->setName('newTopic');
                 Route::map(['GET', 'POST'], '/reply/{tid:[0-9]+}', '\RunBB\Controller\Post:newreply')->setName('newReply');
@@ -317,14 +321,14 @@ class Init
             Route::get('/userlist', '\RunBB\Controller\Userlist:display')->add(new CanReadBoard)->setName('userList');
 
             // Auth routes
-            Route::group('/auth', function() {
+            Route::group('/auth', function () {
                 Route::map(['GET', 'POST'], '', '\RunBB\Controller\Auth:login')->setName('login');
                 Route::map(['GET', 'POST'], '/forget', '\RunBB\Controller\Auth:forget')->setName('resetPassword');
                 Route::get('/logout/token/{token}', '\RunBB\Controller\Auth:logout')->setName('logout');
             });
 
             // Register routes
-            Route::group('/register', function() {
+            Route::group('/register', function () {
                 Route::get('', '\RunBB\Controller\Register:rules')->setName('registerRules');
                 Route::map(['GET', 'POST'], '/agree', '\RunBB\Controller\Register:display')->setName('register');
                 Route::get('/cancel', '\RunBB\Controller\Register:cancel')->setName('registerCancel');
@@ -332,12 +336,12 @@ class Init
             // Help
             Route::get('/help', '\RunBB\Controller\Help:display')->add(new CanReadBoard)->setName('help');
             // Search routes
-            Route::group('/search', function() {
+            Route::group('/search', function () {
                 Route::get('', '\RunBB\Controller\Search:display')->setName('search');
                 Route::get('/show/{show}', '\RunBB\Controller\Search:quicksearches')->setName('quickSearch');
             })->add(new CanReadBoard);
             // Profile routes
-            Route::group('/user', function() {
+            Route::group('/user', function () {
                 Route::map(['GET', 'POST'], '/{id:[0-9]+}', '\RunBB\Controller\Profile:display')->setName('userProfile');
                 Route::map(['GET', 'POST'], '/{id:[0-9]+}/section/{section}', '\RunBB\Controller\Profile:display')->setName('profileSection');
                 Route::map(['GET', 'POST'], '/{id:[0-9]+}/action/{action}', '\RunBB\Controller\Profile:action')->setName('profileAction'); // TODO: Move to another route for non-authed users

@@ -25,9 +25,9 @@ if (!empty($errors)) {
             <ul class="error-list">
 <?php
 
-    foreach ($errors as $cur_error) {
-        echo "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
-    }
+foreach ($errors as $cur_error) {
+    echo "\t\t\t\t".'<li><strong>'.$cur_error.'</strong></li>'."\n";
+}
     ?>
             </ul>
         </div>
@@ -35,7 +35,6 @@ if (!empty($errors)) {
 </div>
 
 <?php
-
 }
 ?>
 <div class="blockform">
@@ -53,7 +52,9 @@ if (!empty($errors)) {
                     </div>
                 </fieldset>
             </div>
-            <p class="buttons"><input type="submit" name="request_pass" value="<?= __('Submit') ?>" /><?php if (empty($errors)): ?> <a href="javascript:history.go(-1)"><?= __('Go back') ?></a><?php endif; ?></p>
+            <p class="buttons"><input type="submit" name="request_pass" value="<?= __('Submit') ?>" /><?php if (empty($errors)) :
+?> <a href="javascript:history.go(-1)"><?= __('Go back') ?></a><?php
+endif; ?></p>
         </form>
     </div>
 </div>

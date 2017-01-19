@@ -106,7 +106,7 @@ class Search
         }
 
         // Exclude % and * when checking whether current word is valid
-        $word = str_replace(array('%', '*'), '', $word);
+        $word = str_replace(['%', '*'], '', $word);
 
         // Check the word is within the min/max length
         $num_chars = Utils::strlen($word);
@@ -140,12 +140,12 @@ class Search
         static $patterns;
 
         if (!isset($patterns)) {
-            $patterns = array(
+            $patterns = [
                 '%\[img=([^\]]*+)\]([^[]*+)\[/img\]%' => '$2 $1',    // Keep the url and description
                 '%\[(url|email)=([^\]]*+)\]([^[]*+(?:(?!\[/\1\])\[[^[]*+)*)\[/\1\]%' => '$2 $3',    // Keep the url and text
                 '%\[(img|url|email)\]([^[]*+(?:(?!\[/\1\])\[[^[]*+)*)\[/\1\]%' => '$2',        // Keep the url
                 '%\[(topic|post|forum|user)\][1-9]\d*\[/\1\]%' => ' ',        // Do not index topic/post/forum/user ID
-            );
+            ];
         }
 
         return preg_replace(array_keys($patterns), array_values($patterns), $text);
@@ -165,19 +165,19 @@ class Search
 
         // Split old and new post/subject to obtain array of 'words'
         $words_message = $this->split_words($message, true);
-        $words_subject = ($subject) ? $this->split_words($subject, true) : array();
+        $words_subject = ($subject) ? $this->split_words($subject, true) : [];
 
         if ($mode == 'edit') {
-            $select_update_search_index = array('w.id', 'w.word', 'm.subject_match');
+            $select_update_search_index = ['w.id', 'w.word', 'm.subject_match'];
             $result = \ORM::for_table(ORM_TABLE_PREFIX.'search_words')->table_alias('w')
                 ->select_many($select_update_search_index)
-                ->inner_join(ORM_TABLE_PREFIX.'search_matches', array('w.id', '=', 'm.word_id'), 'm')
+                ->inner_join(ORM_TABLE_PREFIX.'search_matches', ['w.id', '=', 'm.word_id'], 'm')
                 ->where('m.post_id', $post_id)
                 ->find_many();
 
             // Declare here to stop array_keys() and array_diff() from complaining if not set
-            $cur_words['post'] = array();
-            $cur_words['subject'] = array();
+            $cur_words['post'] = [];
+            $cur_words['subject'] = [];
 
             foreach ($result as $row) {
                 $match_in = ($row['subject_match']) ? 'subject' : 'post';
@@ -194,8 +194,8 @@ class Search
         } else {
             $words['add']['post'] = $words_message;
             $words['add']['subject'] = $words_subject;
-            $words['del']['post'] = array();
-            $words['del']['subject'] = array();
+            $words['del']['post'] = [];
+            $words['del']['subject'] = [];
         }
 
         unset($words_message);
@@ -205,12 +205,12 @@ class Search
         $unique_words = array_unique(array_merge($words['add']['post'], $words['add']['subject']));
 
         if (!empty($unique_words)) {
-            $select_unique_words = array('id', 'word');
+            $select_unique_words = ['id', 'word'];
             $result = \ORM::for_table(ORM_TABLE_PREFIX.'search_words')->select_many($select_unique_words)
                 ->where_in('word', $unique_words)
                 ->find_many();
 
-            $word_ids = array();
+            $word_ids = [];
             foreach ($result as $row) {
                 $word_ids[$row['word']] = $row['id'];
             }
@@ -254,8 +254,7 @@ class Search
             $subject_match = ($match_in == 'subject') ? 1 : 0;
 
             if (!empty($wordlist)) {
-
-                $sql = array();
+                $sql = [];
                 foreach ($wordlist as $word) {
                     $sql[] = $cur_words[$match_in][$word];
                 }

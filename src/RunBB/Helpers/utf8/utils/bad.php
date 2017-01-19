@@ -43,7 +43,7 @@ function utf8_bad_find($str)
         '|\xF4[\x80-\x8F][\x80-\xBF]{2}'.        # Plane 16
         '|(.{1}))';                              # Invalid byte
     $pos = 0;
-    $badList = array();
+    $badList = [];
 
     while (preg_match('/'.$UTF8_BAD.'/S', $str, $matches)) {
         $bytes = strlen($matches[0]);
@@ -84,7 +84,7 @@ function utf8_bad_findall($str)
         '|\xF4[\x80-\x8F][\x80-\xBF]{2}'.        # Plane 16
         '|(.{1}))';                              # Invalid byte
     $pos = 0;
-    $badList = array();
+    $badList = [];
 
     while (preg_match('/'.$UTF8_BAD.'/S', $str, $matches)) {
         $bytes = strlen($matches[0]);
@@ -386,31 +386,31 @@ function utf8_bad_explain($code)
 {
     switch ($code) {
         case UTF8_BAD_5OCTET:
-        return 'Five octet sequences are valid UTF-8 but are not supported by Unicode';
+            return 'Five octet sequences are valid UTF-8 but are not supported by Unicode';
         break;
 
         case UTF8_BAD_6OCTET:
-        return 'Six octet sequences are valid UTF-8 but are not supported by Unicode';
+            return 'Six octet sequences are valid UTF-8 but are not supported by Unicode';
         break;
 
         case UTF8_BAD_SEQID:
-        return 'Invalid octet for use as start of multi-byte UTF-8 sequence';
+            return 'Invalid octet for use as start of multi-byte UTF-8 sequence';
         break;
 
         case UTF8_BAD_NONSHORT:
-        return 'From Unicode 3.1, non-shortest form is illegal';
+            return 'From Unicode 3.1, non-shortest form is illegal';
         break;
 
         case UTF8_BAD_SURROGATE:
-        return 'From Unicode 3.2, surrogate characters are illegal';
+            return 'From Unicode 3.2, surrogate characters are illegal';
         break;
 
         case UTF8_BAD_UNIOUTRANGE:
-        return 'Codepoints outside the Unicode range are illegal';
+            return 'Codepoints outside the Unicode range are illegal';
         break;
 
         case UTF8_BAD_SEQINCOMPLETE:
-        return 'Incomplete multi-octet sequence';
+            return 'Incomplete multi-octet sequence';
         break;
     }
 

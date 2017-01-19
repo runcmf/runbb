@@ -21,11 +21,11 @@ class Index
         Container::get('hooks')->fire('model.index.get_page_head_start');
 
         if (ForumSettings::get('o_feed_type') == '1') {
-            $page_head = array('feed' => '<link rel="alternate" type="application/rss+xml" 
-            href="extern.php?action=feed&amp;type=rss" title="'.__('RSS active topics feed').'" />');
+            $page_head = ['feed' => '<link rel="alternate" type="application/rss+xml" 
+            href="extern.php?action=feed&amp;type=rss" title="'.__('RSS active topics feed').'" />'];
         } elseif (ForumSettings::get('o_feed_type') == '2') {
-            $page_head = array('feed' => '<link rel="alternate" type="application/atom+xml" 
-            href="extern.php?action=feed&amp;type=atom" title="'.__('Atom active topics feed').'" />');
+            $page_head = ['feed' => '<link rel="alternate" type="application/atom+xml" 
+            href="extern.php?action=feed&amp;type=atom" title="'.__('Atom active topics feed').'" />'];
         }
 
         $page_head = Container::get('hooks')->fire('model.index.get_page_head', $page_head);
@@ -38,7 +38,7 @@ class Index
     {
         Container::get('hooks')->fire('model.index.get_forum_actions_start');
 
-        $forum_actions = array();
+        $forum_actions = [];
 
         // Display a "mark all as read" link
         if (!User::get()->is_guest) {
@@ -55,16 +55,19 @@ class Index
     {
         Container::get('hooks')->fire('model.index.get_new_posts_start');
 
-        $query['select'] = array('f.id', 'f.last_post');
-        $query['where'] = array(
-            array('fp.read_forum' => 'IS NULL'),
-            array('fp.read_forum' => '1')
-        );
+        $query['select'] = ['f.id', 'f.last_post'];
+        $query['where'] = [
+            ['fp.read_forum' => 'IS NULL'],
+            ['fp.read_forum' => '1']
+        ];
         $query = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
             ->table_alias('f')
             ->select_many($query['select'])
-            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                '(`fp`.`forum_id`=`f`.`id` AND `fp`.`group_id`='.User::get()->g_id.')', 'fp')
+            ->left_outer_join(
+                ORM_TABLE_PREFIX.'forum_perms',
+                '(`fp`.`forum_id`=`f`.`id` AND `fp`.`group_id`='.User::get()->g_id.')',
+                'fp'
+            )
 //            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
 //            ->where_any_is($query['where'])
@@ -75,7 +78,7 @@ class Index
 
         $query = $query->find_result_set();
 //tdie($query);
-        $forums = $new_topics = array();
+        $forums = $new_topics = [];
         $tracked_topics = Track::get_tracked_topics();
 
         foreach ($query as $cur_forum) {
@@ -89,7 +92,7 @@ class Index
             if (empty($tracked_topics['topics'])) {
                 $new_topics = $forums;
             } else {
-                $query['select'] = array('forum_id', 'id', 'last_post');
+                $query['select'] = ['forum_id', 'id', 'last_post'];
 
                 $query = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                     ->select_many($query['select'])
@@ -128,7 +131,7 @@ class Index
             $new_topics = $this->get_new_posts();
         }
 
-        $query['select'] = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.forum_desc', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.num_posts', 'f.last_post', 'f.last_post_id', 'f.last_poster');
+        $query['select'] = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.forum_desc', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.num_posts', 'f.last_post', 'f.last_post_id', 'f.last_poster'];
 //        $query['where'] = array(
 //            array('fp.read_forum' => 'IS NULL'),
 //            array('fp.read_forum' => '1')
@@ -139,8 +142,11 @@ class Index
             ->table_alias('c')
             ->select_many($query['select'])
             ->inner_join(ORM_TABLE_PREFIX.'forums', ['c.id', '=', 'f.cat_id'], 'f')
-            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-                '(`fp`.`forum_id`=`f`.`id` AND `fp`.`group_id`='. User::get()->g_id.')', 'fp')
+            ->left_outer_join(
+                ORM_TABLE_PREFIX.'forum_perms',
+                '(`fp`.`forum_id`=`f`.`id` AND `fp`.`group_id`='. User::get()->g_id.')',
+                'fp'
+            )
 //            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
 //            ->where_any_is($query['where'])
@@ -152,7 +158,7 @@ class Index
 
         $query = $query->find_result_set();
 
-        $index_data = array();
+        $index_data = [];
         $i = 0;
         foreach ($query as $cur_forum) {
             if ($i == 0) {
@@ -213,7 +219,7 @@ class Index
 
             if ($cur_forum->moderators != '') {
                 $mods_array = unserialize($cur_forum->moderators);
-                $moderators = array();
+                $moderators = [];
 
                 foreach ($mods_array as $mod_username => $mod_id) {
                     if (User::get()->g_view_users == '1') {
@@ -277,11 +283,11 @@ class Index
         Container::get('hooks')->fire('model.index.fetch_users_online_start');
 
         // Fetch users online info and generate strings for output
-        $online = array();
+        $online = [];
         $online['num_guests'] = 0;
 
-        $query['select'] = array('user_id', 'ident');
-        $query['where'] = array('idle' => '0');
+        $query['select'] = ['user_id', 'ident'];
+        $query['where'] = ['idle' => '0'];
 //        $query['order_by'] = array('ident');
 
         $query = \ORM::for_table(ORM_TABLE_PREFIX.'online')
@@ -294,7 +300,7 @@ class Index
 
         $query = $query->find_result_set();
 
-        foreach($query as $user_online) {
+        foreach ($query as $user_online) {
             if ($user_online->user_id > 1) {
                 if (User::get()->g_view_users == '1') {
                     $online['users'][] = "\n\t\t\t\t".'<dd><a href="'.Router::pathFor('userProfile', ['id' => $user_online->user_id]).'">'.Utils::escape($user_online->ident).'</a>';

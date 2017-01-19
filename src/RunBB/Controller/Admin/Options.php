@@ -30,14 +30,13 @@ class Options
 
         AdminUtils::generateAdminMenu('options');
 
-        View::setPageInfo(array(
-                'title' => array(Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Options')),
+        View::setPageInfo([
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Options')],
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'languages' => $this->model->get_langs(),
                 'styles' => $this->model->get_styles(),
                 'times' => $this->model->get_times(),
-            )
-        )->addTemplate('admin/options.php')->display();
+            ])->addTemplate('admin/options.php')->display();
     }
 }

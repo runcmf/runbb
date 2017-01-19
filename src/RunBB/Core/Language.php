@@ -25,7 +25,7 @@ class Language
     private $domain;
     private $translator;
 
-    public function __construct($domain='RunBB')
+    public function __construct($domain = 'RunBB')
     {
         $this->domain = $domain;
         $this->translator = new Translator();
@@ -47,7 +47,7 @@ class Language
     {
         $this->translator->loadTranslations(
             Translations::fromPoFile($file)->setDomain($domain)
-//            Translations::fromMoFile($file)->setDomain($domain)
+            //            Translations::fromMoFile($file)->setDomain($domain)
         );
     }
 

@@ -62,11 +62,11 @@ class Maintenance
         $start_at = Container::get('hooks')->fire('model.admin.maintenance.get_query_str.start_at', $start_at);
 
         // Fetch posts to process this cycle
-        $result['select'] = array('p.id', 'p.message', 't.subject', 't.first_post_id');
+        $result['select'] = ['p.id', 'p.message', 't.subject', 't.first_post_id'];
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->table_alias('p')
                         ->select_many($result['select'])
-                        ->inner_join(ORM_TABLE_PREFIX.'topics', array('t.id', '=', 'p.topic_id'), 't')
+                        ->inner_join(ORM_TABLE_PREFIX.'topics', ['t.id', '=', 'p.topic_id'], 't')
                         ->where_gte('p.id', $start_at)
                         ->order_by_asc('p.id')
                         ->limit($per_page);
@@ -125,7 +125,7 @@ class Maintenance
 
         $topics_id = $topics_id->find_many();
 
-        $topic_ids = array();
+        $topic_ids = [];
         foreach ($topics_id as $row) {
             $topic_ids[] = $row['id'];
         }
@@ -137,7 +137,7 @@ class Maintenance
                             ->where_in('topic_id', $topic_ids)
                             ->find_many();
 
-            $post_ids = array();
+            $post_ids = [];
             foreach ($posts_id as $row) {
                 $post_ids[] = $row['id'];
             }
@@ -191,13 +191,13 @@ class Maintenance
         // Locate any "orphaned redirect topics" and delete them
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')->table_alias('t1')
                         ->select('t1.id')
-                        ->left_outer_join(ORM_TABLE_PREFIX.'topics', array('t1.moved_to', '=', 't2.id'), 't2')
+                        ->left_outer_join(ORM_TABLE_PREFIX.'topics', ['t1.moved_to', '=', 't2.id'], 't2')
                         ->where_null('t2.id')
                         ->where_not_null('t1.moved_to');
         $result = Container::get('hooks')->fireDB('model.admin.maintenance.prune_comply.orphans_query', $result);
         $result = $result->find_array();
 
-        $orphans = array();
+        $orphans = [];
         if (!empty($result)) {
             foreach ($result as $row) {
                 $orphans[] = $row['id'];
@@ -214,7 +214,7 @@ class Maintenance
 
     public function get_info_prune($prune_sticky, $prune_from)
     {
-        $prune = array();
+        $prune = [];
 
         $prune['days'] = Utils::trim(Input::post('req_prune_days'));
         if ($prune['days'] == '' || preg_match('%[^0-9]%', $prune['days'])) {
@@ -260,12 +260,12 @@ class Maintenance
     {
         $output = '';
 
-        $select_get_categories = array('cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name');
+        $select_get_categories = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name'];
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'categories')
             ->table_alias('c')
             ->select_many($select_get_categories)
-            ->inner_join(ORM_TABLE_PREFIX.'forums', array('c.id', '=', 'f.cat_id'), 'f')
+            ->inner_join(ORM_TABLE_PREFIX.'forums', ['c.id', '=', 'f.cat_id'], 'f')
             ->where_null('f.redirect_url')
             ->orderByExpr('c.disp_position, c.id, f.disp_position');
         $result = Container::get('hooks')->fireDB('model.admin.maintenance.get_categories.query', $result);

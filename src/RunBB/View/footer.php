@@ -7,7 +7,8 @@
  * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
  */
 
-use RunBB\Core\Url;use RunBB\Core\Utils;
+use RunBB\Core\Url;
+use RunBB\Core\Utils;
 
 // Make sure no one attempts to run this script "directly"
 if (!isset($feather)) {
@@ -77,14 +78,13 @@ if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) { ?>
                             <div><label><span><?= __('Jump to') ?><br /></span></label>
                                 <select name="id" onchange="window.location=(this.options[this.selectedIndex].value)">
 <?php
-print_r(User::get()->g_id);
-                foreach ($quickjump[(int) User::get()->g_id] as $cat_id => $cat_data) {
-                    echo "\t\t\t\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";
-                    foreach ($cat_data['cat_forums'] as $forum) {
-                        echo "\t\t\t\t\t\t\t\t\t\t".'<option value="'.Router::pathFor('Forum', ['id' => $forum['forum_id'], 'name' => Url::url_friendly($forum['forum_name'])]).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
-                    }
-                    echo "\t\t\t\t\t\t\t\t\t".'</optgroup>'."\n";
-                }
+foreach ($quickjump[(int) User::get()->g_id] as $cat_id => $cat_data) {
+    echo "\t\t\t\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";
+    foreach ($cat_data['cat_forums'] as $forum) {
+        echo "\t\t\t\t\t\t\t\t\t\t".'<option value="'.Router::pathFor('Forum', ['id' => $forum['forum_id'], 'name' => Url::url_friendly($forum['forum_name'])]).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
+    }
+    echo "\t\t\t\t\t\t\t\t\t".'</optgroup>'."\n";
+}
 ?>
                                 </select>
                             </div>
@@ -164,11 +164,11 @@ if (!empty($queries_info)) { ?>
 
 <script>
     var baseUrl = '<?= Utils::escape(Url::base()); ?>',
-        phpVars = <?= isset($jsVars) ? json_encode($jsVars) : json_encode(array()); ?>;
-<?= isset($jsRAW) ? $jsRAW : ''; ?>;
+        phpVars = <?= isset($jsVars) ? json_encode($jsVars) : json_encode([]); ?>;
+<?= isset($jsraw) ? $jsraw : ''; ?>;
 </script>
 
-    <!-- JS -->
+<!-- JS -->
 <?php foreach ($assets['js'] as $script) {
     echo '<script ';
     foreach ($script['params'] as $key => $value) {

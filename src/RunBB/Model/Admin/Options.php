@@ -285,7 +285,7 @@ class Options
 
     public function get_times()
     {
-        $times = array(5, 15, 30, 60);
+        $times = [5, 15, 30, 60];
         $times = Container::get('hooks')->fire('model.admin.options.get_times.times', $times);
 
         $output = '';

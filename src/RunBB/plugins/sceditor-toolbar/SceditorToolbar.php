@@ -49,18 +49,22 @@ class SceditorToolbar
         });';
 
         // maybe where used
-        $data['jsRAW'] = isset($data['jsRAW']) ? $data['jsRAW'] . $SCEditConfig : $SCEditConfig;
+        $data['jsraw'] = isset($data['jsraw']) ? $data['jsraw'] . $SCEditConfig : $SCEditConfig;
         return $data;
     }
 
     public function addToolbar()
     {
         //$args = func_get_args();
-        View::addAsset('css', 'plugins/sceditor-toolbar/assets/themes/monocons.min.css', array('type' => 'text/css', 'rel' => 'stylesheet'));
+        View::addAsset('css', 'plugins/sceditor-toolbar/assets/themes/monocons.min.css', ['type' => 'text/css', 'rel' => 'stylesheet']);
 //        View::addAsset('js', 'plugins/sceditor-toolbar/assets/jquery.sceditor.bbcode.min.js', array('type' => 'text/javascript'));
         return true;
     }
 
-    public function install() {}
-    public function remove() {}
+    public function install()
+    {
+    }
+    public function remove()
+    {
+    }
 }

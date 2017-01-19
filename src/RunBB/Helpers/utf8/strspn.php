@@ -16,7 +16,7 @@
 * @package utf8
 * @subpackage strings
 */
-function utf8_strspn($str, $mask, $start=null, $length=null)
+function utf8_strspn($str, $mask, $start = null, $length = null)
 {
     $mask = preg_replace('!([\\\\\\-\\]\\[/^])!', '\\\${1}', $mask);
 

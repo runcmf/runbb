@@ -25,11 +25,12 @@ Container::get('hooks')->fire('view.userlist.start');
                 <fieldset>
                     <legend><?= __('User find legend') ?></legend>
                     <div class="infldset">
-<?php if (User::get()->g_search_users == '1'): ?>                        <label class="conl"><?= __('Username') ?><br /><input type="text" name="username" value="<?= Utils::escape($username) ?>" size="25" maxlength="25" /><br /></label>
+<?php if (User::get()->g_search_users == '1') :
+?>                        <label class="conl"><?= __('Username') ?><br /><input type="text" name="username" value="<?= Utils::escape($username) ?>" size="25" maxlength="25" /><br /></label>
 <?php endif; ?>                        <label class="conl"><?= __('User group')."\n" ?>
                         <br /><select name="show_group">
                             <option value="-1"<?php if ($show_group == -1) {
-    echo ' selected="selected"';
+                                echo ' selected="selected"';
 } ?>><?= __('All users') ?></option>
 <?= $dropdown_menu ?>
                         </select>
@@ -37,12 +38,13 @@ Container::get('hooks')->fire('view.userlist.start');
                         <label class="conl"><?= __('Sort by')."\n" ?>
                         <br /><select name="sort_by">
                             <option value="username"<?php if ($sort_by == 'username') {
-    echo ' selected="selected"';
+                                echo ' selected="selected"';
 } ?>><?= __('Username') ?></option>
                             <option value="registered"<?php if ($sort_by == 'registered') {
-    echo ' selected="selected"';
+                                echo ' selected="selected"';
 } ?>><?= __('Registered') ?></option>
-<?php if ($show_post_count): ?>                            <option value="num_posts"<?php if ($sort_by == 'num_posts') {
+<?php if ($show_post_count) :
+?>                            <option value="num_posts"<?php if ($sort_by == 'num_posts') {
     echo ' selected="selected"';
 } ?>><?= __('No of posts') ?></option>
 <?php endif; ?>                        </select>
@@ -50,10 +52,10 @@ Container::get('hooks')->fire('view.userlist.start');
                         <label class="conl"><?= __('Sort order')."\n" ?>
                         <br /><select name="sort_dir">
                             <option value="ASC"<?php if ($sort_dir == 'ASC') {
-    echo ' selected="selected"';
+                                echo ' selected="selected"';
 } ?>><?= __('Ascending') ?></option>
                             <option value="DESC"<?php if ($sort_dir == 'DESC') {
-    echo ' selected="selected"';
+                                echo ' selected="selected"';
 } ?>><?= __('Descending') ?></option>
                         </select>
                         <br /></label>
@@ -82,7 +84,8 @@ Container::get('hooks')->fire('view.userlist.start');
                 <tr>
                     <th class="tcl" scope="col"><?= __('Username') ?></th>
                     <th class="tc2" scope="col"><?= __('Title') ?></th>
-<?php if ($show_post_count): ?>                    <th class="tc3" scope="col"><?= __('Posts') ?></th>
+<?php if ($show_post_count) :
+?>                    <th class="tc3" scope="col"><?= __('Posts') ?></th>
 <?php endif; ?>                    <th class="tcr" scope="col"><?= __('Registered') ?></th>
                 </tr>
             </thead>
@@ -93,13 +96,13 @@ Container::get('hooks')->fire('view.userlist.start');
                     <tr>
                         <td class="tcl"><?= '<a href="'.Router::pathFor('userProfile', ['id' => $user->id]).'">'.Utils::escape($user->username).'</a>' ?></td>
                         <td class="tc2"><?= Utils::get_title($user->title, $user->username, $user->g_user_title, $user->g_id) ?></td>
-    <?php if ($show_post_count): ?>                    <td class="tc3"><?= Utils::forum_number_format($user->num_posts) ?></td>
+    <?php if ($show_post_count) :
+?>                    <td class="tc3"><?= Utils::forum_number_format($user->num_posts) ?></td>
     <?php endif;
                 ?>
                         <td class="tcr"><?= Utils::format_time($user->registered, true) ?></td>
                     </tr>
             <?php
-
             }
             if (empty($userlist_data)) {
                 echo "\t\t\t".'<tr>'."\n\t\t\t\t\t".'<td class="tcl" colspan="'.(($show_post_count) ? 4 : 3).'">'.__('No hits').'</td></tr>'."\n";

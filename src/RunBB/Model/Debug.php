@@ -30,7 +30,7 @@ class Debug
 
     public static function get_info()
     {
-        $data = array('exec_time' => (Utils::get_microtime() - Container::get('start')));
+        $data = ['exec_time' => (Utils::get_microtime() - Container::get('start'))];
 //        $data['nb_queries'] = (isset(\ORM::get_query_log()[0])) ? count(\ORM::get_query_log()[0]) : 'N/A';
         $data['nb_queries'] = (!empty(Core::getQueryLog())) ? count(Core::getQueryLog()[0]) : 'N/A';
         $data['mem_usage'] = (function_exists('memory_get_usage')) ? Utils::file_size(memory_get_usage()) : 'N/A';

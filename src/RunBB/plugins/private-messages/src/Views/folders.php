@@ -8,7 +8,7 @@ if (!empty($errors)) { ?>
                 <div>
                     <p><?= __('Block error info', 'private_messages') ?></p>
                     <ul class="error-list">
-<?php foreach ($errors as $error): ?>
+<?php foreach ($errors as $error) : ?>
                         <li><strong><?= Utils::escape($error) ?></strong></li>
 <?php endforeach; ?>
                     </ul>
@@ -39,7 +39,7 @@ if (!empty($errors)) { ?>
 $folders = $inboxes;
 // Unset default inboxes
 unset($folders['1'], $folders['2'], $folders['3']);
-if (!empty($folders)): ?>
+if (!empty($folders)) : ?>
                 <h2 class="block2"><span><?= __('My Folders', 'private_messages') ?></span></h2>
                 <div class="box">
                     <form method="post" action="">
@@ -55,7 +55,7 @@ if (!empty($folders)): ?>
                                             </tr>
                                         </thead>
                                         <tbody>
-<?php foreach ($folders as $fid => $folder): ?>
+<?php foreach ($folders as $fid => $folder) : ?>
                                             <tr>
                                                 <td class="tcl"><input type="text" name="folder[<?= $fid ?>]" value="<?= Utils::escape($folder['name']) ?>" size="24" maxlength="30" /></td>
                                                 <td><input type="submit" name="update_folder[<?= $fid ?>]" value="Update" />&#160;<input type="submit" name="remove_folder[<?= $fid ?>]" value="Remove" /></td>
