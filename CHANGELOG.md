@@ -1,3 +1,8 @@
+###2017-01-23
+* release plugins
+    - https://packagist.org/packages/runcmf/runbb-ext-markitup  
+    - https://packagist.org/packages/runcmf/runbb-ext-simplemde
+
 ###2017-01-16
 * rebuild plugins system
 * begin work with markdown

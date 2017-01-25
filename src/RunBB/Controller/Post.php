@@ -280,7 +280,7 @@ class Post
             return $this->model->handle_deletion($is_topic_post, $args['id'], $cur_post['tid'], $cur_post['fid']);
         }
 
-        $cur_post['message'] = Container::get('parser')->parse_message($cur_post['message'], $cur_post['hide_smilies']);
+        $cur_post['message'] = Container::get('parser')->parseMessage($cur_post['message'], $cur_post['hide_smilies']);
 
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Delete post')],
@@ -329,7 +329,7 @@ class Post
 
             // Let's see if everything went right
             $errors = $this->model->check_errors_before_edit($can_edit_subject, $errors);
-
+//tdie($cur_post);
             // Setup some variables before post
             $post = $this->model->setup_edit_variables($cur_post, $is_admmod, $can_edit_subject, $errors);
 
@@ -348,12 +348,12 @@ class Post
             $post = '';
         }
 
-        if (Input::post('preview')) {
-            $preview_message = Container::get('parser')->parse_message($post['message'], $post['hide_smilies']);
-            $preview_message = Container::get('hooks')->fire('controller.post.edit.preview', $preview_message);
-        } else {
-            $preview_message = '';
-        }
+//        if (Input::post('preview')) {
+//            $preview_message = Container::get('parser')->parse_message($post['message'], $post['hide_smilies']);
+//            $preview_message = Container::get('hooks')->fire('controller.post.edit.preview', $preview_message);
+//        } else {
+//            $preview_message = '';
+//        }
 
         View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Edit post')],
@@ -361,7 +361,7 @@ class Post
                 'focus_element' => ['edit', 'req_message'],
                 'cur_post' => $cur_post,
                 'errors' => $errors,
-                'preview_message' => $preview_message,
+                'preview_message' => '',//$preview_message,
                 'id' => $args['id'],
                 'checkboxes' => $this->model->get_edit_checkboxes($can_edit_subject, $is_admmod, $cur_post, 1),
                 'can_edit_subject' => $can_edit_subject,

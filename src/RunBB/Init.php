@@ -187,8 +187,8 @@ class Init
     private function registerViews()
     {
         // register template path & template alias
-        $viewLoader = $this->app->getContainer()->get('view')->getLoader();
-        $viewLoader->addPath(__DIR__ . '/View', 'forum');
+//        $viewLoader = $this->app->getContainer()->get('view')->getLoader();
+//        $viewLoader->addPath(__DIR__ . '/View', 'forum');
     }
 
     private function registerAdminRoute()

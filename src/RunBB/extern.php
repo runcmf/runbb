@@ -496,7 +496,7 @@ if ($action == 'feed') {
                 'fp'
             )
 //                        ->where_any_is($where_show_recent_topics)
-            ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+            ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
             ->where_null('t.moved_to')
             ->where('t.id', $tid)
             ->find_one();
@@ -533,7 +533,7 @@ if ($action == 'feed') {
             ->find_array();
 
         foreach ($result as $cur_post) {
-            $cur_post['message'] = Container::get('parser')->parse_message(
+            $cur_post['message'] = Container::get('parser')->parseMessage(
                 $cur_post['message'],
                 $cur_post['hide_smilies']
             );
@@ -597,7 +597,7 @@ if ($action == 'feed') {
                         'fp'
                     )
 //                    ->where_any_is($where_show_forum_name)
-                    ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+                    ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
                     ->where('f.id', $fids[0])
                     ->select('f.forum_name')
                     ->find_one();
@@ -661,7 +661,7 @@ if ($action == 'feed') {
                     'fp'
                 )
 //                        ->where_any_is($where_print_posts)
-                ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+                ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
                 ->where_null('t.moved_to')
                 ->order_by_expr(($order_posted ? 't.posted' : 't.last_post'))
                 ->limit((isset($cache_id) ? 50 : $show))
@@ -672,7 +672,7 @@ if ($action == 'feed') {
                     $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
                 }
 
-                $cur_topic['message'] = Container::get('parser')->parse_message(
+                $cur_topic['message'] = Container::get('parser')->parseMessage(
                     $cur_topic['message'],
                     $cur_topic['hide_smilies']
                 );

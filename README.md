@@ -2,7 +2,7 @@
 [![Total Downloads][ico-downloads]][link-downloads]
 [![Software License][ico-license]][link-license]  
 
-# now dev only, no support!
+## now dev only, no support!
 
 ## About
 
@@ -11,7 +11,8 @@ was slowly falling into abandon. I proceeded to remove all the useless (to me) c
 * Core\Database (old or slightly hacked [Idiorm](https://github.com/j4mie/idiorm) version ???) and utilized [Idiorm](https://github.com/j4mie/idiorm) from package instead  
 * Core\gettext and utilized [gettext](https://github.com/oscarotero/Gettext) from package instead  
 * Rebuild plugins system. Plugins load by composer packages. Old system temporary exist but deprecated.
-* Markdown instead of BBCodes. Now present as original BBCodes parser and [s9e/text-formatter](https://github.com/s9e/TextFormatter) with [SimpleMDE](https://github.com/NextStepWebs/simplemde-markdown-editor) as plugin [RunBB-plugin-simplemde](https://github.com/runcmf)
+* Markdown instead of BBCodes. Now present as original BBCodes parser and [s9e/text-formatter](https://github.com/s9e/TextFormatter) with [SimpleMDE](https://github.com/NextStepWebs/simplemde-markdown-editor) as plugin [runbb-plugin-simplemde](https://github.com/runcmf/runbb-plugin-simplemde)
+* ability to use [Ttwig](https://github.com/twigphp/Twig) templates
 
 
 
@@ -39,22 +40,6 @@ return [
             // and all (display info + queries)
             'plugins' => [// register plugins as NameSpace\InitInfoClass
 //                'simplemde' => 'SimpleMDE\SimpleMDE'
-            ],
-            // Common load assets. Load priority seriatim. For begin live as is.
-            'commonAssets' => [
-                'css' => [
-                    'assets/css/font-awesome.min.css',
-                    'style/js/styles/androidstudio.css',// highlight.js theme
-                ],
-                'jshead' => [
-                    'assets/js/jquery-3.1.1.min.js',
-                    'style/js/highlight.pack.js',
-                ],
-                'js' => [
-//                    'assets/js/jquery-3.1.1.min.js',
-//                    'style/js/highlight.pack.js',
-                ],
-                'jsraw' => "\t\t" . 'hljs.initHighlightingOnLoad();',// init highlight.js
             ]
         ]
     ]

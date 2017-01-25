@@ -23,6 +23,8 @@ class ParserS9E
     private $renderer;
     private $cacheDir;
 
+    public $pd = [];
+
     public function __construct()
     {
         $this->cacheDir = ForumEnv::get('FORUM_CACHE_DIR').'/parser';
@@ -33,6 +35,8 @@ class ParserS9E
         } else {
             $this->configureParser();
         }
+        // temporary for heli show only
+        $this->pd = $this->getSmilies();
     }
 
     /**
@@ -303,5 +307,117 @@ array($this, '_textile_list_callback'), $part);
         }
         return $text;
 */
+    }
+
+    private function getSmilies()
+    {
+        return [
+            'smilies' => [
+                ':)' => [
+                    'file' => 'smile.png',
+                    'html' => '<img width="25" height="25" src="/assets/img/smilies/smile.png" alt="Smile" title="Smile" />',
+                ],
+                '=)' => [
+                    'file' => 'smile.png',
+                    'html' => '<img width="25" height="25" src="/assets/img/smilies/smile.png" alt="Smile" title="Smile" />',
+                ],
+                ':|' => array(
+                        'file' => 'neutral.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/neutral.png" alt="Neutral" title="Neutral" />',
+                    ),
+                '=|' => array(
+                        'file' => 'neutral.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/neutral.png" alt="Neutral" title="Neutral" />',
+                    ),
+                ':(' => array(
+                        'file' => 'sad.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/sad.png" alt="Sad" title="Sad" />',
+                    ),
+                '=(' => array(
+                        'file' => 'sad.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/sad.png" alt="Sad" title="Sad" />',
+                    ),
+                ':D' => array(
+                        'file' => 'lol.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/lol.png" alt="Lol" title="Lol" />',
+                    ),
+                '=D' => array(
+                        'file' => 'lol.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/lol.png" alt="Lol" title="Lol" />',
+                    ),
+                ':o' => array(
+                        'file' => 'surprised.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/surprised.png" alt="Surprised" title="Surprised" />',
+                    ),
+                ':O' => array(
+                        'file' => 'surprised.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/surprised.png" alt="Surprised" title="Surprised" />',
+                    ),
+                ';)' => array(
+                        'file' => 'wink.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/wink.png" alt="Wink" title="Wink" />',
+                    ),
+                ':/' => array(
+                        'file' => 'hmm.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/hmm.png" alt="Hmm" title="Hmm" />',
+                    ),
+                ':?' => array(
+                        'file' => 'hmm.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/hmm.png" alt="Hmm" title="Hmm" />',
+                    ),
+                ':P' => array(
+                        'file' => 'tongue.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/tongue.png" alt="Tongue" title="Tongue" />',
+                    ),
+                ':p' => array(
+                        'file' => 'tongue.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/tongue.png" alt="Tongue" title="Tongue" />',
+                    ),
+                ':lol:' => array(
+                        'file' => 'lol.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/lol.png" alt="Lol" title="Lol" />',
+                    ),
+                ':mad:' => array(
+                        'file' => 'mad.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/mad.png" alt="Mad" title="Mad" />',
+                    ),
+                ':x' => array(
+                        'file' => 'mad.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/mad.png" alt="Mad" title="Mad" />',
+                    ),
+                ':cool:' => array(
+                        'file' => 'cool.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/cool.png" alt="Cool" title="Cool" />',
+                    ),
+                ':8' => array(
+                        'file' => 'desire.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/desire.png" alt="Desire" title="Desire" />',
+                    ),
+                ':cry:' => array(
+                        'file' => 'cry.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/cry.png" alt="Cry" title="Cry" />',
+                    ),
+                ':oops:' => array(
+                        'file' => 'oops.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/oops.png" alt="Oops" title="Oops" />',
+                    ),
+                ':evil:' => array(
+                        'file' => 'evil.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/evil.png" alt="Evil" title="Evil" />',
+                    ),
+                ':pint:' => array(
+                        'file' => 'pint.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/pint.png" alt="Pint" title="Pint" />',
+                    ),
+                ':blah:' => array(
+                        'file' => 'blah.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/blah.png" alt="Blah" title="Blah" />',
+                    ),
+                ':stop:' => array(
+                        'file' => 'stop.png',
+                        'html' => '<img width="25" height="25" src="/assets/img/smilies/stop.png" alt="Stop" title="Stop" />',
+                    )
+            ]
+        ];
     }
 }

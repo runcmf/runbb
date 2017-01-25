@@ -1,0 +1,11 @@
+{% if nested %}
+    {% include 'header.html.twig' %}
+{% endif %}
+
+<!-- Page Content -->
+{% block content %}{% endblock content %}
+<!-- /.Page Content -->
+
+{% if nested %}
+    {% include 'footer.html.twig' %}
+{% endif %}

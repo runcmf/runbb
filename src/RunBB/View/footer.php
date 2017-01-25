@@ -19,7 +19,7 @@ Container::get('hooks')->fire('view.footer.start');
 ?>
         </div>
 
-        <div id="brdfooter" class="block">
+        <div id="brdfooter" class="blockform">
             <h2><span><?= __('Board footer') ?></span></h2>
             <div class="box">
 <?php
@@ -74,9 +74,11 @@ if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') 
 // Display the "Jump to" drop list
 if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) { ?>
                     <div class="conl">
-                        <form id="qjump" method="get" action="">
-                            <div><label><span><?= __('Jump to') ?><br /></span></label>
-                                <select name="id" onchange="window.location=(this.options[this.selectedIndex].value)">
+                        <form class="form-horizontal" id="qjump" method="get" action="">
+                            <div class="form-group">
+                                <label class="control-label col-sm-4" for="id"><?= __('Jump to') ?></label>
+                                <div class="col-sm-8">
+                                <select name="id" class="form-control" onchange="window.location=(this.options[this.selectedIndex].value)">
 <?php
 foreach ($quickjump[(int) User::get()->g_id] as $cat_id => $cat_data) {
     echo "\t\t\t\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";
@@ -87,6 +89,7 @@ foreach ($quickjump[(int) User::get()->g_id] as $cat_id => $cat_data) {
 }
 ?>
                                 </select>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -162,12 +165,6 @@ if (!empty($queries_info)) { ?>
 <?php } ?>
 </section>
 
-<script>
-    var baseUrl = '<?= Utils::escape(Url::base()); ?>',
-        phpVars = <?= isset($jsVars) ? json_encode($jsVars) : json_encode([]); ?>;
-<?= isset($jsraw) ? $jsraw : ''; ?>;
-</script>
-
 <!-- JS -->
 <?php foreach ($assets['js'] as $script) {
     echo '<script ';
@@ -176,9 +173,16 @@ if (!empty($queries_info)) { ?>
     }
     echo 'src="'.Url::base_static().'/'.$script['file'].'"/></script>'."\n";
 } ?>
-
+<!-- JSRAW -->
+<script>
+    var baseUrl = '<?= Utils::escape(Url::base()); ?>',
+        phpVars = <?= isset($jsVars) ? json_encode($jsVars) : json_encode([]); ?>;
+    <?= isset($jsraw) ? $jsraw : ''; ?>;
+</script>
 <?php Container::get('hooks')->fire('view.footer.before.html.tag'); ?>
 </body>
 </html>
 <?php
 Container::get('hooks')->fire('view.footer.end');
+
+//tdie(Container::get('twig')->isDebug());

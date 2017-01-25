@@ -108,14 +108,15 @@ if (User::get()->is_guest) {
 if ($fid) : ?>
                         <label class="required"><strong><?= __('Subject') ?> <span><?= __('Required') ?></span></strong><br /><input class="longinput" type="text" name="req_subject" value="<?php if (Input::post('req_subject')) {
                             echo Utils::escape($post['subject']);
-} ?>" size="80" maxlength="70" tabindex="<?= $cur_index++ ?>" /><br /></label>
+} ?>" maxlength="70" tabindex="<?= $cur_index++ ?>" /><br /></label>
 <?php endif; ?>                        <label class="required"><strong><?= __('Message') ?> <span><?= __('Required') ?></span></strong><br />
                         <textarea name="req_message" id="req_message" rows="20" tabindex="<?= $cur_index++ ?>"><?php echo(Input::post('req_message')) ? Utils::linebreaks(Utils::trim(Utils::escape(Input::post('req_message')))) : (isset($quote) ? $quote : ''); ?></textarea><br /></label>
-                        <ul class="bblinks">
-                            <li><span><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?= __('BBCode') ?>ok</a> <?php echo(ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open (this.href); return false;"><?= __('url tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && User::get()->g_post_links == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?= __('img tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1') ? __('on') : __('off'); ?></span></li>
-                            <li><span><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?= __('Smilies') ?></a> <?php echo(ForumSettings::get('o_smilies') == '1') ? __('on') : __('off'); ?></span></li>
+                        <div id="markitup-elfinder"></div>
+                        <ul class="bblinks list-inline">
+                            <li><a href="<?= Router::pathFor('help').'#bbcode' ?>" onclick="window.open(this.href); return false;"><?= __('BBCode') ?>ok</a> <?php echo(ForumSettings::get('p_message_bbcode') == '1') ? __('on') : __('off'); ?></li>
+                            <li><a href="<?= Router::pathFor('help').'#url' ?>" onclick="window.open (this.href); return false;"><?= __('url tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && User::get()->g_post_links == '1') ? __('on') : __('off'); ?></li>
+                            <li><a href="<?= Router::pathFor('help').'#img' ?>" onclick="window.open(this.href); return false;"><?= __('img tag') ?></a> <?php echo(ForumSettings::get('p_message_bbcode') == '1' && ForumSettings::get('p_message_img_tag') == '1') ? __('on') : __('off'); ?></li>
+                            <li><a href="<?= Router::pathFor('help').'#smilies' ?>" onclick="window.open(this.href); return false;"><?= __('Smilies') ?></a> <?php echo(ForumSettings::get('o_smilies') == '1') ? __('on') : __('off'); ?></li>
                         </ul>
                     </div>
                 </fieldset>

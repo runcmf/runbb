@@ -297,7 +297,7 @@ class Topic
                 'fp'
             )
 //                        ->where_any_is($authorized['where'])
-                ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+                ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
                         ->where('t.id', $topic_id)
                         ->where_null('t.moved_to');
         $authorized = Container::get('hooks')->fireDB('model.topic.subscribe_topic_authorized_query', $authorized);
@@ -447,7 +447,7 @@ class Topic
                 'fp'
             )
 //                    ->where_any_is($result['where'])
-                ->where_raw('fp.post_topics IS NULL OR fp.post_topics=1')
+                ->where_raw('(fp.post_topics IS NULL OR fp.post_topics=1)')
                     ->where_null('f.redirect_url')
                     ->order_by_expr($result['order_by']);
         $result = Container::get('hooks')->fireDB('model.topic.check_move_possible', $result);
@@ -486,7 +486,7 @@ class Topic
                 'fp'
             )
 //                    ->where_any_is($where_get_forum_list_move)
-                ->where_raw('fp.post_topics IS NULL OR fp.post_topics=1')
+                ->where_raw('(fp.post_topics IS NULL OR fp.post_topics=1)')
                     ->where_null('f.redirect_url')
                     ->order_by_expr($order_by_get_forum_list_move);
         $result = Container::get('hooks')->fireDB('model.topic.get_forum_list_move_query', $result);
@@ -543,7 +543,7 @@ class Topic
                 'fp'
             )
 //                    ->where_any_is($result['where'])
-            ->where_raw('fp.post_topics IS NULL OR fp.post_topics=1')
+            ->where_raw('(fp.post_topics IS NULL OR fp.post_topics=1)')
                     ->where_null('f.redirect_url')
                     ->order_by_expr($order_by_get_forum_list_split);
         $result = Container::get('hooks')->fireDB('model.topic.get_forum_list_split_query', $result);
@@ -616,7 +616,7 @@ class Topic
                 true
             )
 //                        ->where_any_is($authorized['where'])
-                ->where_raw('fp.post_topics IS NULL OR fp.post_topics=1')
+                ->where_raw('(fp.post_topics IS NULL OR fp.post_topics=1)')
                         ->where_null('f.redirect_url');
         $authorized = Container::get('hooks')->fireDB('model.topic.move_to_authorized', $authorized);
         $authorized = $authorized->find_one();
@@ -781,7 +781,7 @@ class Topic
                 'fp'
             )
 //            ->where_any_is($cur_topic['where'])
-            ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+            ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
             ->where('f.id', $fid)
             ->where('t.id', $tid)
             ->where_null('t.moved_to');
@@ -855,7 +855,7 @@ class Topic
                     true
                 )
 //                        ->where_any_is($result['where'])
-                ->where_raw('fp.post_topics IS NULL OR fp.post_topics=1')
+                ->where_raw('(fp.post_topics IS NULL OR fp.post_topics=1)')
                         ->where_null('f.redirect_url');
             $result = Container::get('hooks')->fireDB('model.topic.split_posts_second_query', $result);
             $result = $result->find_one();

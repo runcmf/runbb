@@ -71,7 +71,7 @@ class Index
 //            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
 //            ->where_any_is($query['where'])
-            ->where_raw('fp.read_forum IS NULL OR fp.read_forum = 1')
+            ->where_raw('(fp.read_forum IS NULL OR fp.read_forum = 1)')
             ->where_gt('f.last_post', User::get()->last_visit);
 
         $query = Container::get('hooks')->fireDB('model.index.query_get_new_posts', $query);
@@ -150,7 +150,7 @@ class Index
 //            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
 //            ->where_any_is($query['where'])
-            ->where_raw('`fp`.`read_forum` IS NULL OR `fp`.`read_forum`=1')
+            ->where_raw('(`fp`.`read_forum` IS NULL OR `fp`.`read_forum`=1)')
             ->orderByExpr('`c`.`disp_position`, `c`.`id`, `f`.`disp_position`');
 //            ->order_by_many($query['order_by']);
 
@@ -263,14 +263,15 @@ class Index
 
         $query = $query->find_one();
 
-        $stats['total_topics'] = intval($query['total_topics']);
-        $stats['total_posts'] = intval($query['total_posts']);
+        $stats['total_topics'] = Utils::forum_number_format((int)$query['total_topics']);
+        $stats['total_posts'] = Utils::forum_number_format((int)$query['total_posts']);
 
         if (User::get()->g_view_users == '1') {
             $stats['newest_user'] = '<a href="'.Router::pathFor('userProfile', ['id' => $stats['last_user']['id']]).'">'.Utils::escape($stats['last_user']['username']).'</a>';
         } else {
             $stats['newest_user'] = Utils::escape($stats['last_user']['username']);
         }
+        $stats['total_users'] = Utils::forum_number_format((int)$stats['total_users']);
 
         $stats = Container::get('hooks')->fire('model.index.collect_stats', $stats);
 

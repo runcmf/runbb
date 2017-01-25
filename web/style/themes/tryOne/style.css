@@ -139,7 +139,7 @@ select,
 textarea {
     color: inherit;
     font: inherit;
-    margin: 0
+    margin: 0;
 }
 button {
     overflow: visible
@@ -165,8 +165,13 @@ input::-moz-focus-inner {
     padding: 0
 }
 input {
-    line-height: normal
+    line-height: normal;
 }
+
+.longinput {
+    width: 100%;
+}
+
 input[type=checkbox],
 input[type=radio] {
     box-sizing: border-box;
@@ -278,7 +283,7 @@ nav .navbar-right {
 }
 nav .navbar-right input {
     width: 100%;
-    height: 1.8rem;
+    height: 2.8rem;
     padding: 7px 10px;
     border-radius: 3px;
     background-color: #fff;
@@ -649,7 +654,7 @@ section .blocktable .box table tbody tr .tcr .byuser {
 .linksb .pagepost .pagelink.conl .pages-label,
 .linkst .pagepost .pagelink.conl .pages-label,
 .postlinksb .pagepost .pagelink.conl .pages-label {
-    display: none
+    /*display: none*/
 }
 .postlinksb {
     margin-bottom: 5px
@@ -773,18 +778,14 @@ footer .footer-link {
     font-weight: 400;
     font-size: 1.3rem
 }
-#editform .box fieldset .bblinks,
-#postform .box fieldset .bblinks,
+/*#editform .box fieldset .bblinks,*/
+/*#postform .box fieldset .bblinks,*/
 #punsearch .linksb .pagepost .pagelink .pages-label,
 #punsearch .linkst .pagepost .pagelink .pages-label,
 #punsearch .postlinksb .pagepost .pagelink .pages-label,
-#quickpost .box fieldset .bblinks,
-#reportform .box fieldset .bblinks {
+/*#quickpost .box fieldset .bblinks,*/
+#reportform .box {
     /*display: none*/
-    display:inline;
-    list-style:none;
-    margin:0px;
-    padding:0px;
 }
 
 .pagepost .postlink.conr a,
@@ -836,6 +837,7 @@ footer .footer-link {
 #editform .box,
 #postform .box,
 #quickpost .box,
+#brdfooter .box,
 #reportform .box {
     border: 1px solid #d8d8d8;
     border-radius: 0 0 3px 3px;
@@ -883,7 +885,8 @@ footer .footer-link {
     border: 1px solid #51a7e8;
     background-color: #fff;
     box-shadow: 0 0 5px rgba(81, 167, 232, .5);
-    outline: 0
+    outline: 0;
+    float: left;/*resize*/
 }
 #postform {
     margin: 15px 0 0
@@ -981,14 +984,14 @@ footer .footer-link {
 #punsearch .linksb .pagepost .pagelink strong,
 #punsearch .linkst .pagepost .pagelink strong,
 #punsearch .postlinksb .pagepost .pagelink strong {
-    font-weight: 400;
+    /*font-weight: 400;*/
     background-color: #fafafa;
     cursor: default
 }
 #brdfooter,
 #brdstats {
-    padding: 10px;
-    border: 1px solid #d8d8d8;
+    /*padding: 10px;*/
+    /*border: 1px solid #d8d8d8;*/
     border-radius: 3px;
     background-color: #fff
 }
@@ -1045,7 +1048,7 @@ footer .footer-link {
     font-size: 12px
 }
 #brdfooter h2 {
-    display: none
+    /*display: none*/
 }
 #brdfooter .conr {
     text-align: right;
@@ -1446,7 +1449,7 @@ input[type=submit]:focus {
     font-style: normal
 }
 code {
-    padding: 15px!important;
+    padding: 5px;
 }
 img {
     max-width: 100%;
@@ -1459,8 +1462,8 @@ img {
     margin: 0
 }
 .blockpost .box .postright code {
-    padding: 15px!important;
-    background-color: #272822
+    /*padding: 5px;*/
+    /*background-color: #E8E9E7*/
 }
 .blockpost .box .postright acronym {
     cursor: help;
@@ -1499,6 +1502,26 @@ img {
 .blockpost .box .postright .quotebox blockquote {
     margin: 0
 }
+
+blockquote {
+    background: #f9f9f9;
+    border-left: 10px solid #ccc;
+    margin: 1.5em 10px;
+    padding: 0.5em 10px;
+    quotes: "\201C""\201D""\2018""\2019";
+}
+blockquote:before {
+    color: #ccc;
+    content: open-quote;
+    font-size: 4em;
+    line-height: 0.1em;
+    margin-right: 0.25em;
+    vertical-align: -0.4em;
+}
+blockquote p {
+    display: inline;
+}
+
 .container {
     width: 100%
 }
@@ -1771,7 +1794,7 @@ img {
     padding: 5px;
 }
 #searchform.blockform div.box form#search div.inform fieldset div.infldset p.clearl {
-    margin-top: 100px;
+    margin-top: 40px;
 }
 #searchform.blockform div.box form#search div.inform fieldset div.infldset label.conl {
     margin-top: -2px;

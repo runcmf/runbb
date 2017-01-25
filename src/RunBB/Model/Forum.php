@@ -45,7 +45,7 @@ class Forum
                     '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
                     'fp'
                 )
-                ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+                ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
 //                ->where_any_is($cur_forum['where'])
                             ->where('f.id', $id);
         } else {
@@ -62,7 +62,7 @@ class Forum
                     'fp'
                 )
 //                            ->where_any_is($cur_forum['where'])
-                ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+                ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
                             ->where('f.id', $id);
         }
 
@@ -496,7 +496,7 @@ class Forum
                 'fp'
             )
 //                        ->where_any_is($authorized['where'])
-                ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+                ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
                         ->where('f.id', $forum_id);
         $authorized = Container::get('hooks')->fireDB('model.forum.subscribe_forum_authorized_query', $authorized);
         $authorized = $authorized->find_one();

@@ -28,7 +28,9 @@ class Search
         $search = Container::get('hooks')->fire('model.search.get_search_results_start', $search);
 
         $action = (Input::query('action')) ? Input::query('action') : null;
-        $forums = Input::query('forums') ? (is_array(Input::query('forums')) ? Input::query('forums') : array_filter(explode(',', Input::query('forums')))) : (Input::query('forums') ? [Input::query('forums')] : []);
+        $forums = Input::query('forums') ? (is_array(Input::query('forums')) ? Input::query('forums')
+            : array_filter(explode(',', Input::query('forums'))))
+            : (Input::query('forums') ? [Input::query('forums')] : []);
         $sort_dir = (Input::query('sort_dir') && Input::query('sort_dir') == 'DESC') ? 'DESC' : 'ASC';
 
         $forums = array_map('intval', $forums);
@@ -51,7 +53,10 @@ class Search
             $keywords = (Input::query('keywords')) ? utf8_strtolower(Utils::trim(Input::query('keywords'))) : null;
             $author = (Input::query('author')) ? utf8_strtolower(Utils::trim(Input::query('author'))) : null;
 
-            if (preg_match('%^[\*\%]+$%', $keywords) || (Utils::strlen(str_replace(['*', '%'], '', $keywords)) < ForumEnv::get('FEATHER_SEARCH_MIN_WORD') && !$this->search->is_cjk($keywords))) {
+            if (preg_match('%^[\*\%]+$%', $keywords) ||
+                (Utils::strlen(str_replace(['*', '%'], '', $keywords)) < ForumEnv::get('FEATHER_SEARCH_MIN_WORD')
+                    && !$this->search->is_cjk($keywords)))
+            {
                 $keywords = '';
             }
 
@@ -69,7 +74,8 @@ class Search
 
             $show_as = (Input::query('show_as') && Input::query('show_as') == 'topics') ? 'topics' : 'posts';
             $sort_by = (Input::query('sort_by')) ? intval(Input::query('sort_by')) : 0;
-            $search_in = (!Input::query('search_in') || Input::query('search_in') == '0') ? 0 : ((Input::query('search_in') == '1') ? 1 : -1);
+            $search_in = (!Input::query('search_in') || Input::query('search_in') == '0') ? 0
+                : ((Input::query('search_in') == '1') ? 1 : -1);
         } // If it's a user search (by ID)
         elseif ($action == 'show_user_posts' || $action == 'show_user_topics' || $action == 'show_subscriptions') {
             $user_id = (Input::query('user_id')) ? intval(Input::query('user_id')) : User::get()->id;
@@ -100,7 +106,8 @@ class Search
                 ->select('search_data')
                 ->where('id', $search_id)
                 ->where('ident', $ident);
-            $search_data = Container::get('hooks')->fireDB('model.search.get_search_results_search_data_query', $search_data);
+            $search_data = Container::get('hooks')->fireDB(
+                'model.search.get_search_results_search_data_query', $search_data);
             $search_data = $search_data->find_one();
 
             if ($search_data->search_data) {
@@ -122,12 +129,16 @@ class Search
             $keyword_results = $author_results = [];
 
             // Search a specific forum?
-            $forum_sql = (!empty($forums) || (empty($forums) && ForumSettings::get('o_search_all_forums') == '0' && !User::get()->is_admmod)) ? ' AND t.forum_id IN ('.implode(',', $forums).')' : '';
+            $forum_sql = (!empty($forums) || (empty($forums) && ForumSettings::get('o_search_all_forums') == '0'
+                    && !User::get()->is_admmod)) ? ' AND t.forum_id IN ('.implode(',', $forums).')' : '';
 
             if (!empty($author) || !empty($keywords)) {
                 // Flood protection
-                if (User::get()->last_search && (time() - User::get()->last_search) < User::get()->g_search_flood && (time() - User::get()->last_search) >= 0) {
-                    throw new  RunBBException(sprintf(__('Search flood'), User::get()->g_search_flood, User::get()->g_search_flood - (time() - User::get()->last_search)), 429);
+                if (User::get()->last_search && (time() - User::get()->last_search) < User::get()->g_search_flood
+                    && (time() - User::get()->last_search) >= 0) {
+                    throw new  RunBBException(sprintf(__('Search flood'),
+                        User::get()->g_search_flood,
+                        User::get()->g_search_flood - (time() - User::get()->last_search)), 429);
                 }
 
                 if (!User::get()->is_guest) {
@@ -184,7 +195,8 @@ class Search
                 if ($keywords) {
                     // split the keywords into words
                     $keywords_array = $this->search->split_words($keywords, false);
-                    $keywords_array = Container::get('hooks')->fire('model.search.get_search_results_keywords_array', $keywords_array);
+                    $keywords_array = Container::get('hooks')->fire(
+                        'model.search.get_search_results_keywords_array', $keywords_array);
 
                     if (empty($keywords_array)) {
                         throw new  RunBBException(__('No hits'), 400);
@@ -192,7 +204,8 @@ class Search
 
                     // Should we search in message body or topic subject specifically?
                     $search_in_cond = ($search_in) ? (($search_in > 0) ? ' AND m.subject_match = 0' : ' AND m.subject_match = 1') : '';
-                    $search_in_cond = Container::get('hooks')->fire('model.search.get_search_results_search_cond', $search_in_cond);
+                    $search_in_cond = Container::get('hooks')->fire(
+                        'model.search.get_search_results_search_cond', $search_in_cond);
 
                     $word_count = 0;
                     $match_type = 'and';
@@ -210,14 +223,39 @@ class Search
                             {
                                 if ($this->search->is_cjk($cur_word)) {
                                     $where_cond = str_replace('*', '%', $cur_word);
-                                    $where_cond_cjk = ($search_in ? (($search_in > 0) ? 'p.message LIKE %:where_cond%' : 't.subject LIKE %:where_cond%') : 'p.message LIKE %:where_cond% OR t.subject LIKE %:where_cond%');
+                                    $where_cond_cjk = ($search_in ? (($search_in > 0) ? 'p.message LIKE %:where_cond%'
+                                        : 't.subject LIKE %:where_cond%')
+                                        : 'p.message LIKE %:where_cond% OR t.subject LIKE %:where_cond%');
 
-                                    $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->raw_query('SELECT p.id AS post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.ForumSettings::get('db_prefix').'posts AS p INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE ('.$where_cond_cjk.') AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, [':where_cond' => $where_cond]);
+                                    $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->raw_query(
+                                        'SELECT p.id AS post_id, p.topic_id, '.$sort_by_sql.' AS sort_by 
+                                        FROM '.ForumSettings::get('db_prefix').'posts AS p 
+                                        INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t 
+                                            ON t.id=p.topic_id 
+                                        LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp 
+                                            ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') 
+                                        WHERE ('.$where_cond_cjk.') 
+                                            AND (fp.read_forum IS NULL OR fp.read_forum=1)'.
+                                        $forum_sql, [':where_cond' => $where_cond]);
                                 } else {
-                                    $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->raw_query('SELECT m.post_id, p.topic_id, '.$sort_by_sql.' AS sort_by FROM '.ForumSettings::get('db_prefix').'search_words AS w INNER JOIN '.ForumSettings::get('db_prefix').'search_matches AS m ON m.word_id = w.id INNER JOIN '.ForumSettings::get('db_prefix').'posts AS p ON p.id=m.post_id INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE w.word LIKE :where_cond'.$search_in_cond.' AND (fp.read_forum IS NULL OR fp.read_forum=1)'.$forum_sql, [':where_cond' => str_replace('*', '%', $cur_word)]);
+                                    $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->raw_query(
+                                        'SELECT m.post_id, p.topic_id, '.$sort_by_sql.' AS sort_by 
+                                        FROM '.ForumSettings::get('db_prefix').'search_words AS w 
+                                        INNER JOIN '.ForumSettings::get('db_prefix').'search_matches AS m 
+                                            ON m.word_id = w.id 
+                                        INNER JOIN '.ForumSettings::get('db_prefix').'posts AS p 
+                                            ON p.id=m.post_id 
+                                        INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t 
+                                            ON t.id=p.topic_id 
+                                        LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp 
+                                            ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') 
+                                        WHERE w.word LIKE :where_cond'.$search_in_cond.' 
+                                            AND (fp.read_forum IS NULL OR fp.read_forum=1)'.
+                                        $forum_sql, [':where_cond' => str_replace('*', '%', $cur_word)]);
                                 }
 
-                                $result = Container::get('hooks')->fireDB('model.search.get_search_results_search_first_query', $result);
+                                $result = Container::get('hooks')->fireDB(
+                                    'model.search.get_search_results_search_first_query', $result);
                                 $result = $result->find_many();
 
                                 $row = [];
@@ -254,12 +292,15 @@ class Search
                         }
                     }
 
-                    $keyword_results = Container::get('hooks')->fire('model.search.get_search_results_search_keyword_results', $keyword_results);
-                    // Sort the results - annoyingly array_multisort re-indexes arrays with numeric keys, so we need to split the keys out into a separate array then combine them again after
+                    $keyword_results = Container::get('hooks')->fire(
+                        'model.search.get_search_results_search_keyword_results', $keyword_results);
+                    // Sort the results - annoyingly array_multisort re-indexes arrays with numeric keys,
+                    // so we need to split the keys out into a separate array then combine them again after
                     $post_ids = array_keys($keyword_results);
                     $topic_ids = array_values($keyword_results);
 
-                    array_multisort(array_values($sort_data), $sort_dir == 'DESC' ? SORT_DESC : SORT_ASC, $sort_type, $post_ids, $topic_ids);
+                    array_multisort(array_values($sort_data), $sort_dir == 'DESC' ? SORT_DESC : SORT_ASC,
+                        $sort_type, $post_ids, $topic_ids);
 
                     // combine the arrays back into a key => value array
                     $keyword_results = array_combine($post_ids, $topic_ids);
@@ -272,7 +313,8 @@ class Search
                     $username_exists = \ORM::for_table(ORM_TABLE_PREFIX.'users')
                                         ->select('id')
                                         ->where_like('username', $author);
-                    $username_exists = Container::get('hooks')->fireDB('model.search.get_search_results_username_exists', $username_exists);
+                    $username_exists = Container::get('hooks')->fireDB(
+                        'model.search.get_search_results_username_exists', $username_exists);
                     $username_exists = $username_exists->find_many();
 
                     if ($username_exists) {
@@ -281,8 +323,18 @@ class Search
                             $user_ids[] = $row['id'];
                         }
 
-                        $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->raw_query('SELECT p.id AS post_id, p.topic_id FROM '.ForumSettings::get('db_prefix').'posts AS p INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t ON t.id=p.topic_id LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') WHERE (fp.read_forum IS NULL OR fp.read_forum=1) AND p.poster_id IN('.implode(',', $user_ids).')'.$forum_sql.' ORDER BY '.$sort_by_sql.' '.$sort_dir);
-                        $result = Container::get('hooks')->fireDB('model.search.get_search_results_search_second_query', $result);
+                        $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->raw_query(
+                            'SELECT p.id AS post_id, p.topic_id 
+                            FROM '.ForumSettings::get('db_prefix').'posts AS p 
+                            INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t 
+                            ON t.id=p.topic_id 
+                            LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp 
+                            ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') 
+                            WHERE (fp.read_forum IS NULL OR fp.read_forum=1) 
+                            AND p.poster_id IN('.implode(',', $user_ids).')'.$forum_sql.' 
+                            ORDER BY '.$sort_by_sql.' '.$sort_dir);
+                        $result = Container::get('hooks')->fireDB(
+                            'model.search.get_search_results_search_second_query', $result);
                         $result = $result->find_many();
 
                         foreach ($result as $temp) {
@@ -297,7 +349,8 @@ class Search
                 // If we searched for both keywords and author name we want the intersection between the results
                 if ($author && $keywords) {
                     $search_ids = array_intersect_assoc($keyword_results, $author_results);
-                    $search_type = ['both', [$keywords, Utils::trim(Input::query('author'))], implode(',', $forums), $search_in];
+                    $search_type = ['both', [$keywords, Utils::trim(Input::query('author'))],
+                        implode(',', $forums), $search_in];
                 } elseif ($keywords) {
                     $search_ids = $keyword_results;
                     $search_type = ['keywords', $keywords, implode(',', $forums), $search_in];
@@ -306,8 +359,12 @@ class Search
                     $search_type = ['author', Utils::trim(Input::query('author')), implode(',', $forums), $search_in];
                 }
 
-                $search_ids = Container::get('hooks')->fire('model.search.get_search_results_search_ids', $search_ids);
-                $search_type = Container::get('hooks')->fire('model.search.get_search_results_search_type', $search_type);
+                $search_ids = Container::get('hooks')->fire(
+                    'model.search.get_search_results_search_ids', $search_ids
+                );
+                $search_type = Container::get('hooks')->fire(
+                    'model.search.get_search_results_search_type', $search_type
+                );
 
                 unset($keyword_results, $author_results);
 
@@ -319,21 +376,32 @@ class Search
 
                 $search_ids = array_unique($search_ids);
 
-                $search_ids = Container::get('hooks')->fire('model.search.get_search_results_search_ids', $search_ids);
-                $search_type = Container::get('hooks')->fire('model.search.get_search_results_search_type', $search_type);
+                $search_ids = Container::get('hooks')->fire(
+                    'model.search.get_search_results_search_ids', $search_ids
+                );
+                $search_type = Container::get('hooks')->fire(
+                    'model.search.get_search_results_search_type', $search_type
+                );
 
                 $num_hits = count($search_ids);
                 if (!$num_hits) {
                     throw new  RunBBException(__('No hits'), 400);
                 }
-            } elseif ($action == 'show_new' || $action == 'show_recent' || $action == 'show_replies' || $action == 'show_user_posts' || $action == 'show_user_topics' || $action == 'show_subscriptions' || $action == 'show_unanswered') {
+            } elseif ($action == 'show_new'
+                || $action == 'show_recent'
+                || $action == 'show_replies'
+                || $action == 'show_user_posts'
+                || $action == 'show_user_topics'
+                || $action == 'show_subscriptions'
+                || $action == 'show_unanswered')
+            {
                 $search_type = ['action', $action];
                 $show_as = 'topics';
                 // We want to sort things after last post
                 $sort_by = 0;
                 $sort_dir = 'DESC';
 
-                $result['where'] = 'fp.read_forum IS NULL OR fp.read_forum=1';
+                $result['where'] = '(fp.read_forum IS NULL OR fp.read_forum=1)';
 //                    array(
 //                    array('fp.read_forum' => 'IS NULL'),
 //                    array('fp.read_forum' => '1')
@@ -349,7 +417,8 @@ class Search
                                 ->table_alias('t')
                                 ->select('t.id')
 //                                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-//                                ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+//                                ->left_outer_join('forum_perms', array('fp.group_id', '=',
+// User::get()->g_id), null, true)
                         ->left_outer_join(
                             ORM_TABLE_PREFIX.'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
@@ -379,7 +448,8 @@ class Search
                                 ->table_alias('t')
                                 ->select('t.id')
 //                                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-//                                ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+//                                ->left_outer_join('forum_perms', array('fp.group_id', '=',
+// User::get()->g_id), null, true)
                         ->left_outer_join(
                             ORM_TABLE_PREFIX.'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
@@ -409,7 +479,8 @@ class Search
                                 ->select('t.id')
                                 ->inner_join(ORM_TABLE_PREFIX.'posts', ['t.id', '=', 'p.topic_id'], 'p')
 //                                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-//                                ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+//                                ->left_outer_join('forum_perms', array('fp.group_id', '=',
+// User::get()->g_id), null, true)
                         ->left_outer_join(
                             ORM_TABLE_PREFIX.'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
@@ -440,7 +511,8 @@ class Search
                                 ->select('p.id')
                                 ->inner_join(ORM_TABLE_PREFIX.'topics', ['p.topic_id', '=', 't.id'], 't')
 //                                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-//                                ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+//                                ->left_outer_join('forum_perms', array('fp.group_id', '=',
+// User::get()->g_id), null, true)
                         ->left_outer_join(
                             ORM_TABLE_PREFIX.'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
@@ -467,8 +539,10 @@ class Search
                                 ->table_alias('t')
                                 ->select('t.id')
                                 ->inner_join(ORM_TABLE_PREFIX.'posts', ['t.first_post_id', '=', 'p.id'], 'p')
-//                                ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-//                                ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+//                                ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+// array('fp.forum_id', '=', 't.forum_id'), 'fp')
+//                                ->left_outer_join('forum_perms', array('fp.group_id', '=',
+// User::get()->g_id), null, true)
                         ->left_outer_join(
                             ORM_TABLE_PREFIX.'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
@@ -506,7 +580,8 @@ class Search
                             's'
                         )
 //                                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-//                                ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+//                                ->left_outer_join('forum_perms', array('fp.group_id', '=',
+// User::get()->g_id), null, true)
                         ->left_outer_join(
                             ORM_TABLE_PREFIX.'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
@@ -532,7 +607,8 @@ class Search
                                 ->table_alias('t')
                                 ->select('t.id')
 //                                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
-//                                ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+//                                ->left_outer_join('forum_perms', array('fp.group_id', '=',
+// User::get()->g_id), null, true)
                         ->left_outer_join(
                             ORM_TABLE_PREFIX.'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
@@ -579,7 +655,8 @@ class Search
 
                 $delete_cache = \ORM::for_table(ORM_TABLE_PREFIX.'search_cache')
                                     ->where_not_in('ident', $old_searches);
-                $delete_cache = Container::get('hooks')->fireDB('model.search.get_search_results_delete_cache', $delete_cache);
+                $delete_cache = Container::get('hooks')->fireDB(
+                    'model.search.get_search_results_delete_cache', $delete_cache);
                 $delete_cache = $delete_cache->delete_many();
             }
 
@@ -641,19 +718,24 @@ class Search
             $per_page = ($show_as == 'posts') ? User::get()->disp_posts : User::get()->disp_topics;
             $num_pages = ceil($num_hits / $per_page);
 
-            $p = (!Input::query('p') || Input::query('p') <= 1 || Input::query('p') > $num_pages) ? 1 : intval(Input::query('p'));
+            $p = (!Input::query('p') || Input::query('p') <= 1 || Input::query('p') > $num_pages) ? 1
+                : intval(Input::query('p'));
             $start_from = $per_page * ($p - 1);
             $search['start_from'] = $start_from;
 
             // Generate paging links
-            $search['paging_links'] = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?search_id='.$search_id);
+            $search['paging_links'] = '<span class="pages-label">'.__('Pages').' </span>'.
+                Url::paginate_old($num_pages, $p, '?search_id='.$search_id);
 
             // throw away the first $start_from of $search_ids, only keep the top $per_page of $search_ids
             $search_ids = array_slice($search_ids, $start_from, $per_page);
 
             // Run the query and fetch the results
             if ($show_as == 'posts') {
-                $result['select'] = ['pid' => 'p.id', 'pposter' => 'p.poster', 'pposted' => 'p.posted', 'p.poster_id', 'p.message', 'p.hide_smilies', 'tid' => 't.id', 't.poster', 't.subject', 't.first_post_id', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_replies', 't.forum_id', 'f.forum_name'];
+                $result['select'] = ['pid' => 'p.id', 'pposter' => 'p.poster', 'pposted' => 'p.posted',
+                    'p.poster_id', 'p.message', 'p.hide_smilies', 'tid' => 't.id', 't.poster', 't.subject',
+                    't.first_post_id', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_replies',
+                    't.forum_id', 'f.forum_name'];
 
                 $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
                                 ->table_alias('p')
@@ -662,9 +744,11 @@ class Search
                                 ->inner_join(ORM_TABLE_PREFIX.'forums', ['f.id', '=', 't.forum_id'], 'f')
                                 ->where_in('p.id', $search_ids)
                                 ->order_by_expr($sort_by_sql.' '.$sort_dir);
-                $result = Container::get('hooks')->fireDB('model.search.get_search_results_select_posts_query', $result);
+                $result = Container::get('hooks')->fireDB(
+                    'model.search.get_search_results_select_posts_query', $result);
             } else {
-                $result['select'] = ['tid' => 't.id', 't.poster', 't.subject', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_replies', 't.closed', 't.sticky', 't.forum_id', 'f.forum_name'];
+                $result['select'] = ['tid' => 't.id', 't.poster', 't.subject', 't.last_post', 't.last_post_id',
+                    't.last_poster', 't.num_replies', 't.closed', 't.sticky', 't.forum_id', 'f.forum_name'];
 
                 $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                                 ->table_alias('t')
@@ -672,7 +756,8 @@ class Search
                                 ->inner_join(ORM_TABLE_PREFIX.'forums', ['f.id', '=', 't.forum_id'], 'f')
                                 ->where_in('t.id', $search_ids)
                                 ->order_by_expr($sort_by_sql.' '.$sort_dir);
-                $result = Container::get('hooks')->fireDB('model.search.get_search_results_select_topics_query', $result);
+                $result = Container::get('hooks')->fireDB(
+                    'model.search.get_search_results_select_topics_query', $result);
             }
             $result = $result->find_array();
             $search['search_set'] = [];
@@ -684,16 +769,23 @@ class Search
 
             if ($search_type[0] == 'action') {
                 if ($search_type[1] == 'show_user_topics') {
-                    $search['crumbs_text']['search_type'] = '<a href="'.Router::pathFor('search').'?action=show_user_topics&amp;user_id='.$search_type[2].'">'.sprintf(__('Quick search show_user_topics'), Utils::escape($search['search_set'][0]['poster'])).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.Router::pathFor('search').
+                        '?action=show_user_topics&amp;user_id='.$search_type[2].'">'.
+                        sprintf(__('Quick search show_user_topics'),
+                            Utils::escape($search['search_set'][0]['poster'])).'</a>';
                 } elseif ($search_type[1] == 'show_user_posts') {
-                    $search['crumbs_text']['search_type'] = '<a href="'.Router::pathFor('search').'?action=show_user_posts&amp;user_id='.$search_type[2].'">'.sprintf(__('Quick search show_user_posts'), Utils::escape($search['search_set'][0]['pposter'])).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.Router::pathFor('search').
+                        '?action=show_user_posts&amp;user_id='.$search_type[2].'">'.
+                        sprintf(__('Quick search show_user_posts'),
+                            Utils::escape($search['search_set'][0]['pposter'])).'</a>';
                 } elseif ($search_type[1] == 'show_subscriptions') {
                     // Fetch username of subscriber
                     $subscriber_id = $search_type[2];
                     $subscriber_name = \ORM::for_table(ORM_TABLE_PREFIX.'users')
                         ->select('username')
                         ->where('id', $subscriber_id);
-                    $subscriber_name = Container::get('hooks')->fireDB('model.search.get_search_results_subscriber_name', $result);
+                    $subscriber_name = Container::get('hooks')->fireDB(
+                        'model.search.get_search_results_subscriber_name', $result);
                     $subscriber_name = $subscriber_name->find_one();
 
 //FIXME rebuild all one with  ->find_one($id)
@@ -702,26 +794,37 @@ class Search
                         throw new  RunBBException(__('Bad request'), 404);
                     }
 
-                    $search['crumbs_text']['search_type'] = '<a href="'.Router::pathFor('search').'?action=show_subscription&amp;user_id='.$subscriber_id.'">'.sprintf(__('Quick search show_subscriptions'), Utils::escape($subscriber_name->username)).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.Router::pathFor('search').
+                        '?action=show_subscription&amp;user_id='.$subscriber_id.'">'.
+                        sprintf(__('Quick search show_subscriptions'),
+                            Utils::escape($subscriber_name->username)).'</a>';
                 } else {
                     $search_url = str_replace('_', '/', $search_type[1]);
-                    $search['crumbs_text']['search_type'] = '<a href="'.Router::pathFor('search').$search_url.'">'.__('Quick search '.$search_type[1]).'</a>';
+                    $search['crumbs_text']['search_type'] = '<a href="'.Router::pathFor('search').$search_url.'">'.
+                        __('Quick search '.$search_type[1]).'</a>';
                 }
             } else {
                 $keywords = $author = '';
 
                 if ($search_type[0] == 'both') {
                     list($keywords, $author) = $search_type[1];
-                    $search['crumbs_text']['search_type'] = sprintf(__('By both show as '.$show_as), Utils::escape($keywords), Utils::escape($author));
+                    $search['crumbs_text']['search_type'] = sprintf(__('By both show as '.$show_as),
+                        Utils::escape($keywords), Utils::escape($author));
                 } elseif ($search_type[0] == 'keywords') {
                     $keywords = $search_type[1];
-                    $search['crumbs_text']['search_type'] = sprintf(__('By keywords show as '.$show_as), Utils::escape($keywords));
+                    $search['crumbs_text']['search_type'] = sprintf(__('By keywords show as '.$show_as),
+                        Utils::escape($keywords));
                 } elseif ($search_type[0] == 'author') {
                     $author = $search_type[1];
-                    $search['crumbs_text']['search_type'] = sprintf(__('By user show as '.$show_as), Utils::escape($author));
+                    $search['crumbs_text']['search_type'] = sprintf(__('By user show as '.$show_as),
+                        Utils::escape($author));
                 }
 
-                $search['crumbs_text']['search_type'] = '<a href="'.Router::pathFor('search').'?action=search&amp;keywords='.urlencode($keywords).'&amp;author='.urlencode($author).'&amp;forums='.$search_type[2].'&amp;search_in='.$search_type[3].'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir.'&amp;show_as='.$show_as.'">'.$search['crumbs_text']['search_type'].'</a>';
+                $search['crumbs_text']['search_type'] = '<a href="'.Router::pathFor('search').
+                    '?action=search&amp;keywords='.urlencode($keywords).'&amp;author='.urlencode($author).
+                    '&amp;forums='.$search_type[2].'&amp;search_in='.$search_type[3].'&amp;sort_by='.
+                    $sort_by.'&amp;sort_dir='.$sort_dir.'&amp;show_as='.$show_as.'">'.
+                    $search['crumbs_text']['search_type'].'</a>';
             }
         }
 
@@ -747,7 +850,8 @@ class Search
 
         foreach ($search['search_set'] as $cur_search) {
             $forum_name = Url::url_friendly($cur_search['forum_name']);
-            $forum = '<a href="'.Router::pathFor('Forum', ['id' => $cur_search['forum_id'], 'name' => $forum_name]).'">'.Utils::escape($cur_search['forum_name']).'</a>';
+            $forum = '<a href="'.Router::pathFor('Forum', ['id' => $cur_search['forum_id'],
+                    'name' => $forum_name]).'">'.Utils::escape($cur_search['forum_name']).'</a>';
             $url_topic = Url::url_friendly($cur_search['subject']);
 
             if (ForumSettings::get('o_censoring') == '1') {
@@ -758,7 +862,12 @@ class Search
                 ++$post_count;
                 $cur_search['icon_type'] = 'icon';
 
-                if (!User::get()->is_guest && $cur_search['last_post'] > User::get()->last_visit && (!isset($tracked_topics['topics'][$cur_search['tid']]) || $tracked_topics['topics'][$cur_search['tid']] < $cur_search['last_post']) && (!isset($tracked_topics['forums'][$cur_search['forum_id']]) || $tracked_topics['forums'][$cur_search['forum_id']] < $cur_search['last_post'])) {
+                if (!User::get()->is_guest && $cur_search['last_post'] > User::get()->last_visit
+                    && (!isset($tracked_topics['topics'][$cur_search['tid']])
+                        || $tracked_topics['topics'][$cur_search['tid']] < $cur_search['last_post'])
+                    && (!isset($tracked_topics['forums'][$cur_search['forum_id']])
+                        || $tracked_topics['forums'][$cur_search['forum_id']] < $cur_search['last_post']))
+                {
                     $cur_search['item_status'] = 'inew';
                     $cur_search['icon_type'] = 'icon icon-new';
                     $cur_search['icon_text'] = __('New icon');
@@ -771,11 +880,13 @@ class Search
                     $cur_search['message'] = Utils::censor($cur_search['message']);
                 }
 
-                $cur_search['message'] = Container::get('parser')->parseMessage($cur_search['message'], $cur_search['hide_smilies']);
+                $cur_search['message'] = Container::get('parser')->parseMessage($cur_search['message'],
+                    $cur_search['hide_smilies']);
                 $pposter = Utils::escape($cur_search['pposter']);
 
                 if ($cur_search['poster_id'] > 1 && User::get()->g_view_users == '1') {
-                    $cur_search['pposter_disp'] = '<strong><a href="'.Router::pathFor('userProfile', ['id' => $cur_search['poster_id']]).'">'.$pposter.'</a></strong>';
+                    $cur_search['pposter_disp'] = '<strong><a href="'.Router::pathFor('userProfile',
+                            ['id' => $cur_search['poster_id']]).'">'.$pposter.'</a></strong>';
                 } else {
                     $cur_search['pposter_disp'] = '<strong>'.$pposter.'</strong>';
                 }
@@ -785,7 +896,10 @@ class Search
                 $cur_search['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
                 $cur_search['icon_type'] = 'icon';
 
-                $subject = '<a href="'.Router::pathFor('Topic', ['id' => $cur_search['tid'], 'name' => $url_topic]).'">'.Utils::escape($cur_search['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_search['poster']).'</span>';
+                $subject = '<a href="'.Router::pathFor('Topic',
+                        ['id' => $cur_search['tid'], 'name' => $url_topic]).'">'.
+                    Utils::escape($cur_search['subject']).'</a> <span class="byuser">'.__('by').' '.
+                    Utils::escape($cur_search['poster']).'</span>';
 
                 if ($cur_search['sticky'] == '1') {
                     $cur_search['item_status'] .= ' isticky';
@@ -797,11 +911,18 @@ class Search
                     $cur_search['item_status'] .= ' iclosed';
                 }
 
-                if (!User::get()->is_guest && $cur_search['last_post'] > User::get()->last_visit && (!isset($tracked_topics['topics'][$cur_search['tid']]) || $tracked_topics['topics'][$cur_search['tid']] < $cur_search['last_post']) && (!isset($tracked_topics['forums'][$cur_search['forum_id']]) || $tracked_topics['forums'][$cur_search['forum_id']] < $cur_search['last_post'])) {
+                if (!User::get()->is_guest && $cur_search['last_post'] > User::get()->last_visit
+                    && (!isset($tracked_topics['topics'][$cur_search['tid']])
+                        || $tracked_topics['topics'][$cur_search['tid']] < $cur_search['last_post'])
+                    && (!isset($tracked_topics['forums'][$cur_search['forum_id']])
+                        || $tracked_topics['forums'][$cur_search['forum_id']] < $cur_search['last_post']))
+                {
                     $cur_search['item_status'] .= ' inew';
                     $cur_search['icon_type'] = 'icon icon-new';
                     $subject = '<strong>'.$subject.'</strong>';
-                    $subject_new_posts = '<span class="newtext">[ <a href="'.Router::pathFor('topicAction', ['id' => $cur_search['tid'], 'action' => 'new']).'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
+                    $subject_new_posts = '<span class="newtext">[ <a href="'.Router::pathFor('topicAction',
+                            ['id' => $cur_search['tid'], 'action' => 'new']).'" title="'.__('New posts info').'">'.
+                        __('New posts').'</a> ]</span>';
                 } else {
                     $subject_new_posts = null;
                 }
@@ -812,7 +933,8 @@ class Search
                 $num_pages_topic = ceil(($cur_search['num_replies'] + 1) / User::get()->disp_posts);
 
                 if ($num_pages_topic > 1) {// FIXME rebuild url
-                    $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_search['tid'].'/'.$url_topic.'/#').' ]</span>';
+                    $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1,
+                            'topic/'.$cur_search['tid'].'/'.$url_topic.'/#').' ]</span>';
                 } else {
                     $subject_multipage = null;
                 }
@@ -867,7 +989,7 @@ class Search
                 'fp'
             )
 //                    ->where_any_is($result['where'])
-                ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+                ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
                     ->where_null('f.redirect_url')
                     ->order_by_expr($result['order_by']);
         $result = Container::get('hooks')->fireDB('model.search.get_list_forums_query', $result);
@@ -889,12 +1011,15 @@ class Search
                         $output .= "\t\t\t\t\t\t\t".'</fieldset>'."\n";
                     }
 
-                    $output .= "\t\t\t\t\t\t\t".'<fieldset><legend><span>'.Utils::escape($cur_forum['cat_name']).'</span></legend>'."\n";
+                    $output .= "\t\t\t\t\t\t\t".'<fieldset><legend><span>'.Utils::escape($cur_forum['cat_name']).
+                        '</span></legend>'."\n";
                     $output .= "\t\t\t\t\t\t\t\t".'<div class="rbox">';
                     $cur_category = $cur_forum['cid'];
                 }
 
-                $output .= "\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="forums[]" id="forum-'.$cur_forum['fid'].'" value="'.$cur_forum['fid'].'" />'.Utils::escape($cur_forum['forum_name']).'</label>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t".'<label><input type="checkbox" name="forums[]" id="forum-'.
+                    $cur_forum['fid'].'" value="'.$cur_forum['fid'].'" />'.Utils::escape($cur_forum['forum_name']).
+                    '</label>'."\n";
             }
 
             if ($cur_category) {
@@ -923,7 +1048,8 @@ class Search
                     $cur_category = $cur_forum['cid'];
                 }
 
-                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'">'.Utils::escape($cur_forum['forum_name']).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t".'<option value="'.$cur_forum['fid'].'">'.
+                    Utils::escape($cur_forum['forum_name']).'</option>'."\n";
             }
 
             $output .= "\t\t\t\t\t\t\t".'</optgroup>'."\n";

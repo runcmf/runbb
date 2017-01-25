@@ -26,7 +26,7 @@ class Post
     {
         Container::get('hooks')->fire('model.post.get_info_post_start', $tid, $fid);
 
-        $cur_posting['where'] = 'fp.read_forum IS NULL OR fp.read_forum=1';
+        $cur_posting['where'] = '(fp.read_forum IS NULL OR fp.read_forum=1)';
 //            array(
 //            array('fp.read_forum' => 'IS NULL'),
 //            array('fp.read_forum' => '1')
@@ -424,7 +424,7 @@ class Post
                 'fp'
             )
 //            ->where_any_is($query['where'])
-            ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+            ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
             ->where('p.id', $id);
 
         $query = Container::get('hooks')->fireDB('model.post.get_info_delete_query', $query);
@@ -718,7 +718,7 @@ class Post
                 '(fp.forum_id=f.id AND fp.group_id='. User::get()->g_id.')',
                 'fp'
             )
-                        ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+                        ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
                         ->where('p.id', $post_id);
         $cur_post = Container::get('hooks')->fireDB('model.post.get_info_report_query', $cur_post);
         $cur_post = $cur_post->find_one();
@@ -879,7 +879,7 @@ class Post
                     ->left_outer_join(ORM_TABLE_PREFIX.'bans', ['u.username', '=', 'b.username'], 'b')
                     ->where_raw('COALESCE(o.logged, u.last_visit)>'.$previous_post_time->posted)
                     ->where_null('b.username')
-                    ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+                    ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
                     ->where('s.topic_id', $tid)
                     ->where_not_equal('u.id', User::get()->id);
         $result = Container::get('hooks')->fireDB('model.post.send_notifications_reply_query', $result);
@@ -1113,7 +1113,7 @@ class Post
                     ->left_outer_join(ORM_TABLE_PREFIX.'bans', ['u.username', '=', 'b.username'], 'b')
                     ->where_null('b.username')
 //                    ->where_any_is($result['where'])
-                ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+                ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
                     ->where('s.forum_id', $cur_posting['id'])
                     ->where_not_equal('u.id', User::get()->id);
         $result = Container::get('hooks')->fireDB('model.post.send_notifications_new_topic_query', $result);

@@ -307,6 +307,8 @@ class Auth
             // Add $user as guest to DIC
             Container::set('user', $user);
         }
+        // load theme assets
+        Container::get('template')->loadThemeAssets(User::get()->style);
 
         translate('common');
         // Load bans from cache

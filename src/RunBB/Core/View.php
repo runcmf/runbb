@@ -138,10 +138,11 @@ class View
     }
 
     /**
-    * Get fully qualified path to template file using templates base directory
-    * @param  string $file The template file pathname relative to templates base directory
-    * @return string
-    */
+     * Get fully qualified path to template file using templates base directory
+     * @param string $file The template file pathname relative to templates base directory
+     * @return string
+     * @throws RunBBException
+     */
     public function getTemplatePathname($file)
     {
         foreach ($this->getTemplatesDirectory() as $tpl_dir) {
@@ -178,6 +179,12 @@ class View
 
     protected function render($data = null, $nested = true)
     {
+        $twig = true;// FIXME config it
+
+        if($twig) {
+            return $this->twigRender($data, $nested);
+        }
+
         extract($data);
         ob_start();
         // Include view files
@@ -197,18 +204,99 @@ class View
         return Container::get('response');
     }
 
+    protected function twigRender($data = null, $nested = true)
+    {
+        $output = '';
+        // echo $twig->render('index.html', array('name' => 'Fabien'));
+        // return $this->environment->loadTemplate($template)->render($data);
+        // addGlobal($name, $value)
+        // mergeGlobals(array $context) return $context;
+        $data['nested'] = $nested;
+        $data['pageTitle'] = Utils::generate_page_title($data['title'], $data['page_number']);
+        $data['flashMessages'] = Container::get('flash')->getMessages();
+        $data['style'] = View::getStyle();
+        $data['navlinks'] = $this->buildNavLinks($data['active_page']);
+
+        if (file_exists(ForumEnv::get('WEB_ROOT').'style/themes/'.View::getStyle().'/base_admin.css')) {
+            $admStyle = '<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/themes/'.View::getStyle().'/base_admin.css" />';
+        } else {
+            $admStyle = '<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/imports/base_admin.css" />';
+        }
+        $data['admStyle'] = $admStyle;
+
+//        extract($data);
+//        ob_start();
+//         Include view files
+//        if ($nested) {
+//            include $this->getTemplatePathname('header.php');
+//        }
+//tdie($data);
+
+dump(count($this->getTemplates()));
+        if(count($this->getTemplates()) > 1) {
+//tdie($this->getTemplates());
+        }
+
+        foreach ($this->getTemplates() as $tpl) {
+// "/var/www/run/vendor/runcmf/runbb/src/RunBB/View/index.php" (57)
+dump($tpl);
+
+
+            $output .= Container::get('twig')->render(rtrim(basename($tpl), '.php') . '.html.twig', $data);
+
+//            include $tpl;
+        }
+        Response::getBody()->write($output);
+        return Container::get('response');
+
+//        if ($nested) {
+//            include $this->getTemplatePathname('footer.php');
+//        }
+
+//        $output = ob_get_clean();
+//        Response::getBody()->write($output);
+//
+//        return Container::get('response');
+    }
     /********************************************************************************
     * Getters and setters
     *******************************************************************************/
 
+    /**
+     * load assets for given style
+     * @param $style
+     */
+    public function loadThemeAssets($style) {
+        $dir = ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/';
+        if(is_file($dir . 'bootstrap.php')) {
+            $vars = include_once $dir . 'bootstrap.php';
+            if(empty($vars)) {
+                return;
+            }
+            foreach ($vars as $key => $assets) {
+                if ($key === 'jsraw' || !in_array($key, ['js', 'jshead', 'css'])) {
+                    continue;
+                }
+                foreach ($assets as $asset) {
+                    $params = ($key === 'css') ? ['type' => 'text/css', 'rel' => 'stylesheet'] : (
+                    ($key === 'js' || $key === 'jshead') ? ['type' => 'text/javascript'] : []
+                    );
+                    $this->addAsset($key, $asset, $params);
+                }
+            }
+            $this->set('jsraw', $vars['jsraw']);
+        }
+    }
+
     public function setStyle($style)
     {
-        if (!is_dir(ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/')) {
+        $dir = ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/';
+        if (!is_dir($dir)) {
             throw new RunBBException('The style '.$style.' doesn\'t exist');
         }
         $this->data->set('style', (string) $style);
-        $this->addTemplatesDirectory(ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/view', 9);
-        return $this;
+        $this->addTemplatesDirectory($dir.'/view', 9);
+//        return $this;
     }
 
     public function getStyle()
@@ -357,6 +445,8 @@ class View
         switch ($type) {
             case 'js':
                 return ['type' => 'text/javascript'];
+            case 'jshead':
+                return ['type' => 'text/javascript'];
             case 'css':
                 return ['rel' => 'stylesheet', 'type' => 'text/css'];
             case 'feed':
@@ -370,5 +460,96 @@ class View
             default:
                 return [];
         }
+    }
+
+    protected function buildNavLinks($active_page = '')
+    {
+        $navlinks = [];
+
+        $navlinks[] = [
+            'id' => 'navindex',
+            'active' => ($active_page == 'index') ? ' class="isactive"' : '',
+            'href' => Url::base().'/forum',
+            'text' => __('Index')
+        ];
+
+        if (User::get()->g_read_board == '1' && User::get()->g_view_users == '1') {
+            $navlinks[] = [
+                'id' => 'navuserlist',
+                'active' => ($active_page == 'userlist') ? ' class="isactive"' : '',
+                'href' => Router::pathFor('userList'),
+                'text' => __('User list')
+            ];
+        }
+
+        if (ForumSettings::get('o_rules') == '1' && (!User::get()->is_guest || User::get()->g_read_board == '1' || ForumSettings::get('o_regs_allow') == '1')) {
+            $navlinks[] = [
+                'id' => 'navrules',
+                'active' => ($active_page == 'rules') ? ' class="isactive"' : '',
+                'href' => Router::pathFor('rules'),
+                'text' => __('Rules')
+            ];
+        }
+
+        if (User::get()->g_read_board == '1' && User::get()->g_search == '1') {
+            $navlinks[] = [
+                'id' => 'navsearch',
+                'active' => ($active_page == 'search') ? ' class="isactive"' : '',
+                'href' => Router::pathFor('search'),
+                'text' => __('Search')
+            ];
+        }
+
+        if (User::get()->is_guest) {
+            $navlinks[] = [
+                'id' => 'navregister',
+                'active' => ($active_page == 'register') ? ' class="isactive"' : '',
+                'href' => Router::pathFor('register'),
+                'text' => __('Register')
+            ];
+            $navlinks[] = [
+                'id' => 'navlogin',
+                'active' => ($active_page == 'login') ? ' class="isactive"' : '',
+                'href' => Router::pathFor('login'),
+                'text' => __('Login')
+            ];
+        } else {
+            $navlinks[] = [
+                'id' => 'navprofile',
+                'active' => ($active_page == 'profile') ? ' class="isactive"' : '',
+                'href' => Router::pathFor('userProfile', ['id' => User::get()->id]),
+                'text' => __('Profile')
+            ];
+            if (User::get()->is_admmod) {
+                $navlinks[] = [
+                    'id' => 'navadmin',
+                    'active' => ($active_page == 'admin') ? ' class="isactive"' : '',
+                    'href' => Router::pathFor('adminIndex'),
+                    'text' => __('Admin')
+                ];
+            }
+
+            $navlinks[] = [
+                'id' => 'navlogout',
+                'active' => ($active_page == 'logout') ? ' class="isactive"' : '',
+                'href' => Router::pathFor('logout', ['token' => Random::hash(User::get()->id.Random::hash(Utils::getIp()))]),
+                'text' => __('Logout')
+            ];
+        }
+
+        // Are there any additional navlinks we should insert into the array before imploding it?
+        $hooksLinks = Container::get('hooks')->fire('view.header.navlinks', []);
+        $extraLinks = ForumSettings::get('o_additional_navlinks')."\n".implode("\n", $hooksLinks);
+        if (User::get()->g_read_board == '1' && ($extraLinks != '')) {
+            if (preg_match_all('%([0-9]+)\s*=\s*(.*?)\n%s', $extraLinks."\n", $results)) {
+                // Insert any additional links into the $links array (at the correct index)
+                $num_links = count($results[1]);
+                for ($i = 0; $i < $num_links; ++$i) {
+                    array_splice($navlinks, $results[1][$i], 0, ['<li id="navextra'.($i + 1).'"'.(($active_page == 'navextra'.($i + 1)) ? ' class="isactive"' : '').'>'.$results[2][$i].'</li>']);
+                }
+            }
+        }
+//        echo "\t\t\t".implode("\n\t\t\t", $navlinks);
+        return $navlinks;
     }
 }

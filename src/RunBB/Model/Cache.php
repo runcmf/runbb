@@ -99,7 +99,7 @@ class Cache
                     'fp'
                 )
 //                        ->where_any_is($where_quickjump)
-                    ->where_raw('fp.read_forum IS NULL OR fp.read_forum=1')
+                    ->where_raw('(fp.read_forum IS NULL OR fp.read_forum=1)')
                         ->where_null('f.redirect_url')
                         ->order_by_expr($order_by_quickjump)
                         ->find_many();

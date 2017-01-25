@@ -13,6 +13,7 @@ namespace RunBB\Middleware;
 use RunBB\Core\Email;
 use RunBB\Core\Hooks;
 //use RunBB\Core\Parser;
+use RunBB\Core\Interfaces\Container;
 use RunBB\Core\ParserS9E;
 use RunBB\Core\Plugin;
 use RunBB\Core\Url;
@@ -34,8 +35,7 @@ class Core
     {
         $this->c = $c;
         // Handle empty values in data
-        $data = array_merge(
-            [
+        $data = array_merge([
             'config_file' => 'config.php',
             'cache_dir' => 'cache/',
             'web_root' => '',
@@ -51,14 +51,8 @@ class Core
         $this->forum_env['FEATHER_DEBUG'] = $this->forum_env['FEATHER_SHOW_QUERIES'] = ($data['debug'] == 'all');
         $this->forum_env['FEATHER_SHOW_INFO'] = ($data['debug'] == 'info' || $data['debug'] == 'all');
         $this->forum_env['WEB_ROOT'] = $data['web_root'];
-        $this->forum_env['WEB_PLUGINS'] = 'plugins';
+        $this->forum_env['WEB_PLUGINS'] = 'ext';
         $this->forum_env['SLIM_SETTINGS'] = $c['settings']['runbb'];
-        $this->forum_env['FORUM_ASSETS'] = [
-            'css' => $c['settings']['runbb']['commonAssets']['css'],
-            'jshead' => $c['settings']['runbb']['commonAssets']['jshead'],
-            'js' => $c['settings']['runbb']['commonAssets']['js'],
-            'jsraw' => $c['settings']['runbb']['commonAssets']['jsraw']
-        ];
 
         // Populate forum_env
         $this->forum_env = array_merge(self::load_default_forum_env(), $this->forum_env);
@@ -224,6 +218,31 @@ class Core
         Container::set('template', function ($container) {
             return new View();
         });
+        // register twig
+        Container::set('twig', function ($container) {
+//$this->forum_env['WEB_ROOT'] add theme name
+            $twig = new \Twig_Environment(
+                new \Twig_Loader_Filesystem(
+                    $this->forum_env['WEB_ROOT'] . 'style/themes/tryOne/view'//FIXME themeName!!!
+//                    $container['settings']['view']['template_path']
+                ),
+//                $container['settings']['view']['twig']
+                [
+                    //root_dir
+                    'cache' => DIR . 'var/cache/twig',
+                    'debug' => true,
+                ]
+            );
+            // extensions
+//            $twig->addExtension(new \Twig_Extension_Profiler($container['twig_profile']));
+            if (ForumEnv::get('FEATHER_DEBUG')) {
+                $twig->addExtension(new \Twig_Extension_Debug());
+            }
+            $twig->addExtension(new \RunBB\Core\RunBBTwig);
+
+            return $twig;
+        });
+
         // Load RunBB url class
         Container::set('url', function ($container) {
             return new Url();
@@ -283,29 +302,6 @@ class Core
 
         // Set default style and assets
         Container::get('template')->setStyle(ForumSettings::get('o_default_style'));
-
-        // load common assets
-        foreach ($this->forum_env['FORUM_ASSETS'] as $key => $assets) {
-            if ($key === 'jsraw' || !in_array($key, ['js', 'jshead', 'css'])) {
-                continue;
-            }
-            foreach ($assets as $asset) {
-                $params = ($key === 'css') ? ['type' => 'text/css', 'rel' => 'stylesheet'] : (
-                    ($key === 'js' || $key === 'jshead') ? ['type' => 'text/javascript'] : []
-                    );
-                Container::get('template')->addAsset(
-                    $key,
-                    $asset,
-                    $params
-                );
-            }
-        }
-        Container::get('template')->set('jsraw', $this->forum_env['FORUM_ASSETS']['jsraw']);
-        Container::get('template')->addAsset(// FIXME move from theme to common ???
-            'js',
-            'style/themes/' . Container::get('template')->getStyle() . '/phone.min.js',
-            ['type' => 'text/javascript']
-        );
 
         // Run activated plugins
         self::loadPlugins();
