@@ -51,15 +51,11 @@ class Search
                         'display' => $display,
                     ]);
 
-                View::addTemplate('search/header.php', 1);
-
                 if ($search['show_as'] == 'posts') {
-                    View::addTemplate('search/posts.php', 5);
+                    View::addTemplate('search/posts.php', 5)->display();
                 } else {
-                    View::addTemplate('search/topics.php', 5);
+                    View::addTemplate('search/topics.php', 5)->display();
                 }
-
-                View::addTemplate('search/footer.php', 10)->display();
             } else {
                 return Router::redirect(Router::pathFor('search'), __('No hits'));
             }

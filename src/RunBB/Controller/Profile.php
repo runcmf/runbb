@@ -22,7 +22,6 @@ class Profile
         translate('profile');
         translate('register');
         translate('prof_reg');
-//        translate('misc');
     }
 
     public function display($req, $res, $args)
@@ -63,8 +62,12 @@ class Profile
             if (Input::post('delete_user_comply')) {
                 return $this->model->delete_user($args['id']);
             } else {
-                View::setPageInfo([
-                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Confirm delete user')],
+                return View::setPageInfo([
+                    'title' => [Utils::escape(
+                        ForumSettings::get('o_board_title')),
+                        __('Profile'),
+                        __('Confirm delete user')
+                    ],
                     'active_page' => 'profile',
                     'username' => $this->model->get_username($args['id']),
                     'id' => $args['id'],
@@ -74,13 +77,13 @@ class Profile
             // Fetch the user group of the user we are editing
             $info = $this->model->fetch_user_group($args['id']);
 
-            if (User::get()->id != $args['id'] &&                                                            // If we aren't the user (i.e. editing your own profile)
-                                    (!User::get()->is_admmod ||                                      // and we are not an admin or mod
-                                    (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&                           // or we aren't an admin and ...
-                                    (User::get()->g_mod_edit_users == '0' ||                         // mods aren't allowed to edit users
-                                    $info['group_id'] == ForumEnv::get('FEATHER_ADMIN') ||                            // or the user is an admin
-                                    $info['is_moderator'])))) {                                      // or the user is another mod
-                                    throw new  RunBBException(__('No permission'), 403);
+            if (User::get()->id != $args['id'] &&          // If we aren't the user (i.e. editing your own profile)
+                            (!User::get()->is_admmod ||                   // and we are not an admin or mod
+                            (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&// or we aren't an admin and ...
+                            (User::get()->g_mod_edit_users == '0' ||      // mods aren't allowed to edit users
+                            $info['group_id'] == ForumEnv::get('FEATHER_ADMIN') || // or the user is an admin
+                            $info['is_moderator'])))) {                          // or the user is another mod
+                throw new  RunBBException(__('No permission'), 403);
             }
 
             return $this->model->update_profile($args['id'], $info, $args['section']);
@@ -95,15 +98,16 @@ class Profile
         // View or edit?
         if (User::get()->id != $args['id'] &&                // If we aren't the user (i.e. editing your own profile)
                 (!User::get()->is_admmod ||                           // and we are not an admin or mod
-                (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&    // or we aren't an admin and ...
-                (User::get()->g_mod_edit_users == '0' ||              // mods aren't allowed to edit users
-                $user->g_id == ForumEnv::get('FEATHER_ADMIN') ||           // or the user is an admin
-                $user->g_moderator == '1')))) {                     // or the user is another mod
+                (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && // or we aren't an admin and ...
+                (User::get()->g_mod_edit_users == '0' ||                // mods aren't allowed to edit users
+                $user->g_id == ForumEnv::get('FEATHER_ADMIN') ||        // or the user is an admin
+                $user->g_moderator == '1'))))                           // or the user is another mod
+        {
                 $user_info = $this->model->parseUserInfo($user);
 
             View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')),
-                    sprintf(__('Users profile'), Utils::escape($user->username))],
+                    __('Users profile', Utils::escape($user->username))],
                 'active_page' => 'profile',
                 'user_info' => $user_info,
                 'id' => $args['id']
@@ -124,7 +128,8 @@ class Profile
                     'user' => $user,
                     'user_disp' => $user_disp,
                     'forum_time_formats' => Container::get('forum_time_formats'),
-                    'forum_date_formats' => Container::get('forum_date_formats')
+                    'forum_date_formats' => Container::get('forum_date_formats'),
+                    'languages' => \RunBB\Core\Lister::getLangs()
                 ]);
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_essentials.php')->display();
@@ -192,7 +197,8 @@ class Profile
                     'active_page' => 'profile',
                     'page' => 'display',
                     'user' => $user,
-                    'id' => $args['id']
+                    'id' => $args['id'],
+                    'styles' => \RunBB\Core\Lister::getStyles()
                 ]);
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_display.php')->display();
@@ -294,6 +300,7 @@ class Profile
                 'required_fields' =>  ['req_file' => __('File')],
                 'focus_element' => ['upload_avatar', 'req_file'],
                 'id' => $args['id'],
+                'avatarFormattedSize' => Utils::file_size(ForumSettings::get('o_avatars_size'))
             ]);
 
             View::addTemplate('profile/upload_avatar.php')->display();

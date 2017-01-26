@@ -65,11 +65,11 @@ class Auth
             }
         } else {
             View::setPageInfo([
-                                'active_page' => 'login',
-                                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Login')],
-                                'required_fields' => ['req_username' => __('Username'), 'req_password' => __('Password')],
-                                'focus_element' => ['login', 'req_username'],
-                                ])->addTemplate('login/form.php')->display();
+                'active_page' => 'login',
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Login')],
+                'required_fields' => ['req_username' => __('Username'), 'req_password' => __('Password')],
+                'focus_element' => ['login', 'req_username'],
+            ])->addTemplate('login/form.php')->display();
         }
     }
 

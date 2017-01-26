@@ -1,4 +1,4 @@
-{% extends 'layout.html.twig' %}
+{% extends '@forum/layout.html.twig' %}
 
 {% block content %}
 
@@ -37,7 +37,7 @@
                         <div class="tclcon">
                             <div>
                                 {{ forum.forum_field|raw }}
-                                {{ forum.moderators_formatted }}
+                                {{ forum.moderators_formatted|raw }}
                             </div>
                         </div>
                     </td>

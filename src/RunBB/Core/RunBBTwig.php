@@ -129,9 +129,21 @@ class RunBBTwig extends \Twig_Extension
 
             /**
              * return Container::get('utils')->format_time($var) result
+             * Container::get('utils')->format_time(
+             *  $timestamp, $date_only, $date_format, $time_format, $time_only, $no_text
+             * )
              */
-            new \Twig_SimpleFunction('formatTime', function ($stamp, $date_only=false) {
-                return Container::get('utils')->format_time($stamp, $date_only);
+            new \Twig_SimpleFunction('formatTime', function (
+                $timestamp,
+                $date_only = false,
+                $date_format = null,
+                $time_format = null,
+                $time_only = false,
+                $no_text = false
+            ) {
+                return Container::get('utils')->format_time(
+                    $timestamp, $date_only, $date_format, $time_format, $time_only, $no_text
+                );
             }, ['is_safe' => ['html']]),
 
             /**
@@ -155,6 +167,15 @@ class RunBBTwig extends \Twig_Extension
              */
             new \Twig_SimpleFunction('formatTitle', function ($title, $name, $groupTitle, $gid) {
                 return Utils::get_title($title, $name, $groupTitle, $gid);
+            }, ['is_safe' => ['html']]),
+
+            /**
+             * Get forum environment var
+             * TODO merge with settings???
+             * return ForumEnv::get($var) result
+             */
+            new \Twig_SimpleFunction('getEnv', function ($var) {
+                return ForumEnv::get($var);
             }, ['is_safe' => ['html']]),
         ];
     }

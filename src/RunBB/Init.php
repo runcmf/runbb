@@ -40,7 +40,7 @@ class Init
     public function init()
     {
         $this->registerMiddlewares();
-        $this->registerViews();
+//        $this->registerViews();
         $this->registerUserRoute();
         $this->registerAdminRoute();
     }

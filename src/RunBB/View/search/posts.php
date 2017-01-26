@@ -14,6 +14,8 @@ if (!isset($feather)) {
     exit;
 }
 
+include_once 'header.php';
+
 Container::get('hooks')->fire('view.search.posts.start');
 
 
@@ -82,3 +84,5 @@ foreach ($display['cur_search'] as $search) {
 }
 
 Container::get('hooks')->fire('view.search.posts.end');
+
+include_once 'footer.php';

@@ -14,7 +14,6 @@
 namespace RunBB\Middleware;
 
 use RunBB\Exception\RunBBException;
-use RunBB\Core\Random;
 use RunBB\Core\Track;
 use RunBB\Core\Utils;
 use RunBB\Model\Cache;
@@ -307,8 +306,9 @@ class Auth
             // Add $user as guest to DIC
             Container::set('user', $user);
         }
-        // load theme assets
-        Container::get('template')->loadThemeAssets(User::get()->style);
+
+        // load theme assets also set setStyle
+        Container::get('template')->loadThemeAssets($user->style);
 
         translate('common');
         // Load bans from cache

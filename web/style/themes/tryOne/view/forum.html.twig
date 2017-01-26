@@ -1,4 +1,4 @@
-{% extends 'layout.html.twig' %}
+{% extends '@forum/layout.html.twig' %}
 
 {% block content %}
 
@@ -9,7 +9,7 @@
                 <li><a href="{{ urlBase() }}/forum">{{ trans('Index') }}</a></li>
                 <li>
                     <span>»&#160;</span>
-                    <strong><a href="{{ pathFor('Forum', {'id': "#{ id }", 'name': "#{ url_forum }"}) }}">{{ cur_forum.forum_name }}</a></strong>
+                    <strong><a href="{{ pathFor('Forum', {'id': id, 'name': url_forum}) }}">{{ cur_forum.forum_name }}</a></strong>
                 </li>
             </ul>
             <div class="pagepost">

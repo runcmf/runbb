@@ -1,4 +1,4 @@
-{% extends 'layout.html.twig' %}
+{% extends '@forum/layout.html.twig' %}
 
 {% block content %}
 
@@ -42,7 +42,7 @@
                             <dt><strong>{{ post.username_formatted|raw }}</strong></dt>
                             <dd class="usertitle"><strong>{{ post.user_title_formatted|raw }}</strong></dd>
         {% if post.user_avatar != '' %}
-                            <dd class="postavatar">{{ post.user_avatar }}</dd>
+                            <dd class="postavatar">{{ post.user_avatar|raw }}</dd>
         {% endif %}
 
         {% if post.user_info|length %}

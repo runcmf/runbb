@@ -9,6 +9,7 @@
 
 namespace RunBB\Core;
 
+use RunBB\Core\Interfaces\Container;
 use RunBB\Exception\RunBBException;
 
 class View
@@ -30,6 +31,8 @@ class View
         'pid' => 'intval',
         'tid' => 'intval'
     ];
+
+    public $tplPath = '', $useTwig = false;
 
     /**
     * Constructor
@@ -160,9 +163,9 @@ class View
 
     public function display($nested = true)
     {
-        if (User::get()) {
-            $this->setStyle(User::get()->style);
-        }
+//        if (User::get()) {
+//            $this->setStyle(User::get()->style);
+//        }
         return $this->fetch($nested);
     }
 
@@ -179,9 +182,7 @@ class View
 
     protected function render($data = null, $nested = true)
     {
-        $twig = true;// FIXME config it
-
-        if($twig) {
+        if($this->useTwig) {
             return $this->twigRender($data, $nested);
         }
 
@@ -206,11 +207,6 @@ class View
 
     protected function twigRender($data = null, $nested = true)
     {
-        $output = '';
-        // echo $twig->render('index.html', array('name' => 'Fabien'));
-        // return $this->environment->loadTemplate($template)->render($data);
-        // addGlobal($name, $value)
-        // mergeGlobals(array $context) return $context;
         $data['nested'] = $nested;
         $data['pageTitle'] = Utils::generate_page_title($data['title'], $data['page_number']);
         $data['flashMessages'] = Container::get('flash')->getMessages();
@@ -224,39 +220,22 @@ class View
         }
         $data['admStyle'] = $admStyle;
 
-//        extract($data);
-//        ob_start();
-//         Include view files
-//        if ($nested) {
-//            include $this->getTemplatePathname('header.php');
-//        }
-//tdie($data);
+        $templates = $this->getTemplates();
 
-dump(count($this->getTemplates()));
-        if(count($this->getTemplates()) > 1) {
-//tdie($this->getTemplates());
+        $tpl = array_pop($templates);// get last in array
+        $tpl = '@forum/' . rtrim(str_replace(ForumEnv::get('FORUM_ROOT') . 'View/', '', $tpl), '.php') . '.html.twig';
+
+        try {
+            $output = Container::get('twig')->render($tpl, $data);
+        } catch (\Twig_Error $e) {
+            // try return to php template show error
+            $this->useTwig = false;
+            throw new RunBBException('Twig Exception, file: '.$e->getFile()
+                .' line: '.$e->getLine().' message: '.$e->getMessage());
         }
 
-        foreach ($this->getTemplates() as $tpl) {
-// "/var/www/run/vendor/runcmf/runbb/src/RunBB/View/index.php" (57)
-dump($tpl);
-
-
-            $output .= Container::get('twig')->render(rtrim(basename($tpl), '.php') . '.html.twig', $data);
-
-//            include $tpl;
-        }
         Response::getBody()->write($output);
         return Container::get('response');
-
-//        if ($nested) {
-//            include $this->getTemplatePathname('footer.php');
-//        }
-
-//        $output = ob_get_clean();
-//        Response::getBody()->write($output);
-//
-//        return Container::get('response');
     }
     /********************************************************************************
     * Getters and setters
@@ -286,16 +265,26 @@ dump($tpl);
             }
             $this->set('jsraw', $vars['jsraw']);
         }
+
+        $this->useTwig = true;// FIXME config it
+
+        $this->setStyle($style);
     }
 
     public function setStyle($style)
     {
-        $dir = ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/';
-        if (!is_dir($dir)) {
+        $this->tplPath = ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/';
+        if (!is_dir($this->tplPath)) {
             throw new RunBBException('The style '.$style.' doesn\'t exist');
         }
         $this->data->set('style', (string) $style);
-        $this->addTemplatesDirectory($dir.'/view', 9);
+        $this->addTemplatesDirectory($this->tplPath.'/view', 9);
+
+        // add path and alias if Twig enabled
+        if($this->useTwig) {
+            $loader = Container::get('twig')->getLoader();
+            $loader->addPath($this->tplPath . 'view', 'forum');
+        }
 //        return $this;
     }
 
@@ -549,7 +538,7 @@ dump($tpl);
                 }
             }
         }
-//        echo "\t\t\t".implode("\n\t\t\t", $navlinks);
+
         return $navlinks;
     }
 }

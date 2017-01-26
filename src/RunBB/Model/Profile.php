@@ -1283,10 +1283,7 @@ class Profile
         $user_info['personal'][] = '<dt>'.__('Username').'</dt>';
         $user_info['personal'][] = '<dd>'.Utils::escape($user->username).'</dd>';
 
-// $user->title, $user->username, $user->g_user_title, g_id
-// public static function get_title($title='', $name='', $groupTitle='', $gid=0)
-        tdie($user);
-        $user_title_field = Utils::get_title($user);
+        $user_title_field = Utils::get_title($user->title);
         $user_info['personal'][] = '<dt>'.__('Title').'</dt>';
         $user_info['personal'][] = '<dd>'.((ForumSettings::get('o_censoring') == '1') ?
                 Utils::censor($user_title_field) : $user_title_field).'</dd>';

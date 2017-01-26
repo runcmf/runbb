@@ -4,8 +4,6 @@ namespace RunBB\Middleware;
 use ArrayAccess;
 use Countable;
 use Traversable;
-use IteratorAggregate;
-use RuntimeException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RunBB\Exception\RunBBException;
@@ -68,14 +66,14 @@ class Csrf
     protected $keyPair;
 
     /**
-     * Create new CSRF guard
+     * Create new CSRF guard.
      *
-     * @param string                 $prefix
+     * @param string $prefix
      * @param null|array|ArrayAccess $storage
-     * @param null|callable          $failureCallable
-     * @param integer                $storageLimit
-     * @param integer                $strength
-     * @throws RuntimeException if the session cannot be found
+     * @param callable|null $failureCallable
+     * @param int $storageLimit
+     * @param int $strength
+     * @throws RunBBException if the session cannot be found
      */
     public function __construct(
         $prefix = 'csrf',
@@ -132,7 +130,7 @@ class Csrf
     /**
      * Invoke middleware
      *
-     * @param  RequestInterface  $request  PSR7 request object
+     * @param  ServerRequestInterface  $request  PSR7 request object
      * @param  ResponseInterface $response PSR7 response object
      * @param  callable          $next     Next middleware callable
      *
@@ -186,9 +184,9 @@ class Csrf
     /**
      * Generates a new CSRF token and attaches it to the Request Object
      *
-     * @param  RequestInterface $request PSR7 response object.
+     * @param  ServerRequestInterface $request PSR7 response object.
      *
-     * @return RequestInterface PSR7 response object.
+     * @return ServerRequestInterface PSR7 response object.
      */
     public function generateNewToken(ServerRequestInterface $request)
     {
@@ -319,7 +317,7 @@ class Csrf
     {
         if (is_null($this->failureCallable)) {
             $this->failureCallable = function (ServerRequestInterface $request, ResponseInterface $response, $next) {
-                throw new  RunBBException('Failed CSRF check!', 500);
+                throw new RunBBException('Failed CSRF check!', 500);
             };
         }
         return $this->failureCallable;

@@ -698,8 +698,8 @@ footer .footer-link {
 }
 .blockpost .box .postleft dl dt strong a,
 .blockpost .box .postleft dl dt strong span {
-    font-size: 1.3rem;
-    font-weight: 400
+    font-size: 1.8rem;
+    /*font-weight: 400*/
 }
 .blockpost .box .postleft dl dt strong a:hover,
 .blockpost .box .postleft dl dt strong span:hover {

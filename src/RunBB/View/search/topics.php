@@ -14,6 +14,8 @@ if (!isset($feather)) {
     exit;
 }
 
+include_once 'header.php';
+
 Container::get('hooks')->fire('view.search.topics.start');
 
 foreach ($display['cur_search'] as $search) {
@@ -39,3 +41,5 @@ foreach ($display['cur_search'] as $search) {
 }
 
 Container::get('hooks')->fire('view.search.topics.end');
+
+include_once 'footer.php';

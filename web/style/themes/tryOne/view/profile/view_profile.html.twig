@@ -1,65 +1,58 @@
-<?php
+{% extends '@forum/layout.html.twig' %}
 
-/**
- * Copyright (C) 2015-2016 FeatherBB
- * based on code by (C) 2008-2015 FluxBB
- * and Rickard Andersson (C) 2002-2008 PunBB
- * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
- */
+{% block content %}
 
-// Make sure no one attempts to run this script "directly"
-if (!isset($feather)) {
-    exit;
-}
+    {{ fireHook('view.profile.view_profile.start') }}
 
-Container::get('hooks')->fire('view.profile.view_profile.start');
-?>
-
-<div id="viewprofile" class="block">
-    <h2><span><?= __('Profile') ?></span></h2>
-    <div class="box">
-        <div class="fakeform">
+    <div id="viewprofile" class="blockform">
+        <h2><span>{{ trans('Profile') }}</span></h2>
+        <div class="box">
             <div class="inform">
                 <fieldset>
-                <legend><?= __('Section personal') ?></legend>
+                <legend>{{ trans('Section personal') }}</legend>
                     <div class="infldset">
                         <dl>
-                            <?= implode("\n\t\t\t\t\t\t\t", $user_info['personal'])."\n" ?>
+                            {{ user_info.personal|join("\n\t\t\t\t\t\t\t")|raw }}
                         </dl>
                         <div class="clearer"></div>
                     </div>
                 </fieldset>
             </div>
-<?php if (!empty($user_info['messaging'])) :
-?>            <div class="inform">
+{% if user_info.messaging is not empty %}
+
+            <div class="inform">
                 <fieldset>
-                <legend><?= __('Section messaging') ?></legend>
+                <legend>{{ trans('Section messaging') }}</legend>
                     <div class="infldset">
                         <dl>
-                            <?= implode("\n\t\t\t\t\t\t\t", $user_info['messaging'])."\n" ?>
+                            {{ user_info.messaging|join("\n\t\t\t\t\t\t\t")|raw }}
                         </dl>
                         <div class="clearer"></div>
                     </div>
                 </fieldset>
             </div>
-<?php endif; if (!empty($user_info['personality'])) :
-?>            <div class="inform">
+{% endif %}
+
+{% if user_info.personality is not empty %}
+
+            <div class="inform">
                 <fieldset>
-                <legend><?= __('Section personality') ?></legend>
+                <legend>{{ trans('Section personality') }}</legend>
                     <div class="infldset">
                         <dl>
-                            <?= implode("\n\t\t\t\t\t\t\t", $user_info['personality'])."\n" ?>
+                            {{ user_info.personality|join("\n\t\t\t\t\t\t\t")|raw }}
                         </dl>
                         <div class="clearer"></div>
                     </div>
                 </fieldset>
             </div>
-<?php endif; ?>            <div class="inform">
+{% endif %}
+            <div class="inform">
                 <fieldset>
-                <legend><?= __('User activity') ?></legend>
+                <legend>{{ trans('User activity') }}</legend>
                     <div class="infldset">
                         <dl>
-                            <?= implode("\n\t\t\t\t\t\t\t", $user_info['activity'])."\n" ?>
+                            {{ user_info.activity|join("\n\t\t\t\t\t\t\t")|raw }}
                         </dl>
                         <div class="clearer"></div>
                     </div>
@@ -67,7 +60,6 @@ Container::get('hooks')->fire('view.profile.view_profile.start');
             </div>
         </div>
     </div>
-</div>
 
-<?php
-Container::get('hooks')->fire('view.profile.view_profile.end');
+    {{ fireHook('view.profile.view_profile.end') }}
+{% endblock content %}

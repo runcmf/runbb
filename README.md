@@ -7,12 +7,12 @@
 ## About
 
 RunBB is a fork of [FeatherBB](https://github.com/featherbb/featherbb) which, at the time of the fork (2017-01-09), 
-was slowly falling into abandon. I proceeded to remove all the useless (to me) cruft:
-* Core\Database (old or slightly hacked [Idiorm](https://github.com/j4mie/idiorm) version ???) and utilized [Idiorm](https://github.com/j4mie/idiorm) from package instead  
-* Core\gettext and utilized [gettext](https://github.com/oscarotero/Gettext) from package instead  
+was slowly falling into abandon. I proceeded to rebuild and remove all the useless (to me) cruft:
+* Core\Database (slightly hacked [Idiorm](https://github.com/j4mie/idiorm) version) and use [Idiorm](https://github.com/j4mie/idiorm) from package instead  
+* Core\gettext and use [gettext](https://github.com/oscarotero/Gettext) from package instead  
 * Rebuild plugins system. Plugins load by composer packages. Old system temporary exist but deprecated.
-* Markdown instead of BBCodes. Now present as original BBCodes parser and [s9e/text-formatter](https://github.com/s9e/TextFormatter) with [SimpleMDE](https://github.com/NextStepWebs/simplemde-markdown-editor) as plugin [runbb-plugin-simplemde](https://github.com/runcmf/runbb-plugin-simplemde)
-* ability to use [Ttwig](https://github.com/twigphp/Twig) templates
+* Markdown instead of BBCodes. Now use [s9e/text-formatter](https://github.com/s9e/TextFormatter) with [SimpleMDE](https://github.com/NextStepWebs/simplemde-markdown-editor) as plugin [runbb-ext-simplemde](https://github.com/runcmf/runbb-ext-simplemde) and [markItUp!](http://markitup.jaysalvat.com/home/) with [elFinder](https://github.com/Studio-42/elFinder) as plugin [runbb-ext-markitup](https://github.com/runcmf/runbb-ext-markitup) 
+* ability to use [Twig](https://github.com/twigphp/Twig) template engine
 
 
 
@@ -55,11 +55,11 @@ TODO
 
 * A webserver
 * PHP 5.6.0 or later
-* A database such as MySQL 4.1.2 or later, PostgreSQL 7.0 or later, SQLite 2 or later
+* DB: all supported by [Idiorm](https://github.com/j4mie/idiorm)
 
 ## Recommendations
 
-* TODO
+* highly recommended **php 7**
 
 
 ---
@@ -86,7 +86,7 @@ If you discover any security related issues, please email to 1f7.wizard( at )gma
 ## License
  
 ```
-Copyright 2016 1f7.wizard@gmail.com
+Copyright 2017 1f7.wizard@gmail.com
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

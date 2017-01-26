@@ -220,26 +220,18 @@ class Core
         });
         // register twig
         Container::set('twig', function ($container) {
-//$this->forum_env['WEB_ROOT'] add theme name
-            $twig = new \Twig_Environment(
-                new \Twig_Loader_Filesystem(
-                    $this->forum_env['WEB_ROOT'] . 'style/themes/tryOne/view'//FIXME themeName!!!
-//                    $container['settings']['view']['template_path']
-                ),
-//                $container['settings']['view']['twig']
-                [
-                    //root_dir
+            // after load user set namespace for Twig
+            $twig = new \Twig_Environment(new \Twig_Loader_Filesystem(), [
                     'cache' => DIR . 'var/cache/twig',
                     'debug' => true,
                 ]
             );
-            // extensions
-//            $twig->addExtension(new \Twig_Extension_Profiler($container['twig_profile']));
+            // load extensions
+            $twig->addExtension(new \Twig_Extension_Profiler($container['twig_profile']));
             if (ForumEnv::get('FEATHER_DEBUG')) {
                 $twig->addExtension(new \Twig_Extension_Debug());
             }
             $twig->addExtension(new \RunBB\Core\RunBBTwig);
-
             return $twig;
         });
 
@@ -300,21 +292,18 @@ class Core
         $this->forum_settings = array_merge(Container::get('cache')->retrieve('config'), $this->forum_settings);
         Container::set('forum_settings', $this->forum_settings);
 
-        // Set default style and assets
-        Container::get('template')->setStyle(ForumSettings::get('o_default_style'));
-
         // Run activated plugins
         self::loadPlugins();
 
         // Define time formats and add them to the container
-        Container::set('forum_time_formats', [
+        Container::set('forum_time_formats', array_unique([
             ForumSettings::get('o_time_format'),
             'H:i:s', 'H:i', 'g:i:s a', 'g:i a'
-        ]);
-        Container::set('forum_date_formats', [
+        ]));
+        Container::set('forum_date_formats', array_unique([
             ForumSettings::get('o_date_format'),
             'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'
-        ]);
+        ]));
 
         // Call RunBBAuth middleware
         return $next($req, $res);
