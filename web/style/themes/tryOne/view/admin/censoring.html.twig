@@ -1,82 +1,95 @@
-<?php
+{% extends '@forum/layout.html.twig' %}
 
-/**
- * Copyright (C) 2015-2016 FeatherBB
- * based on code by (C) 2008-2015 FluxBB
- * and Rickard Andersson (C) 2002-2008 PunBB
- * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
- */
+{% block content %}
 
-use RunBB\Core\Utils;
+    {% include '@forum/admin/menu.html.twig' %}
 
-// Make sure no one attempts to run this script "directly"
-if (!isset($feather)) {
-    exit;
-}
-
-Container::get('hooks')->fire('view.admin.censoring.start');
-?>
+    {{ fireHook('view.admin.censoring.start') }}
 
     <div class="blockform">
-        <h2><span><?= __('Censoring head') ?></span></h2>
+        <h2><span>{{ trans('Censoring head') }}</span></h2>
         <div class="box">
-            <form id="censoring" method="post" action="<?= Router::pathFor('adminCensoring') ?>">
-                <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
+            <form id="censoring" method="post" action="{{ pathFor('adminCensoring') }}">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
                 <div class="inform">
                     <fieldset>
-                        <legend><?= __('Add word subhead') ?></legend>
+                        <legend>{{ trans('Add word subhead') }}</legend>
                         <div class="infldset">
-                            <p><?= __('Add word info'); echo (ForumSettings::get('o_censoring') == '1' ? sprintf(__('Censoring enabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Options').'</a>') : sprintf(__('Censoring disabled'), '<a href="'.Router::pathFor('adminOptions').'#censoring">'.__('Options').'</a>')) ?></p>
+                            <p>
+                                {{ trans(['Add word info', settings('o_censoring') == '1'
+                                ? trans(['Censoring enabled', '<a href="' ~pathFor('adminOptions') ~'#censoring">' ~trans('Options') ~'</a>'])
+                                : trans(['Censoring disabled', '<a href="' ~pathFor('adminOptions') ~'#censoring">' ~trans('Options') ~'</a>'])
+                                ]) }}
+                            </p>
                             <table>
-                            <thead>
+                                <thead>
                                 <tr>
-                                    <th class="tcl" scope="col"><?= __('Censored word label') ?></th>
-                                    <th class="tc2" scope="col"><?= __('Replacement label') ?></th>
-                                    <th class="hidehead" scope="col"><?= __('Action label') ?></th>
+                                    <th class="tcl" scope="col">{{ trans('Censored word label') }}</th>
+                                    <th class="tc2" scope="col">{{ trans('Replacement label') }}</th>
+                                    <th class="hidehead" scope="col">{{ trans('Action label') }}</th>
                                 </tr>
-                            </thead>
-                            <tbody>
+                                </thead>
+                                <tbody>
                                 <tr>
-                                    <td class="tcl"><input type="text" name="new_search_for" size="24" maxlength="60" tabindex="1" /></td>
-                                    <td class="tc2"><input type="text" name="new_replace_with" size="24" maxlength="60" tabindex="2" /></td>
-                                    <td><input type="submit" name="add_word" value="<?= __('Add') ?>" tabindex="3" /></td>
+                                    <td class="tcl"><input type="text" name="new_search_for" size="24" maxlength="60"
+                                                           tabindex="1"/></td>
+                                    <td class="tc2"><input type="text" name="new_replace_with" size="24" maxlength="60"
+                                                           tabindex="2"/></td>
+                                    <td><input type="submit" name="add_word" value="{{ trans('Add') }}" tabindex="3"/>
+                                    </td>
                                 </tr>
-                            </tbody>
+                                </tbody>
                             </table>
                         </div>
                     </fieldset>
                 </div>
                 <div class="inform">
                     <fieldset>
-                        <legend><?= __('Edit remove subhead') ?></legend>
+                        <legend>{{ trans('Edit remove subhead') }}</legend>
                         <div class="infldset">
-<?php
-if (!empty($word_data)) {
-    ?>
-                            <table>
-                            <thead>
-                                <tr>
-                                    <th class="tcl" scope="col"><?= __('Censored word label') ?></th>
-                                    <th class="tc2" scope="col"><?= __('Replacement label') ?></th>
-                                    <th class="hidehead" scope="col"><?= __('Action label') ?></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-<?php
 
-foreach ($word_data as $word) {
-    echo "\t\t\t\t\t\t\t\t".'<tr><td class="tcl"><input type="text" name="search_for['.$word['id'].']" value="'.Utils::escape($word['search_for']).'" size="24" maxlength="60" /></td><td class="tc2"><input type="text" name="replace_with['.$word['id'].']" value="'.Utils::escape($word['replace_with']).'" size="24" maxlength="60" /></td><td><input type="submit" name="update['.$word['id'].']" value="'.__('Update').'" />&#160;<input type="submit" name="remove['.$word['id'].']" value="'.__('Remove').'" /></td></tr>'."\n";
-}
+                            {% if word_data is not empty %}
 
-    ?>
-                            </tbody>
-                            </table>
-<?php
-} else {
-    echo "\t\t\t\t\t\t\t".'<p>'.__('No words in list').'</p>'."\n";
-}
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th class="tcl" scope="col">{{ trans('Censored word label') }}</th>
+                                        <th class="tc2" scope="col">{{ trans('Replacement label') }}</th>
+                                        <th class="hidehead" scope="col">{{ trans('Action label') }}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
 
-?>
+
+                                    {% for word in word_data %}
+                                        <tr>
+                                            <td class="tcl">
+                                                <input type="text" name="search_for[{{ word.id }}]"
+                                                       value="{{ word.search_for }}" size="24" maxlength="60"/>
+                                            </td>
+                                            <td class="tc2">
+                                                <input type="text" name="replace_with[{{ word.id }}]"
+                                                       value="{{ word.replace_with }}" size="24" maxlength="60"/>
+                                            </td>
+                                            <td>
+                                                <input type="submit" name="update[{{ word.id }}]"
+                                                       value="{{ trans('Update') }}"/>&#160;
+                                                <input type="submit" name="remove[{{ word.id }}]"
+                                                       value="{{ trans('Remove') }}"/>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+
+                                    </tbody>
+                                </table>
+
+                            {% else %}
+                                <p>{{ trans('No words in list') }}</p>
+                            {% endif %}
+
+
                         </div>
                     </fieldset>
                 </div>
@@ -84,7 +97,8 @@ foreach ($word_data as $word) {
         </div>
     </div>
     <div class="clearer"></div>
-</div>
+    </div>
 
-<?php
-Container::get('hooks')->fire('view.admin.censoring.end');
+
+    {{ fireHook('view.admin.censoring.end') }}
+{% endblock content %}

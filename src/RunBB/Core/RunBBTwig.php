@@ -33,9 +33,9 @@ class RunBBTwig extends \Twig_Extension
              */
             new \Twig_SimpleFunction('fireHook', function ($name) {
                 if (is_array($name)) {
-                    return call_user_func_array([Container::get('hooks'), 'fire'], $name);
+                    call_user_func_array([Container::get('hooks'), 'fire'], $name);
                 } else {
-                    return Container::get('hooks')->fire($name);
+                    Container::get('hooks')->fire($name);
                 }
             }, ['is_safe' => ['html']]),
 
@@ -165,7 +165,7 @@ class RunBBTwig extends \Twig_Extension
              * Format user title
              * return Utils::get_title($title, $name, $groupTitle, $gid) result
              */
-            new \Twig_SimpleFunction('formatTitle', function ($title, $name, $groupTitle, $gid) {
+            new \Twig_SimpleFunction('formatTitle', function ($title, $name='', $groupTitle='', $gid='') {
                 return Utils::get_title($title, $name, $groupTitle, $gid);
             }, ['is_safe' => ['html']]),
 
@@ -176,6 +176,23 @@ class RunBBTwig extends \Twig_Extension
              */
             new \Twig_SimpleFunction('getEnv', function ($var) {
                 return ForumEnv::get($var);
+            }, ['is_safe' => ['html']]),
+
+            /**
+             * Generate breadcrumbs from an array of name and URLs
+             * return AdminUtils::breadcrumbs_admin($links) result
+             */
+            new \Twig_SimpleFunction('breadcrumbsAdmin', function (array $links) {
+                return AdminUtils::breadcrumbs_admin($links);
+            }, ['is_safe' => ['html']]),
+
+            /**
+             * Generate increment
+             * return incremented index
+             */
+            new \Twig_SimpleFunction('getIndex', function () {
+                static $index = 0;
+                return ++$index;
             }, ['is_safe' => ['html']]),
         ];
     }

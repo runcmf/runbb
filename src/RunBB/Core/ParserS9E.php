@@ -35,7 +35,7 @@ class ParserS9E
         } else {
             $this->configureParser();
         }
-        // temporary for heli show only
+        // $this->pd temporary for help show only !!!
         $this->pd = $this->getSmilies();
     }
 

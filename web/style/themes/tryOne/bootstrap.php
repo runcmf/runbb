@@ -18,14 +18,14 @@
 return [
     'css' => [
         'assets/css/bootstrap.min.css',
-//        'assets/css/jquery-ui.min.css',
+        'assets/css/jquery-ui.min.css',// elFinder depend
         'assets/css/font-awesome.min.css',
-        'assets/js/styles/androidstudio.css',// highlight.js theme
+        'assets/js/styles/github.css',// highlight.js theme
         'assets/fancybox/jquery.fancybox.css'
     ],
     'js' => [
         'assets/js/jquery-3.1.1.min.js',
-//        'assets/js/jquery-ui.min.js',
+        'assets/js/jquery-ui.min.js',// elFinder depend
         'assets/js/bootstrap.min.js',
         'assets/js/highlight.pack.js',
         'assets/fancybox/jquery.fancybox.pack.js',

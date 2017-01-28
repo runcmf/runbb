@@ -9,7 +9,7 @@
 <div class="blockform">
     <h2><span>{{ user.username }} - {{ trans('Section essentials') }}</span></h2>
     <div class="box">
-        <form id="profile1" method="post" action="{{ pathFor('profileSection', {'id': "#{ id }", 'section': 'essentials'}) }}" onsubmit="return process_form(this)">
+        <form id="profile1" method="post" action="{{ pathFor('profileSection', {'id': id, 'section': 'essentials'}) }}" onsubmit="return process_form(this)">
             <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
             <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
             <div class="inform">
@@ -21,7 +21,7 @@
         {% if userGet('id') == id or userGet('g_id') == getEnv('FEATHER_ADMIN') or (user.g_moderator == '0' and userGet('g_mod_change_passwords') == '1') %}
                         <p class="actions">
                             <span>
-                                <a href="{{ pathFor('profileAction', {'id': "#{ id }", 'action': 'change_pass'}) }}">{{ trans('Change pass') }}</a>
+                                <a href="{{ pathFor('profileAction', {'id': id, 'action': 'change_pass'}) }}">{{ trans('Change pass') }}</a>
                             </span>
                         </p>
         {% endif %}
@@ -132,7 +132,7 @@
                 <fieldset>
                     <legend>{{ trans('User activity') }}</legend>
                     <div class="infldset">
-                        {% set regIp = (userGet('is_admmod') ? ' (<a href="' ~"#{ pathFor('usersIpShow', {'ip': user.registration_ip}) }" ~'">' ~"#{ user.registration_ip }" ~'</a>)' : '' ) %}
+                        {% set regIp = (userGet('is_admmod') ? ' (<a href="' ~"#{ pathFor('usersIpShow', {}, {'ip': user.registration_ip}) }" ~'">' ~"#{ user.registration_ip }" ~'</a>)' : '' ) %}
                         <p>{{ trans(['Registered info', formatTime(user.registered, true) ~ regIp ]) }}</p>
                         <p>{{ trans(['Last post info', formatTime(user.last_post)]) }}</p>
                         <p>{{ trans('Last visit info') }} {{ formatTime(user.last_visit) }}</p>

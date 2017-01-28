@@ -35,8 +35,9 @@ class Groups
         $group = [];
 
         if (Input::post('add_group')) {
-            $group['base_group'] = intval(Input::post('base_group'));
-            $group['base_group'] = Container::get('hooks')->fire('model.admin.groups.add_user_group', $group['base_group']);
+            $group['base_group'] = (int)Input::post('base_group');
+            $group['base_group'] = Container::get('hooks')
+                ->fire('model.admin.groups.add_user_group', $group['base_group']);
             $group['info'] = $groups[$group['base_group']];
 
             $group['mode'] = 'add';
@@ -240,7 +241,8 @@ class Groups
             if ($promote_next_group) {
                 \ORM::for_table(ORM_TABLE_PREFIX.'users')->where('group_id', Input::post('group_id'))
                     ->where_gte('num_posts', $promote_min_posts)
-                    ->find_one()
+//                    ->find_one()
+                    ->find_result_set()
                     ->set(['group_id' => $promote_next_group])
                     ->save();
             }
@@ -276,7 +278,8 @@ class Groups
 
         \ORM::for_table(ORM_TABLE_PREFIX.'config')
             ->where('conf_name', 'o_default_user_group')
-            ->find_one()
+//            ->find_one()
+            ->find_result_set()
             ->set(['conf_value' => $group_id])
             ->save();
 
@@ -305,6 +308,10 @@ class Groups
 
     public function delete_group($group_id)
     {
+        if ($group_id < 5) {
+            throw new RunBBException('Cannot delete core groups');
+        }
+
         $group_id = Container::get('hooks')->fire('model.admin.groups.delete_group.group_id', $group_id);
 
         if (Input::post('del_group')) {
@@ -312,7 +319,8 @@ class Groups
             $move_to_group = Container::get('hooks')->fire('model.admin.groups.delete_group.move_to_group', $move_to_group);
             \ORM::for_table(ORM_TABLE_PREFIX.'users')
                 ->where('group_id', $group_id)
-                ->find_one()
+//                ->find_one()
+                ->find_result_set()
                 ->set(['group_id' => $move_to_group])
                 ->save();
         }
@@ -328,7 +336,8 @@ class Groups
         // Don't let users be promoted to this group
         \ORM::for_table(ORM_TABLE_PREFIX.'groups')
             ->where('g_promote_next_group', $group_id)
-            ->find_one()
+//            ->find_one()
+            ->find_result_set()
             ->set(['g_promote_next_group' => 0])
             ->save();
 
@@ -343,6 +352,10 @@ class Groups
             ->select('g_title')
             ->where('g_id', $group_id)
             ->find_one();
+
+        if(!$group_title) {
+            throw new RunBBException('Group ('.$group_id.') title not found. You sure group exists?');
+        }
         $group_title->g_title = Container::get('hooks')->fireDB('model.admin.groups.get_group_title.query', $group_title->g_title);
 //        $group_title = $group_title->find_one_col('g_title');
 

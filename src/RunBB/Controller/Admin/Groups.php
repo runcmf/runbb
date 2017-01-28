@@ -67,11 +67,11 @@ class Groups
                 AdminUtils::generateAdminMenu('groups');
 
                 return View::setPageInfo([
-                        'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
-                        'active_page' => 'admin',
-                        'admin_console' => true,
-                        'group_title'      =>  $this->model->get_group_title($args['id']),
-                        'id'    => $args['id'],
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
+                    'active_page' => 'admin',
+                    'admin_console' => true,
+                    'group_title'      =>  $this->model->get_group_title($args['id']),
+                    'id'    => $args['id'],
                     ])->addTemplate('admin/groups/confirm_delete.php')->display();
             }
         }
@@ -101,7 +101,8 @@ class Groups
         elseif (Input::post('add_group') || isset($args['id'])) {
             AdminUtils::generateAdminMenu('groups');
 
-            $group = $this->model->info_add_group($groups, $args['id']);
+            $id = isset($args['id']) ? (int)$args['id'] : (int)Input::post('base_group');
+            $group = $this->model->info_add_group($groups, $id);
 
             View::setPageInfo([
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
@@ -111,7 +112,7 @@ class Groups
                     'required_fields' => ['req_title' => __('Group title label')],
                     'group'    =>    $group,
                     'groups'    =>    $groups,
-                    'id'    => $args['id'],
+                    'id'    => $id,//$args['id'],
                     'group_list'    => $this->model->get_group_list($groups, $group),
                 ])->addTemplate('admin/groups/add_edit_group.php')->display();
         }

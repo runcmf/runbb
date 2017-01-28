@@ -94,14 +94,22 @@ class Forums
         $forum_data = [];
         $forum_data = Container::get('hooks')->fire('model.admin.forums.get_forums_start', $forum_data);
 
-        $select_get_forums = ['cid' => 'c.id', 'c.cat_name', 'cat_position' => 'c.disp_position', 'fid' => 'f.id', 'f.forum_name', 'forum_position' => 'f.disp_position'];
+        $select_get_forums = [
+            'cid' => 'c.id',
+            'c.cat_name',
+            'cat_position' => 'c.disp_position',
+            'fid' => 'f.id',
+            'f.forum_name',
+            'forum_position' => 'f.disp_position'
+        ];
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'categories')
-                    ->table_alias('c')
-                    ->select_many($select_get_forums)
-                    ->inner_join(ORM_TABLE_PREFIX.'forums', ['c.id', '=', 'f.cat_id'], 'f')
-                    ->order_by_asc('f.disp_position')
-                    ->order_by_asc('c.disp_position');
+            ->table_alias('c')
+            ->select_many($select_get_forums)
+            ->inner_join(ORM_TABLE_PREFIX.'forums', ['c.id', '=', 'f.cat_id'], 'f')
+            ->order_by_asc('c.disp_position')
+            ->order_by_asc('f.disp_position');
+
         $result = Container::get('hooks')->fireDB('model.admin.forums.get_forums_query', $result);
         $result = $result->find_array();
 

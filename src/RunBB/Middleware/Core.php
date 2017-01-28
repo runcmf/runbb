@@ -63,8 +63,6 @@ class Core
 
         // Load files
         require $this->forum_env['FORUM_ROOT'] . 'Helpers/utf8/utf8.php';
-//        require $this->forum_env['FORUM_ROOT'].'Core/gettext/l10n.php';
-//        require $this->forum_env['FORUM_ROOT'].'Core/gettext/MO.php';
 
         // Load Languages
         require $this->forum_env['FORUM_ROOT'] . 'Core/gettext.php';
@@ -220,7 +218,7 @@ class Core
         });
         // register twig
         Container::set('twig', function ($container) {
-            // after load user set namespace for Twig
+            // after load user set namespace for forum
             $twig = new \Twig_Environment(new \Twig_Loader_Filesystem(), [
                     'cache' => DIR . 'var/cache/twig',
                     'debug' => true,

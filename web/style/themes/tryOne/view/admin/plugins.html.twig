@@ -1,93 +1,89 @@
-<?php
+{% extends '@forum/layout.html.twig' %}
 
-/**
- * Copyright (C) 2015-2016 FeatherBB
- * based on code by (C) 2008-2015 FluxBB
- * and Rickard Andersson (C) 2002-2008 PunBB
- * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
- */
+{% block content %}
 
-// Make sure no one attempts to run this script "directly"
-if (!isset($feather)) {
-    exit;
-}
+    {% include '@forum/admin/menu.html.twig' %}
 
-Container::get('hooks')->fire('view.admin.plugins.start');
-?>
+    {{ fireHook('view.admin.plugins.start') }}
 
-<div class="block">
-    <h2>Plugins</h2>
-    <div class="box">
-        <div class="inbox">
-            <table class="table">
-                <caption><?= __('Available plugins') ?></caption>
-                <thead>
+    <div class="block">
+        <h2>Plugins</h2>
+        <div class="box">
+            <div class="inbox">
+                <table class="table">
+                    <caption>{{ trans('Available plugins') }}</caption>
+                    <thead>
                     <tr>
-                        <th><?= __('Extension') ?></th>
-                        <th><?= __('Description') ?></th>
+                        <th>{{ trans('Extension') }}</th>
+                        <th>{{ trans('Description') }}</th>
                     </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($availablePlugins as $plugin) : ?>
+                    </thead>
+                    <tbody>
+                    {% for plugin in availablePlugins %}
                         <tr>
                             <td>
-                                <strong><?= $plugin->title; ?></strong> <small><?= $plugin->version; ?></small>
+                                <strong>{{ plugin.title }}</strong>
+                                <small>{{ plugin.version }}</small>
                                 <div class="plugin-actions">
-                                    <?php if (in_array($plugin->name, $activePlugins)) { ?>
-                                        <a href="<?= Router::pathFor('deactivatePlugin', ['name' => $plugin->name]) ?>"><?= __('Deactivate') ?></a>
-                                    <?php } else { ?>
-                                        <a href="<?= Router::pathFor('activatePlugin', ['name' => $plugin->name]) ?>"><?= __('Activate') ?></a> <br>
-                                        <!-- <a href="<?= Router::pathFor('uninstallPlugin', ['name' => $plugin->name]) ?>"><?= __('Uninstall') ?></a> -->
-                                    <?php } ?>
+                                    {% if plugin.name in activePlugins %}
+                                        <a href="{{ pathFor('deactivatePlugin', {'name': plugin.name}) }}">{{ trans('Deactivate') }}</a>
+                                    {% else %}
+                                        <a href="{{ pathFor('activatePlugin', {'name': plugin.name}) }}">{{ trans('Activate') }}</a>
+                                        <br>
+                                        <!-- <a href="{{ pathFor('uninstallPlugin', {'name': plugin.name}) }}">{{ trans('Uninstall') }}</a> -->
+
+                                    {% endif %}
+
                                 </div>
                             </td>
                             <td>
-                                <?= $plugin->description; ?>
+                                {{ plugin.description|raw }}
                                 <div class="plugin-details">
-                                    By <?= $plugin->author->name; ?>
+                                    By {{ plugin.author.name }}
                                 </div>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-            <p style="text-align:right"><?= count($availablePlugins) ?> éléments</p>
-        </div>
-        <div class="inbox">
-            <table class="table">
-                <caption><?= __('Available plugins') ?></caption>
-                <thead>
-                <tr>
-                    <th><?= __('Extension') ?></th>
-                    <th><?= __('Description') ?></th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php foreach ($officialPlugins as $plugin) : ?>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <p style="text-align:right">{{ availablePlugins|length }} éléments</p>
+            </div>
+            <div class="inbox">
+                <table class="table">
+                    <caption>{{ trans('Available plugins') }}</caption>
+                    <thead>
                     <tr>
-                        <td>
-                            <strong><?= $plugin->title; ?></strong> <small><?= $plugin->version; ?></small>
-                            <div class="plugin-actions">
-                                <a href="<?= Router::pathFor('downloadPlugin', ['name' => $plugin->name, 'version' => $plugin->version]) ?>">Download</a>
-                            </div>
-                        </td>
-                        <td>
-                            <?= $plugin->description; ?>
-                            <div class="plugin-details">
-                                By <?= $plugin->author->name; ?>
-                            </div>
-                        </td>
+                        <th>{{ trans('Extension') }}</th>
+                        <th>{{ trans('Description') }}</th>
                     </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-            <p style="text-align:right"><?= count($officialPlugins) ?> éléments</p>
+                    </thead>
+                    <tbody>
+                    {% for plugin in officialPlugins %}
+                        <tr>
+                            <td>
+                                <strong>{{ plugin.title }}</strong>
+                                <small>{{ plugin.version }}</small>
+                                <div class="plugin-actions">
+                                    <a href="{{ pathFor('downloadPlugin', {'name': plugin.name, 'version': plugin.version}) }}">Download</a>
+                                </div>
+                            </td>
+                            <td>
+                                {{ plugin.description|raw }}
+                                <div class="plugin-details">
+                                    By {{ plugin.author.name }}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                <p style="text-align:right">{{ officialPlugins|length }} éléments</p>
+            </div>
         </div>
     </div>
-</div>
 
     <div class="clearer"></div>
-</div>
+    </div>
 
-<?php
-Container::get('hooks')->fire('view.admin.plugins.end');
+    {{ fireHook('view.admin.plugins.end') }}
+{% endblock content %}

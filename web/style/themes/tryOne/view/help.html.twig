@@ -1,134 +1,118 @@
-<?php
+{% extends '@forum/layout.html.twig' %}
 
-/**
- * Copyright (C) 2015-2016 FeatherBB
- * based on code by (C) 2008-2015 FluxBB
- * and Rickard Andersson (C) 2002-2008 PunBB
- * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
- */
+{% block content %}
 
-use RunBB\Core\Url;
-use RunBB\Core\Utils;
+    {{ fireHook('view.help.start') }}
 
-// Make sure no one attempts to run this script "directly"
-if (!isset($feather)) {
-    exit;
-}
-
-Container::get('hooks')->fire('view.help.start');
-?>
-
-<h2><span><?= __('BBCode') ?></span></h2>
+<h2><span>{{ trans('BBCode') }} / TODO rebuild all</span></h2>
 <div class="box">
     <div class="inbox">
-        <p><a name="bbcode"></a><?= __('BBCode info 1') ?></p>
-        <p><?= __('BBCode info 2') ?></p>
+        <p><a name="bbcode"></a>{{ trans('BBCode info 1') }}</p>
+        <p>{{ trans('BBCode info 2') }}</p>
     </div>
 </div>
-<h2><span><?= __('Text style') ?></span></h2>
+<h2><span>{{ trans('Text style') }}</span></h2>
 <div class="box">
     <div class="inbox">
-        <p><?= __('Text style info') ?></p>
-        <p><code>[b]<?= __('Bold text') ?>[/b]</code> <?= __('produces') ?> <samp><strong><?= __('Bold text') ?></strong></samp></p>
-        <p><code>[u]<?= __('Underlined text') ?>[/u]</code> <?= __('produces') ?> <samp><span class="bbu"><?= __('Underlined text') ?></span></samp></p>
-        <p><code>[i]<?= __('Italic text') ?>[/i]</code> <?= __('produces') ?> <samp><em><?= __('Italic text') ?></em></samp></p>
-        <p><code>[s]<?= __('Strike-through text') ?>[/s]</code> <?= __('produces') ?> <samp><span class="bbs"><?= __('Strike-through text') ?></span></samp></p>
-        <p><code>[del]<?= __('Deleted text') ?>[/del]</code> <?= __('produces') ?> <samp><del><?= __('Deleted text') ?></del></samp></p>
-        <p><code>[ins]<?= __('Inserted text') ?>[/ins]</code> <?= __('produces') ?> <samp><ins><?= __('Inserted text') ?></ins></samp></p>
-        <p><code>[em]<?= __('Emphasised text') ?>[/em]</code> <?= __('produces') ?> <samp><em><?= __('Emphasised text') ?></em></samp></p>
-        <p><code>[color=#FF0000]<?= __('Red text') ?>[/color]</code> <?= __('produces') ?> <samp><span style="color: #ff0000"><?= __('Red text') ?></span></samp></p>
-        <p><code>[color=blue]<?= __('Blue text') ?>[/color]</code> <?= __('produces') ?> <samp><span style="color: blue"><?= __('Blue text') ?></span></samp></p>
-        <p><code>[h]<?= __('Heading text') ?>[/h]</code> <?= __('produces') ?></p> <div class="postmsg"><h5><?= __('Heading text') ?></h5></div>
+        <p>{{ trans('Text style info') }}</p>
+        <p><code>[b]{{ trans('Bold text') }}[/b]</code> {{ trans('produces') }} <samp><strong>{{ trans('Bold text') }}</strong></samp></p>
+        <p><code>[u]{{ trans('Underlined text') }}[/u]</code> {{ trans('produces') }} <samp><span class="bbu">{{ trans('Underlined text') }}</span></samp></p>
+        <p><code>[i]{{ trans('Italic text') }}[/i]</code> {{ trans('produces') }} <samp><em>{{ trans('Italic text') }}</em></samp></p>
+        <p><code>[s]{{ trans('Strike-through text') }}[/s]</code> {{ trans('produces') }} <samp><span class="bbs">{{ trans('Strike-through text') }}</span></samp></p>
+        <p><code>[del]{{ trans('Deleted text') }}[/del]</code> {{ trans('produces') }} <samp><del>{{ trans('Deleted text') }}</del></samp></p>
+        <p><code>[ins]{{ trans('Inserted text') }}[/ins]</code> {{ trans('produces') }} <samp><ins>{{ trans('Inserted text') }}</ins></samp></p>
+        <p><code>[em]{{ trans('Emphasised text') }}[/em]</code> {{ trans('produces') }} <samp><em>{{ trans('Emphasised text') }}</em></samp></p>
+        <p><code>[color=#FF0000]{{ trans('Red text') }}[/color]</code> {{ trans('produces') }} <samp><span style="color: #ff0000">{{ trans('Red text') }}</span></samp></p>
+        <p><code>[color=blue]{{ trans('Blue text') }}[/color]</code> {{ trans('produces') }} <samp><span style="color: blue">{{ trans('Blue text') }}</span></samp></p>
+        <p><code>[h]{{ trans('Heading text') }}[/h]</code> {{ trans('produces') }}</p> <div class="postmsg"><h5>{{ trans('Heading text') }}</h5></div>
     </div>
 </div>
-<h2><span><?= __('Links and images') ?></span></h2>
+<h2><span>{{ trans('Links and images') }}</span></h2>
 <div class="box">
     <div class="inbox">
-        <p><?= __('Links info') ?></p>
-        <p><a name="url"></a><code>[url=<?= Utils::escape(Url::base(true).'/') ?>]<?= Utils::escape(ForumSettings::get('o_board_title')) ?>[/url]</code> <?= __('produces') ?> <samp><a href="<?= Utils::escape(Url::base(true).'/') ?>"><?= Utils::escape(ForumSettings::get('o_board_title')) ?></a></samp></p>
-        <p><code>[url]<?= Utils::escape(Url::base(true).'/') ?>[/url]</code> <?= __('produces') ?> <samp><a href="<?= Utils::escape(Url::base(true).'/') ?>"><?= Utils::escape(Url::base(true).'/') ?></a></samp></p>
-        <p><code>[url=/help/]<?= __('This help page') ?>[/url]</code> <?= __('produces') ?> <samp><a href="<?= Router::pathFor('help') ?>"><?= __('This help page') ?></a></samp></p>
-        <p><code>[email]myname@example.com[/email]</code> <?= __('produces') ?> <samp><a href="mailto:myname@example.com">myname@example.com</a></samp></p>
-        <p><code>[email=myname@example.com]<?= __('My email address') ?>[/email]</code> <?= __('produces') ?> <samp><a href="mailto:myname@example.com"><?= __('My email address') ?></a></samp></p>
-        <p><code>[topic=1]<?= __('Test topic') ?>[/topic]</code> <?= __('produces') ?> <samp><a href="<?= Router::pathFor('Topic', ['id' => '1', 'name' => 'test-name']) ?>"><?= __('Test topic') ?></a></samp></p>
-        <p><code>[topic]1[/topic]</code> <?= __('produces') ?> <samp><a href="<?= Router::pathFor('Topic', ['id' => '1', 'name' => 'test-name']) ?>"><?= Router::pathFor('Topic', ['id' => '1', 'name' => 'test-name']) ?></a></samp></p>
-        <p><code>[post=1]<?= __('Test post') ?>[/post]</code> <?= __('produces') ?> <samp><a href="<?= Router::pathFor('viewPost', ['pid' => '1']).'#1' ?>"><?= __('Test post') ?></a></samp></p>
-        <p><code>[post]1[/post]</code> <?= __('produces') ?> <samp><a href="<?= Router::pathFor('viewPost', ['pid' => '1']).'#1' ?>"><?= Router::pathFor('viewPost', ['pid' => '1']).'#1' ?></a></samp></p>
-        <p><code>[forum=1]<?= __('Test forum') ?>[/forum]</code> <?= __('produces') ?> <samp><a href="<?= Router::pathFor('Topic', ['id' => '1', 'name' => 'test-name']) ?>"><?= __('Test forum') ?></a></samp></p>
-        <p><code>[forum]1[/forum]</code> <?= __('produces') ?> <samp><a href="<?= Router::pathFor('Forum', ['id' => '1', 'name' => 'test-name']) ?>"><?= Router::pathFor('Forum', ['id' => '1', 'name' => 'test-name']) ?></a></samp></p>
-        <p><code>[user=2]<?= __('Test user') ?>[/user]</code> <?= __('produces') ?> <samp><a href="<?= Router::pathFor('userProfile', ['id' => '2']) ?>"><?= __('Test user') ?></a></samp></p>
-        <p><code>[user]2[/user]</code> <?= __('produces') ?> <samp><a href="<?= Router::pathFor('userProfile', ['id' => '2']) ?>"><?= Router::pathFor('userProfile', ['id' => '2']) ?></a></samp></p>
+        <p><{{ trans('Links info') }}</p>
+        <p><a name="url"></a><code>[url={{ urlBase(true) ~'/' }}]{{ settings('o_board_title') }}[/url]</code> <?= __('produces') ?> <samp><a href="{{ urlBase(true) ~'/' }}">{{ settings('o_board_title') }}</a></samp></p>
+        <p><code>[url]{{ urlBase(true) ~'/' }}[/url]</code> {{ trans('produces') }} <samp><a href="{{ urlBase(true) ~'/' }}">{{ urlBase(true) ~'/' }}</a></samp></p>
+        <p><code>[url=/help/]{{ trans('This help page') }}[/url]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('help') }}">{{ trans('This help page') }}</a></samp></p>
+        <p><code>[email]myname@example.com[/email]</code> {{ trans('produces') }} <samp><a href="mailto:myname@example.com">myname@example.com</a></samp></p>
+        <p><code>[email=myname@example.com]{{ trans('My email address') }}[/email]</code> {{ trans('produces') }} <samp><a href="mailto:myname@example.com">{{ trans('My email address') }}</a></samp></p>
+        <p><code>[topic=1]{{ trans('Test topic') }}[/topic]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}">{{ trans('Test topic') }}</a></samp></p>
+        <p><code>[topic]1[/topic]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}">{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}</a></samp></p>
+        <p><code>[post=1]{{ trans('Test post') }}[/post]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('viewPost', {'pid': '1'}) }}#1">{{ trans('Test post') }}</a></samp></p>
+        <p><code>[post]1[/post]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('viewPost', {'pid': '1'}) }}#1">{{ pathFor('viewPost', {'pid': '1'}) }}#1</a></samp></p>
+        <p><code>[forum=1]{{ trans('Test forum') }}[/forum]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Topic', {'id': '1', 'name': 'test-name'}) }}">{{ trans('Test forum') }}</a></samp></p>
+        <p><code>[forum]1[/forum]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('Forum', {'id': '1', 'name': 'test-name'}) }}">{{ pathFor('Forum', {'id': '1', 'name': 'test-name'}) }}</a></samp></p>
+        <p><code>[user=2]{{ trans('Test user') }}[/user]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('userProfile', {'id': '2'}) }}">{{ trans('Test user') }}</a></samp></p>
+        <p><code>[user]2[/user]</code> {{ trans('produces') }} <samp><a href="{{ pathFor('userProfile', {'id': '2'}) }}">{{ pathFor('userProfile', {'id': '2'}) }}</a></samp></p>
     </div>
     <div class="inbox">
-        <p><a name="img"></a><?= __('Images info') ?></p>
-        dede
-        <p><code>[img=<?= __('FeatherBB bbcode test') ?>]<?= Utils::escape(Url::base(true)) ?>/style/img/logo.png[/img]</code> <?= __('produces') ?> <samp><img style="height: 21px" src="<?= Utils::escape(Url::base(true)) ?>/style/img/logo.png" alt="<?= __('FeatherBB bbcode test') ?>" /></samp></p>
+        <p><a name="img"></a>{{ trans('Images info') }}</p>
+        <p><code>[img={{ trans('FeatherBB bbcode test') }}]{{ urlBase(true) }}/style/img/logo.png[/img]</code> {{ trans('produces') }} <samp><img style="height: 21px" src="{{ urlBase(true) }}/style/img/logo.png" alt="{{ trans('FeatherBB bbcode test') }}" /></samp></p>
     </div>
 </div>
-<h2><span><?= __('Quotes') ?></span></h2>
+<h2><span>{{ trans('Quotes') }}</span></h2>
 <div class="box">
     <div class="inbox">
-        <p><?= __('Quotes info') ?></p>
-        <p><code>[quote=James]<?= __('Quote text') ?>[/quote]</code></p>
-        <p><?= __('produces quote box') ?></p>
+        <p>{{ trans('Quotes info') }}</p>
+        <p><code>[quote=James]{{ trans('Quote text') }}[/quote]</code></p>
+        <p>{{ trans('produces quote box') }}</p>
         <div class="postmsg">
-            <div class="quotebox"><cite>James <?= __('wrote') ?></cite><blockquote><div><p><?= __('Quote text') ?></p></div></blockquote></div>
+            <div class="quotebox"><cite>James {{ trans('wrote') }}</cite><blockquote><div><p>{{ trans('Quote text') }}</p></div></blockquote></div>
         </div>
-        <p><?= __('Quotes info 2') ?></p>
-        <p><code>[quote]<?= __('Quote text') ?>[/quote]</code></p>
-        <p><?= __('produces quote box') ?></p>
+        <p>{{ trans('Quotes info 2') }}</p>
+        <p><code>[quote]{{ trans('Quote text') }}[/quote]</code></p>
+        <p>{{ trans('produces quote box') }}</p>
         <div class="postmsg">
-            <div class="quotebox"><blockquote><div><p><?= __('Quote text') ?></p></div></blockquote></div>
+            <div class="quotebox"><blockquote><div><p>{{ trans('Quote text') }}</p></div></blockquote></div>
         </div>
-        <p><?= __('quote note') ?></p>
+        <p>{{ trans('quote note') }}</p>
     </div>
 </div>
-<h2><span><?= __('Code') ?></span></h2>
+<h2><span>{{ trans('Code') }}</span></h2>
 <div class="box">
     <div class="inbox">
-        <p><?= __('Code info') ?></p>
-        <p><code>[code]<?= __('Code text') ?>[/code]</code></p>
-        <p><?= __('produces code box') ?></p>
+        <p>{{ trans('Code info') }}</p>
+        <p><code>[code]{{ trans('Code text') }}[/code]</code></p>
+        <p>{{ trans('produces code box') }}</p>
         <div class="postmsg">
-            <div class="codebox"><pre><code class="hljs"><?= __('Code text') ?></code></pre></div>
+            <div class="codebox"><pre><code class="hljs">{{ trans('Code text') }}</code></pre></div>
         </div>
     </div>
 </div>
-<h2><span><?= __('Lists') ?></span></h2>
+<h2><span>{{ trans('Lists') }}</span></h2>
 <div class="box">
     <div class="inbox">
-        <p><a name="lists"></a><?= __('List info') ?></p>
-        <p><code>[list][*]<?= __('List text 1') ?>[/*][*]<?= __('List text 2') ?>[/*][*]<?= __('List text 3') ?>[/*][/list]</code>
-        <br /><span><?= __('produces list') ?></span></p>
+        <p><a name="lists"></a>{{ trans('List info') }}</p>
+        <p><code>[list][*]{{ trans('List text 1') }}[/*][*]{{ trans('List text 2') }}[/*][*]{{ trans('List text 3') }}[/*][/list]</code>
+        <br /><span>{{ trans('produces list') }}</span></p>
         <div class="postmsg">
-            <ul><li><p><?= __('List text 1') ?></p></li><li><p><?= __('List text 2') ?></p></li><li><p><?= __('List text 3') ?></p></li></ul>
+            <ul><li><p>{{ trans('List text 1') }}</p></li><li><p>{{ trans('List text 2') }}</p></li><li><p>{{ trans('List text 3') }}</p></li></ul>
         </div>
-        <p><code>[list=1][*]<?= __('List text 1') ?>[/*][*]<?= __('List text 2') ?>[/*][*]<?= __('List text 3') ?>[/*][/list]</code>
-        <br /><span><?= __('produces decimal list') ?></span></p>
+        <p><code>[list=1][*]{{ trans('List text 1') }}[/*][*]{{ trans('List text 2') }}[/*][*]{{ trans('List text 3') }}[/*][/list]</code>
+        <br /><span>{{ trans('produces decimal list') }}</span></p>
         <div class="postmsg">
-            <ol class="decimal"><li><p><?= __('List text 1') ?></p></li><li><p><?= __('List text 2') ?></p></li><li><p><?= __('List text 3') ?></p></li></ol>
+            <ol class="decimal"><li><p>{{ trans('List text 1') }}</p></li><li><p>{{ trans('List text 2') }}</p></li><li><p>{{ trans('List text 3') }}</p></li></ol>
         </div>
-        <p><code>[list=a][*]<?= __('List text 1') ?>[/*][*]<?= __('List text 2') ?>[/*][*]<?= __('List text 3') ?>[/*][/list]</code>
-        <br /><span><?= __('produces alpha list') ?></span></p>
+        <p><code>[list=a][*]{{ trans('List text 1') }}[/*][*]{{ trans('List text 2') }}[/*][*]{{ trans('List text 3') }}[/*][/list]</code>
+        <br /><span>{{ trans('produces alpha list') }}</span></p>
         <div class="postmsg">
-            <ol class="alpha"><li><p><?= __('List text 1') ?></p></li><li><p><?= __('List text 2') ?></p></li><li><p><?= __('List text 3') ?></p></li></ol>
+            <ol class="alpha"><li><p>{{ trans('List text 1') }}</p></li><li><p>{{ trans('List text 2') }}</p></li><li><p>{{ trans('List text 3') }}</p></li></ol>
         </div>
     </div>
 </div>
-<h2><span><?= __('Nested tags') ?></span></h2>
+<h2><span>{{ trans('Nested tags') }}</span></h2>
 <div class="box">
     <div class="inbox">
-        <p><?= __('Nested tags info') ?></p>
-        <p><code>[b][u]<?= __('Bold, underlined text') ?>[/u][/b]</code> <?= __('produces') ?> <samp><strong><span class="bbu"><?= __('Bold, underlined text') ?></span></strong></samp></p>
+        <p>{{ trans('Nested tags info') }}</p>
+        <p><code>[b][u]{{ trans('Bold, underlined text') }}[/u][/b]</code> {{ trans('produces') }} <samp><strong><span class="bbu">{{ trans('Bold, underlined text') }}</span></strong></samp></p>
     </div>
 </div>
-<h2><span><?= __('Smilies') ?></span></h2>
+<h2><span>{{ trans('Smilies') }}</span></h2>
 <div class="box">
     <div class="inbox">
-        <p><a name="smilies"></a><?= __('Smilies info') ?></p>
-<?php
+        <p><a name="smilies"></a>{{ trans('Smilies info') }}</p>
 
-// Display the smiley set
+{#// Display the smiley set#}
 $smiley_groups = [];
 
 foreach (Container::get('parser')->pd['smilies'] as $smiley_text => $smiley_data) {
@@ -136,11 +120,12 @@ foreach (Container::get('parser')->pd['smilies'] as $smiley_text => $smiley_data
 }
 
 foreach ($smiley_groups as $smiley_img => $smiley_texts) {
-    echo "\t\t<p><code>". implode('</code> ' .__('and'). ' <code>', $smiley_texts).'</code> <span>' .__('produces'). '</span> <samp>'.Container::get('parser')->pd['smilies'][$smiley_texts[0]]['html'] .'</samp></p>'."\n";
+    <p><code>". implode('</code> ' .__('and'). ' <code>', $smiley_texts).'</code> <span>' .__('produces'). '</span> <samp>'.Container::get('parser')->pd['smilies'][$smiley_texts[0]]['html'] .'</samp></p>
 }
 
-?>
+
     </div>
 </div>
-<?php
-Container::get('hooks')->fire('view.header.end');
+
+    {{ fireHook('view.header.end') }}
+{% endblock content %}

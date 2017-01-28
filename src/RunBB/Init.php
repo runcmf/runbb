@@ -161,7 +161,7 @@ class Init
 
                 return View::setPageInfo([
                     'title' => [\RunBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')],
-                    'msg'    =>    $error['message'],
+                    'msg'    =>    html_entity_decode($error['message']),
                     'backlink'    => $error['back'],
                 ])->addTemplate('error.php')->display();
             };

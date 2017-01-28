@@ -639,7 +639,7 @@ class Profile
         $ban_id = Container::get('hooks')->fireDB('model.profile.ban_user_query', $ban_id);
         $ban_id = $ban_id->find_one();
 
-        if ($ban_id->id) {
+        if ($ban_id && $ban_id->id) {
             return Router::redirect(Router::pathFor('editBan', ['id' => $ban_id->id]), __('Ban redirect'));
         } else {
             return Router::redirect(Router::pathFor('addBan', ['id' => $id]), __('Ban redirect'));

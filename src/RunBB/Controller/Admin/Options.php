@@ -31,12 +31,14 @@ class Options
         AdminUtils::generateAdminMenu('options');
 
         View::setPageInfo([
-                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Options')],
-                'active_page' => 'admin',
-                'admin_console' => true,
-                'languages' => $this->model->get_langs(),
-                'styles' => $this->model->get_styles(),
-                'times' => $this->model->get_times(),
-            ])->addTemplate('admin/options.php')->display();
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Options')],
+            'active_page' => 'admin',
+            'admin_console' => true,
+            'languages' => $this->model->get_langs(),
+            'styles' => $this->model->get_styles(),
+            'times' => $this->model->get_times(),
+            'smtp_pass' => (!empty(ForumSettings::get('o_smtp_pass')) ?
+                Random::key(Utils::strlen(ForumSettings::get('o_smtp_pass')), true) : '')
+        ])->addTemplate('admin/options.php')->display();
     }
 }

@@ -192,7 +192,8 @@ function set_default_user()
         }
     } else {
         \ORM::for_table(ORM_TABLE_PREFIX . 'online')->where('ident', $remote_addr)
-            ->find_one()
+//            ->find_one()
+            ->find_result_set()
             ->set(['logged' => time()])
             ->save();
     }

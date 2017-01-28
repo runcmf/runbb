@@ -234,7 +234,8 @@ class Index
                 $cur_forum->moderators_formatted = '';
             }
 
-            $index_data[] = $cur_forum;
+//            $index_data[] = $cur_forum;
+            $index_data[$cur_forum->cid][] = $cur_forum;
             ++$i;
         }
 

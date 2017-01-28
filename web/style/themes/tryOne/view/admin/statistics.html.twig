@@ -1,45 +1,38 @@
-<?php
+{% extends '@forum/layout.html.twig' %}
 
-/**
- * Copyright (C) 2015-2016 FeatherBB
- * based on code by (C) 2008-2015 FluxBB
- * and Rickard Andersson (C) 2002-2008 PunBB
- * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
- */
+{% block content %}
 
-use RunBB\Core\Utils;
+    {% include '@forum/admin/menu.html.twig' %}
 
-// Make sure no one attempts to run this script "directly"
-if (!isset($feather)) {
-    exit;
-}
-
-Container::get('hooks')->fire('view.admin.statistics.start');
-?>
+    {{ fireHook('view.admin.statistics.start') }}
 
     <div class="block">
-        <h2><span><?= __('Server statistics head') ?></span></h2>
+        <h2><span>{{ trans('Server statistics head') }}</span></h2>
         <div id="adstats" class="box">
             <div class="inbox">
                 <dl>
-                    <dt><?= __('Server load label') ?></dt>
+                    <dt>{{ trans('Server load label') }}</dt>
                     <dd>
-                        <?php printf(__('Server load data')."\n", $server_load, $num_online) ?>
+                        {{ trans(['Server load data', server_load, num_online]) }}
                     </dd>
-<?php if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) :
-?>                    <dt><?= __('Environment label') ?></dt>
+{% if userGet('g_id') == getEnv('FEATHER_ADMIN') %}
+
+                    <dt>{{ trans('Environment label') }}</dt>
                     <dd>
-                        <?php printf(__('Environment data OS'), PHP_OS) ?><br />
-                        <?php printf(__('Environment data version'), phpversion(), '<a href="'.Router::pathFor('phpInfo').'">'.__('Show info').'</a>') ?><br />
-                        <?php printf(__('Environment data acc')."\n", $php_accelerator) ?>
+                        {{ trans(['Environment data OS', php_os]) }}<br />
+                        {{ trans(['Environment data version', phpversion, '<a href="' ~pathFor('phpInfo') ~'">' ~trans('Show info') ~'</a>']) }}<br />
+                        {{ trans(['Environment data acc', php_accelerator]) }}
                     </dd>
-                    <dt><?= __('Database label') ?></dt>
+                    <dt>{{ trans('Database label') }}</dt>
                     <dd>
-<?php if (isset($total_records) && isset($total_size)) :
-?>                        <?php printf(__('Database data rows')."\n", Utils::forum_number_format($total_records)) ?>
-                        <br /><?php printf(__('Database data size')."\n", $total_size) ?>
-<?php endif; ?>                    </dd>
-<?php endif; ?>
+    {% if total_records is not empty and total_size is not empty %}
+
+                        {{ trans(['Database data rows', formatNumber(total_records)]) }}
+                        <br />
+                        {{ trans(['Database data size', total_size]) }}
+    {% endif %}
+                    </dd>
+{% endif %}
                 </dl>
             </div>
         </div>
@@ -47,5 +40,5 @@ Container::get('hooks')->fire('view.admin.statistics.start');
     <div class="clearer"></div>
 </div>
 
-<?php
-Container::get('hooks')->fire('view.admin.statistics.end');
+    {{ fireHook('view.admin.statistics.end') }}
+{% endblock content %}

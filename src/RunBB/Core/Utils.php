@@ -128,9 +128,13 @@ class Utils
      * Calls htmlspecialchars with a few options already set
      * @param $str
      * @return string
+     * @throws \RunBB\Exception\RunBBException
      */
     public static function escape($str)
     {
+        if (!is_string($str)) {
+//            throw new \RunBB\Exception\RunBBException('var not string. check:');
+        }
         return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
     }
 

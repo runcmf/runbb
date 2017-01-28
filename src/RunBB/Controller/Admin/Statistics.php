@@ -30,15 +30,17 @@ class Statistics
         $total = $this->model->get_total_size();
 
         return View::setPageInfo([
-                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Server statistics')],
-                'active_page' => 'admin',
-                'admin_console' => true,
-                'server_load'    =>    $this->model->get_server_load(),
-                'num_online'    =>    $this->model->get_num_online(),
-                'total_size'    =>    $total['size'],
-                'total_records'    =>    $total['records'],
-                'php_accelerator'    =>    $this->model->get_php_accelerator(),
-            ])->addTemplate('admin/statistics.php')->display();
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Server statistics')],
+            'active_page' => 'admin',
+            'admin_console' => true,
+            'server_load' => $this->model->get_server_load(),
+            'num_online' => $this->model->get_num_online(),
+            'total_size' => $total['size'],
+            'total_records' => $total['records'],
+            'php_accelerator' => $this->model->get_php_accelerator(),
+            'php_os' => PHP_OS,
+            'phpversion' => phpversion()
+        ])->addTemplate('admin/statistics.php')->display();
     }
 
 
@@ -48,7 +50,7 @@ class Statistics
 
         // Show phpinfo() output
         // Is phpinfo() a disabled function?
-        if (strpos(strtolower((string) ini_get('disable_functions')), 'phpinfo') !== false) {
+        if (strpos(strtolower((string)ini_get('disable_functions')), 'phpinfo') !== false) {
             throw new  RunBBException(__('PHPinfo disabled message'), 404);
         }
 

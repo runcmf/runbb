@@ -79,27 +79,28 @@ class Bans
                 ->where('g_id', $group_id)
                 ->find_one();
 
-            if ($is_moderator_group) {
+            if ($is_moderator_group->g_moderator > 0) {
                 throw new  RunBBException(sprintf(__('User is mod message'), Utils::escape($ban['ban_user'])), 403);
             }
         }
 
         // If we have a $ban['user_id'], we can try to find the last known IP of that user
         if (isset($ban['user_id'])) {
-            $ban['ip'] = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+            $ban_ip = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
                 ->select('poster_ip')
                 ->where('poster_id', $ban['user_id'])
                 ->order_by_desc('posted')
                 ->find_one();
 
-            if (!$ban['ip']) {
-                $ban['ip'] = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+            if (!$ban_ip->poster_ip) {
+                $ban_ip = \ORM::for_table(ORM_TABLE_PREFIX.'users')
                     ->select('registration_ip')
                     ->where('id', $ban['user_id'])
                     ->find_one();
             }
-        }
 
+            $ban['ip'] = $ban_ip->poster_ip;
+        }
         $ban['mode'] = 'add';
 
         $ban = Container::get('hooks')->fire('model.admin.bans.add_ban_info', $ban);
@@ -166,17 +167,17 @@ class Bans
                 ->where_gt('id', 1)
                 ->find_one();
 
-            if ($group_id) {
-                if ($group_id == ForumEnv::get('FEATHER_ADMIN')) {
+            if ($group_id->group_id) {
+                if ($group_id->group_id == ForumEnv::get('FEATHER_ADMIN')) {
                     throw new  RunBBException(sprintf(__('User is admin message'), Utils::escape($ban_user)), 403);
                 }
 
                 $is_moderator_group = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
                     ->select('g_moderator')
-                    ->where('g_id', $group_id)
+                    ->where('g_id', $group_id->group_id)
                     ->find_one();
 
-                if ($is_moderator_group) {
+                if ($is_moderator_group->g_moderator > 0) {
                     throw new  RunBBException(sprintf(__('User is mod message'), Utils::escape($ban_user)), 403);
                 }
             }

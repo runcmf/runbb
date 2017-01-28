@@ -221,9 +221,10 @@ class View
         $data['admStyle'] = $admStyle;
 
         $templates = $this->getTemplates();
-
-        $tpl = array_pop($templates);// get last in array
-        $tpl = '@forum/' . rtrim(str_replace(ForumEnv::get('FORUM_ROOT') . 'View/', '', $tpl), '.php') . '.html.twig';
+dump($templates);
+        $tpl = trim(array_pop($templates));// get last in array
+        $tpl = substr(str_replace(ForumEnv::get('FORUM_ROOT') . 'View/', '', $tpl), 0, -4);
+        $tpl = '@forum/' . $tpl . '.html.twig';
 
         try {
             $output = Container::get('twig')->render($tpl, $data);
@@ -285,7 +286,6 @@ class View
             $loader = Container::get('twig')->getLoader();
             $loader->addPath($this->tplPath . 'view', 'forum');
         }
-//        return $this;
     }
 
     public function getStyle()

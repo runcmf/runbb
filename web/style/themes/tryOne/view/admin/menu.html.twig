@@ -1,124 +1,94 @@
-<?php
-
-/**
- * Copyright (C) 2015-2016 FeatherBB
- * based on code by (C) 2008-2015 FluxBB
- * and Rickard Andersson (C) 2002-2008 PunBB
- * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
- */
-
-use RunBB\Core\Url;
-
-// Make sure no one attempts to run this script "directly"
-if (!isset($feather)) {
-    exit;
-}
-
-Container::get('hooks')->fire('view.admin.menu.start');
-?>
+{{ fireHook('view.admin.menu.start') }}
 
 <div id="adminconsole" class="block2col">
     <div id="adminmenu" class="blockmenu">
-        <h2><span><?= __('Moderator menu') ?></span></h2>
+        <h2><span>{{ trans('Moderator menu') }}</span></h2>
         <div class="box">
             <div class="inbox">
                 <ul>
-                    <li<?php if ($page == 'index') {
-                        echo ' class="isactive"';
-}
-    ?>><a href="<?= Router::pathFor('adminIndex') ?>"><?= __('Index') ?></a></li>
-                    <li<?php if ($page == 'users') {
-                        echo ' class="isactive"';
-}
-    ?>><a href="<?= Router::pathFor('adminUsers') ?>"><?= __('Users') ?></a></li>
-<?php if ($is_admin || User::get()->g_mod_ban_users == '1') :
-?>                    <li<?php if ($page == 'bans') {
-    echo ' class="isactive"';
-}
-    ?>><a href="<?= Router::pathFor('adminBans') ?>"><?= __('Bans') ?></a></li>
-<?php endif;
-if ($is_admin || ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2') :
-?>                    <li<?php if ($page == 'reports') {
-    echo ' class="isactive"';
-}
-?>><a href="<?= Router::pathFor('adminReports') ?>"><?= __('Reports') ?></a></li>
-<?php     endif;
-    ?>                </ul>
+                    <li{{ page == 'index' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminIndex') }}">{{ trans('Index') }}</a>
+                    </li>
+                    <li{{ page == 'users' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminUsers') }}">{{ trans('Users') }}</a>
+                    </li>
+            {% if is_admin or userGet('g_mod_ban_users') == '1' %}
+                    <li{{ page == 'bans' ? ' class="isactive"': '' }}>
+                        <a href="{{ pathFor('adminBans') }}">{{ trans('Bans') }}</a>
+                    </li>
+            {% endif %}
+
+            {% if is_admin or settings('o_report_method') == '0' or settings('o_report_method') == '2' %}
+                    <li{{ page == 'reports' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminReports') }}">{{ trans('Reports') }}</a>
+                    </li>
+            {% endif %}
+
+                </ul>
             </div>
         </div>
-<?php
 
-if ($is_admin) {
-    ?>
-    <h2 class="block2"><span><?= __('Admin menu') ?></span></h2>
-    <div class="box">
-    <div class="inbox">
-        <ul>
-            <li<?php if ($page == 'options') {
-                    echo ' class="isactive"';
-}
-?>><a href="<?= Router::pathFor('adminOptions') ?>"><?= __('Options') ?></a></li>
-            <li<?php if ($page == 'permissions') {
-                    echo ' class="isactive"';
-}
-?>><a href="<?= Router::pathFor('adminPermissions') ?>"><?= __('Permissions') ?></a></li>
-            <li<?php if ($page == 'categories') {
-                    echo ' class="isactive"';
-}
-?>><a href="<?= Router::pathFor('adminCategories') ?>"><?= __('Categories') ?></a></li>
-            <li<?php if ($page == 'forums') {
-                    echo ' class="isactive"';
-}
-?>><a href="<?= Router::pathFor('adminForums') ?>"><?= __('Forums') ?></a></li>
-            <li<?php if ($page == 'groups') {
-                    echo ' class="isactive"';
-}
-?>><a href="<?= Router::pathFor('adminGroups') ?>"><?= __('User groups') ?></a></li>
-            <li<?php if ($page == 'plugins') {
-                    echo ' class="isactive"';
-}
-?>><a href="<?= Router::pathFor('adminPlugins') ?>"><?= 'Plugins'; ?></a></li>
-            <li<?php if ($page == 'censoring') {
-                    echo ' class="isactive"';
-}
-?>><a href="<?= Router::pathFor('adminCensoring') ?>"><?= __('Censoring') ?></a></li>
-            <li<?php if ($page == 'parser') {
-                    echo ' class="isactive"';
-}
-?>><a href="<?= Router::pathFor('adminParser') ?>"><?= __('Parser') ?></a></li>
-            <li<?php if ($page == 'maintenance') {
-                    echo ' class="isactive"';
-}
-?>><a href="<?= Router::pathFor('adminMaintenance') ?>"><?= __('Maintenance') ?></a></li>
-        </ul>
-    </div>
-    </div>
-<?php
-}
+    {% if is_admin %}
 
-    // Did we find any plugins?
-if (!empty($plugins)) {
-    ?>
-    <h2 class="block2"><span><?= __('Plugins menu') ?></span></h2>
-    <div class="box">
-    <div class="inbox">
-        <ul>
-<?php
+        <h2 class="block2"><span>{{ trans('Admin menu') }}</span></h2>
+        <div class="box">
+            <div class="inbox">
+                <ul>
+                    <li{{ page == 'options' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminOptions') }}">{{ trans('Options') }}</a>
+                    </li>
+                    <li{{ page == 'permissions' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminPermissions') }}">{{ trans('Permissions') }}</a>
+                    </li>
+                    <li{{ page == 'categories' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminCategories') }}">{{ trans('Categories') }}</a>
+                    </li>
+                    <li{{ page == 'forums' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminForums') }}">{{ trans('Forums') }}</a>
+                    </li>
+                    <li{{ page == 'groups' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminGroups') }}">{{ trans('User groups') }}</a>
+                    </li>
+                    <li{{ page == 'plugins' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminPlugins') }}">{{ trans('Plugins') }}</a>
+                    </li>
+                    <li{{ page == 'censoring' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminCensoring') }}">{{ trans('Censoring') }}</a>
+                    </li>
+                    <li{{ page == 'parser' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminParser') }}">{{ trans('Parser') }}</a>
+                    </li>
+                    <li{{ page == 'maintenance' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminMaintenance') }}">{{ trans('Maintenance') }}</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
-foreach ($plugins as $plugin) {
-    $plugin_url = URL::url_friendly($plugin);
-    echo "\t\t\t\t\t".'<li'.(($page == $plugin_url) ? ' class="isactive"' : '').'><a href="'.Router::pathFor('infoPlugin', ['name' => $plugin_url]).'">'.$plugin.'</a></li>'."\n";
-}
+    {% endif %}
 
-?>
-        </ul>
-    </div>
-</div>
-<?php
-}
+    {#// Did we find any plugins?#}
+    {% if plugins is not empty %}
 
-    ?>
+        <h2 class="block2"><span><?= __('Plugins menu') ?></span></h2>
+        <div class="box">
+            <div class="inbox">
+                <ul>
+
+                {% for plugin in plugins %}
+                {% set plugin_url = urlFriendly(plugin) %}
+                    <li{{ page == plugin_url ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('infoPlugin', {'name': plugin_url}) }}">{{ plugin }}</a>
+                    </li>
+                {% endfor %}
+
+
+                </ul>
+            </div>
+        </div>
+
+    {% endif %}
+
     </div>
 
-<?php
-Container::get('hooks')->fire('view.admin.menu.end');
+{{ fireHook('view.admin.menu.end') }}

@@ -403,6 +403,7 @@ section .blocktable .box table thead th.tcr {
 }
 section .blocktable .box table thead th.tc2,
 section .blocktable .box table thead th.tc3,
+section .blocktable .box table thead th.tc4,
 section .blocktable .box table thead th.tcmod {
     text-align: center;
     width: 11%
@@ -417,6 +418,7 @@ section .blocktable .box table tbody tr td {
 }
 section .blocktable .box table tbody tr .tc2,
 section .blocktable .box table tbody tr .tc3,
+section .blocktable .box table tbody tr .tc4,
 section .blocktable .box table tbody tr .tcmod {
     text-align: center;
     width: 11%
