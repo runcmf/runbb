@@ -19,59 +19,52 @@ Container::get('hooks')->fire('view.index.start');
 if (empty($index_data)) : ?>
     <div id="idx0" class="block"><div class="box"><div class="inbox"><p><?= __('Empty board') ?></p></div></div></div>
 <?php endif;
-foreach ($index_data as $forum) {
-    if ($forum->cid != $cur_cat) :
-        if ($cur_cat != 0) :
-    ?>
-                </tbody>
-            </table>
+foreach ($index_data as $f) {
+
+?>
+    <div id="idx<?= $f[0]->cid ?>" class="blocktable">
+        <h2><span><?= Utils::escape($f[0]->cat_name) ?></span></h2>
+        <div class="box">
+            <div class="inbox">
+                <table>
+                    <thead>
+                    <tr>
+                        <th class="tcl" scope="col"><?= __('Forum') ?></th>
+                        <th class="tc2" scope="col"><?= __('Topics') ?></th>
+                        <th class="tc3" scope="col"><?= __('Posts') ?></th>
+                        <th class="tcr" scope="col"><?= __('Last post') ?></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                    foreach ($f as $forum) {
+                        ?>
+                        <tr class="<?= $forum->item_status ?>">
+                            <td class="tcl">
+                                <div class="<?= $forum->icon_type ?>">
+                                    <div class="nosize"><?= Utils::forum_number_format($forum->forum_count_formatted) ?></div>
+                                </div>
+                                <div class="tclcon">
+                                    <div>
+                                        <?= $forum->forum_field . "\n" . $forum->moderators_formatted ?>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="tc2"><?= Utils::forum_number_format($forum->num_topics_formatted) ?></td>
+                            <td class="tc3"><?= Utils::forum_number_format($forum->num_posts_formatted) ?></td>
+                            <td class="tcr"><?= $forum->last_post_formatted ?></td>
+                        </tr>
+                        <?php
+                    }
+                    ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-    </div>
-    <?php                                                                                                                                                                                                                 endif;
-    ?>
-    <div id="idx<?= $forum->cid ?>" class="blocktable">
-    <h2><span><?= Utils::escape($forum->cat_name) ?></span></h2>
-    <div class="box">
-        <div class="inbox">
-            <table>
-            <thead>
-                <tr>
-                    <th class="tcl" scope="col"><?= __('Forum') ?></th>
-                    <th class="tc2" scope="col"><?= __('Topics') ?></th>
-                    <th class="tc3" scope="col"><?= __('Posts') ?></th>
-                    <th class="tcr" scope="col"><?= __('Last post') ?></th>
-                </tr>
-            </thead>
-            <tbody>
-    <?php
-    $cur_cat = $forum->cid;
-    endif;
-    ?>
-                <tr class="<?= $forum->item_status ?>">
-                    <td class="tcl">
-                        <div class="<?= $forum->icon_type ?>"><div class="nosize"><?= Utils::forum_number_format($forum->forum_count_formatted) ?></div></div>
-                        <div class="tclcon">
-                            <div>
-                                <?= $forum->forum_field."\n".$forum->moderators_formatted ?>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="tc2"><?= Utils::forum_number_format($forum->num_topics_formatted) ?></td>
-                    <td class="tc3"><?= Utils::forum_number_format($forum->num_posts_formatted) ?></td>
-                    <td class="tcr"><?= $forum->last_post_formatted ?></td>
-                </tr>
     <?php
 }
-if ($cur_cat > 0) :
-    ?>
-                    </tbody>
-            </table>
-        </div>
-    </div>
-    </div>
-<?php
-endif;
+
 if (!empty($forum_actions)) :
 ?>
 <div class="linksb">

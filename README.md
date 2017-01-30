@@ -8,12 +8,12 @@
 
 RunBB is a fork of [FeatherBB](https://github.com/featherbb/featherbb) which, at the time of the fork (2017-01-09), 
 was slowly falling into abandon. I proceeded to rebuild and remove all the useless (to me) cruft:
-* Core\Database (slightly hacked [Idiorm](https://github.com/j4mie/idiorm) version) and use [Idiorm](https://github.com/j4mie/idiorm) from package instead  
-* Core\gettext and use [gettext](https://github.com/oscarotero/Gettext) from package instead  
-* Rebuild plugins system. Plugins load by composer packages. Old system temporary exist but deprecated.
-* Markdown instead of BBCodes. Now use [s9e/text-formatter](https://github.com/s9e/TextFormatter) with [SimpleMDE](https://github.com/NextStepWebs/simplemde-markdown-editor) as plugin [runbb-ext-simplemde](https://github.com/runcmf/runbb-ext-simplemde) and [markItUp!](http://markitup.jaysalvat.com/home/) with [elFinder](https://github.com/Studio-42/elFinder) as plugin [runbb-ext-markitup](https://github.com/runcmf/runbb-ext-markitup) 
-* ability to use [Twig](https://github.com/twigphp/Twig) template engine.
-* ability to translate language online
+* Removed: Core\Database (slightly hacked [Idiorm](https://github.com/j4mie/idiorm) version) and use [Idiorm](https://github.com/j4mie/idiorm) from package instead  
+* Removed: Core\gettext and use [gettext](https://github.com/oscarotero/Gettext) from package instead  
+* Rebuild: plugins system. Plugins load by composer packages. Old system temporary exist but deprecated.
+* Add: Markdown instead of BBCodes. Now use [s9e/text-formatter](https://github.com/s9e/TextFormatter) with [SimpleMDE](https://github.com/NextStepWebs/simplemde-markdown-editor) as plugin [runbb-ext-simplemde](https://github.com/runcmf/runbb-ext-simplemde) and [markItUp!](http://markitup.jaysalvat.com/home/) with [elFinder](https://github.com/Studio-42/elFinder) as plugin [runbb-ext-markitup](https://github.com/runcmf/runbb-ext-markitup) 
+* Add: ability to use [Twig](https://github.com/twigphp/Twig) template engine.
+* Add: ability to work with translations online.
 
 
 

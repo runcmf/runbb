@@ -137,7 +137,7 @@ class Init
 //        if (User::get()->is_guest) {
 //            $error['message'] = 'There was an internal error'; // TODO : translation
 //        } else
-                if (User::get()->is_admmod) {
+                if (isset(User::get()->is_admmod) && User::get()->is_admmod === true) {
                     // show last 5 trace lines
                     if (count($e->getTrace()) > 1) {
                         $trace = $e->getTrace();

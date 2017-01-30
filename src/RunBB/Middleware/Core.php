@@ -53,6 +53,7 @@ class Core
         $this->forum_env['WEB_ROOT'] = $data['web_root'];
         $this->forum_env['WEB_PLUGINS'] = 'ext';
         $this->forum_env['SLIM_SETTINGS'] = $c['settings']['runbb'];
+        $this->forum_env['TPL_ENGINE'] = ($data['tplEngine'] === 'twig') ? 'twig' : 'php';
 
         // Populate forum_env
         $this->forum_env = array_merge(self::load_default_forum_env(), $this->forum_env);

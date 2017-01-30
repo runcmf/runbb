@@ -38,6 +38,9 @@ class Install
         $this->c = $c;
         $this->model = new \RunBB\Model\Install();
         $this->available_langs = Lister::getLangs();
+        if(!is_dir(ForumEnv::get('WEB_ROOT').'style/themes/')) {
+            $this->installStyles();
+        }
         Container::set('user', null);
         View::setStyle('FeatherBB');
         $dbCfg = $this->c['settings']['db'];
@@ -360,5 +363,15 @@ class Install
             'p_allow_dupe_email'        => 0,
             'p_force_guest_email'        => 1
         ];
+    }
+
+    public function installStyles()
+    {
+        $src = realpath(__DIR__ . '/../../../').'/web';
+        $dst = ForumEnv::get('WEB_ROOT');
+        if(!Utils::checkDir($dst)) {
+            die('can not create dir: '.$dst.'. check rights');
+        }
+        Utils::recurseCopy($src, $dst);
     }
 }

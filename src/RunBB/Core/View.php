@@ -267,7 +267,7 @@ dump($templates);
             $this->set('jsraw', $vars['jsraw']);
         }
 
-        $this->useTwig = true;// FIXME config it
+        $this->useTwig = ForumEnv::get('TPL_ENGINE') === 'twig' ? true : false;
 
         $this->setStyle($style);
     }
