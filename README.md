@@ -2,13 +2,12 @@
 [![Total Downloads][ico-downloads]][link-downloads]
 [![Software License][ico-license]][link-license]  
 
-## now dev only, no support!
 
 ## About
 
 RunBB is a fork of [FeatherBB](https://github.com/featherbb/featherbb) which, at the time of the fork (2017-01-09), 
 was slowly falling into abandon. I proceeded to rebuild and remove all the useless (to me) cruft:
-* Removed: Core\Database (slightly hacked [Idiorm](https://github.com/j4mie/idiorm) version) and use [Idiorm](https://github.com/j4mie/idiorm) from package instead  
+* Removed: [db-layer](https://github.com/featherbb/db-layer) and use [Idiorm](https://github.com/j4mie/idiorm) from package instead  
 * Removed: Core\gettext and use [gettext](https://github.com/oscarotero/Gettext) from package instead  
 * Rebuild: plugins system. Plugins load by composer packages. Old system temporary exist but deprecated.
 * Add: Markdown instead of BBCodes. Now use [s9e/text-formatter](https://github.com/s9e/TextFormatter) with [SimpleMDE](https://github.com/NextStepWebs/simplemde-markdown-editor) as plugin [runbb-ext-simplemde](https://github.com/runcmf/runbb-ext-simplemde) and [markItUp!](http://markitup.jaysalvat.com/home/) with [elFinder](https://github.com/Studio-42/elFinder) as plugin [runbb-ext-markitup](https://github.com/runcmf/runbb-ext-markitup) 
@@ -23,8 +22,8 @@ $ composer require runcmf/runbb:dev-master
 ```
 
 ## init
-1. read [example](docs/howto/install_with_slim_skeleton.md) install with [slim-skeleton](https://github.com/slimphp/Slim-Skeleton)  
-2. TODO
+**1.** read [example](docs/howto/install_with_slim_skeleton.md) install with [slim-skeleton](https://github.com/slimphp/Slim-Skeleton)  
+**2.** read [example](docs/howto/install_plugin.md) install [markitup](https://github.com/runcmf/runbb-ext-markitup) plugin  
 
 
 ## Requirements

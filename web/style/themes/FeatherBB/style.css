@@ -1122,8 +1122,8 @@ footer .footer-link a {
     border-radius: 3px 3px 0 0
 }
 .blockform .box {
-    border: 1px solid #d8d8d8;
-    border-radius: 0 0 3px 3px;
+    /*border: 1px solid #d8d8d8;*/
+    /*border-radius: 0 0 3px 3px;*/
     background-color: #fff
 }
 .blockform .box .inform {

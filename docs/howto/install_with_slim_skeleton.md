@@ -1,6 +1,6 @@
 # Install RunBB with [slim-skeleton](https://github.com/slimphp/Slim-Skeleton)
 
-Install procedure include 6 steps:
+Install procedure include some steps:
 * install slim-skeleton
 * install runbb
 * create db
@@ -8,8 +8,9 @@ Install procedure include 6 steps:
 * add forum init
 * and install procedure in browser  
 
+---
 
-installation process will create a directory
+installation process will try create a directory
 ```php
 install_root/public/style
 install_root/public/ext
@@ -21,21 +22,22 @@ cache dir you can change in config below.
 ---
 ####Well, let's  begin  
 
-1. install slim/slim-skeleton to root:
+**1.** install slim/slim-skeleton to root:
 ```sh
 $ composer create-project slim/slim-skeleton . 
-```
-        - or to dir `myproject`:
+```  
+**1.1.** or to dir `myproject`:  
+
 ```sh
 $ composer create-project slim/slim-skeleton myproject
 ```
 
-2. install RunBB
+**2.** install RunBB
 ```sh
 $ composer require runcmf/runbb:dev-master 
 ```
 
-3. add to `src/settings.php`
+**3.** add to `src/settings.php`
 ```php
         'runbb' => [
             'config_file' => 'config.php',
@@ -86,7 +88,7 @@ return [
 ];
 ```  
 
-4. add in public/index.php `(new \RunBB\Init($app))->init();` before `// Run app`  
+**4.** add in public/index.php `(new \RunBB\Init($app))->init();` before `// Run app`
 result is:
 ```php
 <?php
@@ -123,7 +125,7 @@ require __DIR__ . '/../src/routes.php';
 $app->run();
 ```  
 
-5. create data base, then F5 on installed site and you redirected to install page.
+**5.** create data base, then F5 on installed site and you redirected to install page.
     * fill database info (Note: admin pass length minimum 6 symbols)
 
 #### IMPORTANT: 
@@ -134,6 +136,6 @@ else you get error `Static route "/forum" is shadowed by previously defined vari
 ---
 #### By default forum uri is '/forum' like `site.name/forum` but if you want simply change init such as
 
-1. `(new \RunBB\Init($app))->init();` - default with path `/forum`   
-2. `(new \RunBB\Init($app, ''))->init();` - empty for web root (subdomain, site with forum only etc.)   
-3. `(new \RunBB\Init($app, '/discourse'))->init();` - any you want `/community`, `/discourse`, `/mylair` etc.  
+**1.** `(new \RunBB\Init($app))->init();` - default with path `/forum`   
+**2.** `(new \RunBB\Init($app, ''))->init();` - empty for web root (subdomain, site with forum only etc.)   
+**3.** `(new \RunBB\Init($app, '/discourse'))->init();` - any you want `/community`, `/discourse`, `/mylair` etc.  
