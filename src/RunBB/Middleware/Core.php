@@ -81,7 +81,7 @@ class Core
             'FORUM_ROOT' => '',
             'FORUM_CONFIG_FILE' => 'config.php',
             'FORUM_CACHE_DIR' => DIR . 'var/cache/',
-            'FORUM_VERSION' => '1.0.0',
+            'FORUM_VERSION' => '1.0.1',
             'FORUM_NAME' => 'RunBB',
             'FORUM_DB_REVISION' => 21,
             'FORUM_SI_REVISION' => 2,
