@@ -76,9 +76,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-[ico-version]: https://img.shields.io/packagist/v/runcmf/runbb.svg?style=flat-square
-[ico-license]: https://img.shields.io/badge/license-Apache%202-green.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/runcmf/runbb.svg?style=flat-square
+[ico-version]: https://img.shields.io/packagist/v/runcmf/runbb.svg
+[ico-license]: https://img.shields.io/badge/license-Apache%202-green.svg
+[ico-downloads]: https://img.shields.io/packagist/dt/runcmf/runbb.svg
 
 [link-packagist]: https://packagist.org/packages/runcmf/runbb
 [link-license]: http://www.apache.org/licenses/LICENSE-2.0

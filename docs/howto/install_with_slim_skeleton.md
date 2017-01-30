@@ -88,7 +88,8 @@ return [
 ];
 ```  
 
-**4.** add in public/index.php `(new \RunBB\Init($app))->init();` before `// Run app`
+**4.** add in public/index.php `(new \RunBB\Init($app))->init();` before `// Run app`  
+
 result is:
 ```php
 <?php
@@ -125,7 +126,7 @@ require __DIR__ . '/../src/routes.php';
 $app->run();
 ```  
 
-**5.** create data base, then F5 on installed site and you redirected to install page.
+**5.** create data base, then F5 on installed site and you redirected to install page.  
     * fill database info (Note: admin pass length minimum 6 symbols)
 
 #### IMPORTANT: 
