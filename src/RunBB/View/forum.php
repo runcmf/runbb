@@ -20,7 +20,7 @@ Container::get('hooks')->fire('view.forum.start');
 <div class="linkst">
     <div class="inbox crumbsplus">
         <ul class="crumbs">
-            <li><a href="<?= Url::base() ?>/forum"><?= __('Index') ?></a></li>
+            <li><a href="<?= Url::base() ?>"><?= __('Index') ?></a></li>
             <li><span>»&#160;</span><strong><a href="<?php Router::pathFor('Forum', ['id' => $id, 'name' => $url_forum]) ?>"><?= Utils::escape($cur_forum['forum_name']) ?></a></strong></li>
         </ul>
         <div class="pagepost">

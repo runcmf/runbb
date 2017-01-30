@@ -156,7 +156,7 @@ class Install
                 return $this->create_config($data);
             }
         } else {
-            $base_url = str_replace('index.php', '', Url::base()) . '/forum';
+            $base_url = str_replace('index.php', '', Url::base());
             $data = [
                 'title' => __('My RunBB Forum'),
                 'description' => __('Description'),

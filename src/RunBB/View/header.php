@@ -127,7 +127,7 @@ Container::get('hooks')->fire('view.header.before.head.tag');
                     <div id="brdmenu" class="inbox">
                         <ul>
 <?php
-$navlinks[] = '<li id="navindex"'.(($active_page == 'index') ? ' class="isactive"' : '').'><a href="'.Url::base().'/forum">'.__('Index').'</a></li>';
+$navlinks[] = '<li id="navindex"'.(($active_page == 'index') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('home').'">'.__('Index').'</a></li>';
 
 if (User::get()->g_read_board == '1' && User::get()->g_view_users == '1') {
     $navlinks[] = '<li id="navuserlist"'.(($active_page == 'userlist') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('userList').'">'.__('User list').'</a></li>';
@@ -184,7 +184,7 @@ echo "\t\t\t".implode("\n\t\t\t", $navlinks);
         <div class="container">
             <div class="container-title-status">
                 <h1 class="title-site">
-                    <a href="<?= Url::base() ?>/forum" title="" class="site-name">
+                    <a href="<?= Router::pathFor('home') ?>" title="" class="site-name">
                         <p><?= Utils::escape(ForumSettings::get('o_board_title')) ?></p>
                     </a>
                     <div id="brddesc"><?= htmlspecialchars_decode(ForumSettings::get('o_board_desc')) ?></div>

@@ -22,34 +22,9 @@ was slowly falling into abandon. I proceeded to rebuild and remove all the usele
 $ composer require runcmf/runbb:dev-master
 ```
 
-add to Settings
-```php
-
-defined('DS') || define('DS', DIRECTORY_SEPARATOR);
-define('DIR', realpath(__DIR__ . '/../../') . DS);
-
-return [
-    'settings' => [
-        ... // ...
-        ... // ...
-        'runbb' => [
-            'config_file' => 'NameFileAsYouWant.php',
-            'cache_dir' => DIR . 'var/cache/RunBB/',
-            'web_root' => DIR . 'web/',// public for slim-skeleton
-            'debug' => 'all',
-            // 3 levels : false, info (only execution time and number of queries),
-            // and all (display info + queries)
-            'plugins' => [// register plugins as NameSpace\InitInfoClass
-//                'simplemde' => 'SimpleMDE\SimpleMDE'
-            ]
-        ]
-    ]
-];
-```
-init
-```php
-TODO
-```
+## init
+1. read [example](docs/howto/install_with_slim_skeleton.md) install with [slim-skeleton](https://github.com/slimphp/Slim-Skeleton)  
+2. TODO
 
 
 ## Requirements

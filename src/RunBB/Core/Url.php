@@ -826,7 +826,8 @@ class Url
      */
     public static function base_static()
     {
-        $url = Request::getUri()->getBasePath();
+//        $url = Request::getUri()->getBasePath();
+        $url = self::base();
         $url = str_replace('/index.php', '', $url);
         return $url;
     }

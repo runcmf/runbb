@@ -458,7 +458,7 @@ dump($templates);
         $navlinks[] = [
             'id' => 'navindex',
             'active' => ($active_page == 'index') ? ' class="isactive"' : '',
-            'href' => Url::base().'/forum',
+            'href' => Url::base(),
             'text' => __('Index')
         ];
 

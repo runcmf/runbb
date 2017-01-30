@@ -26,11 +26,12 @@ use RunBB\Middleware\AdminModo as IsAdmMod;
 
 class Init
 {
-    private $app;
+    private $app, $uri;
 
-    public function __construct($app)
+    public function __construct($app, $uri='/forum')
     {
         $this->app = $app;
+        $this->uri = $uri;
 
         SlimStatic::boot($app);
         // Allow static proxies to be called from anywhere in App
@@ -291,24 +292,26 @@ class Init
 
     private function registerUserRoute()
     {
-//        $this->app->map(['GET', 'POST'], '/install', '\RunBB\Controller\Install:run')->setName('install');
-        $this->app->group('/forum', function () {
-            // Forum
-            Route::group('', function () {
-                // Index
-                $this->get('', '\RunBB\Controller\Index:display')->add(new CanReadBoard)->setName('home');
+        $root = $this->uri === '' ? '/' : '';
+        $this->app->group($this->uri, function () use ($root) {
+            // root routes
+            // Index
+            $this->get($root, '\RunBB\Controller\Index:display')->add(new CanReadBoard)->setName('home');
+            // Userlist
+            Route::get('/userlist', '\RunBB\Controller\Userlist:display')->add(new CanReadBoard)->setName('userList');
 
-                Route::get('/{id:[0-9]+}[/{name:[\w\-]+}]', '\RunBB\Controller\Forum:display')->setName('Forum');
-                Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\RunBB\Controller\Forum:display')->setName('ForumPaginate');
-                Route::get('/mark-read/{id:[0-9]+}[/{name:[\w\-]+}]', '\RunBB\Controller\Forum:markread')->add(new IsLogged)->setName('markForumRead');
-                Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\RunBB\Controller\Forum:subscribe')->add(new IsLogged)->setName('subscribeForum');
-                Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\RunBB\Controller\Forum:unsubscribe')->add(new IsLogged)->setName('unsubscribeForum');
-                Route::get('/moderate/{fid:[0-9]+}/page/{page:[0-9]+}', '\RunBB\Controller\Forum:moderate')->setName('moderateForum');
-                Route::post('/moderate/{fid:[0-9]+}[/page/{page:[0-9]+}]', '\RunBB\Controller\Forum:dealposts')->setName('dealPosts');
-            })->add(new CanReadBoard);
-
+            Route::get('/{id:[0-9]+}[/{name:[\w\-]+}]', '\RunBB\Controller\Forum:display')->add(new CanReadBoard)->setName('Forum');
+            Route::get('/{id:[0-9]+}/{name:[\w\-]+}/page/{page:[0-9]+}', '\RunBB\Controller\Forum:display')->add(new CanReadBoard)->setName('ForumPaginate');
+            Route::get('/mark-read/{id:[0-9]+}[/{name:[\w\-]+}]', '\RunBB\Controller\Forum:markread')->add(new IsLogged)->setName('markForumRead');
+            Route::get('/subscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\RunBB\Controller\Forum:subscribe')->add(new IsLogged)->setName('subscribeForum');
+            Route::get('/unsubscribe/{id:[0-9]+}[/{name:[\w\-]+}]', '\RunBB\Controller\Forum:unsubscribe')->add(new IsLogged)->setName('unsubscribeForum');
+            Route::get('/moderate/{fid:[0-9]+}/page/{page:[0-9]+}', '\RunBB\Controller\Forum:moderate')->add(new CanReadBoard)->setName('moderateForum');
+            Route::post('/moderate/{fid:[0-9]+}[/page/{page:[0-9]+}]', '\RunBB\Controller\Forum:dealposts')->add(new CanReadBoard)->setName('dealPosts');
             $this->get('/rules', '\RunBB\Controller\Index:rules')->setName('rules');
             $this->get('/mark-read', '\RunBB\Controller\Index:markread')->add(new IsLogged)->setName('markRead');
+            // Help
+            Route::get('/help', '\RunBB\Controller\Help:display')->add(new CanReadBoard)->setName('help');
+
             // Topic
             Route::group('/topic', function () {
                 Route::get('/{id:[0-9]+}[/{name:[\w\-]+}]', '\RunBB\Controller\Topic:display')->setName('Topic');
@@ -324,6 +327,7 @@ class Init
                 Route::map(['GET', 'POST'], '/moderate/{id:[0-9]+}/forum/{fid:[0-9]+}[/page/{page:[0-9]+}]', '\RunBB\Controller\Topic:moderate')->add(new IsAdmMod)->setName('moderateTopic');
                 Route::get('/{id:[0-9]+}/action/{action}', '\RunBB\Controller\Topic{action}')->setName('topicAction');
             })->add(new CanReadBoard);
+
             // Post routes
             Route::group('/post', function () {
                 Route::get('/{pid:[0-9]+}', '\RunBB\Controller\Topic:viewpost')->setName('viewPost');
@@ -335,8 +339,6 @@ class Init
                 Route::map(['GET', 'POST'], '/report/{id:[0-9]+}', '\RunBB\Controller\Post:report')->setName('report');
                 Route::get('/get-host/{pid:[0-9]+}', '\RunBB\Controller\Post:gethost')->setName('getPostHost');
             })->add(new CanReadBoard);
-            // Userlist
-            Route::get('/userlist', '\RunBB\Controller\Userlist:display')->add(new CanReadBoard)->setName('userList');
 
             // Auth routes
             Route::group('/auth', function () {
@@ -351,8 +353,7 @@ class Init
                 Route::map(['GET', 'POST'], '/agree', '\RunBB\Controller\Register:display')->setName('register');
                 Route::get('/cancel', '\RunBB\Controller\Register:cancel')->setName('registerCancel');
             });
-            // Help
-            Route::get('/help', '\RunBB\Controller\Help:display')->add(new CanReadBoard)->setName('help');
+
             // Search routes
             Route::group('/search', function () {
                 Route::get('', '\RunBB\Controller\Search:display')->setName('search');

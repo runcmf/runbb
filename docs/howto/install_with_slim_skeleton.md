@@ -1,5 +1,14 @@
 # Install RunBB with [slim-skeleton](https://github.com/slimphp/Slim-Skeleton)
 
+Install procedure include 6 steps:
+* install slim-skeleton
+* install runbb
+* create db
+* add and change settings
+* add forum init
+* and install procedure in browser
+---
+
 installation process will create a directory
 ```php
 install_root/public/style
@@ -7,8 +16,9 @@ install_root/public/ext
 install_root/var
 ```
 `style` for assets, `ext` for extensions assets and `var` for cache.  
-cache dir you can change in config below.
+cache dir you can change in config below.  
 
+---
 ####Well, let's  begin  
 
 1. install slim/slim-skeleton to root:
@@ -74,7 +84,8 @@ return [
         ]
     ],
 ];
-```
+```  
+
 4. add in public/index.php `(new \RunBB\Init($app))->init();` before `// Run app`
 result is:
 ```php
@@ -110,12 +121,19 @@ require __DIR__ . '/../src/routes.php';
 
 // Run app
 $app->run();
-```
-5. IMPORTANT: 
-`comment or delete route from slim-skeleton example install with `$app->get('/[{name}]'` from `src/routes.php``
+```  
 
-6. create data base, then F5 on installed site and you must in RunBB install page.
-    * fill database info.
-    * admin details (Note: pass length minimum 6 symbols)
-    
+5. create data base, then F5 on installed site and you redirected to install page.
+    * fill database info (Note: admin pass length minimum 6 symbols)
 
+#### IMPORTANT: 
+comment or delete example route from slim-skeleton with `$app->get('/[{name}]', function ($request, $response, $args) {` from `src/routes.php`  
+or edit as `$app->get('/', function ($request, $response, $args) {`  
+else you get error `Static route "/forum" is shadowed by previously defined variable route "/([^/]+)" for method "GET"`  
+
+---
+#### By default forum uri is '/forum' like `site.name/forum` but if you want simply change init such as
+
+1. `(new \RunBB\Init($app))->init();` - default with path `/forum`   
+2. `(new \RunBB\Init($app, ''))->init();` - empty for web root (subdomain, site with forum only etc.)   
+3. `(new \RunBB\Init($app, '/discourse'))->init();` - any you want `/community`, `/discourse`, `/mylair` etc.  

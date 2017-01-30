@@ -421,7 +421,6 @@ class Profile
                 $extension = '.png';
             } else {
                 // Invalid type
-//                @unlink(ForumEnv::get('FORUM_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');
                 @unlink(ForumEnv::get('WEB_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');
                 throw new  RunBBException(__('Bad type'));
             }
@@ -431,7 +430,6 @@ class Profile
                 empty($height) ||
                 $width > ForumSettings::get('o_avatars_width') ||
                 $height > ForumSettings::get('o_avatars_height')) {
-//                @unlink(ForumEnv::get('FORUM_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');
                 @unlink(ForumEnv::get('WEB_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp');
                 throw new  RunBBException(__('Too wide or high').' '.
                     ForumSettings::get('o_avatars_width').'x'.
@@ -440,11 +438,8 @@ class Profile
 
             // Delete any old avatars and put the new one in place
             $this->delete_avatar($id);
-//            @rename(ForumEnv::get('FORUM_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp',
-// ForumEnv::get('FORUM_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.$extension);
-//            @chmod(ForumEnv::get('FORUM_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.$extension, 0644);
-            @rename(ForumEnv::get('WEB_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp', DIR.'web'.
-                ForumSettings::get('o_avatars_dir').'/'.$id.$extension);
+            @rename(ForumEnv::get('WEB_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp',
+                ForumEnv::get('WEB_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.$extension);
             @chmod(ForumEnv::get('WEB_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.$extension, 0644);
         } else {
             throw new  RunBBException(__('Unknown failure'));

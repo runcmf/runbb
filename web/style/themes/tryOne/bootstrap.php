@@ -17,18 +17,18 @@
 
 return [
     'css' => [
-        'assets/css/bootstrap.min.css',
-        'assets/css/jquery-ui.min.css',// elFinder depend
-        'assets/css/font-awesome.min.css',
-        'assets/js/styles/github.css',// highlight.js theme
-        'assets/fancybox/jquery.fancybox.css'
+        'style/themes/tryOne/css/bootstrap.min.css',
+        'style/themes/tryOne/css/jquery-ui.min.css',// elFinder depend
+        'style/themes/tryOne/css/font-awesome.min.css',
+        'style/themes/tryOne/css/github.css',// highlight.js theme
+        'style/themes/tryOne/css/jquery.fancybox.css'
     ],
     'js' => [
-        'assets/js/jquery-3.1.1.min.js',
-        'assets/js/jquery-ui.min.js',// elFinder depend
-        'assets/js/bootstrap.min.js',
-        'assets/js/highlight.pack.js',
-        'assets/fancybox/jquery.fancybox.pack.js',
+        'style/themes/tryOne/js/jquery-3.1.1.min.js',
+        'style/themes/tryOne/js/jquery-ui.min.js',// elFinder depend
+        'style/themes/tryOne/js/bootstrap.min.js',
+        'style/themes/tryOne/js/highlight.pack.js',
+        'style/themes/tryOne/js/jquery.fancybox.pack.js',
         'style/themes/tryOne/phone.min.js'
     ],
     'jshead' => [

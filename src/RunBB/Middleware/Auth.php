@@ -306,6 +306,10 @@ class Auth
             // Add $user as guest to DIC
             Container::set('user', $user);
         }
+        // TODO remove to plugin
+        if(class_exists('\Tracy\Debugger') && \Tracy\Debugger::isEnabled() && $user->is_admmod == false) {
+            \Tracy\Debugger::$showBar = false;
+        }
 
         // load theme assets also set setStyle
         Container::get('template')->loadThemeAssets($user->style);
