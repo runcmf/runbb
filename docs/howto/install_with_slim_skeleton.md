@@ -6,8 +6,8 @@ Install procedure include 6 steps:
 * create db
 * add and change settings
 * add forum init
-* and install procedure in browser
----
+* and install procedure in browser  
+
 
 installation process will create a directory
 ```php
@@ -25,7 +25,7 @@ cache dir you can change in config below.
 ```sh
 $ composer create-project slim/slim-skeleton . 
 ```
-1.1. or to dir `myproject`:
+        - or to dir `myproject`:
 ```sh
 $ composer create-project slim/slim-skeleton myproject
 ```
@@ -86,7 +86,7 @@ return [
 ];
 ```  
 
-4. add in public/index.php `(new \RunBB\Init($app))->init();` before `// Run app`
+4. add in public/index.php `(new \RunBB\Init($app))->init();` before `// Run app`  
 result is:
 ```php
 <?php
