@@ -47,7 +47,7 @@ class Language
     {
         $this->translator->loadTranslations(
             Translations::fromPoFile($file)->setDomain($domain)
-            //            Translations::fromMoFile($file)->setDomain($domain)
+//            Translations::fromMoFile($file)->setDomain($domain)
         );
     }
 

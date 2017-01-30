@@ -122,7 +122,7 @@ class Plugins
         Container::get('hooks')->fire('controller.admin.plugins.activate');
 
         if (!$args['name']) {
-            throw new  RunBBException(__('Bad request'), 400);
+            throw new RunBBException(__('Bad request'), 400);
         }
 
         $this->model->activate($args['name']);

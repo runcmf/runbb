@@ -1296,7 +1296,7 @@ footer .footer-link a {
     color: #a94442
 }
 
-.error {
+.error, .warntext {
     background: #ebccd1;
     border: 1px solid #ebccd1 !important;
     background: -webkit-linear-gradient(top, #f2dede, #ebccd1);

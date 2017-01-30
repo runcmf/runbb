@@ -49,6 +49,12 @@
                     <li{{ page == 'groups' ? ' class="isactive"' : '' }}>
                         <a href="{{ pathFor('adminGroups') }}">{{ trans('User groups') }}</a>
                     </li>
+                    <li{{ page == 'templates' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminTemplates') }}">Templates</a>
+                    </li>
+                    <li{{ page == 'languages' ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('adminLanguages') }}">Languages</a>
+                    </li>
                     <li{{ page == 'plugins' ? ' class="isactive"' : '' }}>
                         <a href="{{ pathFor('adminPlugins') }}">{{ trans('Plugins') }}</a>
                     </li>

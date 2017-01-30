@@ -268,6 +268,24 @@ class Init
                 Route::get('/ip-stats/id/{id:[0-9]+}', '\RunBB\Controller\Admin\Users:ipstats')->setName('usersIpStats');
                 Route::get('/show-users', '\RunBB\Controller\Admin\Users:showusers')->setName('usersIpShow');
             });
+
+            // Admin templates
+            Route::group('/template', function () {
+                Route::map(['GET', 'POST'], '', '\RunBB\Controller\Admin\Templates:display')->setName('adminTemplates');
+            });
+
+            // Admin languages
+            Route::group('/language', function () {
+                Route::get('', '\RunBB\Controller\Admin\Languages:display')->setName('adminLanguages');
+                Route::map(['GET', 'POST'], '/showlang', '\RunBB\Controller\Admin\Languages:showLangFiles')->setName('adminLanguages.showlangfiles');
+                Route::map(['GET', 'POST'], '/editlang', '\RunBB\Controller\Admin\Languages:editLang')->setName('adminLanguages.editlang');
+                Route::map(['GET', 'POST'], '/showmailtpls', '\RunBB\Controller\Admin\Languages:showMailTemplates')->setName('adminLanguages.showmailtpls');
+                Route::map(['GET', 'POST'], '/editmailtpls', '\RunBB\Controller\Admin\Languages:editMailTemplates')->setName('adminLanguages.editmailtpls');
+                Route::map(['GET', 'POST'], '/export', '\RunBB\Controller\Admin\Languages:exportLanguage')->setName('adminLanguages.export');
+                Route::map(['GET', 'POST'], '/import', '\RunBB\Controller\Admin\Languages:importLanguage')->setName('adminLanguages.import');
+                Route::map(['GET', 'POST'], '/build', '\RunBB\Controller\Admin\Languages:buildNewTranslation')->setName('adminLanguages.build');
+                Route::map(['GET', 'POST'], '/delete', '\RunBB\Controller\Admin\Languages:deleteTranslation')->setName('adminLanguages.delete');
+            });
         })->add(new IsAdmMod);
     }
 

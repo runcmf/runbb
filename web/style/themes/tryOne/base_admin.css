@@ -1,3 +1,6 @@
+.list-group-item {
+    max-height: 3.5em;
+}
 #adminmenu {
     float: left;
     width: 27.5%

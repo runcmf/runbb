@@ -1,3 +1,7 @@
+###2017-01-30
+* begin work with languages and templates.
+    * edit, export, import, add, delete, generate files
+
 ###2017-01-23
 * release plugins
     - https://packagist.org/packages/runcmf/runbb-ext-markitup  

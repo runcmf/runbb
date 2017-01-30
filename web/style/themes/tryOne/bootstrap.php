@@ -29,7 +29,7 @@ return [
         'assets/js/bootstrap.min.js',
         'assets/js/highlight.pack.js',
         'assets/fancybox/jquery.fancybox.pack.js',
-        'style/themes/FeatherBB/phone.min.js'
+        'style/themes/tryOne/phone.min.js'
     ],
     'jshead' => [
 //        'assets/js/jquery-3.1.1.min.js',

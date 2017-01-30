@@ -444,7 +444,7 @@ $s .= sprintf("\$pd = ", count($pd));
 $s .= var_export($pd, true);
 $s .= ";\n";
 
-$s .= "?>";
+//$s .= "?>";
 file_put_contents(ForumEnv::get('FORUM_CACHE_DIR').'cache_parser_data.php', $s);
 
 // Clean up our global variables.
