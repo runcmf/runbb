@@ -17,7 +17,7 @@ class Permissions
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Permissions();
-        translate('admin/permissions');
+        Lang::load('admin/permissions');
     }
 
     public function display($req, $res, $args)

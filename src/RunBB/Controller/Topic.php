@@ -19,9 +19,8 @@ class Topic
     public function __construct()
     {
         $this->model = new \RunBB\Model\Topic();
-        translate('topic');
-//        translate('misc'); // To be removed
-        translate('post');
+        Lang::load('topic');
+        Lang::load('post');
     }
 
     public function display($req, $res, $args)
@@ -99,10 +98,10 @@ class Topic
         }
 
         if (ForumSettings::get('o_feed_type') == '1') {
-            View::addAsset('feed', 'extern.php?action=feed&amp;fid=' .
+            View::addAsset('feed', Router::pathFor('extern') . '?action=feed&amp;fid=' .
                 $args['id'] . '&amp;type=rss', ['title' => __('RSS forum feed')]);
         } elseif (ForumSettings::get('o_feed_type') == '2') {
-            View::addAsset('feed', 'extern.php?action=feed&amp;fid=' .
+            View::addAsset('feed', Router::pathFor('extern') . '?action=feed&amp;fid=' .
                 $args['id'] . '&amp;type=atom', ['title' => __('Atom forum feed')]);
         }
 

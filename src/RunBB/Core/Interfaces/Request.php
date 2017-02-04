@@ -1,6 +1,6 @@
 <?php
 namespace RunBB\Core\Interfaces;
 
-class Request extends \Statical\BaseProxy
+class Request extends \RunBB\Core\Statical\BaseProxy
 {
 }

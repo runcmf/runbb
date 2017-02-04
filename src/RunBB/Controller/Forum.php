@@ -9,6 +9,7 @@
 
 namespace RunBB\Controller;
 
+use RunBB\Core\Interfaces\Router;
 use RunBB\Exception\RunBBException;
 use RunBB\Core\Track;
 use RunBB\Core\Url;
@@ -19,7 +20,7 @@ class Forum
     public function __construct()
     {
         $this->model = new \RunBB\Model\Forum();
-        translate('forum');
+        Lang::load('forum');
     }
 
     public function display($req, $res, $args)
@@ -70,9 +71,9 @@ class Forum
         }
 
         if (ForumSettings::get('o_feed_type') == '1') {
-            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['fid'].'&amp;type=rss', ['title' => __('RSS forum feed')]);
+            View::addAsset('feed', Router::pathFor('extern') . '?action=feed&amp;fid='.$args['fid'].'&amp;type=rss', ['title' => __('RSS forum feed')]);
         } elseif (ForumSettings::get('o_feed_type') == '2') {
-            View::addAsset('feed', 'extern.php?action=feed&amp;fid='.$args['fid'].'&amp;type=atom', ['title' => __('Atom forum feed')]);
+            View::addAsset('feed', Router::pathFor('extern') . '?action=feed&amp;fid='.$args['fid'].'&amp;type=atom', ['title' => __('Atom forum feed')]);
         }
 
         View::setPageInfo([

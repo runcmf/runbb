@@ -205,12 +205,24 @@ class View
         return Container::get('response');
     }
 
-    protected function twigRender($data = null, $nested = true)
+    protected function twigRender(& $data = null, & $nested = true)
     {
+        $templates = $this->getTemplates();
+//dump($templates);
+        $style = View::getStyle();
+        $tpl = trim(array_pop($templates));// get last in array
+        $tpl = substr(str_replace(ForumEnv::get('FORUM_ROOT') . 'View/', '', $tpl), 0, -4);
+        $file = ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/'.$tpl. '.html.twig';
+        if(!file_exists($file)) {
+            // no template found. return to php
+            $this->useTwig = false;
+            return $this->render($data, $nested);
+        }
+
         $data['nested'] = $nested;
         $data['pageTitle'] = Utils::generate_page_title($data['title'], $data['page_number']);
         $data['flashMessages'] = Container::get('flash')->getMessages();
-        $data['style'] = View::getStyle();
+        $data['style'] = $style;
         $data['navlinks'] = $this->buildNavLinks($data['active_page']);
 
         if (file_exists(ForumEnv::get('WEB_ROOT').'style/themes/'.View::getStyle().'/base_admin.css')) {
@@ -219,11 +231,6 @@ class View
             $admStyle = '<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/imports/base_admin.css" />';
         }
         $data['admStyle'] = $admStyle;
-
-        $templates = $this->getTemplates();
-dump($templates);
-        $tpl = trim(array_pop($templates));// get last in array
-        $tpl = substr(str_replace(ForumEnv::get('FORUM_ROOT') . 'View/', '', $tpl), 0, -4);
         $tpl = '@forum/' . $tpl . '.html.twig';
 
         try {

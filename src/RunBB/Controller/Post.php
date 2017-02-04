@@ -18,13 +18,12 @@ class Post
     public function __construct()
     {
         $this->model = new \RunBB\Model\Post();
-        translate('prof_reg');
-        translate('delete');
-        translate('post');
-//        translate('misc');
-        translate('register');
-        translate('antispam');
-        translate('bbeditor');
+        Lang::load('prof_reg');
+        Lang::load('delete');
+        Lang::load('post');
+        Lang::load('register');
+        Lang::load('antispam');
+//        Lang::load('bbeditor');
     }
 
     public function newreply($req, $res, $args)

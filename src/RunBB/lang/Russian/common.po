@@ -407,7 +407,7 @@ msgid "Debug table"
 msgstr "Debug information"
 
 msgid "Querytime"
-msgstr "Generated in %1$s seconds, %2$s queries executed"
+msgstr "Generated in %1$s seconds"
 
 msgid "Memory usage"
 msgstr "Memory usage: %1$s"

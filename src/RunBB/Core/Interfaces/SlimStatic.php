@@ -1,24 +1,27 @@
 <?php
 namespace RunBB\Core\Interfaces;
 
+use Slim\App;
+use RunBB\Core\Statical\Manager;
+
 class SlimStatic
 {
     /**
     * Boots up SlimStatic by registering its proxies with Statical.
     *
     * @param \Slim\App $slim
-    * @return \Statical\Manager
+    * @return \RunBB\Core\Statical\Manager
     */
-    public static function boot(\Slim\App $slim)
+    public static function boot(App $slim)
     {
         // set Slim application for syntactic-sugar proxies
         SlimSugar::$slim = $slim;
 
         // create a new Manager
-        $manager = new \Statical\Manager();
+        $manager = new Manager();
 
         // Add proxies that use the Slim instance
-        $aliases = ['Config', 'Route', 'Router', 'ForumEnv', 'ForumSettings', 'User'];
+        $aliases = ['Config', 'Route', 'Router', 'ForumEnv', 'ForumSettings', 'User', 'Lang'];
         static::addInstances($aliases, $manager, $slim);
 
         // Add special-case Slim container instance
@@ -35,7 +38,7 @@ class SlimStatic
     * Adds instances to the Statical Manager
     *
     * @param string[] $aliases
-    * @param \Statical\Manager $manager
+    * @param \RunBB\Core\Statical\Manager $manager
     * @param object $instance
     */
     protected static function addInstances($aliases, $manager, $instance)
@@ -49,8 +52,8 @@ class SlimStatic
     /**
     * Adds services to the Statical Manager
     *
-    * @param \Statical\Manager $manager
-    * @param \Slim\Slim $slim
+    * @param \RunBB\Core\Statical\Manager $manager
+    * @param \Slim\App $slim
     */
     protected static function addServices($manager, $slim)
     {

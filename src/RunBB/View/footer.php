@@ -99,21 +99,21 @@ foreach ($quickjump[(int) User::get()->g_id] as $cat_id => $cat_data) {
 
 if ($active_page == 'index') {
     if (ForumSettings::get('o_feed_type') == '1') {
-        echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Url::base_static().'/extern.php?action=feed&amp;type=rss">'.__('RSS active topics feed').'</a></span></p>'."\n";
+        echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Router::pathFor('extern').'?action=feed&amp;type=rss">'.__('RSS active topics feed').'</a></span></p>'."\n";
     } elseif (ForumSettings::get('o_feed_type') == '2') {
-        echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Url::base_static().'/extern.php?action=feed&amp;type=atom">'.__('Atom active topics feed').'</a></span></p>'."\n";
+        echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Router::pathFor('extern').'?action=feed&amp;type=atom">'.__('Atom active topics feed').'</a></span></p>'."\n";
     }
 } elseif ($active_page == 'Forum') {
     if (ForumSettings::get('o_feed_type') == '1') {
-        echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Url::base_static().'/extern.php?action=feed&amp;fid='.$fid.'&amp;type=rss">'.__('RSS forum feed').'</a></span></p>'."\n";
+        echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Router::pathFor('extern').'?action=feed&amp;fid='.$fid.'&amp;type=rss">'.__('RSS forum feed').'</a></span></p>'."\n";
     } elseif (ForumSettings::get('o_feed_type') == '2') {
-        echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Url::base_static().'/extern.php?action=feed&amp;fid='.$fid.'&amp;type=atom">'.__('Atom forum feed').'</a></span></p>'."\n";
+        echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Router::pathFor('extern').'?action=feed&amp;fid='.$fid.'&amp;type=atom">'.__('Atom forum feed').'</a></span></p>'."\n";
     }
 } elseif ($active_page == 'Topic') {
     if (ForumSettings::get('o_feed_type') == '1') {
-        echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Url::base_static().'/extern.php?action=feed&amp;tid='.$tid.'&amp;type=rss">'.__('RSS topic feed').'</a></span></p>'."\n";
+        echo "\t\t\t".'<p id="feedlinks"><span class="rss"><a href="'.Router::pathFor('extern').'?action=feed&amp;tid='.$tid.'&amp;type=rss">'.__('RSS topic feed').'</a></span></p>'."\n";
     } elseif (ForumSettings::get('o_feed_type') == '2') {
-        echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Url::base_static().'/extern.php?action=feed&amp;tid='.$tid.'&amp;type=atom">'.__('Atom topic feed').'</a></span></p>'."\n";
+        echo "\t\t\t".'<p id="feedlinks"><span class="atom"><a href="'.Router::pathFor('extern').'?action=feed&amp;tid='.$tid.'&amp;type=atom">'.__('Atom topic feed').'</a></span></p>'."\n";
     }
 }
 
@@ -133,7 +133,7 @@ Container::get('hooks')->fire('view.footer.feed.links');
 
 // Display debug info (if enabled/defined)
 if (!empty($exec_info)) { ?>
-    <p id="debugtime">[ <?= __('Querytime', round($exec_info['exec_time'], 6), $exec_info['nb_queries']).' - '.__('Memory usage', $exec_info['mem_usage']).' '.__('Peak usage', $exec_info['mem_peak_usage'])?> ]</p>
+    <p id="debugtime">[ <?= __('Querytime', round($exec_info['exec_time'], 6)).' - '.__('Memory usage', $exec_info['mem_usage']).' '.__('Peak usage', $exec_info['mem_peak_usage'])?> ]</p>
 <?php }
 if (!empty($queries_info)) { ?>
     <div id="debug" class="blocktable">

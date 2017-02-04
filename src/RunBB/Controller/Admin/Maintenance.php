@@ -17,7 +17,7 @@ class Maintenance
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Maintenance();
-        translate('admin/maintenance');
+        Lang::load('admin/maintenance');
     }
 
     public function display($req, $res, $args)

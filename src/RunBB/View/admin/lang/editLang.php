@@ -14,3 +14,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+if (!isset($feather)) {
+    exit;
+}
+
+Container::get('hooks')->fire('view.admin.editlang.start');
+
+?>
+
+<div class="block">
+
+    <form class="panel panel-primary" action="<?= Router::pathFor('adminLanguages.editlang') ?>" method="post">
+        <div class="panel-heading">
+            <h3 class="panel-title">Language: <?= $langinfo['name'] ?>, cat: <?= $grp ?></h3>
+        </div>
+        <input type="hidden" name="csrf_name" value="<?= $csrf_name ?>">
+        <input type="hidden" name="csrf_value" value="<?= $csrf_value ?>">
+        <input type="hidden" name="lng" value="<?= $lng ?>">
+        <input type="hidden" name="grp" value="<?= $grp ?>">
+
+        <div class="list-group">
+
+            <?php foreach ($translateList as $row) { ?>
+            <div class="list-group-item" style="max-height: 12em;">
+                <p class="list-group-item-heading">msgid: <u><?= $row['msgid'] ?></u></p>
+
+                <?php if (isset($row['msgstrwith'])) { ?>
+                <div class="well well-sm">en: <?= $row['msgstrwith'] ?></div>
+                <?php } ?>
+                <div class="form-inline"><?= $langinfo['code'] ?>
+                    <textarea name="transtr[<?= $row['id'] ?>]" class="list-group-item-text" style="width: 97%"><?= $row['msgstr'] ?></textarea>
+                </div>
+            </div>
+
+            <?php } ?>
+
+        </div>
+        <div class="panel-footer">
+            <input type="submit" class="btn btn-success btn-xs">save</input>
+        </div>
+    </form>
+
+</div>
+
+<div class="clearer"></div>
+</div>
+
+<?php
+Container::get('hooks')->fire('view.admin.editlang.end');

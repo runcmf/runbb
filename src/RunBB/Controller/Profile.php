@@ -19,9 +19,9 @@ class Profile
     public function __construct()
     {
         $this->model = new \RunBB\Model\Profile();
-        translate('profile');
-        translate('register');
-        translate('prof_reg');
+        Lang::load('profile');
+        Lang::load('register');
+        Lang::load('prof_reg');
     }
 
     public function display($req, $res, $args)

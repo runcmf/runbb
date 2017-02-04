@@ -1551,8 +1551,8 @@ class Profile
         // Include UTF-8 function
         require_once ForumEnv::get('FORUM_ROOT').'Helpers/utf8/strcasecmp.php';
 
-        translate('register');
-        translate('prof_reg');
+        Lang::load('register');
+        Lang::load('prof_reg');
 
         // Convert multiple whitespace characters into one (to prevent people from registering with
         // indistinguishable usernames)

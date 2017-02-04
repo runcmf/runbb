@@ -1,7 +1,9 @@
 <?php
 namespace RunBB\Core\Interfaces;
 
-class Input extends \Statical\BaseProxy
+use RunBB\Core\Statical\BaseProxy;
+
+class Input extends BaseProxy
 {
     public static function file($name)
     {

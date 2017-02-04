@@ -88,21 +88,21 @@
 
 {% if active_page == 'index' %}
     {% if settings('o_feed_type') == '1' %}
-        <p id="feedlinks"><span class="rss"><a href="{{ baseStatic() }}/extern.php?action=feed&type=rss">{{ trans('RSS active topics feed') }}</a></span></p>
+        <p id="feedlinks"><span class="rss"><a href="{{ pathFor('extern') }}?action=feed&type=rss">{{ trans('RSS active topics feed') }}</a></span></p>
     {% elseif settings('o_feed_type') == '2' %}
-        <p id="feedlinks"><span class="atom"><a href="{{ baseStatic() }}/extern.php?action=feed&type=atom">{{ trans('Atom active topics feed') }}</a></span></p>
+        <p id="feedlinks"><span class="atom"><a href="{{ pathFor('extern') }}?action=feed&type=atom">{{ trans('Atom active topics feed') }}</a></span></p>
     {% endif %}
 {% elseif active_page == 'Forum' %}
     {% if settings('o_feed_type') == '1' %}
-        <p id="feedlinks"><span class="rss"><a href="{{ baseStatic() }}/extern.php?action=feed&fid={{ fid }}&type=rss">{{ trans('RSS forum feed') }}</a></span></p>
+        <p id="feedlinks"><span class="rss"><a href="{{ pathFor('extern') }}?action=feed&fid={{ fid }}&type=rss">{{ trans('RSS forum feed') }}</a></span></p>
     {% elseif settings('o_feed_type') == '2' %}
-        <p id="feedlinks"><span class="atom"><a href="{{ baseStatic() }}/extern.php?action=feed&fid={{ fid }}&type=atom">{{ trans('Atom forum feed') }}</a></span></p>
+        <p id="feedlinks"><span class="atom"><a href="{{ pathFor('extern') }}?action=feed&fid={{ fid }}&type=atom">{{ trans('Atom forum feed') }}</a></span></p>
     {% endif %}
 {% elseif active_page == 'Topic' %}
     {% if settings('o_feed_type') == '1' %}
-        <p id="feedlinks"><span class="rss"><a href="{{ baseStatic() }}/extern.php?action=feed&tid={{ tid }}&type=rss">{{ trans('RSS topic feed') }}</a></span></p>
+        <p id="feedlinks"><span class="rss"><a href="{{ pathFor('extern') }}?action=feed&tid={{ tid }}&type=rss">{{ trans('RSS topic feed') }}</a></span></p>
     {% elseif settings('o_feed_type') == '2' %}
-        <p id="feedlinks"><span class="atom"><a href="{{ baseStatic() }}/extern.php?action=feed&tid={{ tid }}&type=atom">{{ trans('Atom topic feed') }}</a></span></p>
+        <p id="feedlinks"><span class="atom"><a href="{{ pathFor('extern') }}?action=feed&tid={{ tid }}&type=atom">{{ trans('Atom topic feed') }}</a></span></p>
     {% endif %}
 {% endif %}
 
@@ -125,7 +125,7 @@
 {# Display debug info (if enabled/defined) #}
 {% if exec_info is not empty %}
     <p id="debugtime">[
-    {{ trans(['Querytime', exec_info.exec_time|round(6), exec_info.nb_queries]) }} -
+    {{ trans(['Querytime', exec_info.exec_time|round(6)]) }} -
     {{ trans(['Memory usage', exec_info.mem_usage]) }}
     {{ trans(['Peak usage', exec_info.mem_peak_usage]) }}
     ]</p>

@@ -74,8 +74,16 @@ if ($is_admin) {
                     echo ' class="isactive"';
 }
 ?>><a href="<?= Router::pathFor('adminGroups') ?>"><?= __('User groups') ?></a></li>
-            <li<?php if ($page == 'plugins') {
+            <li<?php if ($page == 'templates') {
                     echo ' class="isactive"';
+}
+?>><a href="<?= Router::pathFor('adminTemplates') ?>">Templates</a></li>
+            <li<?php if ($page == 'languages') {
+                echo ' class="isactive"';
+}
+?>><a href="<?= Router::pathFor('adminLanguages') ?>">Languages</a></li>
+            <li<?php if ($page == 'plugins') {
+                echo ' class="isactive"';
 }
 ?>><a href="<?= Router::pathFor('adminPlugins') ?>"><?= 'Plugins'; ?></a></li>
             <li<?php if ($page == 'censoring') {

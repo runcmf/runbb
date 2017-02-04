@@ -1,3 +1,9 @@
+###2017-02-03
+* Implement statical/statical inside RunBB\Core
+* add static Lang
+* rebuild load lang
+* rebuild extern.php to controllers
+
 ###2017-01-30
 * begin work with languages and templates.
     * edit, export, import, add, delete, generate files

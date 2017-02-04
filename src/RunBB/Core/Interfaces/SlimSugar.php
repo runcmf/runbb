@@ -1,7 +1,7 @@
 <?php
 namespace RunBB\Core\Interfaces;
 
-abstract class SlimSugar extends \Statical\BaseProxy
+abstract class SlimSugar extends \RunBB\Core\Statical\BaseProxy
 {
     public static $slim;
 

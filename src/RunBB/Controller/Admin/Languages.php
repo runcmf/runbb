@@ -40,6 +40,7 @@ class Languages
         AdminUtils::generateAdminMenu('languages');
 
         return View::setPageInfo([
+            'active_page' => 'admin',
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), 'Languages'],// TODO translate
             'admin_console' => true,
             'langList' => $this->model->getLangList()
@@ -54,6 +55,7 @@ class Languages
 
         $id = Input::query('lng');
         return View::setPageInfo([
+            'active_page' => 'admin',
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), 'Languages'],// TODO translate
             'admin_console' => true,
             'langinfo' => $this->model->getLangInfo($id),
@@ -81,6 +83,7 @@ class Languages
         }
 
         return View::setPageInfo([
+            'active_page' => 'admin',
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), 'Languages'],// TODO translate
             'admin_console' => true,
             'lng' => $lngId,
@@ -135,11 +138,13 @@ class Languages
         }
 
         $out = 'New language id: ';
+
         $data = [
             'code' => Input::post('code'),
             'locale' => Input::post('locale'),
             'name' => Input::post('name'),
         ];
+
         $from = Input::post('lid');
         $out .= $this->model->buildLang($data, $from);
 
@@ -173,6 +178,7 @@ class Languages
             $info = $this->model->getLangInfo($lid);
 
             View::setPageInfo([
+                'active_page' => 'admin',
                 'title'    =>    [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')],
                 'active_page'    =>    'admin',
                 'admin_console'    =>    true,

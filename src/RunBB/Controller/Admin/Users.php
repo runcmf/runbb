@@ -19,7 +19,7 @@ class Users
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Users();
-        translate('admin/users');
+        Lang::load('admin/users');
     }
 
     public function display($req, $res, $args)

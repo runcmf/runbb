@@ -359,6 +359,7 @@ class Init
                 Route::get('', '\RunBB\Controller\Search:display')->setName('search');
                 Route::get('/show/{show}', '\RunBB\Controller\Search:quicksearches')->setName('quickSearch');
             })->add(new CanReadBoard);
+
             // Profile routes
             Route::group('/user', function () {
                 Route::map(['GET', 'POST'], '/{id:[0-9]+}', '\RunBB\Controller\Profile:display')->setName('userProfile');
@@ -367,6 +368,9 @@ class Init
                 Route::map(['GET', 'POST'], '/email/{id:[0-9]+}', '\RunBB\Controller\Profile:email')->setName('email');
                 Route::get('/get-host/{ip}', '\RunBB\Controller\Profile:gethostip')->setName('getHostIp');
             })->add(new IsLogged);
+
+            // External
+            Route::get('/extern', '\RunBB\Controller\Extern:display')->add(new CanReadBoard)->setName('extern');
         });
     }
 }

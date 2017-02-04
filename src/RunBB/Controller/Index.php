@@ -20,7 +20,7 @@ class Index
     public function __construct()
     {
         $this->model = new \RunBB\Model\Index();
-        translate('index');
+        Lang::load('index');
     }
 
     public function display($req, $res, $args)

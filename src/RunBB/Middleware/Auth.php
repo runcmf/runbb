@@ -314,7 +314,6 @@ class Auth
         // load theme assets also set setStyle
         Container::get('template')->loadThemeAssets($user->style);
 
-        translate('common');
         // Load bans from cache
         if (!Container::get('cache')->isCached('bans')) {
             Container::get('cache')->store('bans', Cache::get_bans());

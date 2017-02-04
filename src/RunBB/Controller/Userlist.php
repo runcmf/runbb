@@ -18,8 +18,8 @@ class Userlist
     public function __construct()
     {
         $this->model = new \RunBB\Model\Userlist();
-        translate('userlist');
-        translate('search');
+        Lang::load('userlist');
+        Lang::load('search');
     }
 
     public function display($req, $res, $args)

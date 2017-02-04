@@ -14,6 +14,7 @@ use RunBB\Core\Email;
 use RunBB\Core\Hooks;
 //use RunBB\Core\Parser;
 use RunBB\Core\Interfaces\Container;
+use RunBB\Core\Interfaces\Lang;
 use RunBB\Core\ParserS9E;
 use RunBB\Core\Plugin;
 use RunBB\Core\Url;
@@ -31,7 +32,7 @@ class Core
         'X-Frame-Options' => 'deny'];
     protected static $queryLog = [];
 
-    public function __construct(\Slim\Container $c, array $data)
+    public function __construct(\Slim\Container $c, array $data = [])
     {
         $this->c = $c;
         // Handle empty values in data
@@ -65,14 +66,20 @@ class Core
         // Load files
         require $this->forum_env['FORUM_ROOT'] . 'Helpers/utf8/utf8.php';
 
+        // Populate Slim object with forum_env vars
+        Container::set('forum_env', $this->forum_env);
+
         // Load Languages
-        require $this->forum_env['FORUM_ROOT'] . 'Core/gettext.php';
-        Container::set('lang', function ($container) {
-            return new \RunBB\Core\Language('RunBB');
-        });
+//        require $this->forum_env['FORUM_ROOT'] . 'Core/gettext.php';
+//        Container::set('lang', function ($container) {
+//            return new \RunBB\Core\Language('RunBB');
+//        });
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
+        Lang::construct();
+        Lang::load('misc');
+        Lang::load('common');
     }
 
     public static function load_default_forum_env()
@@ -137,14 +144,14 @@ class Core
         \ORM::configure('username', $config['db_user']);
         \ORM::configure('password', $config['db_pass']);
 //        \ORM::configure('prefix', $config['db_prefix']);// idiorm not use prefix
-        if ($log_queries) {
-            \ORM::configure('logging', true);
-            // Collect query info
-            \ORM::configure('logger', function ($query, $time) {
-                self::$queryLog[0][] = $time;
-                self::$queryLog[1][] = $query;
-            });
-        }
+//        if ($log_queries) {
+//            \ORM::configure('logging', true);
+//            // Collect query info
+//            \ORM::configure('logger', function ($query, $time) {
+//                self::$queryLog[0][] = $time;
+//                self::$queryLog[1][] = $query;
+//            });
+//        }
         \ORM::configure('id_column_overrides', [
             $config['db_prefix'] . 'groups' => 'g_id',
         ]);
@@ -183,9 +190,9 @@ class Core
         }
 
         // Populate Slim object with forum_env vars
-        Container::set('forum_env', $this->forum_env);
+//        Container::set('forum_env', $this->forum_env);
 
-        translate('misc');// load misc lang vars
+//        translate('misc');// load misc lang vars
 
         // Load RunBB utils class
         Container::set('utils', function ($container) {

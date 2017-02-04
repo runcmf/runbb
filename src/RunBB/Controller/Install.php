@@ -68,7 +68,7 @@ class Install
         $csrf = new \RunBB\Middleware\Csrf();
         $csrf->generateNewToken(Container::get('request'));
 
-        translate('install');//, 'RunBB', $this->install_lang);
+        Lang::load('install');//, 'RunBB', $this->install_lang);
 
         if (Request::isPost() && empty(Input::getParsedBodyParam('choose_lang'))) {
             $missing_fields = [];
@@ -209,7 +209,7 @@ class Install
         // Init DB
         Core::init_db($data);
         // Load appropriate language
-        translate('install', 'RunBB', $data['default_lang']);
+        Lang::load('install', 'RunBB', $data['default_lang']);
 
         // Create tables
         foreach ($this->model->get_database_scheme() as $table => $sql) {

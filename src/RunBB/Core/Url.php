@@ -757,7 +757,7 @@ class Url
      */
     public static function get($link, $args = null)
     {
-        $base_url = self::base();
+        $base_url = self::base() . Router::pathFor('home');
 
         $gen_link = $link;
         if ($args == null) {
@@ -820,6 +820,11 @@ class Url
             Request::getUri()->getBasePath();
     }
 
+    public static function current()
+    {
+        return Request::getUri()->getScheme().'://'.Request::getUri()->getHost().
+            Request::getUri()->getPath().'?'.Request::getUri()->getQuery();
+    }
     /**
      * Fetch the base_url for static files, optionally support HTTPS and HTTP
      * @return mixed

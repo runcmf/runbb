@@ -44,9 +44,7 @@ $ composer require runcmf/runbb:dev-master
             'cache_dir' => DIR . 'var/cache/RunBB/',
             'web_root' => DIR . 'public/',
             'tplEngine' => '',// live empty for php or `twig`
-            'debug' => 'info',
-            // 3 levels : false, info (only execution time and number of queries),
-            // and all (display info + queries)
+            'debug' => 'info', // false, info (only page generate time, mem usage and peak)
             'plugins' => [// register plugins as NameSpace\InitInfoClass
             ]
         ]

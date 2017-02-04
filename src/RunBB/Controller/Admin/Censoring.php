@@ -17,7 +17,7 @@ class Censoring
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Censoring();
-        translate('admin/censoring');
+        Lang::load('admin/censoring');
     }
 
     public function display($req, $res, $args)

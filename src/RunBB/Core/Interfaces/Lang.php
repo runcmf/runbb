@@ -15,46 +15,37 @@
  * limitations under the License.
  */
 
-namespace RunBB\Core;
+namespace RunBB\Core\Interfaces;
 
+use RunBB\Core\Statical\BaseProxy;
 use Gettext\Translations;
 use Gettext\Translator;
 
-class Language
+class Lang extends BaseProxy
 {
-    private $domain;
-    private $translator;
+    private static $domain;
+    private static $translator;
 
-    public function __construct($domain = 'RunBB')
+    public static function construct($domain = 'RunBB')
     {
-        $this->domain = $domain;
-        $this->translator = new Translator();
-        $this->translator->defaultDomain($domain);
-        $this->translator->register();
+        self::$domain = $domain;
+        self::$translator = new Translator();
+        self::$translator->defaultDomain($domain);
+        self::$translator->register();
     }
 
-    public function getTranslator()
+    public static function load($file, $domain = 'RunBB', $path = false)
     {
-        return $this->translator;
-    }
-
-    public function setDomain($domain)
-    {
-//        $this->domain = $domain;
-    }
-
-    public function load($file, $domain)
-    {
-        $this->translator->loadTranslations(
+        $lng = (!User::get(null)) ? 'English' : User::get()->language;
+        // FIXME while debug .po used
+        if (!$path) {
+            $file = ForumEnv::get('FORUM_ROOT') . 'lang/' . $lng . '/' . $file . '.po';
+        } else {
+            $file = $path.'/'.$lng.'/'.$file.'.po';
+        }
+        self::$translator->loadTranslations(
             Translations::fromPoFile($file)->setDomain($domain)
 //            Translations::fromMoFile($file)->setDomain($domain)
         );
-    }
-
-    public function gettext($text, $domain)
-    {
-        $ret= $this->translator->dgettext($domain, $text);
-//dump($ret.' / '.$domain.' / '.$text);
-        return $ret;
     }
 }

@@ -18,7 +18,7 @@ class Reports
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Reports();
-        translate('admin/reports');
+        Lang::load('admin/reports');
     }
 
     public function display($req, $res, $args)

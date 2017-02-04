@@ -25,12 +25,14 @@
     "j4mie/idiorm": "^1.5",
     "gettext/gettext": "^4.2",
     "s9e/text-formatter": "^0.9",
-    "statical/statical": "^1.1",
     "firebase/php-jwt": "^4.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^2.5",
     "phpunit/phpunit": "^5.7"
+  },
+  "suggest": {
+    "runcmf/runtracy": "View debug info and queries log"
   },
   "autoload": {
     "psr-4": {

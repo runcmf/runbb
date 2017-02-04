@@ -19,7 +19,7 @@ class Forums
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Forums();
-        translate('admin/forums');
+        Lang::load('admin/forums');
     }
 
     public function add()

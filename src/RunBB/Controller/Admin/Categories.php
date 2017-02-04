@@ -20,7 +20,7 @@ class Categories
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Categories();
-        translate('admin/categories');
+        Lang::load('admin/categories');
     }
 
     public function add($req, $res, $args)

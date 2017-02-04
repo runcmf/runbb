@@ -3,7 +3,7 @@ namespace RunBB\Core\Interfaces;
 
 use RunBB\Model\Auth as AuthModel;
 
-class User extends \Statical\BaseProxy
+class User extends \RunBB\Core\Statical\BaseProxy
 {
     public static function get($id = null)
     {
