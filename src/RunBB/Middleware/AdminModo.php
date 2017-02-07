@@ -20,7 +20,6 @@ use RunBB\Exception\RunBBException;
  */
 class AdminModo
 {
-
     public function __invoke($request, $response, $next)
     {
         // Middleware to check if user is allowed to moderate, if he's not redirect to error page.

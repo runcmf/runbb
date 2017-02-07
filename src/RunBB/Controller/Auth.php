@@ -59,10 +59,12 @@ class Auth
                     ModelAuth::feather_setcookie('Bearer '.$jwt, $expire);
 
                     return Router::redirect(Router::pathFor('home'), __('Login redirect'));
-                } else {
-                    throw new  RunBBException(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
-                }
-            }
+                }// else {
+                    //throw new  RunBBException(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
+                //}
+            } //else {
+                throw new  RunBBException(__('Wrong user/pass').' <a href="'.Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
+            //}
         } else {
             View::setPageInfo([
                 'active_page' => 'login',

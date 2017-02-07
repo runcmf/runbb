@@ -104,7 +104,7 @@ class Install
             `g_report_flood` smallint(6) NOT NULL DEFAULT '60',
             `inherit` text,
             PRIMARY KEY (`g_id`)
-        ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;",
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
         'online' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `user_id` int(10) unsigned NOT NULL DEFAULT '1',
@@ -126,7 +126,7 @@ class Install
             `user` int(11) DEFAULT NULL,
             `group` int(11) DEFAULT NULL,
             PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;",
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
         'plugins' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `name` varchar(200) NOT NULL DEFAULT '',
@@ -159,7 +159,7 @@ class Install
             `group` int(11) DEFAULT NULL,
             `default` tinyint(1) DEFAULT NULL,
             PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;",
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
         'reports' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `post_id` int(10) unsigned NOT NULL DEFAULT '0',

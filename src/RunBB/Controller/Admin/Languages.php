@@ -28,12 +28,17 @@ class Languages
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Languages();
-//        translate('admin/languages');
+        Lang::load('admin-common');
     }
 
     public function display($req, $res, $args)
     {
 //        return $this->loadLanguages();
+
+        // from modal langinfo
+        if (Input::post('langId', 0) > 0) {
+            return $this->saveLangInfo(Input::post('langId', 0));
+        }
 
         Container::get('hooks')->fire('controller.admin.languages.display');
 
@@ -45,6 +50,36 @@ class Languages
             'admin_console' => true,
             'langList' => $this->model->getLangList()
         ])->addTemplate('admin/lang/admin_lang.php')->display();
+    }
+
+    public function langInfo()
+    {
+        $id = Input::query('langinfo');
+
+        // show modal
+        return View::setPageInfo([
+            'info' => $this->model->getLangInfo($id)
+        ])->addTemplate('admin/lang/langInfo.php')->display();
+    }
+
+    public function saveLangInfo($id)
+    {
+        $data = [
+            'id' => $id,
+            'code' => Input::post('code'),
+            'locale' => Input::post('locale'),
+            'name' => Input::post('name'),
+            'version' => Input::post('version'),
+            'image' => Input::post('image'),
+            'author' => Input::post('author'),
+        ];
+
+        $this->model->updateLangInfo($data);
+        return Router::redirect(
+            Router::pathFor('adminLanguages'), ['success', 'Language Info Updated']// TODO translate
+        );
+
+        return $id;
     }
 
     public function showLangFiles()
@@ -61,6 +96,30 @@ class Languages
             'langinfo' => $this->model->getLangInfo($id),
             'domainList' => $this->model->getDomainList($id)
         ])->addTemplate('admin/lang/domainList.php')->display();
+    }
+
+    public function showRepo()
+    {
+        Container::get('hooks')->fire('controller.admin.languages.showRepo');
+
+        AdminUtils::generateAdminMenu('languages');
+
+        $installedList = $this->model->getLangList();
+        $repoList = Container::get('remote')->getLangRepoList();
+
+        foreach ($repoList as $key => $lang) {
+            $repoList[$key]->isInstalled =
+                (Utils::recursiveArraySearch($lang->code, $installedList) !== false)
+                    ? true : false;
+        }
+
+        return View::setPageInfo([
+            'active_page' => 'admin',
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')),
+                __('Admin'), 'Languages Repository'],// TODO translate
+            'admin_console' => true,
+            'langList' => $repoList
+        ])->addTemplate('admin/lang/repoList.php')->display();
     }
 
     public function editLang()
@@ -111,13 +170,16 @@ class Languages
 
     public function importLanguage()
     {
-        $out = 'Imported languages: '."\n";
-        $info = $this->model->importLang();
+        $code = Input::query('lng');
+
+        $out = 'Imported language: '."\n";
+        $info = $this->model->importLang($code);
+
         if(!empty($info)) {
             foreach ($info as $i) {
-                $out .= 'lid: '.$i['lid'].', code: '.$i['code'].', name: '.$i['name']."\n".
-                ',locale: '.$i['locale'].', translations: '.$i['transcount']."\n".
-                ',mail templates: '.$i['mailTemplates']."\n";
+                $out .= 'lid: '.$i['lid'].', code: '.$i['code'].', name: '.$i['name'].",\n".
+                'locale: '.$i['locale'].', translations: '.$i['transcount'].",\n".
+                'mail templates: '.$i['mailTemplates']."\n";
             }
         } else {
             $out .= 0;
@@ -187,67 +249,68 @@ class Languages
             ])->addTemplate('admin/lang/deleteLang.php')->display();
         }
     }
+
     /**
      * Do not use
      * @internal
      */
-    private function loadLanguages()
-    {
-        $this->model->createTables();
-
-        $dir = ForumEnv::get('FORUM_ROOT') . 'lang/';
-
-        $lnDir = [];
-        foreach(glob($dir . '*', GLOB_ONLYDIR) as $v) {
-            $lnDir[] = substr($v, strlen($dir));
-        }
-
-        foreach ($lnDir as $lang) {
-            // load lang info
-            $data = [
-                'code' => strtolower(substr($lang, 0, 2)),
-                'name' => $lang
-            ];
-            // save to db
-            $id = $this->model->add_data('languages', $data);
-
-            // load mail templates
-            foreach(glob($dir.$lang.'/mail_templates/*.tpl') as $t) {
-                $data = [
-                    'lid' => $id,
-                    'file' => basename($t, '.tpl'),
-                    'text' => file_get_contents($t)
-                ];
-                // save to db
-                $this->model->add_data('lang_mailtpls', $data);
-            }
-
-            // load lang translations
-            $dir_iterator = new \RecursiveDirectoryIterator($dir.$lang);
-            $iterator = new \RecursiveIteratorIterator($dir_iterator, \RecursiveIteratorIterator::SELF_FIRST);
-            foreach ($iterator as $file) {
-                if ($file->isFile()) {
-                    $curFile = substr($file->getPathname(), strlen($dir.$lang.'/'));
-                    $isSub = explode(DIRECTORY_SEPARATOR, $curFile);
-                    if(count($isSub) > 1) {
-                        $domain = $isSub[0].'-';
-                    } else {
-                        $domain = '';
-                    }
-                    $translations = \Gettext\Translations::fromPoFile($file->getPathname());
-                    foreach ($translations as $var) {
-                        $data = [
-                            'lid' => $id,
-                            'domain' => $domain . basename($file->getPathname(), '.po'),//$pathInfo['filename'],
-                            'msgid' => $var->getOriginal(),
-                            'msgstr' => $var->getTranslation()
-                        ];
-                        // save to db
-                        $this->model->add_data('lang_trans', $data);
-                    }
-                }
-            }
-        }
-        tdie('ready. comment loader');
-    }
+//    private function loadLanguages()
+//    {
+//        $this->model->createTables();
+//
+//        $dir = ForumEnv::get('FORUM_ROOT') . 'lang/';
+//
+//        $lnDir = [];
+//        foreach(glob($dir . '*', GLOB_ONLYDIR) as $v) {
+//            $lnDir[] = substr($v, strlen($dir));
+//        }
+//
+//        foreach ($lnDir as $lang) {
+//            // load lang info
+//            $data = [
+//                'code' => strtolower(substr($lang, 0, 2)),
+//                'name' => $lang
+//            ];
+//            // save to db
+//            $id = $this->model->add_data('languages', $data);
+//
+//            // load mail templates
+//            foreach(glob($dir.$lang.'/mail_templates/*.tpl') as $t) {
+//                $data = [
+//                    'lid' => $id,
+//                    'file' => basename($t, '.tpl'),
+//                    'text' => file_get_contents($t)
+//                ];
+//                // save to db
+//                $this->model->add_data('lang_mailtpls', $data);
+//            }
+//
+//            // load lang translations
+//            $dir_iterator = new \RecursiveDirectoryIterator($dir.$lang);
+//            $iterator = new \RecursiveIteratorIterator($dir_iterator, \RecursiveIteratorIterator::SELF_FIRST);
+//            foreach ($iterator as $file) {
+//                if ($file->isFile()) {
+//                    $curFile = substr($file->getPathname(), strlen($dir.$lang.'/'));
+//                    $isSub = explode(DIRECTORY_SEPARATOR, $curFile);
+//                    if(count($isSub) > 1) {
+//                        $domain = $isSub[0].'-';
+//                    } else {
+//                        $domain = '';
+//                    }
+//                    $translations = \Gettext\Translations::fromPoFile($file->getPathname());
+//                    foreach ($translations as $var) {
+//                        $data = [
+//                            'lid' => $id,
+//                            'domain' => $domain . basename($file->getPathname(), '.po'),//$pathInfo['filename'],
+//                            'msgid' => $var->getOriginal(),
+//                            'msgstr' => $var->getTranslation()
+//                        ];
+//                        // save to db
+//                        $this->model->add_data('lang_trans', $data);
+//                    }
+//                }
+//            }
+//        }
+//        tdie('ready. comment loader');
+//    }
 }

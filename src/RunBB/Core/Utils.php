@@ -226,7 +226,7 @@ class Utils
             $size /= 1024;
         }
 
-        return sprintf(__('Size unit '.$units[$i]), round($size, 2));
+        return __('Size unit '.$units[$i], round($size, 2));
     }
 
     /**
@@ -469,5 +469,33 @@ class Utils
             }
         }
         return true;
+    }
+
+    public static function stdToArray($object)
+    {
+        if (is_object($object)) {
+            return array_map(__FUNCTION__, get_object_vars($object));
+        } else if (is_array($object)) {
+            return array_map(__FUNCTION__, $object);
+        } else {
+            return $object;
+        }
+    }
+
+    /**
+     * http://php.net/manual/ru/function.array-search.php#91365
+     * @param $needle
+     * @param $haystack
+     * @return bool|int|string
+     */
+    public static function recursiveArraySearch($needle,$haystack)
+    {
+        foreach($haystack as $key=>$value) {
+            $current_key=$key;
+            if($needle===$value OR (is_array($value) && self::recursiveArraySearch($needle,$value) !== false)) {
+                return $current_key;
+            }
+        }
+        return false;
     }
 }

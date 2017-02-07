@@ -19,7 +19,8 @@ class Parser
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Parser();
-        Lang::load('admin/parser');
+        Lang::load('admin-common');
+        Lang::load('admin-parser');
     }
 
     public function display($req, $res, $args)

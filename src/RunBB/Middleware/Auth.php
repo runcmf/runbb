@@ -306,6 +306,10 @@ class Auth
             // Add $user as guest to DIC
             Container::set('user', $user);
         }
+        // load common lang
+        Lang::load('misc');
+        Lang::load('common');
+
         // TODO remove to plugin
         if(class_exists('\Tracy\Debugger') && \Tracy\Debugger::isEnabled() && $user->is_admmod == false) {
             \Tracy\Debugger::$showBar = false;

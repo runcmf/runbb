@@ -1,3 +1,7 @@
+###2017-02-07
+* added [login modal](http://www.smarttutorials.net/login-modal-bootstrap/)
+* continue with languages
+
 ###2017-02-03
 * Implement statical/statical inside RunBB\Core
 * add static Lang

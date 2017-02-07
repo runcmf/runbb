@@ -19,7 +19,8 @@ class Forums
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Forums();
-        Lang::load('admin/forums');
+        Lang::load('admin-common');
+        Lang::load('admin-forums');
     }
 
     public function add()

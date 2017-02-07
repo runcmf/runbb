@@ -29,7 +29,7 @@ return [
         'style/themes/tryOne/js/bootstrap.min.js',
         'style/themes/tryOne/js/highlight.pack.js',
         'style/themes/tryOne/js/jquery.fancybox.pack.js',
-        'style/themes/tryOne/phone.min.js'
+        'style/themes/tryOne/js/common.js',
     ],
     'jshead' => [
 //        'assets/js/jquery-3.1.1.min.js',

@@ -24,7 +24,8 @@ class Plugins
     {
         $this->c = $c;
         $this->model = new \RunBB\Model\Admin\Plugins($c);
-        Lang::load('admin/plugins');
+        Lang::load('admin-common');
+        Lang::load('admin-plugins');
     }
 
     /**

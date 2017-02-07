@@ -18,7 +18,8 @@ class Statistics
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Statistics();
-        Lang::load('admin/index');
+        Lang::load('admin-common');
+        Lang::load('admin-index');
     }
 
     public function display($req, $res, $args)

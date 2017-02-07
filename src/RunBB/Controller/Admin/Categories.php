@@ -20,7 +20,8 @@ class Categories
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Categories();
-        Lang::load('admin/categories');
+        Lang::load('admin-common');
+        Lang::load('admin-categories');
     }
 
     public function add($req, $res, $args)

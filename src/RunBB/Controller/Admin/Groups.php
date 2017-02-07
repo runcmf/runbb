@@ -18,7 +18,8 @@ class Groups
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Groups();
-        Lang::load('admin/groups');
+        Lang::load('admin-common');
+        Lang::load('admin-groups');
     }
 
     public function display($req, $res, $args)

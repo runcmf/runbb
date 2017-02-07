@@ -10,6 +10,7 @@
 namespace RunBB\Core;
 
 use RunBB\Core\Interfaces\Container;
+use RunBB\Core\Interfaces\Lang;
 use RunBB\Exception\RunBBException;
 
 class View
@@ -212,7 +213,8 @@ class View
         $style = View::getStyle();
         $tpl = trim(array_pop($templates));// get last in array
         $tpl = substr(str_replace(ForumEnv::get('FORUM_ROOT') . 'View/', '', $tpl), 0, -4);
-        $file = ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/'.$tpl. '.html.twig';
+        $file = ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/view/'.$tpl. '.html.twig';
+//bdump($file);
         if(!file_exists($file)) {
             // no template found. return to php
             $this->useTwig = false;
@@ -226,9 +228,11 @@ class View
         $data['navlinks'] = $this->buildNavLinks($data['active_page']);
 
         if (file_exists(ForumEnv::get('WEB_ROOT').'style/themes/'.View::getStyle().'/base_admin.css')) {
-            $admStyle = '<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/themes/'.View::getStyle().'/base_admin.css" />';
+            $admStyle = '<link rel="stylesheet" type="text/css" href="'.
+                Url::base_static().'/style/themes/'.View::getStyle().'/base_admin.css" />';
         } else {
-            $admStyle = '<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/imports/base_admin.css" />';
+            $admStyle = '<link rel="stylesheet" type="text/css" href="'.
+                Url::base_static().'/style/imports/base_admin.css" />';
         }
         $data['admStyle'] = $admStyle;
         $tpl = '@forum/' . $tpl . '.html.twig';
@@ -424,6 +428,21 @@ class View
 
         if (is_object(User::get()) && User::get()->is_admmod) {
             $data['has_reports'] = \RunBB\Model\Admin\Reports::has_reports();
+        } else {
+            // guest user. for modal. load reg data from Register.php
+            Lang::load('login');
+            Lang::load('register');
+            Lang::load('prof_reg');
+            Lang::load('antispam');
+
+            // FIXME rebuild
+            // Antispam feature
+            $lang_antispam_questions = require ForumEnv::get('FORUM_ROOT').'lang/'.User::get()->language.'/antispam.php';
+            $index_questions = rand(0, count($lang_antispam_questions)-1);
+            $data['index_questions'] = $index_questions;
+            $data['languages'] = \RunBB\Core\Lister::getLangs();
+            $data['question'] = array_keys($lang_antispam_questions);
+            $data['qencoded'] = md5(array_keys($lang_antispam_questions)[$index_questions]);
         }
 
         if (ForumEnv::get('FEATHER_SHOW_INFO')) {
@@ -432,6 +451,9 @@ class View
                 $data['queries_info'] = \RunBB\Model\Debug::get_queries();
             }
         }
+        $data['logOutLink'] = Router::pathFor('logout',
+            ['token' => Random::hash(User::get()->id.Random::hash(Utils::getIp()))]
+        );
 
         return $data;
     }
@@ -465,7 +487,7 @@ class View
         $navlinks[] = [
             'id' => 'navindex',
             'active' => ($active_page == 'index') ? ' class="isactive"' : '',
-            'href' => Url::base(),
+            'href' => Router::pathFor('home'),
             'text' => __('Index')
         ];
 
@@ -478,7 +500,10 @@ class View
             ];
         }
 
-        if (ForumSettings::get('o_rules') == '1' && (!User::get()->is_guest || User::get()->g_read_board == '1' || ForumSettings::get('o_regs_allow') == '1')) {
+        if (ForumSettings::get('o_rules') == '1' && (!User::get()->is_guest
+                || User::get()->g_read_board == '1'
+                || ForumSettings::get('o_regs_allow') == '1')
+        ) {
             $navlinks[] = [
                 'id' => 'navrules',
                 'active' => ($active_page == 'rules') ? ' class="isactive"' : '',
@@ -496,42 +521,44 @@ class View
             ];
         }
 
-        if (User::get()->is_guest) {
-            $navlinks[] = [
-                'id' => 'navregister',
-                'active' => ($active_page == 'register') ? ' class="isactive"' : '',
-                'href' => Router::pathFor('register'),
-                'text' => __('Register')
-            ];
-            $navlinks[] = [
-                'id' => 'navlogin',
-                'active' => ($active_page == 'login') ? ' class="isactive"' : '',
-                'href' => Router::pathFor('login'),
-                'text' => __('Login')
-            ];
-        } else {
-            $navlinks[] = [
-                'id' => 'navprofile',
-                'active' => ($active_page == 'profile') ? ' class="isactive"' : '',
-                'href' => Router::pathFor('userProfile', ['id' => User::get()->id]),
-                'text' => __('Profile')
-            ];
-            if (User::get()->is_admmod) {
-                $navlinks[] = [
-                    'id' => 'navadmin',
-                    'active' => ($active_page == 'admin') ? ' class="isactive"' : '',
-                    'href' => Router::pathFor('adminIndex'),
-                    'text' => __('Admin')
-                ];
-            }
-
-            $navlinks[] = [
-                'id' => 'navlogout',
-                'active' => ($active_page == 'logout') ? ' class="isactive"' : '',
-                'href' => Router::pathFor('logout', ['token' => Random::hash(User::get()->id.Random::hash(Utils::getIp()))]),
-                'text' => __('Logout')
-            ];
-        }
+//        if (User::get()->is_guest) {
+//            $navlinks[] = [
+//                'id' => 'navregister',
+//                'active' => ($active_page == 'register') ? ' class="isactive"' : '',
+//                'href' => Router::pathFor('register'),
+//                'text' => __('Register')
+//            ];
+//            $navlinks[] = [
+//                'id' => 'navlogin',
+//                'active' => ($active_page == 'login') ? ' class="isactive"' : '',
+//                'href' => Router::pathFor('login'),
+//                'text' => __('Login')
+//            ];
+//        } else {
+//            $navlinks[] = [
+//                'id' => 'navprofile',
+//                'active' => ($active_page == 'profile') ? ' class="isactive"' : '',
+//                'href' => Router::pathFor('userProfile', ['id' => User::get()->id]),
+//                'text' => __('Profile')
+//            ];
+//            if (User::get()->is_admmod) {
+//                $navlinks[] = [
+//                    'id' => 'navadmin',
+//                    'active' => ($active_page == 'admin') ? ' class="isactive"' : '',
+//                    'href' => Router::pathFor('adminIndex'),
+//                    'text' => __('Admin')
+//                ];
+//            }
+//            $navlinks[] = [
+//                'id' => 'navlogout',
+//                'active' => ($active_page == 'logout') ? ' class="isactive"' : '',
+//                'href' => Router::pathFor(
+//                    'logout',
+//                    ['token' => Random::hash(User::get()->id.Random::hash(Utils::getIp()))]
+//                ),
+//                'text' => __('Logout')
+//            ];
+//        }
 
         // Are there any additional navlinks we should insert into the array before imploding it?
         $hooksLinks = Container::get('hooks')->fire('view.header.navlinks', []);
@@ -541,7 +568,11 @@ class View
                 // Insert any additional links into the $links array (at the correct index)
                 $num_links = count($results[1]);
                 for ($i = 0; $i < $num_links; ++$i) {
-                    array_splice($navlinks, $results[1][$i], 0, ['<li id="navextra'.($i + 1).'"'.(($active_page == 'navextra'.($i + 1)) ? ' class="isactive"' : '').'>'.$results[2][$i].'</li>']);
+                    array_splice(
+                        $navlinks,
+                        $results[1][$i], 0, ['<li id="navextra'.($i + 1).'"'.
+                        (($active_page == 'navextra'.($i + 1)) ? ' class="isactive"' : '').'>'.
+                        $results[2][$i].'</li>']);
                 }
             }
         }

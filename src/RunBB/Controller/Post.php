@@ -23,7 +23,6 @@ class Post
         Lang::load('post');
         Lang::load('register');
         Lang::load('antispam');
-//        Lang::load('bbeditor');
     }
 
     public function newreply($req, $res, $args)

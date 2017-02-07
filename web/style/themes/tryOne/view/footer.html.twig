@@ -111,7 +111,7 @@
                         <p id="poweredby">
                             {{ trans(
                             ['Powered by',
-                            '<a href="https://github.com/runcmf/runbb">RunBB</a>'
+                            '<a href="https://github.com/runcmf/runbb">RunBB</a> '
                             ~"#{ settings('o_show_version') == '1' ? settings('o_cur_version') : '' }"
                             ]) }}
                             <br />Based on <a href="https://github.com/featherbb/featherbb">FeatherBB</a>
@@ -171,6 +171,11 @@
         phpVars = {{ jsVars|json_encode() }};
     {{ jsraw|raw }}
 </script>
+
+{% if userGet('is_guest') %}
+{% include '@forum/login.html.twig' %}
+{% endif %}
+
 {{ fireHook('view.footer.before.html.tag') }}
 </body>
 </html>

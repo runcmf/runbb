@@ -37,15 +37,26 @@ class Lang extends BaseProxy
     public static function load($file, $domain = 'RunBB', $path = false)
     {
         $lng = (!User::get(null)) ? 'English' : User::get()->language;
+        $lng = substr(strtolower($lng), 0, 2);
+
         // FIXME while debug .po used
         if (!$path) {
-            $file = ForumEnv::get('FORUM_ROOT') . 'lang/' . $lng . '/' . $file . '.po';
+//            $tfile = ForumEnv::get('FORUM_CACHE_DIR') . 'locale/' . $lng . '/LC_MESSAGES/' . $file . '.mo';
+            $tfile = ForumEnv::get('FORUM_CACHE_DIR') . 'locale/' . $lng . '/LC_MESSAGES/' . $file . '.po';
         } else {
-            $file = $path.'/'.$lng.'/'.$file.'.po';
+            // FIXME test external file
+            $tfile = $path.'/'.$lng.'/'.$file.'.mo';
         }
+
+        if (!is_file($tfile)) {
+            // generate translation
+            $model = new \RunBB\Model\Admin\Languages();
+            $model->generateTranslationByDomain($lng, $file);
+        }
+
         self::$translator->loadTranslations(
-            Translations::fromPoFile($file)->setDomain($domain)
-//            Translations::fromMoFile($file)->setDomain($domain)
+            Translations::fromPoFile($tfile)->setDomain($domain)
+//            Translations::fromMoFile($tfile)->setDomain($domain)
         );
     }
 }

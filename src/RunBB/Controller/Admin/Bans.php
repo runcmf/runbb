@@ -19,7 +19,8 @@ class Bans
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Bans();
-        Lang::load('admin/bans');
+        Lang::load('admin-common');
+        Lang::load('admin-bans');
 
         if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator != '1' || User::get()->g_mod_ban_users == '0')) {
             throw new  RunBBException(__('No permission'), '403');

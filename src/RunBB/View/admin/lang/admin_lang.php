@@ -50,7 +50,7 @@ Container::get('hooks')->fire('view.admin.languages.start');
         <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>">
         <input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
         <div class="panel-heading">
-            <h3 class="panel-title">Add new translations</h3>
+            <h3 class="panel-title">Create new translations</h3>
         </div>
         <div class="list-group">
             <div class="list-group-item">

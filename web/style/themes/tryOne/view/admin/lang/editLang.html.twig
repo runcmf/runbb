@@ -20,7 +20,7 @@
         <div class="list-group">
             {#id, lid, domain, msgid, msgstr, msgstrwith#}
             {% for row in translateList %}
-                <div class="list-group-item" style="max-height: 12em;">
+                <div class="list-group-item list-striped">
                     <p class="list-group-item-heading">msgid: <u>{{ row.msgid }}</u></p>
                     {% if row.msgstrwith is not null %}
                         <div class="well well-sm">en: {{ row.msgstrwith }}</div>

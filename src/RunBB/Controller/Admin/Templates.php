@@ -26,7 +26,8 @@ class Templates
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Templates();
-//        translate('admin/templates');
+        Lang::load('admin-common');
+//        translate('admin-templates');
     }
 
     public function display($req, $res, $args)

@@ -17,7 +17,8 @@ class Options
     public function __construct()
     {
         $this->model = new \RunBB\Model\Admin\Options();
-        Lang::load('admin/options');
+        Lang::load('admin-common');
+        Lang::load('admin-options');
     }
 
     public function display($req, $res, $args)

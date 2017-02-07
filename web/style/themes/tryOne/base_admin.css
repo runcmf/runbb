@@ -1,6 +1,17 @@
-.list-group-item {
-    max-height: 3.5em;
+.list-group {
+    display: table;
+    width: 100%;
 }
+/* begin colorize rows */
+.list-striped:nth-of-type(odd){
+    background-color: #efefef;
+}
+
+.list-striped:nth-of-type(even){
+    /*background-color: #ffffff;*/
+}
+/* end colorize rows */
+
 #adminmenu {
     float: left;
     width: 27.5%
