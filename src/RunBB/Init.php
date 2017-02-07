@@ -306,7 +306,8 @@ class Init
 
             // Admin templates
             Route::group('/template', function () {
-                Route::map(['GET', 'POST'], '', '\RunBB\Controller\Admin\Templates:display')->setName('adminTemplates');
+                Route::map(['GET', 'POST'], '',
+                    '\RunBB\Controller\Admin\Templates:display')->setName('adminTemplates');
             });
 
             // Admin languages
@@ -405,7 +406,8 @@ class Init
                     '\RunBB\Controller\Post:delete')->setName('deletePost');
                 Route::map(['GET', 'POST'], '/edit/{id:[0-9]+}',
                     '\RunBB\Controller\Post:editpost')->setName('editPost');
-                Route::map(['GET', 'POST'], '/report/{id:[0-9]+}', '\RunBB\Controller\Post:report')->setName('report');
+                Route::map(['GET', 'POST'], '/report/{id:[0-9]+}',
+                    '\RunBB\Controller\Post:report')->setName('report');
                 Route::get('/get-host/{pid:[0-9]+}', '\RunBB\Controller\Post:gethost')->setName('getPostHost');
             })->add(new CanReadBoard);
 

@@ -40,7 +40,7 @@
                         </div>
                         <div class="col-sm-5">{{ lang.author|raw }}</div>
                         <div class="col-sm-4">
-                            <a href="{{ pathFor('adminLanguages.showmailtpls') }}?lng={{ lang.id }}" class="btn btn-info btn-xs">
+                            <a href="{{ pathFor('adminLanguages.showmailtpls') }}?lng={{ lang.id }}&name={{ lang.name }}" class="btn btn-info btn-xs">
                                 mail tpls &nbsp; <i class="fa fa-edit fa-lg"></i>
                             </a>
                             <a href="{{ pathFor('adminLanguages.export') }}?lng={{ lang.id }}" class="btn btn-warning btn-xs">

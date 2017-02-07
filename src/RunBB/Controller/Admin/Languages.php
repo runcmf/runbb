@@ -154,7 +154,30 @@ class Languages
 
     public function showMailTemplates()
     {
-        tdie(Input::query('lng'));
+        $text = Input::post('mailTemplateText');
+//tdie($text);
+        if($text) {
+            $this->model->updateMailTemplates($text);
+            return Router::redirect(
+                Router::pathFor('adminLanguages'), ['success', 'Mail templates updated']// TODO translate
+            );
+        }
+
+        $id = Input::query('lng');
+        $name = Input::query('name');
+
+        AdminUtils::generateAdminMenu('languages');
+
+        $tpls = $this->model->getMailTemplatesById($id);
+//tdie($tpls);
+        return View::setPageInfo([
+            'active_page' => 'admin',
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), 'Languages'],// TODO translate
+            'admin_console' => true,
+            'lng' => $id,
+            'name' => $name,
+            'templates' => $tpls
+        ])->addTemplate('admin/lang/mailTplList.php')->display();
     }
 
     public function exportLanguage()

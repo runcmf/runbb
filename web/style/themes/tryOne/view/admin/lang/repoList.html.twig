@@ -33,7 +33,7 @@
                                 Lang: {{ lang.name }}, ver: {{ lang.version }}<br>
                                 Code: {{ lang.code }}<br>
                                 Locale: {{ lang.locale }}<br>
-                                Author: {{ lang.authore }}<br>
+                                Author: {{ lang.author|raw }}<br>
 
                                 <a href="{{ pathFor('adminLanguages.import') }}?lng={{ lang.code }}" class="btn btn-success btn-xs" onclick="return confirm('Are you sure?');">
                                     install

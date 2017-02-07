@@ -54,7 +54,7 @@ class Languages
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `lid` int(11) NOT NULL DEFAULT '0',
             `file` varchar(32) NOT NULL DEFAULT '',
-            `text` tinytext NOT NULL,
+            `text` text NOT NULL,
             PRIMARY KEY (`id`),
             KEY `lid` (`lid`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",];
@@ -165,12 +165,31 @@ class Languages
 
     public function update(array $arr = [])
     {
+        if (empty($arr)) {
+            throw new RunBBException('Data empty. Can not update language translations');
+        }
         foreach ($arr as $key => $var) {
             $rec = \ORM::forTable(ORM_TABLE_PREFIX . 'lang_trans')
                 ->findOne($key)
                 ->set('msgstr', $var);
             if(!$rec->save()) {
-                throw new RunBBException('A problem was encountered while update msgstr: '.$var);
+                throw new RunBBException('A problem was encountered while update translation msgstr: '.$var);
+            }
+        }
+        return true;
+    }
+
+    public function updateMailTemplates(array $arr = [])
+    {
+        if (empty($arr)) {
+            throw new RunBBException('Data empty. Can not update language mail templates');
+        }
+        foreach ($arr as $key => $var) {
+            $rec = \ORM::forTable(ORM_TABLE_PREFIX . 'lang_mailtpls')
+                ->findOne($key)
+                ->set('text', $var);
+            if(!$rec->save()) {
+                throw new RunBBException('A problem was encountered while update mail template text: '.$var);
             }
         }
         return true;
