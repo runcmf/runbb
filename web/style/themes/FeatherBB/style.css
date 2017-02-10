@@ -1451,7 +1451,7 @@ img {
 }
 .blockpost .box .postright code {
     padding: 15px!important;
-    background-color: #272822
+    /*background-color: #272822*/
 }
 .blockpost .box .postright acronym {
     cursor: help;
