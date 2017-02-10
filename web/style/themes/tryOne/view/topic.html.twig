@@ -28,9 +28,7 @@
 
         <h2>
             <span>
-                <span class="conr"><a href="
-                {{ pathFor('viewPost', {'pid': "#{ post.id }"}) }}#p{{ post.id }}"> #
-                {{ start_from + loop.index }}</a> {{ formatTime(post.posted) }}
+                <span class="conr"><a href="{{ pathFor('viewPost', {'pid': "#{ post.id }"}) }}#p{{ post.id }}"> # {{ start_from + loop.index }}</a> {{ formatTime(post.posted) }}
                 </span>
             </span>
         </h2>

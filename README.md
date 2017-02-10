@@ -12,7 +12,9 @@ was slowly falling into abandon. I proceeded to rebuild and remove all the usele
 * Rebuild: plugins system. Plugins load by composer packages. Old system temporary exist but deprecated.
 * Add: Markdown instead of BBCodes. Now use [s9e/text-formatter](https://github.com/s9e/TextFormatter) with [SimpleMDE](https://github.com/NextStepWebs/simplemde-markdown-editor) as plugin [runbb-ext-simplemde](https://github.com/runcmf/runbb-ext-simplemde) and [markItUp!](http://markitup.jaysalvat.com/home/) with [elFinder](https://github.com/Studio-42/elFinder) as plugin [runbb-ext-markitup](https://github.com/runcmf/runbb-ext-markitup) 
 * Add: ability to use [Twig](https://github.com/twigphp/Twig) template engine.
-* Add: ability to work with translations online.
+* Add: ability to work with translations/email templates online. (install/export/add new)
+* Add: install translations by click
+* Add: install extensions (plugins) by click 
 
 
 

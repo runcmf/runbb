@@ -52,7 +52,7 @@ Container::get('hooks')->fire('view.admin.editlang.start');
 
         </div>
         <div class="panel-footer">
-            <input type="submit" class="btn btn-success btn-xs">save</input>
+            <input type="submit" class="btn btn-success btn-xs" />
         </div>
     </form>
 

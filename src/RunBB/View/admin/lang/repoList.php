@@ -23,4 +23,48 @@ Container::get('hooks')->fire('view.admin.repoList.start');
 
 ?>
 
-<p>here will be repo list</p>
+<div class="block">
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Repo Languages list</h3>
+        </div>
+        <div class="list-group">
+            <div class="list-group-item list-group-item-info">
+                <div class="row">
+                    <div class="col-sm-4">Image</div>
+                    <div class="col-sm-8">Info</div>
+                </div>
+            </div>
+            <?php foreach ($langList as $lang) { ?>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <img src="https://raw.githubusercontent.com/runcmf/runbb-languages/master/img/<?= $lang->image ?>" class="img-rounded" title="<?= $lang->name ?>" alt="<?= $lang->name ?>" width="300" height="250">
+                    </div>
+                    <div class="col-sm-8">
+                        Lang: <?= $lang->name ?>, ver: <?= $lang->version ?><br>
+                        Code: <?= $lang->code ?><br>
+                        Locale: <?= $lang->locale ?><br>
+                        Author: <?= $lang->author ?><br>
+
+                        <a href="<?= Router::pathFor('adminLanguages.import') ?>?lng=<?= $lang->code ?>" class="btn btn-success btn-xs" onclick="return confirm('Are you sure?');">
+                            install
+                        </a>
+                        &nbsp; <?php ($lang->isInstalled == true) ? '<strong>* Installed</strong>' : '' ?>
+                    </div>
+                </div>
+            </div>
+            <?php } ?>
+        </div>
+        <div class="panel-footer">
+            <small>TODO: check/compare version</small>
+        </div>
+    </div>
+
+</div>
+<div class="clearer"></div>
+</div>
+
+<?php
+Container::get('hooks')->fire('view.admin.repoList.end');

@@ -59,7 +59,7 @@ class Languages
         // show modal
         return View::setPageInfo([
             'info' => $this->model->getLangInfo($id)
-        ])->addTemplate('admin/lang/langInfo.php')->display();
+        ])->addTemplate('admin/lang/langInfo.php')->display(false);
     }
 
     public function saveLangInfo($id)
@@ -78,8 +78,6 @@ class Languages
         return Router::redirect(
             Router::pathFor('adminLanguages'), ['success', 'Language Info Updated']// TODO translate
         );
-
-        return $id;
     }
 
     public function showLangFiles()

@@ -137,15 +137,8 @@
                 <div class="status-avatar">
                     <div id="brdwelcome" class="inbox">
 
-
-        {% if userGet('is_guest') %}
-                        {#<p class="conl">{{ trans('Not logged in') }}</p>#}
-        {% else %}
+        {% if userGet('is_guest') != false %}
             <ul class="conl">
-                {#<li><span>{{ trans('Logged in as') }} <strong>{{ userGet('username') }}</strong></span></li>#}
-                {#<li><span>{{ trans('Last visit') }} {{ formatTime( userGet('last_visit') ) }}</span></li>#}
-
-
             {% if userGet('is_admmod') %}
                 {% if settings('o_report_method')  == '0' or settings('o_report_method') == '2' %}
                     {% if has_reports %}

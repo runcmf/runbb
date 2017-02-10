@@ -1,0 +1,11 @@
+{% if nested %}
+    {% include '@forum/header.html.twig' %}
+{% endif %}
+
+<!-- Page Content -->
+{% block content %}{% endblock content %}
+<!-- /.Page Content -->
+
+{% if nested %}
+    {% include '@forum/footer.html.twig' %}
+{% endif %}
