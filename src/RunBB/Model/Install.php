@@ -130,6 +130,7 @@ class Install
         'plugins' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `name` varchar(200) NOT NULL DEFAULT '',
+            `class` varchar(200) NOT NULL DEFAULT '',
             `installed` tinyint(1) unsigned NOT NULL DEFAULT '1',
             `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
             PRIMARY KEY (`id`),

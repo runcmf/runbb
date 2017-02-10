@@ -114,8 +114,7 @@ if (!empty($plugins)) {
 <?php
 
 foreach ($plugins as $plugin) {
-    $plugin_url = URL::url_friendly($plugin);
-    echo "\t\t\t\t\t".'<li'.(($page == $plugin_url) ? ' class="isactive"' : '').'><a href="'.Router::pathFor('infoPlugin', ['name' => $plugin_url]).'">'.$plugin.'</a></li>'."\n";
+    echo "\t\t\t\t\t".'<li'.(($page == $plugin['url']) ? ' class="isactive"' : '').'><a href="'.Router::pathFor('infoPlugin', ['name' => $plugin['url']]).'">'.$plugin['name'].'</a></li>'."\n";
 }
 
 ?>

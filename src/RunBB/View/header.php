@@ -120,12 +120,8 @@ Container::get('hooks')->fire('view.header.before.head.tag');
     <header>
         <nav>
             <div class="container">
-                <div class="phone-menu" id="phone-button">
-                    <a class="button-phone"></a>
-                </div>
-                <div id="phone">
-                    <div id="brdmenu" class="inbox">
-                        <ul>
+                <div id="brdmenu" class="inbox">
+                    <ul>
 <?php
 $navlinks[] = '<li id="navindex"'.(($active_page == 'index') ? ' class="isactive"' : '').'><a href="'.Router::pathFor('home').'">'.__('Index').'</a></li>';
 
@@ -169,14 +165,13 @@ if (User::get()->g_read_board == '1' && ($extraLinks != '')) {
 echo "\t\t\t".implode("\n\t\t\t", $navlinks);
 ?>
 
-                        </ul>
-                    </div>
-                    <div class="navbar-right">
-                        <form method="get" action="<?= Router::pathFor('search'); ?>" class="nav-search">
-                            <input type="hidden" name="action" value="search">
-                            <input type="text" name="keywords" size="20" maxlength="100" placeholder="<?= __('Search') ?>">
-                        </form>
-                    </div>
+                    </ul>
+                </div>
+                <div class="navbar-right">
+                    <form method="get" action="<?= Router::pathFor('search'); ?>" class="nav-search">
+                        <input type="hidden" name="action" value="search">
+                        <input type="text" name="keywords" size="20" maxlength="100" placeholder="<?= __('Search') ?>">
+                    </form>
                 </div>
             </div>
         </nav>

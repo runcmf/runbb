@@ -22,7 +22,7 @@ use RunBB\Core\Interfaces\SlimStatic;
 use RunBB\Middleware\Logged as IsLogged;
 use RunBB\Middleware\ReadBoard as CanReadBoard;
 use RunBB\Middleware\Admin as IsAdmin;
-use RunBB\Middleware\AdminModo as IsAdmMod;
+use RunBB\Middleware\AdminMod as IsAdmMod;
 
 class Init
 {
@@ -146,7 +146,7 @@ class Init
                         for ($i=0; $i < 5; $i++) {
                             if (isset($trace[$i]['file'])) {
                                 $msg .= '<p>' . $i . ': file: &nbsp; &nbsp; &nbsp;' .
-                                    str_replace(DIR, '', $trace[$i]['file']) . ' [' . $trace[$i]['line'] . ']</p>';
+                                    str_replace(ForumEnv::get('APP_ROOT'), '', $trace[$i]['file']) . ' [' . $trace[$i]['line'] . ']</p>';
                             } else {
                                 $msg .= '<p>' . $i . ': ' .
                                     'class: &nbsp;'. $trace[$i]['class'] . ' [' . $trace[$i]['function'] . ']</p>';
@@ -280,12 +280,16 @@ class Init
                     '\RunBB\Controller\Admin\Plugins:info')->setName('infoPlugin');
                 Route::get('/activate/{name:[\w\-]+}',
                     '\RunBB\Controller\Admin\Plugins:activate')->setName('activatePlugin');
-                Route::get('/download/{name:[\w\-]+}/{version}',
+                Route::get('/download/{name:[\w\-]+}[/{version}]',
                     '\RunBB\Controller\Admin\Plugins:download')->setName('downloadPlugin');
                 Route::get('/deactivate/{name:[\w\-]+}',
                     '\RunBB\Controller\Admin\Plugins:deactivate')->setName('deactivatePlugin');
                 Route::get('/uninstall/{name:[\w\-]+}',
                     '\RunBB\Controller\Admin\Plugins:uninstall')->setName('uninstallPlugin');
+                Route::get('/repo',
+                    '\RunBB\Controller\Admin\Plugins:repoList')->setName('pluginsRepoList');
+                Route::map(['GET', 'POST'], '/compose',
+                    '\RunBB\Controller\Admin\Compose:display')->setName('pluginsCompose');
             });
 
             // Admin maintenance

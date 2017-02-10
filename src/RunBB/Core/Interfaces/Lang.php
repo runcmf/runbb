@@ -36,16 +36,16 @@ class Lang extends BaseProxy
 
     public static function load($file, $domain = 'RunBB', $path = false)
     {
-        $lng = (!User::get(null)) ? 'English' : User::get()->language;
-        $lng = substr(strtolower($lng), 0, 2);
+        $language = (!User::get(null)) ? 'English' : User::get()->language;
+        $lng = substr(strtolower($language), 0, 2);
 
         // FIXME while debug .po used
         if (!$path) {
-//            $tfile = ForumEnv::get('FORUM_CACHE_DIR') . 'locale/' . $lng . '/LC_MESSAGES/' . $file . '.mo';
             $tfile = ForumEnv::get('FORUM_CACHE_DIR') . 'locale/' . $lng . '/LC_MESSAGES/' . $file . '.po';
         } else {
             // FIXME test external file
-            $tfile = $path.'/'.$lng.'/'.$file.'.mo';
+            // full lang name, or add to common langs???
+            $tfile = $path.'/'.$language.'/'.$file.'.po';
         }
 
         if (!is_file($tfile)) {

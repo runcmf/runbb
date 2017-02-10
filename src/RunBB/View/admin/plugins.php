@@ -16,7 +16,13 @@ Container::get('hooks')->fire('view.admin.plugins.start');
 ?>
 
 <div class="block">
-    <h2>Plugins</h2>
+    <h2>Plugins
+        <div class="pull-right">
+            <a href="<?= Router::pathFor('pluginsRepoList') ?>" class="btn btn-info btn-xs" role="button">
+                repo &nbsp; <i class="fa fa-github fa-lg"></i>
+            </a>
+        </div>
+    </h2>
     <div class="box">
         <div class="inbox">
             <table class="table">
@@ -37,7 +43,7 @@ Container::get('hooks')->fire('view.admin.plugins.start');
                                         <a href="<?= Router::pathFor('deactivatePlugin', ['name' => $plugin->name]) ?>"><?= __('Deactivate') ?></a>
                                     <?php } else { ?>
                                         <a href="<?= Router::pathFor('activatePlugin', ['name' => $plugin->name]) ?>"><?= __('Activate') ?></a> <br>
-                                        <!-- <a href="<?= Router::pathFor('uninstallPlugin', ['name' => $plugin->name]) ?>"><?= __('Uninstall') ?></a> -->
+                                        <a href="<?= Router::pathFor('uninstallPlugin', ['name' => $plugin->name]) ?>"><?= __('Uninstall') ?></a>
                                     <?php } ?>
                                 </div>
                             </td>

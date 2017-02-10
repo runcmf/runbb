@@ -22,6 +22,10 @@ class Plugin
     {
         $activePlugins = Container::get('cache')->isCached('activePlugins') ?
             Container::get('cache')->retrieve('activePlugins') : [];
+        // try restore
+        if (empty($activePlugins)) {
+            $activePlugins = $this->setActivePlugins();
+        }
 
         return $activePlugins;
     }
@@ -44,12 +48,20 @@ class Plugin
     public function loadPlugins()
     {
         $activePlugins = $this->getActivePlugins();
-//tdie($activePlugins);
         foreach ($activePlugins as $plugin) {
             if ($class = $this->load($plugin)) {
                 $class->run();
             }
         }
+    }
+
+    public function getAdminMenu($items)
+    {
+        if (method_exists($this, 'adminMenu')) {
+            $items[] = $this::adminMenu();
+        }
+
+        return $items;
     }
 
     public function getName($items)
@@ -114,6 +126,8 @@ class Plugin
 
     protected function load($plugin)
     {
+        static $plugins = false;
+
         // "Complex" plugins which need to register namespace via bootstrap.php
         if (file_exists($file = ForumEnv::get('FORUM_ROOT') . 'plugins/' . $plugin . '/bootstrap.php')) {
             $className = require $file;
@@ -129,12 +143,15 @@ class Plugin
             return $class;
         }
         // check new system
-        if (array_key_exists($plugin, ForumEnv::get('SLIM_SETTINGS')['plugins'])) {
-            $class = ForumEnv::get('SLIM_SETTINGS')['plugins'][$plugin];
+        if (!$plugins) {// TODO rebuild with model
+            $plugins = \ORM::for_table(ORM_TABLE_PREFIX . 'plugins')->findArray();
+        }
+        $key = Utils::recursiveArraySearch($plugin, $plugins);
+        if ($key !== false) {
+            $class = $plugins[$key]['class'];
             // check class registered
             if (class_exists($class)) {
-                $class = new $class($this->c);
-                return $class;
+                return new $class($this->c);
             }
         }
         // Invalid plugin

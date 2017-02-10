@@ -36,17 +36,20 @@ class Remote
      * get json languages info
      * @var string
      */
-    protected $infoUrl =
+    protected $translationsInfoUrl =
         'https://api.github.com/repos/runcmf/runbb-languages/contents/translationsIInfo.json?ref=master';
+
+    protected $extensionsInfofoUrl =
+        'https://api.github.com/repos/runcmf/runbb-languages/contents/extensionsInfo.json?ref=master';
 
     /**
      * Get language list from repo
-     * @return mixed
+     * @return array
      */
     public function getLangRepoList()
     {
         $data = json_decode(
-            $this->get_remote_contents($this->infoUrl)
+            $this->get_remote_contents($this->translationsInfoUrl)
         );
 
         $content = $data->encoding === 'base64' ? base64_decode($data->content) : [];
@@ -65,6 +68,20 @@ class Remote
         );
 
         return $data->content;
+    }
+
+    /**
+     * Get Extensions list from repo
+     * @return array
+     */
+    public function getExtensionsInfoList()
+    {
+        $data = json_decode(
+            $this->get_remote_contents($this->extensionsInfofoUrl)
+        );
+
+        $content = $data->encoding === 'base64' ? base64_decode($data->content) : [];
+        return json_decode($content, true);// true to array
     }
 
     /**

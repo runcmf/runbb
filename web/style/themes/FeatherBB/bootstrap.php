@@ -16,10 +16,27 @@
  */
 
 return [
-    'css' => [],
+    'css' => [
+        'style/themes/tryOne/css/bootstrap.min.css',
+        'style/themes/tryOne/css/jquery-ui.min.css',// elFinder depend
+        'style/themes/tryOne/css/font-awesome.min.css',
+        'style/themes/tryOne/css/github.css',// highlight.js theme
+        'style/themes/tryOne/css/jquery.fancybox.css'
+    ],
     'js' => [
-        'style/themes/FeatherBB/phone.min.js'
+        'style/themes/tryOne/js/jquery-3.1.1.min.js',
+        'style/themes/tryOne/js/jquery-ui.min.js',// elFinder depend
+        'style/themes/tryOne/js/bootstrap.min.js',
+        'style/themes/tryOne/js/highlight.pack.js',
+        'style/themes/tryOne/js/jquery.fancybox.pack.js',
+        'style/themes/tryOne/js/common.js',
+//        'style/themes/FeatherBB/phone.min.js'
     ],
     'jshead' => [],
-    'jsraw' => ''
+    'jsraw' => '
+        hljs.initHighlightingOnLoad();// init highlight.js
+        $(document).ready(function() {
+            $(".fancybox").fancybox();
+        });
+'
 ];

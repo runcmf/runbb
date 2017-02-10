@@ -30,7 +30,7 @@
                                     {% else %}
                                         <a href="{{ pathFor('activatePlugin', {'name': plugin.name}) }}">{{ trans('Activate') }}</a>
                                         <br>
-                                        <!-- <a href="{{ pathFor('uninstallPlugin', {'name': plugin.name}) }}">{{ trans('Uninstall') }}</a> -->
+                                        {#<a href="{{ pathFor('uninstallPlugin', {'name': plugin.name}) }}">{{ trans('Uninstall') }}</a>#}
 
                                     {% endif %}
 
@@ -39,7 +39,7 @@
                             <td>
                                 {{ plugin.description|raw }}
                                 <div class="plugin-details">
-                                    By {{ plugin.author.name }}
+                                    By {{ plugin.author.name|raw }}
                                 </div>
                             </td>
                         </tr>

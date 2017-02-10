@@ -27,7 +27,7 @@ class ParserS9E
 
     public function __construct()
     {
-        $this->cacheDir = ForumEnv::get('FORUM_CACHE_DIR').'/parser';
+        $this->cacheDir = ForumEnv::get('FORUM_CACHE_DIR').'parser';
 
         if (is_file($this->cacheDir.'/s9eparser.php') && is_file($this->cacheDir.'/s9erenderer.php')) {
             $this->parser = unserialize(file_get_contents($this->cacheDir.'/s9eparser.php'));

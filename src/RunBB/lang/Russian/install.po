@@ -219,7 +219,7 @@ msgid "InnoDB off"
 msgstr "InnoDB does not seem to be enabled. Please choose a database layer that does not have InnoDB support, or enable InnoDB on your MySQL server"
 
 msgid "Administrators"
-msgstr "Administrators"
+msgstr "Администраторы"
 
 msgid "Administrator"
 msgstr "Administrator"

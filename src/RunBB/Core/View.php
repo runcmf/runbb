@@ -210,7 +210,7 @@ class View
     {
         $templates = $this->getTemplates();
 //dump($templates);
-        $style = View::getStyle();
+        $style = $this->getStyle();
         $tpl = trim(array_pop($templates));// get last in array
         $tpl = substr(str_replace(ForumEnv::get('FORUM_ROOT') . 'View/', '', $tpl), 0, -4);
         $file = ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/view/'.$tpl. '.html.twig';
@@ -227,9 +227,9 @@ class View
         $data['style'] = $style;
         $data['navlinks'] = $this->buildNavLinks($data['active_page']);
 
-        if (file_exists(ForumEnv::get('WEB_ROOT').'style/themes/'.View::getStyle().'/base_admin.css')) {
+        if (file_exists(ForumEnv::get('WEB_ROOT').'style/themes/'.$this->getStyle().'/base_admin.css')) {
             $admStyle = '<link rel="stylesheet" type="text/css" href="'.
-                Url::base_static().'/style/themes/'.View::getStyle().'/base_admin.css" />';
+                Url::base_static().'/style/themes/'.$this->getStyle().'/base_admin.css" />';
         } else {
             $admStyle = '<link rel="stylesheet" type="text/css" href="'.
                 Url::base_static().'/style/imports/base_admin.css" />';

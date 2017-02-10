@@ -35,7 +35,6 @@ class Cache
      * Default constructor
      *
      * @param string|array [optional] $config
-     * @return void
      */
     public function __construct($config = [])
     {
@@ -93,7 +92,9 @@ class Cache
             'expire' => (int)$expires,
             'data' => serialize($data)
         ];
-
+        if ($this->retrieve($key) !== null) {
+            $this->delete($key);
+        }
         $cache = $this->_loadCache();
         if (is_array($cache)) {
             $cache[(string)$key] = $new_data;

@@ -53,6 +53,7 @@ class Core
         $this->forum_env['FEATHER_DEBUG'] = $this->forum_env['FEATHER_SHOW_QUERIES'] = $data['debug'];
         $this->forum_env['FEATHER_SHOW_INFO'] = ($data['debug'] == 'info' || $data['debug'] == 'all');
         $this->forum_env['WEB_ROOT'] = $data['web_root'];
+        $this->forum_env['APP_ROOT'] = $data['root_dir'];//ForumEnv::get('APP_ROOT')
         $this->forum_env['WEB_PLUGINS'] = 'ext';
         $this->forum_env['SLIM_SETTINGS'] = $c['settings']['runbb'];
         $this->forum_env['TPL_ENGINE'] = ($data['tplEngine'] === 'twig') ? 'twig' : 'php';
@@ -62,7 +63,7 @@ class Core
 
         // Load IdiORM
         // TODO move to global separately forum ???
-        require_once DIR . 'vendor/j4mie/idiorm/idiorm.php';
+        require_once $data['root_dir'] . 'vendor/j4mie/idiorm/idiorm.php';
 
         // Load files
         require $this->forum_env['FORUM_ROOT'] . 'Helpers/utf8/utf8.php';
@@ -88,7 +89,7 @@ class Core
         return [
             'FORUM_ROOT' => '',
             'FORUM_CONFIG_FILE' => 'config.php',
-            'FORUM_CACHE_DIR' => DIR . 'var/cache/',
+            'FORUM_CACHE_DIR' => ForumEnv::get('APP_ROOT') . 'var/cache/',
             'FORUM_VERSION' => '1.0.1',
             'FORUM_NAME' => 'RunBB',
             'FORUM_DB_REVISION' => 21,
@@ -224,8 +225,6 @@ class Core
 //        Lang::load('common');
         // finish main init, latter in Auth, after load user will be loaded lang
 
-
-
         // Set headers
         $res = $this->setHeaders($res);
 
@@ -273,7 +272,7 @@ class Core
         Container::set('twig', function ($container) {
             // after load user set namespace for forum
             $twig = new \Twig_Environment(new \Twig_Loader_Filesystem(), [
-                    'cache' => DIR . 'var/cache/twig',
+                    'cache' => $this->forum_env['APP_ROOT'] . 'var/cache/twig',
                     'debug' => true,
                 ]
             );
@@ -320,9 +319,6 @@ class Core
             return new \Slim\Flash\Messages;
         });
 
-        // Run activated plugins
-        self::loadPlugins();
-
         // Define time formats and add them to the container
         Container::set('forum_time_formats', array_unique([
             ForumSettings::get('o_time_format'),
@@ -332,6 +328,9 @@ class Core
             ForumSettings::get('o_date_format'),
             'Y-m-d', 'Y-d-m', 'd-m-Y', 'm-d-Y', 'M j Y', 'jS M Y'
         ]));
+
+        // Run activated plugins
+        self::loadPlugins();
 
         // Call RunBBAuth middleware
         return $next($req, $res);

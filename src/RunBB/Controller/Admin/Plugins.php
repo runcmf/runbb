@@ -38,6 +38,25 @@ class Plugins
      */
     public function download($req, $res, $args)
     {
+        $repoList = Container::get('remote')->getExtensionsInfoList();
+        // not care about indexes, simple retrieve twice
+        // get category
+        $category = Utils::recursiveArraySearch($args['name'], $repoList);
+        // get plugin
+        $plugKey = Utils::recursiveArraySearch($args['name'], $repoList[$category]);
+        $plug = $repoList[$category][$plugKey];
+
+        return View::setPageInfo([
+            'admin_console' => true,
+            'active_page' => 'admin',
+//            'key' => $args['name'],
+            'package' => $plug['package'],
+            'stability' => $plug['stability'],
+            'category' => $category,
+            'pluginInfo' => base64_encode(json_encode($plug)),
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')],
+        ])->addTemplate('misc/modal.php')->display(false);
+/*
         $zipFile = ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'] . "-" . $args['version'] . '.zip';
         $zipResource = fopen($zipFile, "w");
 
@@ -76,7 +95,9 @@ class Plugins
         }
         rename(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'] . "-" . $args['version'], ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name']);
         unlink(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'] . "-" . $args['version'] . '.zip');
+
         return Router::redirect(Router::pathFor('adminPlugins'), 'Plugin downloaded!');
+*/
     }
 
     /**
@@ -94,7 +115,9 @@ class Plugins
 
         View::addAsset('js', 'style/imports/common.js', ['type' => 'text/javascript']);
 
-        $availablePlugins = Lister::getPlugins();
+        $availablePlugins = Lister::getPlugins(
+            $this->model->getList()
+        );
         $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : [];
 
         $officialPlugins = [];//Lister::getOfficialPlugins();
@@ -171,7 +194,6 @@ class Plugins
         return Router::redirect(Router::pathFor('adminPlugins'), ['warning', 'Plugin uninstalled!']);
     }
 
-
     /**
      * Load plugin info if it exists
      * @param $req
@@ -183,21 +205,58 @@ class Plugins
     public function info($req, $res, $args)
     {
         $formattedPluginName =
-            str_replace(' ', '', ucwords(
+            str_replace(' ', '',
+//                ucwords(
                 str_replace(['-', '_'], ' ', $args['name'])
-            ));
-
-        $new = "\\RunBB\\Plugins\\Controller\\" . $formattedPluginName;
-        if (class_exists($new)) {
-            $plugin = new $new;
-            if (method_exists($plugin, 'info')) {
-                AdminUtils::generateAdminMenu($args['name']);
-                return $plugin->info($req, $res, $args);
+//            )
+            );
+        $plugins = $this->model->getList();
+        $plugKey = Utils::recursiveArraySearch($formattedPluginName, $plugins);
+        if ($plugKey !== false) {
+            $p = explode('\\', $plugins[$plugKey]['class']);
+            $plug = '\\'.$p[0].'\\Controller\\' . $p[1];
+            if (class_exists($plug)) {
+                $plugin = new $plug;
+                if (method_exists($plugin, 'info')) {
+                    AdminUtils::generateAdminMenu($args['name']);
+                    return $plugin->info($req, $res, $args);
+                } else {
+                    throw new  RunBBException('Not found `info` method in class: '.$plug, 400);
+                }
             } else {
-                throw new  RunBBException(__('Bad request'), 400);
+                throw new  RunBBException('Not found extension class: '.$plug, 400);
             }
         } else {
-            throw new  RunBBException(__('Bad request'), 400);
+            throw new  RunBBException('Not found in extensions: '.$formattedPluginName, 400);
         }
+    }
+
+    public function repoList($req, $res, $args)
+    {
+        Container::get('hooks')->fire('controller.admin.plugins.repoList');
+
+        View::addAsset('js', 'style/imports/common.js', ['type' => 'text/javascript']);
+
+        AdminUtils::generateAdminMenu('plugins');
+
+        $installedPlugins = $this->model->getList();
+
+        $repoList = Container::get('remote')->getExtensionsInfoList();
+        foreach ($repoList as $key => $extensions) {
+            foreach ($extensions as $ekey => $ext) {
+                if (isset($ext['key'])) {
+                    $repoList[$key][$ekey]['isInstalled'] =
+                        (Utils::recursiveArraySearch($ext['key'], $installedPlugins) !== false)
+                            ? true : false;
+                }
+            }
+        }
+
+        View::setPageInfo([
+            'admin_console' => true,
+            'active_page' => 'admin',
+            'repoList' => $repoList,
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')],
+        ])->addTemplate('admin/pluginsRepo.php')->display();
     }
 }

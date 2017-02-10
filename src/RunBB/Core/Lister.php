@@ -15,20 +15,17 @@ class Lister
 {
     /**
      * Get all valid plugin files.
+     * @param array $list
+     * @return array
      */
-    public static function getPlugins()
+    public static function getPlugins(array $list = [])
     {
         $plugins = [];
 
-        $cfgPlugins = ForumEnv::get('SLIM_SETTINGS')['plugins'];
-
-        foreach (glob(ForumEnv::get('FORUM_ROOT').'plugins/*/featherbb.json') as $plugin_file) {
-            $plugins[] =  json_decode(file_get_contents($plugin_file));
-        }
-        if (!empty($cfgPlugins)) {
-            foreach ($cfgPlugins as $plug) {
-                if (class_exists($plug)) {
-                    $plugins[] = json_decode($plug::getInfo());
+        if (!empty($list)) {
+            foreach ($list as $plug) {
+                if (class_exists($plug['class'])) {
+                    $plugins[] = json_decode($plug['class']::getInfo());
                 }
             }
         }

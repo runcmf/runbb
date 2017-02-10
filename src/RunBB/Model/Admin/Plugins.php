@@ -23,6 +23,44 @@ class Plugins
         $this->manager = new Plugin($c);
     }
 
+    public function getList($force = false)
+    {
+        static $list = [];
+
+        if (empty($list) || $force) {
+            if (!Container::get('cache')->isCached('pluginsList') || $force) {
+                $list = \ORM::forTable(ORM_TABLE_PREFIX.'plugins')->findArray();
+                Container::get('cache')->store('pluginsList', $list);
+            } else {
+                $list = Container::get('cache')->retrieve('pluginsList');
+            }
+        }
+
+        return $list;
+    }
+
+    public function addInfo(array $arr=[])
+    {
+        // check if already exists
+        $key = \ORM::forTable(ORM_TABLE_PREFIX.'plugins')
+            ->where('name', $arr['key'])
+            ->findArray();
+        if ($key !== null && !empty($key)) {
+            return $key->id;
+        } else {
+            $result = \ORM::forTable(ORM_TABLE_PREFIX . 'plugins')
+                ->create()
+                ->set([
+                    'name' => $arr['key'],
+                    'class' => $arr['class'],
+                    'installed' => 0,
+                    'active' => 0
+                ])
+                ->save();
+            return $result;
+        }
+    }
+
     public function activate($name)
     {
         $name = Container::get('hooks')->fire('model.plugin.activate.name', $name);

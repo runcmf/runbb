@@ -76,15 +76,14 @@
     {#// Did we find any plugins?#}
     {% if plugins is not empty %}
 
-        <h2 class="block2"><span><?= __('Plugins menu') ?></span></h2>
+        <h2 class="block2"><span>{{ trans('Plugins menu') }}</span></h2>
         <div class="box">
             <div class="inbox">
                 <ul>
 
                 {% for plugin in plugins %}
-                {% set plugin_url = urlFriendly(plugin) %}
-                    <li{{ page == plugin_url ? ' class="isactive"' : '' }}>
-                        <a href="{{ pathFor('infoPlugin', {'name': plugin_url}) }}">{{ plugin }}</a>
+                    <li{{ page == plugin.url ? ' class="isactive"' : '' }}>
+                        <a href="{{ pathFor('infoPlugin', {'name': plugin.url}) }}">{{ plugin.name }}</a>
                     </li>
                 {% endfor %}
 
