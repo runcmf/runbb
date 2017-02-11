@@ -1,6 +1,13 @@
+###2017-02-11
+* PSR2 reformat, validation with CodeSniffer.
+
+###2017-02-10
+* rebuild plugins & installer
+
 ###2017-02-07
 * added [login modal](http://www.smarttutorials.net/login-modal-bootstrap/)
-* continue with languages
+* add edit mail templates
+* continue play with languages
 
 ###2017-02-03
 * Implement statical/statical inside RunBB\Core

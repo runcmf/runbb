@@ -16,7 +16,7 @@ use RunBB\Model\Cache;
 
 class Censoring
 {
-    public function add_word()
+    public function addWord()
     {
         $search_for = Utils::trim(Input::post('new_search_for'));
         $replace_with = Utils::trim(Input::post('new_replace_with'));
@@ -28,7 +28,8 @@ class Censoring
         $set_search_word = ['search_for' => $search_for,
                                 'replace_with' => $replace_with];
 
-        $set_search_word = Container::get('hooks')->fire('model.admin.censoring.add_censoring_word_data', $set_search_word);
+        $set_search_word = Container::get('hooks')
+            ->fire('model.admin.censoring.add_censoring_word_data', $set_search_word);
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'censoring')
             ->create()
@@ -36,13 +37,13 @@ class Censoring
             ->save();
 
         // Regenerate the censoring cache
-        Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
-        Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
+        Container::get('cache')->store('search_for', Cache::getCensoring('search_for'));
+        Container::get('cache')->store('replace_with', Cache::getCensoring('replace_with'));
 
         return Router::redirect(Router::pathFor('adminCensoring'), __('Word added redirect'));
     }
 
-    public function update_word()
+    public function updateWord()
     {
         $id = intval(key(Input::post('update')));
 
@@ -56,7 +57,8 @@ class Censoring
         $set_search_word = ['search_for' => $search_for,
                                 'replace_with' => $replace_with];
 
-        $set_search_word = Container::get('hooks')->fire('model.admin.censoring.update_censoring_word_start', $set_search_word);
+        $set_search_word = Container::get('hooks')
+            ->fire('model.admin.censoring.update_censoring_word_start', $set_search_word);
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'censoring')
             ->find_one($id)
@@ -64,13 +66,13 @@ class Censoring
             ->save();
 
         // Regenerate the censoring cache
-        Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
-        Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
+        Container::get('cache')->store('search_for', Cache::getCensoring('search_for'));
+        Container::get('cache')->store('replace_with', Cache::getCensoring('replace_with'));
 
         return Router::redirect(Router::pathFor('adminCensoring'), __('Word updated redirect'));
     }
 
-    public function remove_word()
+    public function removeWord()
     {
         $id = intval(key(Input::post('remove')));
         $id = Container::get('hooks')->fire('model.admin.censoring.remove_censoring_word_start', $id);
@@ -80,19 +82,18 @@ class Censoring
         $result = $result->delete();
 
         // Regenerate the censoring cache
-        Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
-        Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
+        Container::get('cache')->store('search_for', Cache::getCensoring('search_for'));
+        Container::get('cache')->store('replace_with', Cache::getCensoring('replace_with'));
 
         return Router::redirect(Router::pathFor('adminCensoring'), __('Word removed redirect'));
     }
 
-    public function get_words()
+    public function getWords()
     {
-        $word_data = [];
-
         $word_data = \ORM::for_table(ORM_TABLE_PREFIX.'censoring')
                         ->order_by_asc('id');
-        $word_data = Container::get('hooks')->fireDB('model.admin.censoring.update_censoring_word_query', $word_data);
+        $word_data = Container::get('hooks')
+            ->fireDB('model.admin.censoring.update_censoring_word_query', $word_data);
         $word_data = $word_data->find_array();
 
         return $word_data;

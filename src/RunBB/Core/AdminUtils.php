@@ -42,7 +42,7 @@ class AdminUtils
     /**
      * Generate breadcrumbs from an array of name and URLs
      */
-    public static function breadcrumbs_admin(array $links)
+    public static function breadcrumbsAdmin(array $links)
     {
         foreach ($links as $name => $url) {
             if ($name != '' && $url != '') {
@@ -58,7 +58,7 @@ class AdminUtils
     /**
      * Delete a folder and all its content
      */
-    public static function delete_folder($dirPath)
+    public static function deleteFolder($dirPath)
     {
         $it = new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::SKIP_DOTS);
         $files = new RecursiveIteratorIterator(
@@ -79,10 +79,10 @@ class AdminUtils
     /**
      * Fetch admin IDs
      */
-    public static function get_admin_ids()
+    public static function getAdminIds()
     {
         if (!Container::get('cache')->isCached('admin_ids')) {
-            Container::get('cache')->store('admin_ids', \RunBB\Model\Cache::get_admin_ids());
+            Container::get('cache')->store('admin_ids', \RunBB\Model\Cache::getAdminIds());
         }
 
         return Container::get('cache')->retrieve('admin_ids');
@@ -91,7 +91,7 @@ class AdminUtils
     /**
      * Wrapper for cURL
      */
-    public static function get_content($url)
+    public static function getContent($url)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);

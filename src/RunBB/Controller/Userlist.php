@@ -33,12 +33,14 @@ class Userlist
         // Determine if we are allowed to view post counts
         $show_post_count = (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) ? true : false;
 
-        $username = Input::query('username') && User::get()->g_search_users == '1' ? Utils::trim(Input::query('username')) : '';
+        $username = Input::query('username') && User::get()->g_search_users == '1' ?
+            Utils::trim(Input::query('username')) : '';
         $show_group = Input::query('show_group') ? intval(Input::query('show_group')) : -1;
-        $sort_by = Input::query('sort_by') && (in_array(Input::query('sort_by'), ['username', 'registered']) || (Input::query('sort_by') == 'num_posts' && $show_post_count)) ? Input::query('sort_by') : 'username';
+        $sort_by = Input::query('sort_by') && (in_array(Input::query('sort_by'), ['username', 'registered']) ||
+            (Input::query('sort_by') == 'num_posts' && $show_post_count)) ? Input::query('sort_by') : 'username';
         $sort_dir = Input::query('sort_dir') && Input::query('sort_dir') == 'DESC' ? 'DESC' : 'ASC';
 
-        $num_users = $this->model->fetch_user_count($username, $show_group);
+        $num_users = $this->model->fetchUserCount($username, $show_group);
 
         // Determine the user offset (based on $page)
         $num_pages = ceil($num_users / 50);
@@ -53,7 +55,9 @@ class Userlist
         }
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.Url::paginate_old($num_pages, $p, '?username='.urlencode($username).'&amp;show_group='.$show_group.'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir);
+        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.
+            Url::paginateOld($num_pages, $p, '?username='.urlencode($username).'&amp;show_group='.
+                $show_group.'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir);
 
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('User list')],
@@ -67,8 +71,8 @@ class Userlist
             'sort_by' => $sort_by,
             'sort_dir' => $sort_dir,
             'show_post_count' => $show_post_count,
-            'dropdown_menu' => $this->model->generate_dropdown_menu($show_group),
-            'userlist_data' => $this->model->print_users($username, $start_from, $sort_by, $sort_dir, $show_group),
+            'dropdown_menu' => $this->model->generateDropdownMenu($show_group),
+            'userlist_data' => $this->model->printUsers($username, $start_from, $sort_by, $sort_dir, $show_group),
         ])->addTemplate('userlist.php')->display();
     }
 }

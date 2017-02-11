@@ -12,10 +12,9 @@ namespace RunBB\Middleware;
 
 use RunBB\Core\Email;
 use RunBB\Core\Hooks;
-//use RunBB\Core\Parser;
+use RunBB\Core\Parser;
 use RunBB\Core\Interfaces\Container;
 use RunBB\Core\Interfaces\Lang;
-use RunBB\Core\ParserS9E;
 use RunBB\Core\Plugin;
 //use RunBB\Core\Remote;
 use RunBB\Core\Url;
@@ -24,8 +23,9 @@ use RunBB\Core\View;
 
 class Core
 {
-    protected $forum_env,
-        $forum_settings, $c;
+    protected $forum_env;
+    protected $forum_settings;
+    protected $c;
     protected $headers = [
         'Cache-Control' => 'no-cache, no-store, must-revalidate',
         'Pragma' => 'no-cache',
@@ -37,7 +37,8 @@ class Core
     {
         $this->c = $c;
         // Handle empty values in data
-        $data = array_merge([
+        $data = array_merge(
+            [
             'config_file' => 'config.php',
             'cache_dir' => 'cache/',
             'web_root' => '',
@@ -59,32 +60,24 @@ class Core
         $this->forum_env['TPL_ENGINE'] = ($data['tplEngine'] === 'twig') ? 'twig' : 'php';
 
         // Populate forum_env
-        $this->forum_env = array_merge(self::load_default_forum_env(), $this->forum_env);
+        $this->forum_env = array_merge(self::loadDefaultForumEnv(), $this->forum_env);
 
         // Load IdiORM
         // TODO move to global separately forum ???
         require_once $data['root_dir'] . 'vendor/j4mie/idiorm/idiorm.php';
 
-        // Load files
+        // Load & init utf8 files
         require $this->forum_env['FORUM_ROOT'] . 'Helpers/utf8/utf8.php';
+        initUTF8();
 
         // Populate Slim object with forum_env vars
         Container::set('forum_env', $this->forum_env);
 
-        // Load Languages
-//        require $this->forum_env['FORUM_ROOT'] . 'Core/gettext.php';
-//        Container::set('lang', function ($container) {
-//            return new \RunBB\Core\Language('RunBB');
-//        });
-
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
-//        Lang::construct();
-//        Lang::load('misc');
-//        Lang::load('common');
     }
 
-    public static function load_default_forum_env()
+    public static function loadDefaultForumEnv()
     {
         return [
             'FORUM_ROOT' => '',
@@ -110,7 +103,7 @@ class Core
         ];
     }
 
-    public static function load_default_forum_settings()
+    public static function loadDefaultForumSettings()
     {
         return [
             // Database
@@ -127,7 +120,7 @@ class Core
         ];
     }
 
-    public static function init_db(array $config, $log_queries = false)
+    public static function initDb(array $config, $log_queries = false)
     {
         $config['db_prefix'] = (!empty($config['db_prefix'])) ? $config['db_prefix'] : '';
         switch ($config['db_type']) {
@@ -135,8 +128,8 @@ class Core
                 \ORM::configure('mysql:host=' . $config['db_host'] . ';dbname=' . $config['db_name']);
                 \ORM::configure('driver_options', [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
                 break;
-            case 'sqlite';
-            case 'sqlite3';
+            case 'sqlite':
+            case 'sqlite3':
                 \ORM::configure('sqlite:./' . $config['db_name']);
                 break;
             case 'pgsql':
@@ -145,15 +138,6 @@ class Core
         }
         \ORM::configure('username', $config['db_user']);
         \ORM::configure('password', $config['db_pass']);
-//        \ORM::configure('prefix', $config['db_prefix']);// idiorm not use prefix
-//        if ($log_queries) {
-//            \ORM::configure('logging', true);
-//            // Collect query info
-//            \ORM::configure('logger', function ($query, $time) {
-//                self::$queryLog[0][] = $time;
-//                self::$queryLog[1][] = $query;
-//            });
-//        }
         \ORM::configure('id_column_overrides', [
             $config['db_prefix'] . 'groups' => 'g_id',
         ]);
@@ -202,69 +186,49 @@ class Core
         // Load config from disk
         $config = include ForumEnv::get('FORUM_CONFIG_FILE');
         if (!empty($config)) {
-            $this->forum_settings = array_merge(self::load_default_forum_settings(), $config);
+            $this->forum_settings = array_merge(self::loadDefaultForumSettings(), $config);
         } else {
             $this->c['response']->withStatus(500); // Send forbidden header
             return $this->c['response']->getBody()->write('Wrong config file format');
         }
 
         // Init DB and configure Slim
-        self::init_db($this->forum_settings, ForumEnv::get('FEATHER_SHOW_INFO'));
+        self::initDb($this->forum_settings, ForumEnv::get('FEATHER_SHOW_INFO'));
         Config::set('displayErrorDetails', ForumEnv::get('FEATHER_DEBUG'));
 
         if (!Container::get('cache')->isCached('config')) {
-            Container::get('cache')->store('config', \RunBB\Model\Cache::get_config());
+            Container::get('cache')->store('config', \RunBB\Model\Cache::getConfig());
         }
-
         // Finalize forum_settings array
         $this->forum_settings = array_merge(Container::get('cache')->retrieve('config'), $this->forum_settings);
         Container::set('forum_settings', $this->forum_settings);
-
+        // init languages
         Lang::construct();
-//        Lang::load('misc');
-//        Lang::load('common');
-        // finish main init, latter in Auth, after load user will be loaded lang
-
         // Set headers
         $res = $this->setHeaders($res);
-
         // Block prefetch requests
         if ((isset($this->c->environment['HTTP_X_MOZ'])) && ($this->c->environment['HTTP_X_MOZ'] == 'prefetch')) {
             return $this->c->response->withStatus(403); // Send forbidden header
         }
-
-        // Populate Slim object with forum_env vars
-//        Container::set('forum_env', $this->forum_env);
-
-//        translate('misc');// load misc lang vars
-
-        // Load RunBB utils class
+        // Load utils class
         Container::set('utils', function ($container) {
             return new Utils();
         });
         // Record start time
-        Container::set('start', Utils::get_microtime());
+        Container::set('start', Utils::getMicrotime());
         // Define now var
         Container::set('now', function () {
             return time();
         });
-//        // Load RunBB cache
-//        Container::set('cache', function ($container) {
-//            return new \RunBB\Core\Cache([
-//                'name' => 'runbb',
-//                'path' => $this->forum_env['FORUM_CACHE_DIR'],
-//                'extension' => '.cache'
-//            ]);
-//        });
-        // Load RunBB permissions
+        // Load permissions
         Container::set('perms', function ($container) {
             return new \RunBB\Core\Permissions();
         });
-        // Load RunBB preferences
+        // Load preferences
         Container::set('prefs', function ($container) {
             return new \RunBB\Core\Preferences();
         });
-        // Load RunBB view
+        // Load view
         Container::set('template', function ($container) {
             return new View();
         });
@@ -274,8 +238,7 @@ class Core
             $twig = new \Twig_Environment(new \Twig_Loader_Filesystem(), [
                     'cache' => $this->forum_env['APP_ROOT'] . 'var/cache/twig',
                     'debug' => true,
-                ]
-            );
+                ]);
             // load extensions
             $twig->addExtension(new \Twig_Extension_Profiler($container['twig_profile']));
             if (ForumEnv::get('FEATHER_DEBUG')) {
@@ -284,8 +247,7 @@ class Core
             $twig->addExtension(new \RunBB\Core\RunBBTwig);
             return $twig;
         });
-
-        // Load RunBB url class
+        // Load url class
         Container::set('url', function ($container) {
             return new Url();
         });
@@ -293,22 +255,18 @@ class Core
         Container::set('remote', function ($container) {
             return new \RunBB\Core\Remote();
         });
-        // Load RunBB hooks
+        // Load hooks
         Container::set('hooks', function ($container) {
             return new Hooks();
         });
-
         // This is the very first hook fired
         Container::get('hooks')->fire('core.start');
-
-        // Load RunBB email class
+        // Load email class
         Container::set('email', function ($container) {
             return new Email();
         });
-
         Container::set('parser', function ($container) {
-//            return new Parser();
-            return new ParserS9E();
+            return new Parser();
         });
         // Set cookies
         Container::set('cookie', function ($container) {
@@ -318,7 +276,6 @@ class Core
         Container::set('flash', function ($c) {
             return new \Slim\Flash\Messages;
         });
-
         // Define time formats and add them to the container
         Container::set('forum_time_formats', array_unique([
             ForumSettings::get('o_time_format'),

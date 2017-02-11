@@ -16,19 +16,17 @@ class Search
 {
     public function __construct()
     {
+        // @codingStandardsIgnoreStart
         // Make a regex that will match CJK or Hangul characters
         defined('FEATHER_CJK_HANGUL_REGEX') || define('FEATHER_CJK_HANGUL_REGEX', '[' .
             '\x{1100}-\x{11FF}' .        // Hangul Jamo                            1100-11FF        (http://www.fileformat.info/info/unicode/block/hangul_jamo/index.htm)
             '\x{3130}-\x{318F}' .        // Hangul Compatibility Jamo            3130-318F        (http://www.fileformat.info/info/unicode/block/hangul_compatibility_jamo/index.htm)
             '\x{AC00}-\x{D7AF}' .        // Hangul Syllables                        AC00-D7AF        (http://www.fileformat.info/info/unicode/block/hangul_syllables/index.htm)
-
             // Hiragana
             '\x{3040}-\x{309F}' .        // Hiragana                                3040-309F        (http://www.fileformat.info/info/unicode/block/hiragana/index.htm)
-
             // Katakana
             '\x{30A0}-\x{30FF}' .        // Katakana                                30A0-30FF        (http://www.fileformat.info/info/unicode/block/katakana/index.htm)
             '\x{31F0}-\x{31FF}' .        // Katakana Phonetic Extensions            31F0-31FF        (http://www.fileformat.info/info/unicode/block/katakana_phonetic_extensions/index.htm)
-
             // CJK Unified Ideographs    (http://en.wikipedia.org/wiki/CJK_Unified_Ideographs)
             '\x{2E80}-\x{2EFF}' .        // CJK Radicals Supplement                2E80-2EFF        (http://www.fileformat.info/info/unicode/block/cjk_radicals_supplement/index.htm)
             '\x{2F00}-\x{2FDF}' .        // Kangxi Radicals                        2F00-2FDF        (http://www.fileformat.info/info/unicode/block/kangxi_radicals/index.htm)
@@ -40,6 +38,7 @@ class Search
             '\x{4E00}-\x{9FFF}' .        // CJK Unified Ideographs                4E00-9FFF        (http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs/index.htm)
             '\x{20000}-\x{2A6DF}' .        // CJK Unified Ideographs Extension B    20000-2A6DF        (http://www.fileformat.info/info/unicode/block/cjk_unified_ideographs_extension_b/index.htm)
             ']');
+        // @codingStandardsIgnoreEnd
     }
 
 
@@ -47,16 +46,22 @@ class Search
     // "Cleans up" a text string and returns an array of unique words
     // This function depends on the current locale setting
     //
-    public function split_words($text, $idx)
+    public function splitWords($text, $idx)
     {
         // Remove BBCode
-        $text = preg_replace('%\[/?(b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|topic|post|forum|user)(?:\=[^\]]*)?\]%', ' ', $text);
+        $text = preg_replace('%\[/?(b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|topic'.
+            '|post|forum|user)(?:\=[^\]]*)?\]%', ' ', $text);
 
         // Remove any apostrophes or dashes which aren't part of words
-        $text = substr(Utils::ucp_preg_replace('%((?<=[^\p{L}\p{N}])[\'\-]|[\'\-](?=[^\p{L}\p{N}]))%u', '', ' ' . $text . ' '), 1, -1);
+        $text = substr(Utils::ucpPregReplace(
+            '%((?<=[^\p{L}\p{N}])[\'\-]|[\'\-](?=[^\p{L}\p{N}]))%u',
+            '',
+            ' ' . $text . ' '
+        ), 1, -1);
 
-        // Remove punctuation and symbols (actually anything that isn't a letter or number), allow apostrophes and dashes (and % * if we aren't indexing)
-        $text = Utils::ucp_preg_replace('%(?![\'\-' . ($idx ? '' : '\%\*') . '])[^\p{L}\p{N}]+%u', ' ', $text);
+        // Remove punctuation and symbols (actually anything that isn't a letter or number),
+        // allow apostrophes and dashes (and % * if we aren't indexing)
+        $text = Utils::ucpPregReplace('%(?![\'\-' . ($idx ? '' : '\%\*') . '])[^\p{L}\p{N}]+%u', ' ', $text);
 
         // Replace multiple whitespace or dashes
         $text = preg_replace('%(\s){2,}%u', '\1', $text);
@@ -67,7 +72,7 @@ class Search
         // Remove any words that should not be indexed
         foreach ($words as $key => $value) {
             // If the word shouldn't be indexed, remove it
-            if (!$this->validate_search_word($value, $idx)) {
+            if (!$this->validateSearchWord($value, $idx)) {
                 unset($words[$key]);
             }
         }
@@ -79,18 +84,18 @@ class Search
     //
     // Checks if a word is a valid searchable word
     //
-    public function validate_search_word($word, $idx)
+    public function validateSearchWord($word, $idx)
     {
         static $stopwords;
 
         // If the word is a keyword we don't want to index it, but we do want to be allowed to search it
-        if ($this->is_keyword($word)) {
+        if ($this->isKeyword($word)) {
             return !$idx;
         }
 
         if (!isset($stopwords)) {
             if (!Container::get('cache')->isCached('stopwords')) {
-                Container::get('cache')->store('stopwords', \RunBB\Model\Cache::get_config(), '+1 week');
+                Container::get('cache')->store('stopwords', \RunBB\Model\Cache::getConfig(), '+1 week');
             }
             $stopwords = Container::get('cache')->retrieve('stopwords');
         }
@@ -101,7 +106,7 @@ class Search
         }
 
         // If the word is CJK we don't want to index it, but we do want to be allowed to search it
-        if ($this->is_cjk($word)) {
+        if ($this->isCjk($word)) {
             return !$idx;
         }
 
@@ -110,14 +115,15 @@ class Search
 
         // Check the word is within the min/max length
         $num_chars = Utils::strlen($word);
-        return $num_chars >= ForumEnv::get('FEATHER_SEARCH_MIN_WORD') && $num_chars <= ForumEnv::get('FEATHER_SEARCH_MAX_WORD');
+        return $num_chars >= ForumEnv::get('FEATHER_SEARCH_MIN_WORD') &&
+            $num_chars <= ForumEnv::get('FEATHER_SEARCH_MAX_WORD');
     }
 
 
     //
     // Check a given word is a search keyword.
     //
-    public function is_keyword($word)
+    public function isKeyword($word)
     {
         return $word == 'and' || $word == 'or' || $word == 'not';
     }
@@ -126,7 +132,7 @@ class Search
     //
     // Check if a given word is CJK or Hangul.
     //
-    public function is_cjk($word)
+    public function isCjk($word)
     {
         return preg_match('%^' . FEATHER_CJK_HANGUL_REGEX . '+$%u', $word) ? true : false;
     }
@@ -135,14 +141,14 @@ class Search
     //
     // Strip [img] [url] and [email] out of the message so we don't index their contents
     //
-    public function strip_bbcode($text)
+    public function stripBBcode($text)
     {
         static $patterns;
 
         if (!isset($patterns)) {
             $patterns = [
                 '%\[img=([^\]]*+)\]([^[]*+)\[/img\]%' => '$2 $1',    // Keep the url and description
-                '%\[(url|email)=([^\]]*+)\]([^[]*+(?:(?!\[/\1\])\[[^[]*+)*)\[/\1\]%' => '$2 $3',    // Keep the url and text
+                '%\[(url|email)=([^\]]*+)\]([^[]*+(?:(?!\[/\1\])\[[^[]*+)*)\[/\1\]%' => '$2 $3',// Keep the url and text
                 '%\[(img|url|email)\]([^[]*+(?:(?!\[/\1\])\[[^[]*+)*)\[/\1\]%' => '$2',        // Keep the url
                 '%\[(topic|post|forum|user)\][1-9]\d*\[/\1\]%' => ' ',        // Do not index topic/post/forum/user ID
             ];
@@ -155,17 +161,17 @@ class Search
     //
     // Updates the search index with the contents of $post_id (and $subject)
     //
-    public function update_search_index($mode, $post_id, $message, $subject = null)
+    public function updateSearchIndex($mode, $post_id, $message, $subject = null)
     {
         $message = utf8_strtolower($message);
         $subject = utf8_strtolower($subject);
 
         // Remove any bbcode that we shouldn't index
-        $message = $this->strip_bbcode($message);
+        $message = $this->stripBBcode($message);
 
         // Split old and new post/subject to obtain array of 'words'
-        $words_message = $this->split_words($message, true);
-        $words_subject = ($subject) ? $this->split_words($subject, true) : [];
+        $words_message = $this->splitWords($message, true);
+        $words_subject = ($subject) ? $this->splitWords($subject, true) : [];
 
         if ($mode == 'edit') {
             $select_update_search_index = ['w.id', 'w.word', 'm.subject_match'];
@@ -231,7 +237,8 @@ class Search
                         // Quite dirty, right? :-)
                         $placeholders = rtrim(str_repeat('(?), ', count($new_words)), ', ');
                         \ORM::for_table(ORM_TABLE_PREFIX.'search_words')
-                            ->raw_execute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_words (word) VALUES ' . $placeholders, $new_words);
+                            ->raw_execute('INSERT INTO ' . ForumSettings::get('db_prefix') .
+                                'search_words (word) VALUES ' . $placeholders, $new_words);
                         break;
 
                     default:
@@ -275,7 +282,11 @@ class Search
                 $wordlist = array_values($wordlist);
                 $placeholders = rtrim(str_repeat('?, ', count($wordlist)), ', ');
                 \ORM::for_table(ORM_TABLE_PREFIX.'search_words')
-                    ->raw_execute('INSERT INTO ' . ForumSettings::get('db_prefix') . 'search_matches (post_id, word_id, subject_match) SELECT ' . $post_id . ', id, ' . $subject_match . ' FROM ' . ForumSettings::get('db_prefix') . 'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
+                    ->raw_execute('INSERT INTO ' . ForumSettings::get('db_prefix') .
+                        'search_matches (post_id, word_id, subject_match) SELECT ' .
+                        $post_id . ', id, ' . $subject_match . ' FROM ' .
+                        ForumSettings::get('db_prefix') .
+                        'search_words WHERE word IN (' . $placeholders . ')', $wordlist);
             }
         }
 
@@ -286,7 +297,7 @@ class Search
     //
     // Strip search index of indexed words in $post_ids
     //
-    public function strip_search_index($post_ids)
+    public function stripSearchIndex($post_ids)
     {
         if (!is_array($post_ids)) {
             $post_ids_sql = explode(',', $post_ids);
@@ -298,7 +309,7 @@ class Search
             case 'mysql':
             case 'mysqli':
             case 'mysql_innodb':
-            case 'mysqli_innodb': {
+            case 'mysqli_innodb':
                 $result = \ORM::for_table(ORM_TABLE_PREFIX.'search_matches')->select('word_id')
                     ->where_in('post_id', $post_ids_sql)
                     ->group_by('word_id')
@@ -328,11 +339,14 @@ class Search
                     }
                 }
                 break;
-            }
 
             default:
                 \ORM::for_table(ORM_TABLE_PREFIX.'search_matches')
-                    ->where_raw('id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE word_id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches WHERE post_id IN(' . $post_ids . ') GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
+                    ->where_raw('id IN(SELECT word_id FROM ' . ForumSettings::get('db_prefix') . 'search_matches 
+                    WHERE word_id IN(SELECT word_id 
+                    FROM ' . ForumSettings::get('db_prefix') . 'search_matches 
+                    WHERE post_id IN(' . $post_ids . ') 
+                    GROUP BY word_id) GROUP BY word_id HAVING COUNT(word_id)=1)')
                     ->delete_many();
                 break;
         }

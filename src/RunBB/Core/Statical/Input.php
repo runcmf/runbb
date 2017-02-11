@@ -115,7 +115,7 @@ class Input
      */
     protected static function checkGroup($value)
     {
-        $groups = array('any', 'path', 'name');
+        $groups = ['any', 'path', 'name'];
 
         if (!in_array($value, $groups, true)) {
             throw new \InvalidArgumentException('Invalid namespace group.');
@@ -133,7 +133,7 @@ class Input
     protected static function formatContainer($container)
     {
         if (!is_array($container)) {
-            $container = array($container);
+            $container = [$container];
         }
 
         $instance = array_shift($container);
@@ -146,7 +146,7 @@ class Input
             }
         }
 
-        return array($instance, $method);
+        return [$instance, $method];
     }
 
     /**
@@ -160,7 +160,7 @@ class Input
         $group = static::checkGroup($group);
 
         if ('any' === $group) {
-            $namespace = array('*');
+            $namespace = ['*'];
         } else {
             foreach ($namespace as &$value) {
                 $value = static::checkNamespace($value);

@@ -20,26 +20,26 @@
                 pathFor('moderateTopic', {'id': tid, 'fid': fid, 'page': page_number})
                 }}">{{ trans('Moderate topic') }}</a></span></dd>
                 <dd><span><a href="{{
-                pathFor('moveTopic', {'id': tid, 'fid': fid, 'name': urlFriendly(cur_topic.subject) })
+                pathFor('moveTopic', {'id': tid, 'fid': fid, 'name': slug(cur_topic.subject) })
                 }}">{{ trans('Move topic') }}</a></span></dd>
 
         {% if cur_topic.closed == '1' %}
                 <dd><span><a href="{{
-                pathFor('openTopic', {'id': tid, 'name': urlFriendly(cur_topic.subject) })
+                pathFor('openTopic', {'id': tid, 'name': slug(cur_topic.subject) })
                 }}">{{ trans('Open topic') }}</a></span></dd>
         {% else %}
                 <dd><span><a href="{{
-                pathFor('closeTopic', {'id': tid, 'name': urlFriendly(cur_topic.subject) })
+                pathFor('closeTopic', {'id': tid, 'name': slug(cur_topic.subject) })
                 }}">{{ trans('Close topic') }}</a></span></dd>
         {% endif %}
 
         {% if cur_topic.sticky == '1' %}
                 <dd><span><a href="{{
-                pathFor('unstickTopic', {'id': tid, 'name': urlFriendly(cur_topic.subject) })
+                pathFor('unstickTopic', {'id': tid, 'name': slug(cur_topic.subject) })
                 }}">{{ trans('Unstick topic') }}</a></span></dd>
         {% else %}
                 <dd><span><a href="{{
-                pathFor('stickTopic', {'id': tid, 'name': urlFriendly(cur_topic.subject) })
+                pathFor('stickTopic', {'id': tid, 'name': slug(cur_topic.subject) })
                 }}">{{ trans('Stick topic') }}</a></span></dd>
         {% endif %}
             </dl>
@@ -64,7 +64,7 @@
 {% for cat_id, cat_data in quickjump["#{ userGet('g_id') }"] %}
                                     <optgroup label="{{ cat_data.cat_name }}">
                     {% for forum in cat_data.cat_forums %}
-                        <option value="{{ pathFor('Forum', {'id': "#{ forum.forum_id }", 'name': "#{ urlFriendly(forum.forum_name) }"}) }}"{{ fid == 2 ? ' selected="selected"' : '' }}>{{ forum.forum_name }}</option>
+                        <option value="{{ pathFor('Forum', {'id': "#{ forum.forum_id }", 'name': "#{ slug(forum.forum_name) }"}) }}"{{ fid == 2 ? ' selected="selected"' : '' }}>{{ forum.forum_name }}</option>
                     {% endfor %}
 
                                     </optgroup>

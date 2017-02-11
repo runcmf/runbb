@@ -21,7 +21,7 @@ class Preferences
 
     // Add / Update
 
-    public function setUser($user = null, array $prefs)
+    public function setUser($user = null, array $prefs = [])
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
 
@@ -56,7 +56,7 @@ class Preferences
         return $this;
     }
 
-    public function setGroup($gid = null, array $prefs)
+    public function setGroup($gid = null, array $prefs = [])
     {
         $gid = (int) $gid;
         if ($gid < 1) {
@@ -207,7 +207,8 @@ class Preferences
         if (empty($pref)) {
             return $this->preferences[$gid][$uid];
         }
-        return (isset($this->preferences[$gid][$uid][(string) $pref])) ? $this->preferences[$gid][$uid][(string) $pref] : null;
+        return (isset($this->preferences[$gid][$uid][(string) $pref])) ?
+            $this->preferences[$gid][$uid][(string) $pref] : null;
     }
 
     // Utils

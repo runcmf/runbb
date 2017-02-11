@@ -41,7 +41,7 @@ Container::get('hooks')->fire('view.profile.section_personality.start');
                     <div class="infldset">
                         <p><?= __('Signature info') ?></p>
                         <div class="txtarea">
-                            <?php printf(__('Sig max size'), Utils::forum_number_format(ForumSettings::get('p_sig_length')), ForumSettings::get('p_sig_lines')) ?><br />
+                            <?php printf(__('Sig max size'), Utils::numberFormat(ForumSettings::get('p_sig_length')), ForumSettings::get('p_sig_lines')) ?><br />
                             <textarea id="req_message" name="signature" rows="10" cols="65"><?= Utils::escape($user->signature) ?></textarea><br />
                         </div>
                         <ul class="bblinks list-inline">

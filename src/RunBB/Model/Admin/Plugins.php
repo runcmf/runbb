@@ -39,7 +39,7 @@ class Plugins
         return $list;
     }
 
-    public function addInfo(array $arr=[])
+    public function addInfo(array $arr = [])
     {
         // check if already exists
         $key = \ORM::forTable(ORM_TABLE_PREFIX.'plugins')
@@ -141,7 +141,7 @@ class Plugins
             $this->manager->uninstall($name);
 
             if (file_exists(ForumEnv::get('FORUM_ROOT').'plugins'.DIRECTORY_SEPARATOR.$name)) {
-                AdminUtils::delete_folder(ForumEnv::get('FORUM_ROOT').'plugins'.DIRECTORY_SEPARATOR.$name);
+                AdminUtils::deleteFolder(ForumEnv::get('FORUM_ROOT').'plugins'.DIRECTORY_SEPARATOR.$name);
             }
 
             $this->manager->setActivePlugins();

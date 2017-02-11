@@ -31,10 +31,10 @@ class Index
             'title' => [Utils::escape(ForumSettings::get('o_board_title'))],
             'active_page' => 'index',
             'is_indexed' => true,
-            'index_data' => $this->model->print_categories_forums(),
-            'stats' => $this->model->collect_stats(),
-            'online' => $this->model->fetch_users_online(),
-            'forum_actions' => $this->model->get_forum_actions(),
+            'index_data' => $this->model->printCategoriesForums(),
+            'stats' => $this->model->collectStats(),
+            'online' => $this->model->fetchUsersOnline(),
+            'forum_actions' => $this->model->getForumActions(),
             'cur_cat' => 0
         ])->addTemplate('index.php')->display();
     }
@@ -44,8 +44,7 @@ class Index
         Container::get('hooks')->fire('controller.index.rules');
 
         if (ForumSettings::get('o_rules') == '0' || (User::get()->is_guest &&
-                User::get()->g_read_board == '0' && ForumSettings::get('o_regs_allow') == '0'))
-        {
+                User::get()->g_read_board == '0' && ForumSettings::get('o_regs_allow') == '0')) {
             throw new  RunBBException(__('Bad request'), 404);
         }
 
@@ -59,9 +58,9 @@ class Index
     {
         Container::get('hooks')->fire('controller.index.markread');
 
-        Auth::set_last_visit(User::get()->id, User::get()->logged);
+        Auth::setLastVisit(User::get()->id, User::get()->logged);
         // Reset tracked topics
-        Track::set_tracked_topics(null);
+        Track::setTrackedTopics(null);
         return Router::redirect(Router::pathFor('home'), __('Mark read redirect'));
     }
 }

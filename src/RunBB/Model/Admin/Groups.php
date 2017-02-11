@@ -16,7 +16,7 @@ use RunBB\Model\Cache;
 
 class Groups
 {
-    public function fetch_groups()
+    public function fetchGroups()
     {
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'groups')->orderByExpr('g_id')->find_many();
         Container::get('hooks')->fireDB('model.admin.groups.fetch_groups_query', $result);
@@ -30,7 +30,7 @@ class Groups
         return $groups;
     }
 
-    public function info_add_group($groups, $id)
+    public function infoAddGroup($groups, $id)
     {
         $group = [];
 
@@ -58,16 +58,20 @@ class Groups
         return $group;
     }
 
-    public function get_group_list($groups, $group)
+    public function getGroupList($groups, $group)
     {
         $output = '';
 
         foreach ($groups as $cur_group) {
-            if (($cur_group['g_id'] != $group['info']['g_id'] || $group['mode'] == 'add') && $cur_group['g_id'] != ForumEnv::get('FEATHER_ADMIN') && $cur_group['g_id'] != ForumEnv::get('FEATHER_GUEST')) {
+            if (($cur_group['g_id'] != $group['info']['g_id'] || $group['mode'] == 'add') &&
+                $cur_group['g_id'] != ForumEnv::get('FEATHER_ADMIN') &&
+                $cur_group['g_id'] != ForumEnv::get('FEATHER_GUEST')) {
                 if ($cur_group['g_id'] == $group['info']['g_promote_next_group']) {
-                    $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
+                    $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.
+                        Utils::escape($cur_group['g_title']).'</option>'."\n";
                 } else {
-                    $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
+                    $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.
+                        Utils::escape($cur_group['g_title']).'</option>'."\n";
                 }
             }
         }
@@ -76,7 +80,7 @@ class Groups
         return $output;
     }
 
-    public function get_group_list_delete($group_id)
+    public function getGroupListDelete($group_id)
     {
         $group_id = Container::get('hooks')->fire('model.admin.groups.get_group_list_delete_start', $group_id);
 
@@ -93,9 +97,11 @@ class Groups
         foreach ($result as $cur_group) {
             if ($cur_group['g_id'] == ForumEnv::get('FEATHER_MEMBER')) {
                 // Pre-select the pre-defined Members group
-                $output .= "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.
+                    Utils::escape($cur_group['g_title']).'</option>'."\n";
             } else {
-                $output .= "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.
+                    Utils::escape($cur_group['g_title']).'</option>'."\n";
             }
         }
 
@@ -103,7 +109,7 @@ class Groups
         return $output;
     }
 
-    public function add_edit_group($groups)
+    public function addEditGroup($groups)
     {
         if (Input::post('group_id')) {
             $group_id = Input::post('group_id');
@@ -114,7 +120,8 @@ class Groups
         $group_id = Container::get('hooks')->fire('model.admin.groups.add_edit_group_start', $group_id);
 
         // Is this the admin group? (special rules apply)
-        $is_admin_group = (Input::post('group_id') && Input::post('group_id') == ForumEnv::get('FEATHER_ADMIN')) ? true : false;
+        $is_admin_group = (Input::post('group_id') && Input::post('group_id') == ForumEnv::get('FEATHER_ADMIN'))
+            ? true : false;
 
         // Set group title
         $title = Utils::trim(Input::post('req_title'));
@@ -130,7 +137,8 @@ class Groups
         $promote_min_posts = Input::post('promote_min_posts') ? intval(Input::post('promote_min_posts')) : '0';
         if (Input::post('promote_next_group') &&
                 isset($groups[Input::post('promote_next_group')]) &&
-                !in_array(Input::post('promote_next_group'), [ForumEnv::get('FEATHER_ADMIN'), ForumEnv::get('FEATHER_GUEST')]) &&
+                !in_array(Input::post('promote_next_group'), [ForumEnv::get('FEATHER_ADMIN'),
+                    ForumEnv::get('FEATHER_GUEST')]) &&
                 (Input::post('group_id') || Input::post('promote_next_group') != Input::post('group_id'))) {
             $promote_next_group = Input::post('promote_next_group');
         } else {
@@ -148,16 +156,20 @@ class Groups
         $post_replies = (Input::post('post_replies') == 0) ? Input::post('post_replies') : '1';
         $post_topics = (Input::post('post_topics') == 0) ? Input::post('post_topics') : '1';
         $edit_posts = (Input::post('edit_posts') == 0) ? Input::post('edit_posts') : ($is_admin_group) ? '1' : '0';
-        $delete_posts = (Input::post('delete_posts') == 0) ? Input::post('delete_posts') : ($is_admin_group) ? '1' : '0';
-        $delete_topics = (Input::post('delete_topics') == 0) ? Input::post('delete_topics') : ($is_admin_group) ? '1' : '0';
+        $delete_posts = (Input::post('delete_posts') == 0) ?
+            Input::post('delete_posts') : ($is_admin_group) ? '1' : '0';
+        $delete_topics = (Input::post('delete_topics') == 0) ?
+            Input::post('delete_topics') : ($is_admin_group) ? '1' : '0';
         $post_links = (Input::post('post_links') == 0) ? Input::post('post_links') : '1';
         $set_title = (Input::post('set_title') == 0) ? Input::post('set_title') : ($is_admin_group) ? '1' : '0';
         $search = (Input::post('search') == 0) ? Input::post('search') : '1';
         $search_users = (Input::post('search_users') == 0) ? Input::post('search_users') : '1';
         $send_email = (Input::post('send_email') && Input::post('send_email') == '1') || $is_admin_group ? '1' : '0';
         $post_flood = (Input::post('post_flood') && Input::post('post_flood') >= 0) ? Input::post('post_flood') : '0';
-        $search_flood = (Input::post('search_flood') && Input::post('search_flood') >= 0) ? Input::post('search_flood') : '0';
-        $email_flood = (Input::post('email_flood') && Input::post('email_flood') >= 0) ? Input::post('email_flood') : '0';
+        $search_flood = (Input::post('search_flood') && Input::post('search_flood') >= 0) ?
+            Input::post('search_flood') : '0';
+        $email_flood = (Input::post('email_flood') && Input::post('email_flood') >= 0) ?
+            Input::post('email_flood') : '0';
         $report_flood = (Input::post('report_flood') >= 0) ? Input::post('report_flood') : '0';
 
         $insert_update_group = [
@@ -188,7 +200,8 @@ class Groups
             'g_report_flood'        =>  $report_flood,
         ];
 
-        $insert_update_group = Container::get('hooks')->fire('model.admin.groups.add_edit_group_data', $insert_update_group);
+        $insert_update_group = Container::get('hooks')
+            ->fire('model.admin.groups.add_edit_group_data', $insert_update_group);
 
         if (Input::post('mode') == 'add') {
             // Creating a new group
@@ -200,7 +213,8 @@ class Groups
             $add = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
                         ->create();
             $add->set($insert_update_group)->save();
-            $new_group_id = Container::get('hooks')->fire('model.admin.groups.add_edit_group.new_group_id', (int) $add->id());
+            $new_group_id = Container::get('hooks')
+                ->fire('model.admin.groups.add_edit_group.new_group_id', (int) $add->id());
 
             // Set new preferences
             Container::get('prefs')->setGroup($new_group_id, ['post.min_interval' => (int) $post_flood]);
@@ -209,7 +223,8 @@ class Groups
             $select_forum_perms = ['forum_id', 'read_forum', 'post_replies', 'post_topics'];
             $result = \ORM::for_table(ORM_TABLE_PREFIX.'forum_perms')->select_many($select_forum_perms)
                             ->where('group_id', Input::post('base_group'));
-            $result = Container::get('hooks')->fireDB('model.admin.groups.add_edit_group.select_forum_perms_query', $result);
+            $result = Container::get('hooks')
+                ->fireDB('model.admin.groups.add_edit_group.select_forum_perms_query', $result);
             $result = $result->find_many();
 
             foreach ($result as $cur_forum_perm) {
@@ -228,7 +243,10 @@ class Groups
             }
         } else {
             // We are editing an existing group
-            $title_exists = \ORM::for_table(ORM_TABLE_PREFIX.'groups')->where('g_title', $title)->where_not_equal('g_id', Input::post('group_id'))->find_one();
+            $title_exists = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+                ->where('g_title', $title)
+                ->where_not_equal('g_id', Input::post('group_id'))
+                ->find_one();
             if ($title_exists) {
                 throw new  RunBBException(sprintf(__('Title already exists message'), Utils::escape($title)), 400);
             }
@@ -241,7 +259,6 @@ class Groups
             if ($promote_next_group) {
                 \ORM::for_table(ORM_TABLE_PREFIX.'users')->where('group_id', Input::post('group_id'))
                     ->where_gte('num_posts', $promote_min_posts)
-//                    ->find_one()
                     ->find_result_set()
                     ->set(['group_id' => $promote_next_group])
                     ->save();
@@ -252,7 +269,7 @@ class Groups
         $group_id = Container::get('hooks')->fire('model.admin.groups.add_edit_group.group_id', $group_id);
 
         // Regenerate the quick jump cache
-        Container::get('cache')->store('quickjump', Cache::get_quickjump());
+        Container::get('cache')->store('quickjump', Cache::getQuickjump());
 
         if (Input::post('mode') == 'edit') {
             return Router::redirect(Router::pathFor('adminGroups'), __('Group edited redirect'));
@@ -261,7 +278,7 @@ class Groups
         }
     }
 
-    public function set_default_group($groups)
+    public function setDefaultGroup($groups)
     {
         $group_id = intval(Input::post('default_group'));
         $group_id = Container::get('hooks')->fire('model.admin.groups.set_default_group.group_id', $group_id);
@@ -278,18 +295,17 @@ class Groups
 
         \ORM::for_table(ORM_TABLE_PREFIX.'config')
             ->where('conf_name', 'o_default_user_group')
-//            ->find_one()
             ->find_result_set()
             ->set(['conf_value' => $group_id])
             ->save();
 
         // Regenerate the config cache
-        Container::get('cache')->store('config', Cache::get_config());
+        Container::get('cache')->store('config', Cache::getConfig());
 
         return Router::redirect(Router::pathFor('adminGroups'), __('Default group redirect'));
     }
 
-    public function check_members($group_id)
+    public function checkMembers($group_id)
     {
         $group_id = Container::get('hooks')->fire('model.admin.groups.check_members_start', $group_id);
 
@@ -306,7 +322,7 @@ class Groups
         return (bool) $is_member;
     }
 
-    public function delete_group($group_id)
+    public function deleteGroup($group_id)
     {
         if ($group_id < 5) {
             throw new RunBBException('Cannot delete core groups');
@@ -316,7 +332,8 @@ class Groups
 
         if (Input::post('del_group')) {
             $move_to_group = intval(Input::post('move_to_group'));
-            $move_to_group = Container::get('hooks')->fire('model.admin.groups.delete_group.move_to_group', $move_to_group);
+            $move_to_group = Container::get('hooks')
+                ->fire('model.admin.groups.delete_group.move_to_group', $move_to_group);
             \ORM::for_table(ORM_TABLE_PREFIX.'users')
                 ->where('group_id', $group_id)
 //                ->find_one()
@@ -344,7 +361,7 @@ class Groups
         return Router::redirect(Router::pathFor('adminGroups'), __('Group removed redirect'));
     }
 
-    public function get_group_title($group_id)
+    public function getGroupTitle($group_id)
     {
         $group_id = Container::get('hooks')->fireDB('model.admin.groups.get_group_title.group_id', $group_id);
 
@@ -353,16 +370,17 @@ class Groups
             ->where('g_id', $group_id)
             ->find_one();
 
-        if(!$group_title) {
+        if (!$group_title) {
             throw new RunBBException('Group ('.$group_id.') title not found. You sure group exists?');
         }
-        $group_title->g_title = Container::get('hooks')->fireDB('model.admin.groups.get_group_title.query', $group_title->g_title);
+        $group_title->g_title = Container::get('hooks')
+            ->fireDB('model.admin.groups.get_group_title.query', $group_title->g_title);
 //        $group_title = $group_title->find_one_col('g_title');
 
         return $group_title->g_title;
     }
 
-    public function get_title_members($group_id)
+    public function getTitleMembers($group_id)
     {
         $group_id = Container::get('hooks')->fire('model.admin.groups.get_title_members.group_id', $group_id);
 

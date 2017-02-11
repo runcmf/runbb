@@ -55,13 +55,19 @@ class Parser
                 $f = $_FILES['new_smiley'];
                 switch ($f['error']) {
                     case 0: // 0: Successful upload.
-                        $name = str_replace(' ', '_', $f['name']);            // Convert spaces to underscoree.
-                        $name = preg_replace('/[^\w\-.]/S', '', $name);        // Weed out all unsavory filename chars.
-                        if (preg_match('/^[\w\-.]++$/', $name)) {            // If we have a valid filename?
-                            if (preg_match('%^image/%', $f['type'])) {        // If we have an image file type?
+                        $name = str_replace(' ', '_', $f['name']);      // Convert spaces to underscoree.
+                        $name = preg_replace('/[^\w\-.]/S', '', $name); // Weed out all unsavory filename chars.
+                        if (preg_match('/^[\w\-.]++$/', $name)) {       // If we have a valid filename?
+                            if (preg_match('%^image/%', $f['type'])) {  // If we have an image file type?
                                 if ($f['size'] > 0 && $f['size'] <= ForumSettings::get('o_avatars_size')) {
-                                    if (move_uploaded_file($f['tmp_name'], ForumEnv::get('WEB_ROOT') . 'style/img/smilies/'. $name)) {
-                                        return Router::redirect(Router::pathFor('adminParser'), $lang_admin_parser['upload success']);
+                                    if (move_uploaded_file(
+                                        $f['tmp_name'],
+                                        ForumEnv::get('WEB_ROOT') . 'style/img/smilies/'. $name
+                                    )) {
+                                        return Router::redirect(
+                                            Router::pathFor('adminParser'),
+                                            $lang_admin_parser['upload success']
+                                        );
                                     } else { //  Error #1: 'Smiley upload failed. Unable to move to smiley folder.'.
                                         throw new  RunBBException($lang_admin_parser['upload_err_1'], 500);
                                     }
@@ -76,19 +82,19 @@ class Parser
                         }
                         break;
                     case 1: // case 1 similar to case 2 so fall through...
-                    case 2:
-                        throw new  RunBBException($lang_admin_parser['upload_err_2'], 400);    // File exceeds MAX_FILE_SIZE.
-                    case 3:
-                        throw new  RunBBException($lang_admin_parser['upload_err_5'], 400);    // File only partially uploaded.
+                    case 2://File exceeds MAX_FILE_SIZE.
+                        throw new  RunBBException($lang_admin_parser['upload_err_2'], 400);
+                    case 3://File only partially uploaded.
+                        throw new  RunBBException($lang_admin_parser['upload_err_5'], 400);
                     //        case 4: break; // No error. Normal response when this form element left empty
-                    case 4:
-                        throw new  RunBBException($lang_admin_parser['upload_err_6'], 400);    // No filename.
-                    case 6:
-                        throw new  RunBBException($lang_admin_parser['upload_err_7'], 500);    // No temp folder.
-                    case 7:
-                        throw new  RunBBException($lang_admin_parser['upload_err_8'], 500);    // Cannot write to disk.
-                    default:
-                        throw new  RunBBException($lang_admin_parser['upload_err_9'], 500);        // Generic/unknown error
+                    case 4:// No filename.
+                        throw new  RunBBException($lang_admin_parser['upload_err_6'], 400);
+                    case 6:// No temp folder.
+                        throw new  RunBBException($lang_admin_parser['upload_err_7'], 500);
+                    case 7:// Cannot write to disk.
+                        throw new  RunBBException($lang_admin_parser['upload_err_8'], 500);
+                    default:// Generic/unknown error
+                        throw new  RunBBException($lang_admin_parser['upload_err_9'], 500);
                 }
             }
 
@@ -211,7 +217,7 @@ class Parser
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'lang_admin_parser'    =>    $lang_admin_parser,
-                'smiley_files' => $this->model->get_smiley_files(),
+                'smiley_files' => $this->model->getSmileyFiles(),
                 'bbcd' =>   $bbcd,
                 'config' => $config,
                 'smilies' =>    $smilies,

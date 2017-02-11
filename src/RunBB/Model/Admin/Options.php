@@ -16,7 +16,7 @@ use RunBB\Model\Cache;
 
 class Options
 {
-    public function update_options()
+    public function updateOptions()
     {
         $form = [
             'board_title'            => Utils::trim(Input::post('form_board_title')),
@@ -28,20 +28,26 @@ class Options
             'default_style'            => Utils::trim(Input::post('form_default_style')),
             'time_format'            => Utils::trim(Input::post('form_time_format')),
             'date_format'            => Utils::trim(Input::post('form_date_format')),
-            'timeout_visit'            => (int)(Input::post('form_timeout_visit') > 0) ? (int)Input::post('form_timeout_visit') : 1,
-            'timeout_online'        => (int)(Input::post('form_timeout_online') > 0) ? (int)Input::post('form_timeout_online') : 1,
-            'redirect_delay'        => (int)(Input::post('form_redirect_delay') >= 0) ? (int)Input::post('form_redirect_delay') : 0,
+            'timeout_visit'            => (int)(Input::post('form_timeout_visit') > 0) ?
+                (int)Input::post('form_timeout_visit') : 1,
+            'timeout_online'        => (int)(Input::post('form_timeout_online') > 0) ?
+                (int)Input::post('form_timeout_online') : 1,
+            'redirect_delay'        => (int)(Input::post('form_redirect_delay') >= 0) ?
+                (int)Input::post('form_redirect_delay') : 0,
             'show_version'            => Input::post('form_show_version') != '1' ? '0' : '1',
             'show_user_info'        => Input::post('form_show_user_info') != '1' ? '0' : '1',
             'show_post_count'        => Input::post('form_show_post_count') != '1' ? '0' : '1',
             'smilies'                => Input::post('form_smilies') != '1' ? '0' : '1',
             'smilies_sig'            => Input::post('form_smilies_sig') != '1' ? '0' : '1',
             'make_links'            => Input::post('form_make_links') != '1' ? '0' : '1',
-            'topic_review'            => (int)Input::post('form_topic_review') >= 0 ? (int)Input::post('form_topic_review') : 0,
+            'topic_review'            => (int)Input::post('form_topic_review') >= 0 ?
+                (int)Input::post('form_topic_review') : 0,
             'disp_topics_default'    => (int)Input::post('form_disp_topics_default'),
             'disp_posts_default'    => (int)Input::post('form_disp_posts_default'),
-            'indent_num_spaces'        => (int)Input::post('form_indent_num_spaces') >= 0 ? (int)Input::post('form_indent_num_spaces') : 0,
-            'quote_depth'            => (int)Input::post('form_quote_depth') > 0 ? (int)Input::post('form_quote_depth') : 1,
+            'indent_num_spaces'        => (int)Input::post('form_indent_num_spaces') >= 0 ?
+                (int)Input::post('form_indent_num_spaces') : 0,
+            'quote_depth'            => (int)Input::post('form_quote_depth') > 0 ?
+                (int)Input::post('form_quote_depth') : 1,
             'quickpost'                => Input::post('form_quickpost') != '1' ? '0' : '1',
             'users_online'            => Input::post('form_users_online') != '1' ? '0' : '1',
             'censoring'                => Input::post('form_censoring') != '1' ? '0' : '1',
@@ -58,9 +64,12 @@ class Options
             'mailing_list'            => Utils::trim(Input::post('form_mailing_list')),
             'avatars'                => Input::post('form_avatars') != '1' ? '0' : '1',
             'avatars_dir'            => Utils::trim(Input::post('form_avatars_dir')),
-            'avatars_width'            => (int)Input::post('form_avatars_width') > 0 ? (int)Input::post('form_avatars_width') : 1,
-            'avatars_height'        => (int)Input::post('form_avatars_height') > 0 ? (int)Input::post('form_avatars_height') : 1,
-            'avatars_size'            => (int)Input::post('form_avatars_size') > 0 ? (int)Input::post('form_avatars_size') : 1,
+            'avatars_width'            => (int)Input::post('form_avatars_width') > 0 ?
+                (int)Input::post('form_avatars_width') : 1,
+            'avatars_height'        => (int)Input::post('form_avatars_height') > 0 ?
+                (int)Input::post('form_avatars_height') : 1,
+            'avatars_size'            => (int)Input::post('form_avatars_size') > 0 ?
+                (int)Input::post('form_avatars_size') : 1,
             'admin_email'            => strtolower(Utils::trim(Input::post('form_admin_email'))),
             'webmaster_email'        => strtolower(Utils::trim(Input::post('form_webmaster_email'))),
             'forum_subscriptions'    => Input::post('form_forum_subscriptions') != '1' ? '0' : '1',
@@ -118,11 +127,11 @@ class Options
             $form['date_format'] = 'Y-m-d';
         }
 
-        if (!Container::get('email')->is_valid_email($form['admin_email'])) {
+        if (!Container::get('email')->isValidEmail($form['admin_email'])) {
             throw new  RunBBException(__('Invalid e-mail message'), 400);
         }
 
-        if (!Container::get('email')->is_valid_email($form['webmaster_email'])) {
+        if (!Container::get('email')->isValidEmail($form['webmaster_email'])) {
             throw new  RunBBException(__('Invalid webmaster e-mail message'), 400);
         }
 
@@ -207,7 +216,8 @@ class Options
 
         foreach ($form as $key => $input) {
             // Only update values that have changed
-            if (array_key_exists('o_'.$key, Container::get('forum_settings')) && ForumSettings::get('o_'.$key) != $input) {
+            if (array_key_exists('o_'.$key, Container::get('forum_settings')) &&
+                ForumSettings::get('o_'.$key) != $input) {
                 if ($input != '' || is_int($input)) {
                     $set = ['conf_value' => $input];
                 } else {
@@ -222,13 +232,13 @@ class Options
         }
 
         // Regenerate the config cache
-        Container::get('cache')->store('config', Cache::get_config());
-        $this->clear_feed_cache();
+        Container::get('cache')->store('config', Cache::getConfig());
+        $this->clearFeedCache();
 
         return Router::redirect(Router::pathFor('adminOptions'), __('Options updated redirect'));
     }
 
-    public function clear_feed_cache()
+    public function clearFeedCache()
     {
         $d = dir(ForumEnv::get('FORUM_CACHE_DIR'));
         $d = Container::get('hooks')->fire('model.admin.options.clear_feed_cache.directory', $d);
@@ -245,7 +255,7 @@ class Options
         $d->close();
     }
 
-    public function get_styles()
+    public function getStyles()
     {
         $styles = \RunBB\Core\Lister::getStyles();
         $styles = Container::get('hooks')->fire('model.admin.options.get_styles.styles', $styles);
@@ -254,9 +264,11 @@ class Options
 
         foreach ($styles as $temp) {
             if (ForumSettings::get('o_default_style') == $temp) {
-                $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.
+                    str_replace('_', ' ', $temp).'</option>'."\n";
             } else {
-                $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.
+                    str_replace('_', ' ', $temp).'</option>'."\n";
             }
         }
 
@@ -264,7 +276,7 @@ class Options
         return $output;
     }
 
-    public function get_langs()
+    public function getLangs()
     {
         $langs = \RunBB\Core\Lister::getLangs();
         $langs = Container::get('hooks')->fire('model.admin.options.get_langs.langs', $langs);
@@ -273,9 +285,11 @@ class Options
 
         foreach ($langs as $temp) {
             if (ForumSettings::get('o_default_lang') == $temp) {
-                $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.str_replace('_', ' ', $temp).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.
+                    str_replace('_', ' ', $temp).'</option>'."\n";
             } else {
-                $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.str_replace('_', ' ', $temp).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.
+                    str_replace('_', ' ', $temp).'</option>'."\n";
             }
         }
 
@@ -283,7 +297,7 @@ class Options
         return $output;
     }
 
-    public function get_times()
+    public function getTimes()
     {
         $times = [5, 15, 30, 60];
         $times = Container::get('hooks')->fire('model.admin.options.get_times.times', $times);
@@ -291,7 +305,9 @@ class Options
         $output = '';
 
         foreach ($times as $time) {
-            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'"'.(ForumSettings::get('o_feed_ttl') == $time ? ' selected="selected"' : '').'>'.sprintf(__('Minutes'), $time).'</option>'."\n";
+            $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$time.'"'.
+                (ForumSettings::get('o_feed_ttl') == $time ? ' selected="selected"' : '').'>'.
+                sprintf(__('Minutes'), $time).'</option>'."\n";
         }
 
         $output = Container::get('hooks')->fire('model.admin.options.get_times.output', $output);

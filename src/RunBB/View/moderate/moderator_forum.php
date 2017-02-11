@@ -60,16 +60,16 @@ Container::get('hooks')->fire('view.moderate.moderator_forum.start');
                 ?>
                             <tr class="<?= $topic['item_status'] ?>">
                     <td class="tcl">
-                        <div class="<?= $topic['icon_type'] ?>"><div class="nosize"><?= Utils::forum_number_format($topic_count + $start_from) ?></div></div>
+                        <div class="<?= $topic['icon_type'] ?>"><div class="nosize"><?= Utils::numberFormat($topic_count + $start_from) ?></div></div>
                         <div class="tclcon">
                             <div>
                                 <?= $topic['subject_disp']."\n" ?>
                             </div>
                         </div>
                     </td>
-                    <td class="tc2"><?php echo(!$topic['ghost_topic']) ? Utils::forum_number_format($topic['num_replies']) : '-' ?></td>
+                    <td class="tc2"><?php echo(!$topic['ghost_topic']) ? Utils::numberFormat($topic['num_replies']) : '-' ?></td>
 <?php if (ForumSettings::get('o_topic_views') == '1') :
-?>                    <td class="tc3"><?php echo(!$topic['ghost_topic']) ? Utils::forum_number_format($topic['num_views']) : '-' ?></td>
+?>                    <td class="tc3"><?php echo(!$topic['ghost_topic']) ? Utils::numberFormat($topic['num_views']) : '-' ?></td>
 <?php endif;
                 ?>                    <td class="tcr"><?= $topic['last_post_disp'] ?></td>
                     <td class="tcmod"><input type="checkbox" name="topics[<?= $topic['id'] ?>]" value="1" /></td>

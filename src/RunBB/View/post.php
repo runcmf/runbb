@@ -185,7 +185,7 @@ if ($tid && ForumSettings::get('o_topic_review') != '0') :
                 <div class="postleft">
                     <dl>
                         <dt><strong><?= Utils::escape($post['poster']) ?></strong></dt>
-                        <dd><span><?= Utils::format_time($post['posted']) ?></span></dd>
+                        <dd><span><?= Utils::timeFormat($post['posted']) ?></span></dd>
                     </dl>
                 </div>
                 <div class="postright">

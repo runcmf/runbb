@@ -82,8 +82,7 @@ class Install
                     // If the field is required, or if user and pass are missing even
                     // though mysql or pgsql are selected as DB
                     if (!in_array($field, $this->optional_fields)
-                        || (in_array($field, ['db_user']) && in_array($data['db_type'], ['mysql', 'pgsql'])))
-                    {
+                        || (in_array($field, ['db_user']) && in_array($data['db_type'], ['mysql', 'pgsql']))) {
                         $missing_fields[] = $field;
                     }
                 }
@@ -106,7 +105,8 @@ class Install
                 } elseif (!strcasecmp($data['username'], 'Guest')) {
                     $this->errors[] = __('Username 3');
                 } elseif (preg_match('%[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}%', $data['username'])
-                    || preg_match('%((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:)'.
+                    || preg_match(
+                        '%((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:)'.
                         '{6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]'.
                         '{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|'.
                         '(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|'.
@@ -118,18 +118,16 @@ class Install
                         '(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|'.
                         '([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|'.
                         '(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))%',
-                        $data['username']))
-                {
+                        $data['username']
+                    )) {
                     $this->errors[] = __('Username 4');
                 } elseif ((strpos($data['username'], '[') !== false
                         || strpos($data['username'], ']') !== false) &&
                     strpos($data['username'], '\'') !== false &&
-                    strpos($data['username'], '"') !== false)
-                {
+                    strpos($data['username'], '"') !== false) {
                     $this->errors[] = __('Username 5');
                 } elseif (preg_match('%(?:\[/?(?:b|u|i|h|colou?r|quote|code|img|url|email|list)\]|'.
-                    '\[(?:code|quote|list)=)%i', $data['username']))
-                {
+                    '\[(?:code|quote|list)=)%i', $data['username'])) {
                     $this->errors[] = __('Username 6');
                 }
 
@@ -162,8 +160,7 @@ class Install
                 // Validate db_prefix if existing
                 if (!empty($data['db_prefix']) && ((strlen($data['db_prefix']) > 0 &&
                         (!preg_match('%^[a-zA-Z_][a-zA-Z0-9_]*$%', $data['db_prefix']) ||
-                            strlen($data['db_prefix']) > 40))))
-                {
+                            strlen($data['db_prefix']) > 40)))) {
                     $this->errors[] = sprintf(__('Table prefix error'), $data['db_prefix']);
                 }
             }
@@ -180,7 +177,7 @@ class Install
             } else {
                 $data['default_style'] = $this->default_style;
                 $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), ['on', 'true', '1']) ? 1 : 0;
-                return $this->create_config($data);
+                return $this->createConfig($data);
             }
         } else {
             $base_url = str_replace('index.php', '', Url::base());
@@ -200,7 +197,7 @@ class Install
         }
     }
 
-    public function create_config(array $data)
+    public function createConfig(array $data)
     {
         Container::get('hooks')->fire('controller.install.create_config');
 
@@ -214,33 +211,33 @@ class Install
 
         $config = array_merge($config, [
             'cookie_name' => mb_strtolower(ForumEnv::get('FORUM_NAME')) . '_cookie_' . Random::key(7, false, true),
-            'jwt_token' => base64_encode(Random::secure_random_bytes(64)),
+            'jwt_token' => base64_encode(Random::secureRandomBytes(64)),
             'jwt_algorithm' => 'HS512'
         ]);
 
         // ... And write it on disk
-        if ($this->write_config($config)) {
-            return $this->create_db($data);
+        if ($this->writeConfig($config)) {
+            return $this->createDb($data);
         } else {
             // TODO: Translate
             return Router::redirect(Router::pathFor('install'), ['error', 'Error while writing config file']);
         }
     }
 
-    public function create_db(array $data)
+    public function createDb(array $data)
     {
         Container::get('hooks')->fire('controller.install.create_db');
 
         // Handle db prefix
         $data['db_prefix'] = (!empty($data['db_prefix'])) ? $data['db_prefix'] : '';
         // Init DB
-        Core::init_db($data);
+        Core::initDb($data);
         // Load appropriate language
         Lang::load('install', 'RunBB', $data['default_lang']);
 
         // Create common tables
-        foreach ($this->model->get_database_scheme() as $table => $sql) {
-            if (!$this->model->create_table($data['db_prefix'] . $table, $sql)) {
+        foreach ($this->model->getDatabaseScheme() as $table => $sql) {
+            if (!$this->model->createTable($data['db_prefix'] . $table, $sql)) {
                 // Error handling
                 $this->errors[] = 'A problem was encountered while creating table ' . $table;
             }
@@ -249,17 +246,17 @@ class Install
         // FIXME move lang shema to installer
         // create languages tables
         $langModel = new \RunBB\Model\Admin\Languages();
-        $lanTables = $langModel->get_database_scheme();
+        $lanTables = $langModel->getDatabaseScheme();
         foreach ($lanTables as $table => $sql) {
-            if (!$this->model->create_table($data['db_prefix'] . $table, $sql)) {
+            if (!$this->model->createTable($data['db_prefix'] . $table, $sql)) {
                 // Error handling
                 $this->errors[] = 'A problem was encountered while creating table ' . $table;
             }
         }
 
         // Populate group table with default values
-        foreach ($this->model->load_default_groups() as $group_name => $group_data) {
-            $this->model->add_data('groups', $group_data);
+        foreach ($this->model->loadDefaultGroups() as $group_name => $group_data) {
+            $this->model->addData('groups', $group_data);
         }
 
         Container::get('perms')->allowGroup(3, [
@@ -305,30 +302,30 @@ class Install
 
 
         // Populate user table with default values
-        $this->model->add_data('users', $this->model->load_default_user());
-        $this->model->add_data('users', $this->model->load_admin_user($data));
+        $this->model->addData('users', $this->model->loadDefaultUser());
+        $this->model->addData('users', $this->model->loadAdminUser($data));
         // Populate categories, forums, topics, posts
-        $this->model->add_mock_forum($this->model->load_mock_forum_data($data));
+        $this->model->addMockForum($this->model->loadMockForumData($data));
         // Store config in DB
-        $this->model->save_config($this->load_default_config($data));
+        $this->model->saveConfig($this->loadDefaultConfig($data));
 
         // Handle .htaccess
         if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) {
-            $this->write_htaccess();
+            $this->writeHtaccess();
         }
 
         // Redirect to homepage with success message
         return Router::redirect(Router::pathFor('home'), ['success', __('Message')]);
     }
 
-    public function write_config($array)
+    public function writeConfig($array)
     {
         Container::get('hooks')->fire('controller.install.write_config');
         return file_put_contents(ForumEnv::get('FORUM_CONFIG_FILE'), '<?php' .
             "\n" . 'return ' . var_export($array, true) . ';');
     }
 
-    public function write_htaccess()
+    public function writeHtaccess()
     {
         Container::get('hooks')->fire('controller.install.write_htaccess');
 
@@ -336,7 +333,7 @@ class Install
         return file_put_contents(ForumEnv::get('FORUM_ROOT') . '.htaccess', $data);
     }
 
-    public function load_default_config(array $data)
+    public function loadDefaultConfig(array $data)
     {
         Container::get('hooks')->fire('controller.install.load_default_config');
 

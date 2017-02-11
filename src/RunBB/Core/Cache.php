@@ -67,9 +67,9 @@ class Cache
      */
     public function isCached($key)
     {
-        if ($cachedData = $this->_loadCache()) {
+        if ($cachedData = $this->loadCache()) {
             if (isset($cachedData[$key])) {
-                if (!$this->_isExpired($cachedData[$key]['time'], $cachedData[$key]['expire'])) {
+                if (!$this->isExpired($cachedData[$key]['time'], $cachedData[$key]['expire'])) {
                     return true;
                 }
             }
@@ -95,13 +95,13 @@ class Cache
         if ($this->retrieve($key) !== null) {
             $this->delete($key);
         }
-        $cache = $this->_loadCache();
+        $cache = $this->loadCache();
         if (is_array($cache)) {
             $cache[(string)$key] = $new_data;
         } else {
             $cache = [(string)$key => $new_data];
         }
-        $this->_saveCache($cache);
+        $this->saveCache($cache);
         return $this;
     }
 
@@ -115,9 +115,9 @@ class Cache
     public function retrieve($key)
     {
         $key = (string)$key;
-        if ($cache = $this->_loadCache()) {
+        if ($cache = $this->loadCache()) {
             if (isset($cache[$key])) {
-                if (!$this->_isExpired($cache[$key]['time'], $cache[$key]['expire'])) {
+                if (!$this->isExpired($cache[$key]['time'], $cache[$key]['expire'])) {
                     return unserialize($cache[$key]['data']);
                 }
             }
@@ -133,7 +133,7 @@ class Cache
      */
     public function retrieveAll($raw = false)
     {
-        if ($cache = $this->_loadCache()) {
+        if ($cache = $this->loadCache()) {
             if (!$raw) {
                 $results = [];
                 foreach ($cache as $key => $value) {
@@ -157,10 +157,10 @@ class Cache
     public function delete($key)
     {
         $key = (string)$key;
-        if ($cache = $this->_loadCache()) {
+        if ($cache = $this->loadCache()) {
             if (isset($cache[$key])) {
                 unset($cache[$key]);
-                $this->_saveCache($cache);
+                $this->saveCache($cache);
                 return $this;
             }
         }
@@ -174,17 +174,17 @@ class Cache
      */
     public function deleteExpired()
     {
-        $cache = $this->_loadCache();
+        $cache = $this->loadCache();
         if (is_array($cache)) {
             $i = 0;
             $cache = array_map(function ($value) use (& $i) {
-                if (!$this->_isExpired($value['time'], $value['expire'])) {
+                if (!$this->isExpired($value['time'], $value['expire'])) {
                     ++$i;
                     return $value;
                 }
             });
             if ($i > 0) {
-                $this->_saveCache($cache);
+                $this->saveCache($cache);
             }
         }
         return $this;
@@ -197,7 +197,7 @@ class Cache
     public function flush()
     {
         $this->cache = null; // Purge cache
-        $this->_saveCache([]);
+        $this->saveCache([]);
         return $this;
     }
 
@@ -209,13 +209,13 @@ class Cache
     public function increment($key)
     {
         $key = (string)$key;
-        if ($cache = $this->_loadCache()) {
+        if ($cache = $this->loadCache()) {
             if (isset($cache[$key])) {
                 $tmp = unserialize($cache[$key]['data']);
                 if (is_numeric($tmp)) {
                     ++$tmp;
                     $cache[$key]['data'] = serialize($tmp);
-                    $this->_saveCache($cache);
+                    $this->saveCache($cache);
                     return $this;
                 }
             }
@@ -231,13 +231,13 @@ class Cache
     public function decrement($key)
     {
         $key = (string)$key;
-        if ($cache = $this->_loadCache()) {
+        if ($cache = $this->loadCache()) {
             if (isset($cache[$key])) {
                 $tmp = unserialize($cache[$key]['data']);
                 if (is_numeric($tmp)) {
                     --$tmp;
                     $cache[$key]['data'] = serialize($tmp);
-                    $this->_saveCache($cache);
+                    $this->saveCache($cache);
                     return $this;
                 }
             }
@@ -249,7 +249,7 @@ class Cache
      * Load cache
      * @return cache if existing or not null / null otherwise
      */
-    protected function _loadCache()
+    private function loadCache()
     {
         if (!is_null($this->cache)) {
             return $this->cache;
@@ -267,7 +267,7 @@ class Cache
      * @param $dataArray
      * @return number of bytes that were written to the file, or FALSE on failure.
      */
-    protected function _saveCache(array $data)
+    private function saveCache(array $data)
     {
         $this->cache = $data; // Save new data in object to avoid useless I/O access
         return file_put_contents($this->getCacheFile(), json_encode($data));
@@ -280,7 +280,7 @@ class Cache
      * @param integer $expiration
      * @return boolean
      */
-    protected function _isExpired($timestamp, $expiration)
+    private function isExpired($timestamp, $expiration)
     {
         if ($expiration !== 0) {
             return (time() - $timestamp > $expiration);
@@ -320,7 +320,9 @@ class Cache
         if (!isset($this->filenames[$this->settings['name']])) {
             if ($this->checkCacheDir()) {
                 $filename = preg_replace('/[^0-9a-z\.\_\-]/i', '', strtolower($this->settings['name']));
-                $this->filenames[$this->settings['name']] = $this->settings['path'] . sha1($filename) . $this->settings['extension'];
+                $this->filenames[$this->settings['name']] = $this->settings['path'] .
+                    sha1($filename) .
+                    $this->settings['extension'];
             }
         }
         return $this->filenames[$this->settings['name']];

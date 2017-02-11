@@ -64,12 +64,12 @@ class Languages
         return \ORM::forTable(ORM_TABLE_PREFIX.'languages')->findArray();
     }
 
-    public function getLangInfo($id=0)
+    public function getLangInfo($id = 0)
     {
         return \ORM::forTable(ORM_TABLE_PREFIX.'languages')->findOne((int)$id);
     }
 
-    public function getLangInfoByCode($code='')
+    public function getLangInfoByCode($code = '')
     {
         return \ORM::forTable(ORM_TABLE_PREFIX.'languages')
             ->where('code', $code)
@@ -105,7 +105,7 @@ class Languages
     public function getTranslationsByDomain($id, $domain)
     {
         // now only with English compare, rebuild for any
-        if($id === 1) {
+        if ($id === 1) {
             $list = \ORM::forTable(ORM_TABLE_PREFIX . 'lang_trans')
                 ->where([
                     'lid' => (int)$id,
@@ -155,10 +155,9 @@ class Languages
         $rec = \ORM::forTable(ORM_TABLE_PREFIX.'languages')
             ->findOne($data['id'])
             ->set($data);
-        if(!$rec->save()) {
+        if (!$rec->save()) {
             throw new RunBBException('A problem was encountered while update Info for language: '.
-                isset($data['name']) ? $data['name'] : 'Unknown'
-            );
+                isset($data['name']) ? $data['name'] : 'Unknown');
         }
         return true;
     }
@@ -172,7 +171,7 @@ class Languages
             $rec = \ORM::forTable(ORM_TABLE_PREFIX . 'lang_trans')
                 ->findOne($key)
                 ->set('msgstr', $var);
-            if(!$rec->save()) {
+            if (!$rec->save()) {
                 throw new RunBBException('A problem was encountered while update translation msgstr: '.$var);
             }
         }
@@ -188,7 +187,7 @@ class Languages
             $rec = \ORM::forTable(ORM_TABLE_PREFIX . 'lang_mailtpls')
                 ->findOne($key)
                 ->set('text', $var);
-            if(!$rec->save()) {
+            if (!$rec->save()) {
                 throw new RunBBException('A problem was encountered while update mail template text: '.$var);
             }
         }
@@ -206,7 +205,7 @@ class Languages
         $info = $this->getLangInfo($id);
         $arr = $this->getTranslationsByDomain($id, $domain);
         $dir = ForumEnv::get('FORUM_CACHE_DIR') . 'locale/' . $info->code .'/LC_MESSAGES';
-        if(Utils::checkDir($dir)) {
+        if (Utils::checkDir($dir)) {
             $translator = isset(User::get()->username) ? User::get()->username : 'RunBB System';
             $email = isset(User::get()->email) ?
                 User::get()->email : Container::get('forum_settings')['o_webmaster_email'];
@@ -226,10 +225,10 @@ class Languages
                 $translations->offsetSet('', $translation);
             }
             //Save to a file
-            if(!\Gettext\Generators\Po::toFile($translations, $dir . '/'.$domain.'.po')) {
+            if (!\Gettext\Generators\Po::toFile($translations, $dir . '/'.$domain.'.po')) {
                 throw new RunBBException('Can not update PO file: '.$domain);
             }
-            if(!\Gettext\Generators\Mo::toFile($translations, $dir . '/'.$domain.'.mo')) {
+            if (!\Gettext\Generators\Mo::toFile($translations, $dir . '/'.$domain.'.mo')) {
                 throw new RunBBException('Can not update MO file: '.$domain);
             }
         }
@@ -302,7 +301,7 @@ class Languages
         return true;
     }
 
-    public function importLang($code=null)
+    public function importLang($code = null)
     {
         if ($code === null) {
             return false;
@@ -313,7 +312,7 @@ class Languages
 
         // first check if code exists
         $installed = $this->getLangInfoByCode($data->code);
-        if($installed) {
+        if ($installed) {
             // clear table ??? FIXME rebuild logic
             $z = \ORM::for_table(ORM_TABLE_PREFIX . 'languages')->find_one($installed->id);
             $z->delete();
@@ -334,7 +333,7 @@ class Languages
             'image' => $data->image,
             'author' => $data->author
         ];
-        $lid = $this->add_data('languages', $l);
+        $lid = $this->addData('languages', $l);
 
         // fill translations
         $transcount = count($data->translations);
@@ -342,7 +341,7 @@ class Languages
             $t = get_object_vars($t);
             // set lang id
             $t['lid'] = $lid;
-            $id = $this->add_data('lang_trans', $t);
+            $id = $this->addData('lang_trans', $t);
         }
 
         // fill mail templates
@@ -350,7 +349,7 @@ class Languages
         foreach ($data->mailTemplates as $m) {
             $m = get_object_vars($m);
             $m['lid'] = $lid;
-            $id = $this->add_data('lang_mailtpls', $m);
+            $id = $this->addData('lang_mailtpls', $m);
         }
         // collect info
         $info[] = [
@@ -397,21 +396,21 @@ class Languages
 //                'locale' => isset($vars['locale']) ? $vars['locale'] : '',
 //                'name' => $vars['name']
 //            ];
-//            $lid = $this->add_data('languages', $l);
+//            $lid = $this->addData('languages', $l);
 //
 //            // fill translations
 //            $transcount = count($vars['translations']);
 //            foreach ($vars['translations'] as $t) {
 //                // set lang id
 //                $t['lid'] = $lid;
-//                $id = $this->add_data('lang_trans', $t);
+//                $id = $this->addData('lang_trans', $t);
 //            }
 //
 //            // fill mail templates
 //            $mailTemplates = count($vars['mailTemplates']);
 //            foreach ($vars['mailTemplates'] as $m) {
 //                $m['lid'] = $lid;
-//                $id = $this->add_data('lang_mailtpls', $m);
+//                $id = $this->addData('lang_mailtpls', $m);
 //            }
 //            // collect info
 //            $info[] = [
@@ -433,7 +432,7 @@ class Languages
             throw new RunBBException('Cannot build lang. Empty data');
         }
         // add lang
-        $lid = $this->add_data('languages', $data);
+        $lid = $this->addData('languages', $data);
         // add translations
         $trans = $this->getTranslationsById($from);
         foreach ($trans as $t) {
@@ -441,7 +440,7 @@ class Languages
             unset($t['id']);
             // set new lang id
             $t['lid'] = $lid;
-            $id = $this->add_data('lang_trans', $t);
+            $id = $this->addData('lang_trans', $t);
         }
         // add mail templates
         $mailTpls = $this->getMailTemplatesById($from);
@@ -450,7 +449,7 @@ class Languages
             unset($m['id']);
             // set new lang id
             $m['lid'] = $lid;
-            $id = $this->add_data('lang_mailtpls', $m);
+            $id = $this->addData('lang_mailtpls', $m);
         }
         return $lid;
     }
@@ -472,19 +471,19 @@ class Languages
         return true;
     }
 
-    public function get_database_scheme()
+    public function getDatabaseScheme()
     {
         return $this->database_scheme;
     }
 
-//    public function create_table($table_name, $sql)
+//    public function createTable($table_name, $sql)
 //    {
 //        $db = \ORM::get_db();
 //        $req = preg_replace('/%t%/', '`' . $table_name . '`', $sql);
 //        return $db->exec($req);
 //    }
 //
-//    public function add_data($table_name, array $data)
+//    public function addData($table_name, array $data)
 //    {
 //        $req = \ORM::for_table(ORM_TABLE_PREFIX . $table_name)
 //            ->create()
@@ -495,8 +494,8 @@ class Languages
 //
 //    public function createTables()
 //    {
-//        foreach ($this->get_database_scheme() as $table => $sql) {
-//            if ($this->create_table(ORM_TABLE_PREFIX.$table, $sql) !== 0) {
+//        foreach ($this->getDatabaseScheme() as $table => $sql) {
+//            if ($this->createTable(ORM_TABLE_PREFIX.$table, $sql) !== 0) {
 //                // Error handling
 //                throw new  RunBBException('A problem was encountered while creating table '.$table);
 //            }

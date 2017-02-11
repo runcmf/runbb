@@ -38,7 +38,11 @@ class Topic
         }
 
         Container::get('hooks')->fire(
-            'controller.topic.display', $args['id'], $args['name'], $args['page'], $args['pid']
+            'controller.topic.display',
+            $args['id'],
+            $args['name'],
+            $args['page'],
+            $args['pid']
         );
 
         // Antispam feature
@@ -55,14 +59,18 @@ class Topic
                 array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         // Can we or can we not post replies?
-        $post_link = $this->model->getPostLink($args['id'], $cur_topic['closed'],
-            $cur_topic['post_replies'], $is_admmod);
+        $post_link = $this->model->getPostLink(
+            $args['id'],
+            $cur_topic['closed'],
+            $cur_topic['post_replies'],
+            $is_admmod
+        );
 
         // Add/update this topic in our list of tracked topics
         if (!User::get()->is_guest) {
-            $tracked_topics = Track::get_tracked_topics();
+            $tracked_topics = Track::getTrackedTopics();
             $tracked_topics['topics'][$args['id']] = time();
-            Track::set_tracked_topics($tracked_topics);
+            Track::setTrackedTopics($tracked_topics);
         }
 
         // Determine the post offset (based on $_GET['p'])
@@ -71,8 +79,8 @@ class Topic
         $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
         $start_from = User::get()->disp_posts * ($p - 1);
 
-        $url_topic = Url::url_friendly($cur_topic['subject']);
-        $url_forum = Url::url_friendly($cur_topic['forum_name']);
+        $url_topic = Url::slug($cur_topic['subject']);
+        $url_forum = Url::slug($cur_topic['forum_name']);
 
         // Generate paging links
         $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' .
@@ -88,12 +96,16 @@ class Topic
         View::addAsset('canonical', Router::pathFor('Forum', ['id' => $args['id'], 'name' => $url_forum]));
         if ($num_pages > 1) {
             if ($p > 1) {
-                View::addAsset('prev', Router::pathFor('ForumPaginate',
-                    ['id' => $args['id'], 'name' => $url_forum, 'page' => intval($p - 1)]));
+                View::addAsset('prev', Router::pathFor(
+                    'ForumPaginate',
+                    ['id' => $args['id'], 'name' => $url_forum, 'page' => intval($p - 1)]
+                ));
             }
             if ($p < $num_pages) {
-                View::addAsset('next', Router::pathFor('ForumPaginate',
-                    ['id' => $args['id'], 'name' => $url_forum, 'page' => intval($p + 1)]));
+                View::addAsset('next', Router::pathFor(
+                    'ForumPaginate',
+                    ['id' => $args['id'], 'name' => $url_forum, 'page' => intval($p + 1)]
+                ));
             }
         }
 
@@ -167,7 +179,7 @@ class Topic
 
         $topic = $this->model->setClosed($args['id'], 1);
         return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'],
-            'name' => Url::url_friendly($topic['subject'])]), __('Close topic redirect'));
+            'name' => Url::slug($topic['subject'])]), __('Close topic redirect'));
     }
 
     public function open($req, $res, $args)
@@ -176,7 +188,7 @@ class Topic
 
         $topic = $this->model->setClosed($args['id'], 0);
         return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'],
-            'name' => Url::url_friendly($topic['subject'])]), __('Open topic redirect'));
+            'name' => Url::slug($topic['subject'])]), __('Open topic redirect'));
     }
 
     public function stick($req, $res, $args)
@@ -185,7 +197,7 @@ class Topic
 
         $topic = $this->model->setSticky($args['id'], 1);
         return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'],
-            'name' => Url::url_friendly($topic['subject'])]), __('Stick topic redirect'));
+            'name' => Url::slug($topic['subject'])]), __('Stick topic redirect'));
     }
 
     public function unstick($req, $res, $args)
@@ -194,7 +206,7 @@ class Topic
 
         $topic = $this->model->setSticky($args['id'], 0);
         return Router::redirect(Router::pathFor('Topic', ['id' => $args['id'],
-            'name' => Url::url_friendly($topic['subject'])]), __('Unstick topic redirect'));
+            'name' => Url::slug($topic['subject'])]), __('Unstick topic redirect'));
     }
 
     // Move a single topic
@@ -228,12 +240,11 @@ class Topic
 
         // Make sure that only admmods allowed access this page
         $forumModel = new \RunBB\Model\Forum();
-        $moderators = $forumModel->get_moderators($args['id']);
+        $moderators = $forumModel->getModerators($args['id']);
         $mods_array = ($moderators != '') ? unserialize($moderators) : [];
 
         if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&
-            (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array)))
-        {
+            (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))) {
             throw new  RunBBException(__('No permission'), 403);
         }
 
@@ -289,8 +300,8 @@ class Topic
                 'page' => $p,
                 'active_page' => 'moderate',
                 'cur_topic' => $cur_topic,
-                'url_topic' => Url::url_friendly($cur_topic['subject']),
-                'url_forum' => Url::url_friendly($cur_topic['forum_name']),
+                'url_topic' => Url::slug($cur_topic['subject']),
+                'url_forum' => Url::slug($cur_topic['forum_name']),
                 'fid' => $args['fid'],
                 'id' => $args['id'],
                 'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' .

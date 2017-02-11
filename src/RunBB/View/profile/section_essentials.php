@@ -183,7 +183,7 @@ foreach (array_unique(Container::get('forum_time_formats')) as $key => $time_for
     if ($user->time_format == $key) {
         echo ' selected="selected"';
     }
-    echo '>'. Utils::format_time(time(), false, null, $time_format, true, true);
+    echo '>'. Utils::timeFormat(time(), false, null, $time_format, true, true);
     if ($key == 0) {
         echo ' ('.__('Default').')';
     }
@@ -201,7 +201,7 @@ foreach (array_unique(Container::get('forum_date_formats')) as $key => $date_for
     if ($user->date_format == $key) {
         echo ' selected="selected"';
     }
-    echo '>'. Utils::format_time(time(), true, $date_format, null, false, true);
+    echo '>'. Utils::timeFormat(time(), true, $date_format, null, false, true);
     if ($key == 0) {
         echo ' ('.__('Default').')';
     }
@@ -244,9 +244,9 @@ foreach ($languages as $temp) {
                 <fieldset>
                     <legend><?= __('User activity') ?></legend>
                     <div class="infldset">
-                        <p><?php printf(__('Registered info'), Utils::format_time($user->registered, true).((User::get()->is_admmod) ? ' (<a href="'.Router::pathFor('usersIpShow', ['ip' => $user->registration_ip]).'">'.Utils::escape($user->registration_ip).'</a>)' : '')) ?></p>
-                        <p><?php __('Last post info') .' '. Utils::format_time($user->last_post) ?></p>
-                        <p><?php __('Last visit info') .' '. Utils::format_time($user->last_visit) ?></p>
+                        <p><?php printf(__('Registered info'), Utils::timeFormat($user->registered, true).((User::get()->is_admmod) ? ' (<a href="'.Router::pathFor('usersIpShow', ['ip' => $user->registration_ip]).'">'.Utils::escape($user->registration_ip).'</a>)' : '')) ?></p>
+                        <p><?php __('Last post info') .' '. Utils::timeFormat($user->last_post) ?></p>
+                        <p><?php __('Last visit info') .' '. Utils::timeFormat($user->last_visit) ?></p>
                         <?= $user_disp['posts_field'] ?>
 <?php if (User::get()->is_admmod) :
 ?>                            <label><?= __('Admin note') ?><br />

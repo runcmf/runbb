@@ -36,7 +36,7 @@ class Index
                 throw new  RunBBException(__('fopen disabled message'), 500);
             }
 
-            $latest_version = trim(@file_get_contents('http://featherbb.org/latest_version.html'));
+            $latest_version = trim(file_get_contents('http://featherbb.org/latest_version.html'));
             if (empty($latest_version)) {
                 throw new  RunBBException(__('Upgrade check failed message'), 500);
             }
@@ -44,7 +44,10 @@ class Index
             if (version_compare(ForumSettings::get('o_cur_version'), $latest_version, '>=')) {
                 return Router::redirect(Router::pathFor('adminIndex'), __('Running latest version message'));
             } else {
-                return Router::redirect(Router::pathFor('adminIndex'), sprintf(__('New version available message'), '<a href="http://featherbb.org/">RunBB.org</a>'));
+                return Router::redirect(
+                    Router::pathFor('adminIndex'),
+                    sprintf(__('New version available message'), '<a href="http://featherbb.org/">RunBB.org</a>')
+                );
             }
         }
 

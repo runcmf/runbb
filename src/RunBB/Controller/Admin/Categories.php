@@ -33,7 +33,7 @@ class Categories
             return Router::redirect(Router::pathFor('adminCategories'), __('Must enter name message'));
         }
 
-        if ($this->model->add_category($cat_name)) {
+        if ($this->model->addCategory($cat_name)) {
             return Router::redirect(Router::pathFor('adminCategories'), __('Category added redirect'));
         } else { //TODO, add error message
             return Router::redirect(Router::pathFor('adminCategories'), __('Category added redirect'));
@@ -55,11 +55,11 @@ class Categories
             if ($category['name'] == '') {
                 return Router::redirect(Router::pathFor('adminCategories'), __('Must enter name message'));
             }
-            $this->model->update_category($category);
+            $this->model->updateCategory($category);
         }
 
         // Regenerate the quick jump cache
-        Container::get('cache')->store('quickjump', Cache::get_quickjump());
+        Container::get('cache')->store('quickjump', Cache::getQuickjump());
 
         return Router::redirect(Router::pathFor('adminCategories'), __('Categories updated redirect'));
     }
@@ -78,7 +78,7 @@ class Categories
             return Router::redirect(Router::pathFor('adminCategories'), __('Delete category not validated'));
         }
 
-        if ($this->model->delete_category($cat_to_delete)) {
+        if ($this->model->deleteCategory($cat_to_delete)) {
             return Router::redirect(Router::pathFor('adminCategories'), __('Category deleted redirect'));
         } else {
             return Router::redirect(Router::pathFor('adminCategories'), __('Unable to delete category'));
@@ -95,7 +95,7 @@ class Categories
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Categories')],
                 'active_page' => 'admin',
                 'admin_console' => true,
-                'cat_list' => $this->model->get_cat_list(),
+                'cat_list' => $this->model->getCatList(),
             ])->addTemplate('admin/categories.php')->display();
     }
 }

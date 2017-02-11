@@ -41,14 +41,18 @@ class Lister
         $plugins = [];
 
         // Get the official list from the website
-        $content = json_decode(AdminUtils::get_content('http://featherbb.org/plugins.json'));
+        $content = json_decode(AdminUtils::getContent('http://featherbb.org/plugins.json'));
 
         // If internet is available
         if (!is_null($content)) {
             foreach ($content as $plugin) {
                 // Get information from each repo
                 // TODO: cache
-                $plugins[] = json_decode(AdminUtils::get_content('https://raw.githubusercontent.com/featherbb/'.$plugin.'/master/featherbb.json'));
+                $plugins[] = json_decode(
+                    AdminUtils::getContent(
+                        'https://raw.githubusercontent.com/featherbb/'.$plugin.'/master/featherbb.json'
+                    )
+                );
             }
         }
 
@@ -64,7 +68,8 @@ class Lister
 
         $iterator = new \DirectoryIterator(ForumEnv::get('WEB_ROOT').'style/themes/');
         foreach ($iterator as $child) {
-            if (!$child->isDot() && $child->isDir() && file_exists($child->getPathname().DIRECTORY_SEPARATOR.'style.css')) {
+            if (!$child->isDot() && $child->isDir() &&
+                file_exists($child->getPathname().DIRECTORY_SEPARATOR.'style.css')) {
                 // If the theme is well formed, add it to the list
                 $styles[] = $child->getFileName();
             }
@@ -83,7 +88,8 @@ class Lister
 
         $iterator = new \DirectoryIterator(ForumEnv::get('FORUM_ROOT').'lang/');
         foreach ($iterator as $child) {
-            if (!$child->isDot() && $child->isDir() && file_exists($child->getPathname().DIRECTORY_SEPARATOR.'common.po')) {
+            if (!$child->isDot() && $child->isDir() &&
+                file_exists($child->getPathname().DIRECTORY_SEPARATOR.'common.po')) {
                 // If the lang pack is well formed, add it to the list
                 $langs[] = $child->getFileName();
             }

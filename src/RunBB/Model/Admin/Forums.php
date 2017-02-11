@@ -11,11 +11,12 @@ namespace RunBB\Model\Admin;
 
 class Forums
 {
-    //
-    // Forum
-    //
-
-    public function add_forum($cat_id, $forum_name)
+    /**
+     * @param $cat_id
+     * @param $forum_name
+     * @return array|mixed|null
+     */
+    public function addForum($cat_id, $forum_name)
     {
         $set_add_forum = ['forum_name' => $forum_name,
                                 'cat_id' => $cat_id];
@@ -30,7 +31,7 @@ class Forums
         return $forum->id();
     }
 
-    public function update_forum($forum_id, array $forum_data)
+    public function updateForum($forum_id, array $forum_data)
     {
         $update_forum = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
                     ->find_one($forum_id)
@@ -41,7 +42,7 @@ class Forums
         return $update_forum;
     }
 
-    public function delete_forum($forum_id)
+    public function deleteForum($forum_id)
     {
         $forum_id = Container::get('hooks')->fire('model.admin.forums.delete_forum_start', $forum_id);
 
@@ -56,11 +57,13 @@ class Forums
 
         // Delete forum specific group permissions and subscriptions
         $delete_forum_perms = \ORM::for_table(ORM_TABLE_PREFIX.'forum_perms')->where('forum_id', $forum_id);
-        $delete_forum_perms = Container::get('hooks')->fireDB('model.admin.forums.delete_forum_perms_query', $delete_forum_perms);
+        $delete_forum_perms = Container::get('hooks')
+            ->fireDB('model.admin.forums.delete_forum_perms_query', $delete_forum_perms);
         $delete_forum_perms->delete_many();
 
         $delete_forum_subs = \ORM::for_table(ORM_TABLE_PREFIX.'forum_subscriptions')->where('forum_id', $forum_id);
-        $delete_forum_subs = Container::get('hooks')->fireDB('model.admin.forums.delete_forum_subs_query', $delete_forum_subs);
+        $delete_forum_subs = Container::get('hooks')
+            ->fireDB('model.admin.forums.delete_forum_subs_query', $delete_forum_subs);
         $delete_forum_subs->delete_many();
 
         // Delete orphaned redirect topics
@@ -69,7 +72,8 @@ class Forums
                     ->left_outer_join(ORM_TABLE_PREFIX.'topics', ['t1.moved_to', '=', 't2.id'], 't2')
                     ->where_null('t2.id')
                     ->where_not_null('t1.moved_to');
-        $orphans = Container::get('hooks')->fireDB('model.admin.forums.delete_orphan_redirect_topics_query', $orphans);
+        $orphans = Container::get('hooks')
+            ->fireDB('model.admin.forums.delete_orphan_redirect_topics_query', $orphans);
         $orphans = $orphans->find_many();
 
         if (count($orphans) > 0) {
@@ -79,7 +83,7 @@ class Forums
         return true; // TODO, better error handling
     }
 
-    public function get_forum_info($forum_id)
+    public function getForumInfo($forum_id)
     {
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
                     ->where('id', $forum_id);
@@ -89,7 +93,7 @@ class Forums
         return $result;
     }
 
-    public function get_forums()
+    public function getForums()
     {
         $forum_data = [];
         $forum_data = Container::get('hooks')->fire('model.admin.forums.get_forums_start', $forum_data);
@@ -128,7 +132,7 @@ class Forums
         return $forum_data;
     }
 
-    public function update_positions($forum_id, $position)
+    public function updatePositions($forum_id, $position)
     {
         Container::get('hooks')->fire('model.admin.forums.update_positions_start', $forum_id, $position);
 
@@ -142,17 +146,30 @@ class Forums
     // Permissions
     //
 
-    public function get_permissions($forum_id)
+    public function getPermissions($forum_id)
     {
         $perm_data = [];
         $forum_id = Container::get('hooks')->fire('model.admin.forums.get_permissions_start', $forum_id);
 
-        $select_permissions = ['g.g_id', 'g.g_title', 'g.g_read_board', 'g.g_post_replies', 'g.g_post_topics', 'fp.read_forum', 'fp.post_replies', 'fp.post_topics'];
+        $select_permissions = [
+            'g.g_id',
+            'g.g_title',
+            'g.g_read_board',
+            'g.g_post_replies',
+            'g.g_post_topics',
+            'fp.read_forum',
+            'fp.post_replies',
+            'fp.post_topics'
+        ];
 
         $permissions = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
                         ->table_alias('g')
                         ->select_many($select_permissions)
-                        ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', 'g.g_id=fp.group_id AND fp.forum_id='.$forum_id, 'fp') // Workaround
+                        ->left_outer_join(
+                            ORM_TABLE_PREFIX.'forum_perms',
+                            'g.g_id=fp.group_id AND fp.forum_id='.$forum_id,
+                            'fp'
+                        ) // Workaround
                         ->where_not_equal('g.g_id', ForumEnv::get('FEATHER_ADMIN'))
                         ->order_by_asc('g.g_id');
         $permissions = Container::get('hooks')->fireDB('model.admin.forums.get_permissions_query', $permissions);
@@ -160,13 +177,19 @@ class Forums
 
         foreach ($permissions as $cur_perm) {
             $cur_perm['read_forum'] = ($cur_perm['read_forum'] != '0') ? true : false;
-            $cur_perm['post_replies'] = (($cur_perm['g_post_replies'] == '0' && $cur_perm['post_replies'] == '1') || ($cur_perm['g_post_replies'] == '1' && $cur_perm['post_replies'] != '0')) ? true : false;
-            $cur_perm['post_topics'] = (($cur_perm['g_post_topics'] == '0' && $cur_perm['post_topics'] == '1') || ($cur_perm['g_post_topics'] == '1' && $cur_perm['post_topics'] != '0')) ? true : false;
+            $cur_perm['post_replies'] = (($cur_perm['g_post_replies'] == '0' && $cur_perm['post_replies'] == '1') ||
+                ($cur_perm['g_post_replies'] == '1' && $cur_perm['post_replies'] != '0')) ? true : false;
+            $cur_perm['post_topics'] = (($cur_perm['g_post_topics'] == '0' && $cur_perm['post_topics'] == '1') ||
+                ($cur_perm['g_post_topics'] == '1' && $cur_perm['post_topics'] != '0')) ? true : false;
 
             // Determine if the current settings differ from the default or not
             $cur_perm['read_forum_def'] = ($cur_perm['read_forum'] == '0') ? false : true;
-            $cur_perm['post_replies_def'] = (($cur_perm['post_replies'] && $cur_perm['g_post_replies'] == '0') || (!$cur_perm['post_replies'] && ($cur_perm['g_post_replies'] == '' || $cur_perm['g_post_replies'] == '1'))) ? false : true;
-            $cur_perm['post_topics_def'] = (($cur_perm['post_topics'] && $cur_perm['g_post_topics'] == '0') || ($cur_perm['post_topics'] && ($cur_perm['g_post_topics'] == '' || $cur_perm['g_post_topics'] == '1'))) ? false : true;
+            $cur_perm['post_replies_def'] = (($cur_perm['post_replies'] && $cur_perm['g_post_replies'] == '0') ||
+                (!$cur_perm['post_replies'] && ($cur_perm['g_post_replies'] == '' ||
+                        $cur_perm['g_post_replies'] == '1'))) ? false : true;
+            $cur_perm['post_topics_def'] = (($cur_perm['post_topics'] && $cur_perm['g_post_topics'] == '0') ||
+                ($cur_perm['post_topics'] && ($cur_perm['g_post_topics'] == '' ||
+                        $cur_perm['g_post_topics'] == '1'))) ? false : true;
 
             $perm_data[] = $cur_perm;
         }
@@ -175,7 +198,7 @@ class Forums
         return $perm_data;
     }
 
-    public function get_default_group_permissions($fetch_admin = true)
+    public function getDefaultGroupPermissions($fetch_admin = true)
     {
         $select_get_default_group_permissions = ['g_id', 'g_read_board', 'g_post_replies', 'g_post_topics'];
 
@@ -193,9 +216,10 @@ class Forums
         return $result;
     }
 
-    public function update_permissions(array $permissions_data)
+    public function updatePermissions(array $permissions_data)
     {
-        $permissions_data = Container::get('hooks')->fire('model.admin.forums.update_permissions_start', $permissions_data);
+        $permissions_data = Container::get('hooks')
+            ->fire('model.admin.forums.update_permissions_start', $permissions_data);
 
         $permissions = \ORM::for_table(ORM_TABLE_PREFIX.'forum_perms')
                             ->where('forum_id', $permissions_data['forum_id'])
@@ -210,7 +234,7 @@ class Forums
         }
     }
 
-    public function delete_permissions($forum_id, $group_id = null)
+    public function deletePermissions($forum_id, $group_id = null)
     {
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'forum_perms')
                     ->where('forum_id', $forum_id);

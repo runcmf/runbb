@@ -16,7 +16,7 @@ use RunBB\Model\Cache;
 
 class Bans
 {
-    public function add_ban_info($id = null)
+    public function addBanInfo($id = null)
     {
         $ban = [];
 
@@ -108,7 +108,7 @@ class Bans
         return $ban;
     }
 
-    public function edit_ban_info($id)
+    public function editBanInfo($id)
     {
         $ban = [];
 
@@ -143,7 +143,7 @@ class Bans
         return $ban;
     }
 
-    public function insert_ban()
+    public function insertBan()
     {
         $ban_user = Utils::trim(Input::post('ban_user'));
         $ban_ip = Utils::trim(Input::post('ban_ip'));
@@ -151,7 +151,8 @@ class Bans
         $ban_message = Utils::trim(Input::post('ban_message'));
         $ban_expire = Utils::trim(Input::post('ban_expire'));
 
-        Container::get('hooks')->fire('model.admin.bans.insert_ban_start', $ban_user, $ban_ip, $ban_email, $ban_message, $ban_expire);
+        Container::get('hooks')
+            ->fire('model.admin.bans.insert_ban_start', $ban_user, $ban_ip, $ban_email, $ban_message, $ban_expire);
 
         if ($ban_user == '' && $ban_ip == '' && $ban_email == '') {
             throw new  RunBBException(__('Must enter message'), 400);
@@ -196,7 +197,8 @@ class Bans
                     for ($c = 0; $c < count($octets); ++$c) {
                         $octets[$c] = ltrim($octets[$c], "0");
 
-                        if ($c > 7 || (!empty($octets[$c]) && !ctype_xdigit($octets[$c])) || intval($octets[$c], 16) > 65535) {
+                        if ($c > 7 || (!empty($octets[$c]) && !ctype_xdigit($octets[$c])) ||
+                            intval($octets[$c], 16) > 65535) {
                             throw new  RunBBException(__('Invalid IP message'), 400);
                         }
                     }
@@ -222,7 +224,7 @@ class Bans
             $ban_ip = implode(' ', $addresses);
         }
 
-        if ($ban_email != '' && !Container::get('email')->is_valid_email($ban_email)) {
+        if ($ban_email != '' && !Container::get('email')->isValidEmail($ban_email)) {
             if (!preg_match('%^[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,63})$%', $ban_email)) {
                 throw new  RunBBException(__('Invalid e-mail message'), 400);
             }
@@ -276,12 +278,12 @@ class Bans
         }
 
         // Regenerate the bans cache
-        Container::get('cache')->store('bans', Cache::get_bans());
+        Container::get('cache')->store('bans', Cache::getBans());
 
         return Router::redirect(Router::pathFor('adminBans'), __('Ban edited redirect'));
     }
 
-    public function remove_ban($ban_id)
+    public function removeBan($ban_id)
     {
         $ban_id = Container::get('hooks')->fire('model.admin.bans.remove_ban', $ban_id);
 
@@ -291,12 +293,12 @@ class Bans
         $result = $result->delete();
 
         // Regenerate the bans cache
-        Container::get('cache')->store('bans', Cache::get_bans());
+        Container::get('cache')->store('bans', Cache::getBans());
 
         return Router::redirect(Router::pathFor('adminBans'), __('Ban removed redirect'));
     }
 
-    public function find_ban($start_from = false)
+    public function findBan($start_from = false)
     {
         $ban_info = [];
 
@@ -307,7 +309,9 @@ class Bans
 
         $expire_after = Input::query('expire_after') ? Utils::trim(Input::query('expire_after')) : '';
         $expire_before = Input::query('expire_before') ? Utils::trim(Input::query('expire_before')) : '';
-        $ban_info['order_by'] = Input::query('order_by') && in_array(Input::query('order_by'), ['username', 'ip', 'email', 'expire']) ? 'b.'.Input::query('order_by') : 'b.username';
+        $ban_info['order_by'] = Input::query('order_by') &&
+        in_array(Input::query('order_by'), ['username', 'ip', 'email', 'expire']) ?
+            'b.'.Input::query('order_by') : 'b.username';
         $ban_info['direction'] = Input::query('direction') && Input::query('direction') == 'DESC' ? 'DESC' : 'ASC';
 
         $ban_info['query_str'][] = 'order_by='.$ban_info['order_by'];
@@ -362,7 +366,16 @@ class Bans
         // Fetch ban count
         if (is_numeric($start_from)) {
             $ban_info['data'] = [];
-            $select_bans = ['b.id', 'b.username', 'b.ip', 'b.email', 'b.message', 'b.expire', 'b.ban_creator', 'ban_creator_username' => 'u.username'];
+            $select_bans = [
+                'b.id',
+                'b.username',
+                'b.ip',
+                'b.email',
+                'b.message',
+                'b.expire',
+                'b.ban_creator',
+                'ban_creator_username' => 'u.username'
+            ];
 
             $result = $result->select_many($select_bans)
                              ->left_outer_join(ORM_TABLE_PREFIX.'users', ['b.ban_creator', '=', 'u.id'], 'u')

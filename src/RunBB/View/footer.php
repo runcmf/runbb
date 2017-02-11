@@ -46,18 +46,18 @@ if (isset($active_page) && ($active_page == 'Forum' || $active_page == 'Topic') 
         echo "\t\t\t\t".'<dt><strong>'.__('Mod controls').'</strong></dt>'."\n";
 
         echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moderateTopic', ['id' => $tid, 'fid' => $fid, 'page' => $page_number]).'">'.__('Moderate topic').'</a></span></dd>'."\n";
-        echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moveTopic', ['id' => $tid, 'fid' => $fid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Move topic').'</a></span></dd>'."\n";
+        echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('moveTopic', ['id' => $tid, 'fid' => $fid, 'name' => Url::slug($cur_topic['subject'])]).'">'.__('Move topic').'</a></span></dd>'."\n";
 
         if ($cur_topic['closed'] == '1') {
-            echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('openTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Open topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('openTopic', ['id' => $tid, 'name' => Url::slug($cur_topic['subject'])]).'">'.__('Open topic').'</a></span></dd>'."\n";
         } else {
-            echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('closeTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Close topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('closeTopic', ['id' => $tid, 'name' => Url::slug($cur_topic['subject'])]).'">'.__('Close topic').'</a></span></dd>'."\n";
         }
 
         if ($cur_topic['sticky'] == '1') {
-            echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('unstickTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Unstick topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('unstickTopic', ['id' => $tid, 'name' => Url::slug($cur_topic['subject'])]).'">'.__('Unstick topic').'</a></span></dd>'."\n";
         } else {
-            echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('stickTopic', ['id' => $tid, 'name' => Url::url_friendly($cur_topic['subject'])]).'">'.__('Stick topic').'</a></span></dd>'."\n";
+            echo "\t\t\t\t".'<dd><span><a href="'.Router::pathFor('stickTopic', ['id' => $tid, 'name' => Url::slug($cur_topic['subject'])]).'">'.__('Stick topic').'</a></span></dd>'."\n";
         }
 
         echo "\t\t\t".'</dl>'."\n";
@@ -83,7 +83,7 @@ if (ForumSettings::get('o_quickjump') == '1' && !empty($quickjump)) { ?>
 foreach ($quickjump[(int) User::get()->g_id] as $cat_id => $cat_data) {
     echo "\t\t\t\t\t\t\t\t\t".'<optgroup label="'.Utils::escape($cat_data['cat_name']).'">'."\n";
     foreach ($cat_data['cat_forums'] as $forum) {
-        echo "\t\t\t\t\t\t\t\t\t\t".'<option value="'.Router::pathFor('Forum', ['id' => $forum['forum_id'], 'name' => Url::url_friendly($forum['forum_name'])]).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
+        echo "\t\t\t\t\t\t\t\t\t\t".'<option value="'.Router::pathFor('Forum', ['id' => $forum['forum_id'], 'name' => Url::slug($forum['forum_name'])]).'"'.($fid == 2 ? ' selected="selected"' : '').'>'.$forum['forum_name'].'</option>'."\n";
     }
     echo "\t\t\t\t\t\t\t\t\t".'</optgroup>'."\n";
 }
@@ -171,7 +171,7 @@ if (!empty($queries_info)) { ?>
     foreach ($script['params'] as $key => $value) {
         echo $key.'="'.$value.'" ';
     }
-    echo 'src="'.Url::base_static().'/'.$script['file'].'"/></script>'."\n";
+    echo 'src="'.Url::baseStatic().'/'.$script['file'].'"/></script>'."\n";
 } ?>
 <!-- JSRAW -->
 <script>

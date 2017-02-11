@@ -18,7 +18,7 @@ class Manager
      *
      * @var array
      */
-    protected $registry = array();
+    protected $registry = [];
 
     /**
      * The alias manager
@@ -241,9 +241,8 @@ class Manager
         }
 
         if ($id = $this->registry[$class]['id']) {
-            return call_user_func_array($this->registry[$class]['target'], array($id));
+            return call_user_func_array($this->registry[$class]['target'], [$id]);
         } else {
-
             if ($closure = $this->registry[$class]['closure']) {
                 $this->registry[$class]['target'] = $closure();
                 $this->registry[$class]['closure'] = null;
@@ -268,11 +267,11 @@ class Manager
         $callee = $target instanceof \Closure ? null : $target;
         $closure = $callee ? null : $target;
 
-        $this->registry[$proxy] = array(
+        $this->registry[$proxy] = [
             'id' => $id,
             'target' => $callee,
             'closure' => $closure
-        );
+        ];
     }
 
     /**

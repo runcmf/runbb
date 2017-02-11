@@ -18,7 +18,7 @@ class NamespaceManager
      *
      * @var array
      */
-    protected $namespaces = array();
+    protected $namespaces = [];
 
     /**
      * Adds a namespace
@@ -35,7 +35,7 @@ class NamespaceManager
             $group = $this->getNamespaceGroup($ns);
 
             if ('any' === $group) {
-                $props = array('any' => true);
+                $props = ['any' => true];
                 break;
             } else {
                 // trim trailing * from path pattern
@@ -56,7 +56,7 @@ class NamespaceManager
      */
     public function match($alias, $class)
     {
-        foreach (array('*', $alias) as $key) {
+        foreach (['*', $alias] as $key) {
             if ($props = $this->getNamespace($key)) {
                 if ($this->matchGroup($props, $alias, $class)) {
                     return true;
@@ -81,7 +81,7 @@ class NamespaceManager
             return true;
         }
 
-        foreach (array('path', 'name') as $group) {
+        foreach (['path', 'name'] as $group) {
             if ($this->matchClass($props[$group], $group, $alias, $class)) {
                 return true;
             }
@@ -103,7 +103,6 @@ class NamespaceManager
         $match = false;
 
         foreach ($array as $test) {
-
             if ('path' === $group) {
                 $match = 0 === strpos($class, $test);
             } else {
@@ -130,7 +129,7 @@ class NamespaceManager
      */
     protected function getNamespace($alias, $default = false)
     {
-        $result = isset($this->namespaces[$alias]) ? $this->namespaces[$alias] : array();
+        $result = isset($this->namespaces[$alias]) ? $this->namespaces[$alias] : [];
 
         if ($result || $default) {
             $result = array_merge($this->getDefaultGroups(), $result);
@@ -190,10 +189,10 @@ class NamespaceManager
      */
     protected function getDefaultGroups()
     {
-        return array(
+        return [
             'any' => false,
-            'path' => array(),
-            'name' => array()
-        );
+            'path' => [],
+            'name' => []
+        ];
     }
 }

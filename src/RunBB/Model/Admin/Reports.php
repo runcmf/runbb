@@ -11,7 +11,7 @@ namespace RunBB\Model\Admin;
 
 class Reports
 {
-    public function zap_report($zap_id)
+    public function zapReport($zap_id)
     {
         $zap_id = Container::get('hooks')->fire('model.admin.reports.zap_report.zap_id', $zap_id);
 
@@ -49,7 +49,7 @@ class Reports
         return true;
     }
 
-    public static function has_reports()
+    public static function hasReports()
     {
         Container::get('hooks')->fire('get_reports_start');
 
@@ -59,10 +59,21 @@ class Reports
         return (bool) $result_header->find_one();
     }
 
-    public function get_reports()
+    public function getReports()
     {
         $reports = [];
-        $select_reports = ['r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.created', 'r.message', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username'];
+        $select_reports = [
+            'r.id',
+            'r.topic_id',
+            'r.forum_id',
+            'r.reported_by',
+            'r.created',
+            'r.message',
+            'pid' => 'p.id',
+            't.subject',
+            'f.forum_name',
+            'reporter' => 'u.username'
+        ];
         $reports = \ORM::for_table(ORM_TABLE_PREFIX.'reports')
             ->table_alias('r')
             ->select_many($select_reports)
@@ -79,10 +90,23 @@ class Reports
         return $reports;
     }
 
-    public function get_zapped_reports()
+    public function getZappedReports()
     {
         $zapped_reports = [];
-        $select_zapped_reports = ['r.id', 'r.topic_id', 'r.forum_id', 'r.reported_by', 'r.message', 'r.zapped', 'zapped_by_id' => 'r.zapped_by', 'pid' => 'p.id', 't.subject', 'f.forum_name', 'reporter' => 'u.username', 'zapped_by' => 'u2.username'];
+        $select_zapped_reports = [
+            'r.id',
+            'r.topic_id',
+            'r.forum_id',
+            'r.reported_by',
+            'r.message',
+            'r.zapped',
+            'zapped_by_id' => 'r.zapped_by',
+            'pid' => 'p.id',
+            't.subject',
+            'f.forum_name',
+            'reporter' => 'u.username',
+            'zapped_by' => 'u2.username'
+        ];
         $zapped_reports = \ORM::for_table(ORM_TABLE_PREFIX.'reports')
             ->table_alias('r')
             ->select_many($select_zapped_reports)
@@ -94,10 +118,12 @@ class Reports
             ->where_not_null('r.zapped')
             ->order_by_desc('zapped')
             ->limit(10);
-        $zapped_reports = Container::get('hooks')->fireDB('model.admin.reports.get_zapped_reports.query', $zapped_reports);
+        $zapped_reports = Container::get('hooks')
+            ->fireDB('model.admin.reports.get_zapped_reports.query', $zapped_reports);
         $zapped_reports = $zapped_reports->find_array();
 
-        $zapped_reports = Container::get('hooks')->fire('model.admin.reports.get_zapped_reports', $zapped_reports);
+        $zapped_reports = Container::get('hooks')
+            ->fire('model.admin.reports.get_zapped_reports', $zapped_reports);
         return $zapped_reports;
     }
 }

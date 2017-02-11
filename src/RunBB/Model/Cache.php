@@ -11,7 +11,7 @@ namespace RunBB\Model;
 
 class Cache
 {
-    public static function get_config()
+    public static function getConfig()
     {
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'config')
                     ->find_array();
@@ -22,13 +22,13 @@ class Cache
         return $config;
     }
 
-    public static function get_bans()
+    public static function getBans()
     {
         return \ORM::for_table(ORM_TABLE_PREFIX.'bans')
                 ->find_array();
     }
 
-    public static function get_censoring($select_censoring = 'search_for')
+    public static function getCensoring($select_censoring = 'search_for')
     {
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'censoring')
                     ->select_many($select_censoring)
@@ -45,7 +45,7 @@ class Cache
         return $output;
     }
 
-    public static function get_users_info()
+    public static function getUsersInfo()
     {
         $stats = [];
         $select_get_users_info = ['id', 'username'];
@@ -61,7 +61,7 @@ class Cache
         return $stats;
     }
 
-    public static function get_admin_ids()
+    public static function getAdminIds()
     {
         return \ORM::for_table(ORM_TABLE_PREFIX.'users')
                 ->select('id')
@@ -69,7 +69,7 @@ class Cache
                 ->find_array();
     }
 
-    public static function get_quickjump()
+    public static function getQuickjump()
     {
         $select_quickjump = ['g_id', 'g_read_board'];
         $read_perms = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
@@ -120,7 +120,7 @@ class Cache
         return $output;
     }
 
-    public static function get_stopwords($lang_path)
+    public static function getStopwords($lang_path)
     {
         $files = new \DirectoryIterator($lang_path);
         $stopwords = [];

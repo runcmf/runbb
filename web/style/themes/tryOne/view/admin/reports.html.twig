@@ -25,8 +25,8 @@
                                     <th scope="row">{{ trans(['Reported by', (report.reporter != '' ? '<a href="' ~pathFor('userProfile', {'id': report.reported_by}) ~'">' ~report.reporter ~'</a>' : trans('Deleted user')) ]) }}</th>
                                     <td class="location">
                                         {{ breadcrumbsAdmin({
-                                                (report.forum_name): pathFor('Forum', {'id': report.forum_id, 'name': urlFriendly(report.forum_name)}),
-                                                (report.subject): pathFor('Forum', {'id': report.topic_id, 'name': urlFriendly(report.subject)}),
+                                                (report.forum_name): pathFor('Forum', {'id': report.forum_id, 'name': slug(report.forum_name)}),
+                                                (report.subject): pathFor('Forum', {'id': report.topic_id, 'name': slug(report.subject)}),
                                                 (trans(['Post ID', report.pid])): pathFor('viewPost', {'pid': report.pid}) ~'#p' ~report.pid
                                             })
                                         }}
@@ -84,8 +84,8 @@
                                     </th>
                                     <td class="location">
                                         {{ breadcrumbsAdmin({
-                                        (report.forum_name): pathFor('Forum', {'id': report.forum_id, 'name': urlFriendly(report.forum_name)}),
-                                        (report.subject): pathFor('Forum', {'id': report.topic_id, 'name': urlFriendly(report.subject)}),
+                                        (report.forum_name): pathFor('Forum', {'id': report.forum_id, 'name': slug(report.forum_name)}),
+                                        (report.subject): pathFor('Forum', {'id': report.topic_id, 'name': slug(report.subject)}),
                                         (trans(['Post ID', report.pid])): pathFor('viewPost', {'pid': report.pid}) ~'#p' ~report.pid
                                         }) }}
                                     </td>

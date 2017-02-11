@@ -17,7 +17,6 @@
 
 namespace RunBB\Controller\Admin;
 
-
 use RunBB\Core\Interfaces\Container;
 
 class Compose
@@ -71,13 +70,12 @@ class Compose
 
         $installerURL = 'https://getcomposer.org/installer';
         $installerFile = ForumEnv::get('APP_ROOT') . 'installer.php';
-        if (!file_exists($installerFile))
-        {
+        if (!file_exists($installerFile)) {
             echo 'Downloading ' . $installerURL . PHP_EOL;
             flush();
             $ch = curl_init($installerURL);
             curl_setopt($ch, CURLOPT_CAINFO, ForumEnv::get('FORUM_ROOT') . 'Helpers/cacert.pem');
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($ch, CURLOPT_FILE, fopen($installerFile, 'w+'));
             if (curl_exec($ch)) {
                 echo 'Success downloading ' . $installerURL . PHP_EOL;
@@ -131,10 +129,10 @@ class Compose
             $input = new \Symfony\Component\Console\Input\StringInput(
                 $_POST['command'].' -vvv -d '.ForumEnv::get('APP_ROOT')
             );
-            $output = new \Symfony\Component\Console\Output\StreamOutput(fopen('php://output','w'));
+            $output = new \Symfony\Component\Console\Output\StreamOutput(fopen('php://output', 'w'));
             $conApp = new \Composer\Console\Application();
             $conApp->setAutoExit(false); // prevent `$conApp->run` method from exitting the script
-            $conApp->run($input,$output);
+            $conApp->run($input, $output);
 
             // add extension info to db
             if (isset($_POST['pluginInfo']) && strstr($_POST['command'], 'require')) {

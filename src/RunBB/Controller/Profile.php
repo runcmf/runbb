@@ -39,13 +39,13 @@ class Profile
                 throw new  RunBBException(__('No permission'), 403);
             }
 
-            return $this->model->update_group_membership($args['id']);
+            return $this->model->updateGroupMembership($args['id']);
         } elseif (Input::post('update_forums')) {
             if (User::get()->g_id > ForumEnv::get('FEATHER_ADMIN')) {
                 throw new  RunBBException(__('No permission'), 403);
             }
 
-            return $this->model->update_mod_forums($args['id']);
+            return $this->model->updateModForums($args['id']);
         } elseif (Input::post('ban')) {
             if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&
                 (User::get()->g_moderator != '1' ||
@@ -53,29 +53,30 @@ class Profile
                 throw new  RunBBException(__('No permission'), 403);
             }
 
-            return $this->model->ban_user($args['id']);
+            return $this->model->banUser($args['id']);
         } elseif (Input::post('delete_user') || Input::post('delete_user_comply')) {
             if (User::get()->g_id > ForumEnv::get('FEATHER_ADMIN')) {
                 throw new  RunBBException(__('No permission'), 403);
             }
 
             if (Input::post('delete_user_comply')) {
-                return $this->model->delete_user($args['id']);
+                return $this->model->deleteUser($args['id']);
             } else {
                 return View::setPageInfo([
                     'title' => [Utils::escape(
-                        ForumSettings::get('o_board_title')),
+                        ForumSettings::get('o_board_title')
+                    ),
                         __('Profile'),
                         __('Confirm delete user')
                     ],
                     'active_page' => 'profile',
-                    'username' => $this->model->get_username($args['id']),
+                    'username' => $this->model->getUsername($args['id']),
                     'id' => $args['id'],
                 ])->addTemplate('profile/delete_user.php')->display();
             }
         } elseif (Input::post('form_sent')) {
             // Fetch the user group of the user we are editing
-            $info = $this->model->fetch_user_group($args['id']);
+            $info = $this->model->fetchUserGroup($args['id']);
 
             if (User::get()->id != $args['id'] &&          // If we aren't the user (i.e. editing your own profile)
                             (!User::get()->is_admmod ||                   // and we are not an admin or mod
@@ -86,10 +87,10 @@ class Profile
                 throw new  RunBBException(__('No permission'), 403);
             }
 
-            return $this->model->update_profile($args['id'], $info, $args['section']);
+            return $this->model->updateProfile($args['id'], $info, $args['section']);
         }
 
-        $user = $this->model->get_user_info($args['id']);
+        $user = $this->model->getUserInfo($args['id']);
 
         if ($user->signature != '') {
             $parsed_signature = Container::get('parser')->parseSignature($user->signature);
@@ -101,9 +102,8 @@ class Profile
                 (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && // or we aren't an admin and ...
                 (User::get()->g_mod_edit_users == '0' ||                // mods aren't allowed to edit users
                 $user->g_id == ForumEnv::get('FEATHER_ADMIN') ||        // or the user is an admin
-                $user->g_moderator == '1'))))                           // or the user is another mod
-        {
-                $user_info = $this->model->parseUserInfo($user);
+                $user->g_moderator == '1')))) {                           // or the user is another mod
+            $user_info = $this->model->parseUserInfo($user);
 
             View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')),
@@ -116,7 +116,7 @@ class Profile
             View::addTemplate('profile/view_profile.php')->display();
         } else {
             if (!isset($args['section']) || $args['section'] == 'essentials') {
-                $user_disp = $this->model->edit_essentials($args['id'], $user);
+                $user_disp = $this->model->editEssentials($args['id'], $user);
 
                 View::setPageInfo([
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'),
@@ -136,11 +136,14 @@ class Profile
             } elseif ($args['section'] == 'personal') {
                 $title_field = '';
                 if (User::get()->g_set_title == '1') {
-                    $title_field = '<label>'.__('Title').' <em>('.__('Leave blank').')</em><br /><input type="text" name="title" value="'.Utils::escape($user->title).'" size="30" maxlength="50" /><br /></label>'."\n";
+                    $title_field = '<label>'.__('Title').' <em>('.
+                        __('Leave blank').')</em><br /><input type="text" name="title" value="'.
+                        Utils::escape($user->title).'" size="30" maxlength="50" /><br /></label>'."\n";
                 }
 
                 View::setPageInfo([
-                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section personal')],
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'),
+                        __('Section personal')],
                     'active_page' => 'profile',
                     'id' => $args['id'],
                     'page' => 'personal',
@@ -151,7 +154,8 @@ class Profile
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_personal.php')->display();
             } elseif ($args['section'] == 'messaging') {
                 View::setPageInfo([
-                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section messaging')],
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'),
+                        __('Section messaging')],
                     'active_page' => 'profile',
                     'page' => 'messaging',
                     'user' => $user,
@@ -164,23 +168,29 @@ class Profile
                     throw new  RunBBException(__('Bad request'), 404);
                 }
 
-                $avatar_field = '<span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'], 'action' => 'upload_avatar']).'">'.__('Change avatar').'</a></span>';
+                $avatar_field = '<span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'],
+                        'action' => 'upload_avatar']).'">'.__('Change avatar').'</a></span>';
 
-                $user_avatar = Utils::generate_avatar_markup($args['id']);
+                $user_avatar = Utils::generateAvatarMarkup($args['id']);
                 if ($user_avatar) {
-                    $avatar_field .= ' <span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'], 'action' => 'delete_avatar']).'">'.__('Delete avatar').'</a></span>';
+                    $avatar_field .= ' <span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'],
+                            'action' => 'delete_avatar']).'">'.__('Delete avatar').'</a></span>';
                 } else {
-                    $avatar_field = '<span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'], 'action' => 'upload_avatar']).'">'.__('Upload avatar').'</a></span>';
+                    $avatar_field = '<span><a href="'.Router::pathFor('profileAction', ['id' => $args['id'],
+                            'action' => 'upload_avatar']).'">'.__('Upload avatar').'</a></span>';
                 }
 
                 if ($user->signature != '') {
-                    $signature_preview = '<p>'.__('Sig preview').'</p>'."\n\t\t\t\t\t\t\t".'<div class="postsignature postmsg">'."\n\t\t\t\t\t\t\t\t".'<hr />'."\n\t\t\t\t\t\t\t\t".$parsed_signature."\n\t\t\t\t\t\t\t".'</div>'."\n";
+                    $signature_preview = '<p>'.__('Sig preview').'</p>'."\n\t\t\t\t\t\t\t".
+                        '<div class="postsignature postmsg">'."\n\t\t\t\t\t\t\t\t".'<hr />'.
+                        "\n\t\t\t\t\t\t\t\t".$parsed_signature."\n\t\t\t\t\t\t\t".'</div>'."\n";
                 } else {
                     $signature_preview = '<p>'.__('No sig').'</p>'."\n";
                 }
 
                 View::setPageInfo([
-                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section personality')],
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'),
+                        __('Section personality')],
                     'active_page' => 'profile',
                     'user_avatar' => $user_avatar,
                     'avatar_field' => $avatar_field,
@@ -193,7 +203,8 @@ class Profile
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_personality.php')->display();
             } elseif ($args['section'] == 'display') {
                 View::setPageInfo([
-                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section display')],
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'),
+                        __('Section display')],
                     'active_page' => 'profile',
                     'page' => 'display',
                     'user' => $user,
@@ -204,7 +215,8 @@ class Profile
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_display.php')->display();
             } elseif ($args['section'] == 'privacy') {
                 View::setPageInfo([
-                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section privacy')],
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'),
+                        __('Section privacy')],
                     'active_page' => 'profile',
                     'page' => 'privacy',
                     'user' => $user,
@@ -213,17 +225,19 @@ class Profile
 
                 View::addTemplate('profile/menu.php', 5)->addTemplate('profile/section_privacy.php')->display();
             } elseif ($args['section'] == 'admin') {
-                if (!User::get()->is_admmod || (User::get()->g_moderator == '1' && User::get()->g_mod_ban_users == '0')) {
+                if (!User::get()->is_admmod || (User::get()->g_moderator == '1' &&
+                        User::get()->g_mod_ban_users == '0')) {
                     throw new  RunBBException(__('Bad request'), 404);
                 }
 
                 View::setPageInfo([
-                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Section admin')],
+                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'),
+                        __('Section admin')],
                     'active_page' => 'profile',
                     'page' => 'admin',
                     'user' => $user,
-                    'forum_list' => $this->model->get_forum_list($args['id']),
-                    'group_list' => $this->model->get_group_list($user),
+                    'forum_list' => $this->model->getForumList($args['id']),
+                    'group_list' => $this->model->getGroupList($user),
                     'id' => $args['id']
                 ]);
 
@@ -255,21 +269,23 @@ class Profile
             if (Request::isPost()) {
                 // TODO: Check if security "if (User::get()->id != $id)" (l.58 of Model/Profile) isn't bypassed
                 // FOR ALL chained if below
-                return $this->model->change_pass($args['id']);
+                return $this->model->changePass($args['id']);
             }
 
             View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'), __('Change pass')],
                 'active_page' => 'profile',
                 'id' => $args['id'],
-                'required_fields' => ['req_old_password' => __('Old pass'), 'req_new_password1' => __('New pass'), 'req_new_password2' => __('Confirm new pass')],
-                'focus_element' => ['change_pass', ((!User::get()->is_admmod) ? 'req_old_password' : 'req_new_password1')],
+                'required_fields' => ['req_old_password' => __('Old pass'),
+                    'req_new_password1' => __('New pass'), 'req_new_password2' => __('Confirm new pass')],
+                'focus_element' => ['change_pass', ((!User::get()->is_admmod) ?
+                    'req_old_password' : 'req_new_password1')],
             ]);
 
             View::addTemplate('profile/change_pass.php')->display();
         } elseif ($args['action'] == 'change_email') {
             if (Request::isPost()) {
-                return $this->model->change_email($args['id']);
+                return $this->model->changeEmail($args['id']);
             }
 
             View::setPageInfo([
@@ -291,7 +307,7 @@ class Profile
             }
 
             if (Request::isPost()) {
-                return $this->model->upload_avatar($args['id'], $_FILES);
+                return $this->model->uploadAvatar($args['id'], $_FILES);
             }
 
             View::setPageInfo([
@@ -300,7 +316,7 @@ class Profile
                 'required_fields' =>  ['req_file' => __('File')],
                 'focus_element' => ['upload_avatar', 'req_file'],
                 'id' => $args['id'],
-                'avatarFormattedSize' => Utils::file_size(ForumSettings::get('o_avatars_size'))
+                'avatarFormattedSize' => Utils::fileSize(ForumSettings::get('o_avatars_size'))
             ]);
 
             View::addTemplate('profile/upload_avatar.php')->display();
@@ -309,15 +325,19 @@ class Profile
                 throw new  RunBBException(__('No permission'), 403);
             }
 
-            $this->model->delete_avatar($args['id']);
+            $this->model->deleteAvatar($args['id']);
 
-            return Router::redirect(Router::pathFor('profileSection', ['id' => $args['id'], 'section' => 'personality']), __('Avatar deleted redirect'));
+            return Router::redirect(Router::pathFor(
+                'profileSection',
+                ['id' => $args['id'], 'section' => 'personality']
+            ), __('Avatar deleted redirect'));
         } elseif ($args['action'] == 'promote') {
-            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') && (User::get()->g_moderator != '1' || User::get()->g_mod_promote_users == '0')) {
+            if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&
+                (User::get()->g_moderator != '1' || User::get()->g_mod_promote_users == '0')) {
                 throw new  RunBBException(__('No permission'), 403);
             }
 
-            $this->model->promote_user($args['id']);
+            $this->model->promoteUser($args['id']);
         } else {
             throw new  RunBBException(__('Bad request'), 404);
         }
@@ -335,7 +355,7 @@ class Profile
             throw new  RunBBException(__('Bad request'), 400);
         }
 
-        $mail = $this->model->get_info_mail($args['id']);
+        $mail = $this->model->getInfoMail($args['id']);
 
         if ($mail['email_setting'] == 2 && !User::get()->is_admmod) {
             throw new  RunBBException(__('Form email disabled'), 403);
@@ -343,11 +363,12 @@ class Profile
 
 
         if (Request::isPost()) {
-            $this->model->send_email($mail);
+            $this->model->sendEmail($mail);
         }
 
         View::setPageInfo([
-            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Send email to').' '.Utils::escape($mail['recipient'])],
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Send email to').' '.
+                Utils::escape($mail['recipient'])],
             'active_page' => 'email',
             'required_fields' => ['req_subject' => __('Email subject'), 'req_message' => __('Email message')],
             'focus_element' => ['email', 'req_subject'],
@@ -360,6 +381,6 @@ class Profile
     {
         $args['ip'] = Container::get('hooks')->fire('controller.profile.gethostip', $args['ip']);
 
-        $this->model->display_ip_info($args['ip']);
+        $this->model->displayIpInfo($args['ip']);
     }
 }

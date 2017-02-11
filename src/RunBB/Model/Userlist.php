@@ -14,7 +14,7 @@ use RunBB\Core\Utils;
 class Userlist
 {
     // Counts the number of user for a specific query
-    public function fetch_user_count($username, $show_group)
+    public function fetchUserCount($username, $show_group)
     {
         // Fetch user count
         $num_users = \ORM::for_table(ORM_TABLE_PREFIX.'users')
@@ -37,7 +37,7 @@ class Userlist
     }
 
     // Generates the dropdown menu containing groups
-    public function generate_dropdown_menu($show_group)
+    public function generateDropdownMenu($show_group)
     {
         $show_group = Container::get('hooks')->fire('model.userlist.generate_dropdown_menu_start', $show_group);
 
@@ -54,9 +54,11 @@ class Userlist
 
         foreach ($result as $cur_group) {
             if ($cur_group['g_id'] == $show_group) {
-                $dropdown_menu .= "\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
+                $dropdown_menu .= "\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'" selected="selected">'.
+                    Utils::escape($cur_group['g_title']).'</option>'."\n";
             } else {
-                $dropdown_menu .= "\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.Utils::escape($cur_group['g_title']).'</option>'."\n";
+                $dropdown_menu .= "\t\t\t\t\t\t\t".'<option value="'.$cur_group['g_id'].'">'.
+                    Utils::escape($cur_group['g_title']).'</option>'."\n";
             }
         }
 
@@ -66,13 +68,15 @@ class Userlist
     }
 
     // Prints the users
-    public function print_users($username, $start_from, $sort_by, $sort_dir, $show_group)
+    public function printUsers($username, $start_from, $sort_by, $sort_dir, $show_group)
     {
         $userlist_data = [];
 
-        $username = Container::get('hooks')->fire('model.userlist.print_users_start', $username, $start_from, $sort_by, $sort_dir, $show_group);
+        $username = Container::get('hooks')
+            ->fire('model.userlist.print_users_start', $username, $start_from, $sort_by, $sort_dir, $show_group);
 
-        // Retrieve a list of user IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
+        // Retrieve a list of user IDs, LIMIT is (really) expensive so we only fetch the
+        // IDs here then later fetch the remaining data
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')
                     ->select('u.id')
                     ->table_alias('u')

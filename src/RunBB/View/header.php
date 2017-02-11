@@ -28,10 +28,10 @@ Container::get('hooks')->fire('view.header.start');
 <?php if ($is_indexed) { ?>
     <meta name="robots" content="noindex, follow">
 <?php } ?>
-    <title><?= Utils::generate_page_title($title, $page_number) ?></title>
-    <link rel="shortcut icon" href="<?= Url::base_static() ?>/style/img/favicon.png" />
+    <title><?= Utils::generatePageTitle($title, $page_number) ?></title>
+    <link rel="shortcut icon" href="<?= Url::baseStatic() ?>/style/img/favicon.png" />
     <!-- Theme -->
-    <link rel="stylesheet" type="text/css" href="<?= Url::base_static() ?>/style/themes/<?= View::getStyle() ?>/style.css">
+    <link rel="stylesheet" type="text/css" href="<?= Url::baseStatic() ?>/style/themes/<?= View::getStyle() ?>/style.css">
 <?php
 
 foreach ($assets as $type => $items) {
@@ -53,17 +53,17 @@ foreach ($assets as $type => $items) {
             echo $key.'="'.$value.'" ';
         }
         if ($isJs) {
-            echo 'src="' . Url::base_static() . '/' . $item['file'] . '" /></script>' . "\n";
+            echo 'src="' . Url::baseStatic() . '/' . $item['file'] . '" /></script>' . "\n";
         } else {
-            echo 'href="' . Url::base_static() . '/' . $item['file'] . '">' . "\n";
+            echo 'href="' . Url::baseStatic() . '/' . $item['file'] . '">' . "\n";
         }
     }
 }
 if ($admin_console) {
     if (file_exists(ForumEnv::get('WEB_ROOT').'style/themes/'.View::getStyle().'/base_admin.css')) {
-        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/themes/'.View::getStyle().'/base_admin.css" />'."\n";
+        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::baseStatic().'/style/themes/'.View::getStyle().'/base_admin.css" />'."\n";
     } else {
-        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::base_static().'/style/imports/base_admin.css" />'."\n";
+        echo "\t".'<link rel="stylesheet" type="text/css" href="'.Url::baseStatic().'/style/imports/base_admin.css" />'."\n";
     }
 }
 if (isset($required_fields)) :
@@ -192,7 +192,7 @@ if (User::get()->is_guest) { ?>
 <?php } else {
     echo "\t\t\t".'<ul class="conl">';
     echo "\n\t\t\t\t".'<li><span>'.__('Logged in as').' <strong>'.Utils::escape(User::get()->username).'</strong></span></li>'."\n";
-    echo "\t\t\t\t".'<li><span>'.__('Last visit') .' '. Container::get('utils')->format_time(User::get()->last_visit).'</span></li>'."\n";
+    echo "\t\t\t\t".'<li><span>'.__('Last visit') .' '. Container::get('utils')->timeFormat(User::get()->last_visit).'</span></li>'."\n";
 
     if (User::get()->is_admmod) {
         if (ForumSettings::get('o_report_method') == '0' || ForumSettings::get('o_report_method') == '2') {

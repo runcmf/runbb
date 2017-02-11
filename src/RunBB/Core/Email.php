@@ -19,20 +19,21 @@ class Email
     //
     // Validate an email address
     //
-    public function is_valid_email($email)
+    public function isValidEmail($email)
     {
         if (strlen($email) > 80) {
             return false;
         }
 
-        return preg_match('%^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|("[^"]+"))@((\[\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\])|(([a-zA-Z\d\-]+\.)+[a-zA-Z]{2,}))$%', $email);
+        return preg_match('%^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|("[^"]+"))@((\[\d{1,3}' .
+            '\.\d{1,3}\.\d{1,3}\.\d{1,3}\])|(([a-zA-Z\d\-]+\.)+[a-zA-Z]{2,}))$%', $email);
     }
 
 
     //
     // Check if $email is banned
     //
-    public function is_banned_email($email)
+    public function isBannedEmail($email)
     {
         foreach (Container::get('bans') as $cur_ban) {
             if ($cur_ban['email'] != '' &&
@@ -50,7 +51,7 @@ class Email
     //
     // Only encode with base64, if there is at least one unicode character in the string
     //
-    public function encode_mail_text($str)
+    public function encodeMailText($str)
     {
         if (utf8_is_ascii($str)) {
             return $str;
@@ -63,7 +64,7 @@ class Email
     // Extract blocks from a text with a starting and ending string
     // This public function always matches the most outer block so nesting is possible
     //
-    public function extract_blocks($text, $start, $end, $retab = true)
+    public function extractBlocks($text, $start, $end, $retab = true)
     {
         $code = [];
         $start_len = strlen($start);
@@ -137,7 +138,7 @@ class Email
         ];
 
         // Split code blocks and text so BBcode in codeblocks won't be touched
-        list($code, $text) = $this->extract_blocks($text, '[code]', '[/code]');
+        list($code, $text) = $this->extractBlocks($text, '[code]', '[/code]');
 
         // Strip all bbcodes, except the quote, url, img, email, code and list items bbcodes
         $text = preg_replace([
@@ -253,7 +254,7 @@ class Email
     //
     // Wrapper for PHP's mail()
     //
-    public function feather_mail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
+    public function dispatchMail($to, $subject, $message, $reply_to_email = '', $reply_to_name = '')
     {
         // Define line breaks in mail headers; possible values can be PHP_EOL, "\r\n", "\n" or "\r"
         if (!defined('FORUM_EOL')) {
@@ -277,14 +278,16 @@ class Email
         $reply_to_name = Utils::trim(preg_replace('%[\n\r:]+%s', '', str_replace('"', '', $reply_to_name)));
 
         // Set up some headers to take advantage of UTF-8
-        $from = '"' . $this->encode_mail_text($from_name) . '" <' . $from_email . '>';
-        $subject = $this->encode_mail_text($subject);
+        $from = '"' . $this->encodeMailText($from_name) . '" <' . $from_email . '>';
+        $subject = $this->encodeMailText($subject);
 
-        $headers = 'From: ' . $from . $EOL . 'Date: ' . gmdate('r') . $EOL . 'MIME-Version: 1.0' . $EOL . 'Content-transfer-encoding: 8bit' . $EOL . 'Content-type: text/plain; charset=utf-8' . $EOL . 'X-Mailer: RunBB Mailer';
+        $headers = 'From: ' . $from . $EOL . 'Date: ' . gmdate('r') . $EOL . 'MIME-Version: 1.0' . $EOL .
+            'Content-transfer-encoding: 8bit' . $EOL . 'Content-type: text/plain; charset=utf-8' . $EOL .
+            'X-Mailer: RunBB Mailer';
 
         // If we specified a reply-to email, we deal with it here
         if (!empty($reply_to_email)) {
-            $reply_to = '"' . $this->encode_mail_text($reply_to_name) . '" <' . $reply_to_email . '>';
+            $reply_to = '"' . $this->encodeMailText($reply_to_name) . '" <' . $reply_to_email . '>';
 
             $headers .= $EOL . 'Reply-To: ' . $reply_to;
         }
@@ -294,7 +297,7 @@ class Email
         $message = str_replace("\n", $EOL, $message);
 
         if ($smtp) {
-            $this->smtp_mail($to, $subject, $message, $headers);
+            $this->smtpMail($to, $subject, $message, $headers);
         } else {
             mail($to, $subject, $message, $headers);
         }
@@ -303,28 +306,33 @@ class Email
 
     //
     // This public function was originally a part of the phpBB Group forum software phpBB2 (http://www.phpbb.com)
-    // They deserve all the credit for writing it. I made small modifications for it to suit PunBB and its coding standards
+    // They deserve all the credit for writing it. I made small modifications for it to suit PunBB and its coding
+    // standards
     //
-    public function server_parse($socket, $expected_response)
+    private function serverParse($socket, $expected_response)
     {
         $server_response = '';
         while (substr($server_response, 3, 1) != ' ') {
             if (!($server_response = fgets($socket, 256))) {
-                throw new  RunBBException('Couldn\'t get mail server response codes. Please contact the forum administrator.', 500);
+                throw new  RunBBException('Couldn\'t get mail server response codes. '.
+                    'Please contact the forum administrator.', 500);
             }
         }
 
         if (!(substr($server_response, 0, 3) == $expected_response)) {
-            throw new  RunBBException('Unable to send email. Please contact the forum administrator with the following error message reported by the SMTP server: "' . $server_response . '"', 500);
+            throw new  RunBBException('Unable to send email. Please contact the forum '.
+                'administrator with the following error message reported by the SMTP server: "' .
+                $server_response . '"', 500);
         }
     }
 
 
     //
     // This public function was originally a part of the phpBB Group forum software phpBB2 (http://www.phpbb.com)
-    // They deserve all the credit for writing it. I made small modifications for it to suit PunBB and its coding standards.
+    // They deserve all the credit for writing it. I made small modifications for it to suit PunBB and its
+    // coding standards.
     //
-    public function smtp_mail($to, $subject, $message, $headers = '')
+    private function smtpMail($to, $subject, $message, $headers = '')
     {
         static $local_host;
 
@@ -347,10 +355,11 @@ class Email
         }
 
         if (!($socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 15))) {
-            throw new  RunBBException('Could not connect to smtp host "' . ForumSettings::get('o_smtp_host') . '" (' . $errno . ') (' . $errstr . ')', 500);
+            throw new RunBBException('Could not connect to smtp host "' .
+                ForumSettings::get('o_smtp_host') . '" (' . $errno . ') (' . $errstr . ')', 500);
         }
 
-        $this->server_parse($socket, '220');
+        $this->serverParse($socket, '220');
 
         if (!isset($local_host)) {
             // Here we try to determine the *real* hostname (reverse DNS entry preferably)
@@ -367,36 +376,37 @@ class Email
 
         if (ForumSettings::get('o_smtp_user') != '' && ForumSettings::get('o_smtp_pass') != '') {
             fwrite($socket, 'EHLO ' . $local_host . "\r\n");
-            $this->server_parse($socket, '250');
+            $this->serverParse($socket, '250');
 
             fwrite($socket, 'AUTH LOGIN' . "\r\n");
-            $this->server_parse($socket, '334');
+            $this->serverParse($socket, '334');
 
             fwrite($socket, base64_encode(ForumSettings::get('o_smtp_user')) . "\r\n");
-            $this->server_parse($socket, '334');
+            $this->serverParse($socket, '334');
 
             fwrite($socket, base64_encode(ForumSettings::get('o_smtp_pass')) . "\r\n");
-            $this->server_parse($socket, '235');
+            $this->serverParse($socket, '235');
         } else {
             fwrite($socket, 'HELO ' . $local_host . "\r\n");
-            $this->server_parse($socket, '250');
+            $this->serverParse($socket, '250');
         }
 
         fwrite($socket, 'MAIL FROM: <' . ForumSettings::get('o_webmaster_email') . '>' . "\r\n");
-        $this->server_parse($socket, '250');
+        $this->serverParse($socket, '250');
 
         foreach ($recipients as $email) {
             fwrite($socket, 'RCPT TO: <' . $email . '>' . "\r\n");
-            $this->server_parse($socket, '250');
+            $this->serverParse($socket, '250');
         }
 
         fwrite($socket, 'DATA' . "\r\n");
-        $this->server_parse($socket, '354');
+        $this->serverParse($socket, '354');
 
-        fwrite($socket, 'Subject: ' . $subject . "\r\n" . 'To: <' . implode('>, <', $recipients) . '>' . "\r\n" . $headers . "\r\n\r\n" . $message . "\r\n");
+        fwrite($socket, 'Subject: ' . $subject . "\r\n" . 'To: <' . implode('>, <', $recipients) . '>' .
+            "\r\n" . $headers . "\r\n\r\n" . $message . "\r\n");
 
         fwrite($socket, '.' . "\r\n");
-        $this->server_parse($socket, '250');
+        $this->serverParse($socket, '250');
 
         fwrite($socket, 'QUIT' . "\r\n");
         fclose($socket);

@@ -57,6 +57,6 @@ abstract class BaseProxy
     */
     public static function __callStatic($name, $args)
     {
-        return call_user_func_array(array(static::getInstance(), $name), $args);
+        return call_user_func_array([static::getInstance(), $name], $args);
     }
 }

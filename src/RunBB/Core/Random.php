@@ -24,7 +24,7 @@ class Random
     //
     public static function key($len, $readable = false, $hash = false)
     {
-        $key = self::secure_random_bytes($len);
+        $key = self::secureRandomBytes($len);
 
         if ($hash) {
             return substr(bin2hex($key), 0, $len);
@@ -86,7 +86,7 @@ class Random
      * $len bytes of entropy under any PHP installation or operating system.
      * The execution time should be at most 10-20 ms in any system.
      */
-    public static function secure_random_bytes($len = 10)
+    public static function secureRandomBytes($len = 10)
     {
         /*
          * Our primary choice for a cryptographic strong randomness function is

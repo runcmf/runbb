@@ -17,7 +17,7 @@ use RunBB\Core\Utils;
 class Forum
 {
     // Returns basic informations about the forum
-    public function get_forum_info($id)
+    public function getForumInfo($id)
     {
         $id = Container::get('hooks')->fire('model.forum.get_info_forum_start', $id);
 
@@ -27,19 +27,31 @@ class Forum
         ];
 
         if (!User::get()->is_guest) {
-            $cur_forum['select'] = ['f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics', 'is_subscribed' => 's.user_id'];
+            $cur_forum['select'] = [
+                'f.forum_name',
+                'f.redirect_url',
+                'f.moderators',
+                'f.num_topics',
+                'f.sort_by',
+                'fp.post_topics',
+                'is_subscribed' => 's.user_id'
+            ];
 
             $cur_forum = \ORM::for_table(ORM_TABLE_PREFIX.'forums')->table_alias('f')
                             ->select_many($cur_forum['select'])
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_subscriptions', array('f.id', '=', 's.forum_id'), 's')
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_subscriptions', array('s.user_id', '=', User::get()->id), null, true)
+//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_subscriptions',
+// array('f.id', '=', 's.forum_id'), 's')
+//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_subscriptions',
+// array('s.user_id', '=', User::get()->id), null, true)
                     ->left_outer_join(
                         ORM_TABLE_PREFIX.'forum_subscriptions',
                         '(f.id = s.forum_id AND s.user_id = '.User::get()->id.')',
                         's'
                     )
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+// array('fp.forum_id', '=', 'f.id'), 'fp')
+//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+// array('fp.group_id', '=', User::get()->g_id), null, true)
                 ->left_outer_join(
                     ORM_TABLE_PREFIX.'forum_perms',
                     '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
@@ -49,13 +61,22 @@ class Forum
 //                ->where_any_is($cur_forum['where'])
                             ->where('f.id', $id);
         } else {
-            $cur_forum['select'] = ['f.forum_name', 'f.redirect_url', 'f.moderators', 'f.num_topics', 'f.sort_by', 'fp.post_topics'];
+            $cur_forum['select'] = [
+                'f.forum_name',
+                'f.redirect_url',
+                'f.moderators',
+                'f.num_topics',
+                'f.sort_by',
+                'fp.post_topics'
+            ];
 
             $cur_forum = \ORM::for_table(ORM_TABLE_PREFIX.'forums')->table_alias('f')
                             ->select_many($cur_forum['select'])
                             ->select_expr(0, 'is_subscribed')
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+// array('fp.forum_id', '=', 'f.id'), 'fp')
+//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+// array('fp.group_id', '=', User::get()->g_id), null, true)
                 ->left_outer_join(
                     ORM_TABLE_PREFIX.'forum_perms',
                     '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
@@ -78,7 +99,7 @@ class Forum
         return $cur_forum;
     }
 
-    public function get_moderators($fid)
+    public function getModerators($fid)
     {
 //        $moderators = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
 //            ->select('moderators')
@@ -95,7 +116,7 @@ class Forum
     }
 
     // Returns the text required by the query to sort the forum
-    public function sort_forum_by($sort_by_sql)
+    public function sortForumBy($sort_by_sql)
     {
         $sort_by_sql = Container::get('hooks')->fire('model.forum.sort_forum_by_start', $sort_by_sql);
 
@@ -120,22 +141,26 @@ class Forum
     }
 
     // Returns forum action
-    public function get_forum_actions($forum_id, $subscriptions, $is_subscribed)
+    public function getForumActions($forum_id, $subscriptions, $is_subscribed)
     {
         $forum_actions = [];
 
-        $forum_actions = Container::get('hooks')->fire('model.forum.get_page_head_start', $forum_actions, $forum_id, $subscriptions, $is_subscribed);
+        $forum_actions = Container::get('hooks')
+            ->fire('model.forum.get_page_head_start', $forum_actions, $forum_id, $subscriptions, $is_subscribed);
 
         if (!User::get()->is_guest) {
             if ($subscriptions == 1) {
                 if ($is_subscribed) {
-                    $forum_actions[] = '<span>'.__('Is subscribed').' - </span><a href="'.Router::pathFor('unsubscribeForum', ['id' => $forum_id]).'">'.__('Unsubscribe').'</a>';
+                    $forum_actions[] = '<span>'.__('Is subscribed').' - </span><a href="'.
+                        Router::pathFor('unsubscribeForum', ['id' => $forum_id]).'">'.__('Unsubscribe').'</a>';
                 } else {
-                    $forum_actions[] = '<a href="'.Router::pathFor('subscribeForum', ['id' => $forum_id]).'">'.__('Subscribe').'</a>';
+                    $forum_actions[] = '<a href="'.
+                        Router::pathFor('subscribeForum', ['id' => $forum_id]).'">'.__('Subscribe').'</a>';
                 }
             }
 
-            $forum_actions[] = '<a href="'.Router::pathFor('markForumRead', ['id' => $forum_id]).'">'.__('Mark forum read').'</a>';
+            $forum_actions[] = '<a href="'.
+                Router::pathFor('markForumRead', ['id' => $forum_id]).'">'.__('Mark forum read').'</a>';
         }
 
         $forum_actions = Container::get('hooks')->fire('model.forum.get_page_head', $forum_actions);
@@ -144,16 +169,18 @@ class Forum
     }
 
     // Returns the elements needed to display topics
-    public function print_topics($forum_id, $sort_by, $start_from)
+    public function printTopics($forum_id, $sort_by, $start_from)
     {
-        $forum_id = Container::get('hooks')->fire('model.forum.print_topics_start', $forum_id, $sort_by, $start_from);
+        $forum_id = Container::get('hooks')
+            ->fire('model.forum.print_topics_start', $forum_id, $sort_by, $start_from);
 
         // Get topic/forum tracking data
         if (!User::get()->is_guest) {
-            $tracked_topics = Track::get_tracked_topics();
+            $tracked_topics = Track::getTrackedTopics();
         }
 
-        // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
+        // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the
+        // IDs here then later fetch the remaining data
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                         ->select('id')
                         ->where('forum_id', $forum_id)
@@ -177,7 +204,20 @@ class Forum
             // Fetch list of topics to display on this page
             if (User::get()->is_guest || ForumSettings::get('o_show_dot') == '0') {
                 // Without "the dot"
-                $result['select'] = ['id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to'];
+                $result['select'] = [
+                    'id',
+                    'poster',
+                    'subject',
+                    'posted',
+                    'last_post',
+                    'last_post_id',
+                    'last_poster',
+                    'num_views',
+                    'num_replies',
+                    'closed',
+                    'sticky',
+                    'moved_to'
+                ];
 
                 $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                             ->select_many($result['select'])
@@ -187,13 +227,29 @@ class Forum
                             ->order_by_desc('id');
             } else {
                 // With "the dot"
-                $result['select'] = ['has_posted' => 'p.poster_id', 't.id', 't.subject', 't.poster', 't.posted', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_views', 't.num_replies', 't.closed', 't.sticky', 't.moved_to'];
+                $result['select'] = [
+                    'has_posted' => 'p.poster_id',
+                    't.id',
+                    't.subject',
+                    't.poster',
+                    't.posted',
+                    't.last_post',
+                    't.last_post_id',
+                    't.last_poster',
+                    't.num_views',
+                    't.num_replies',
+                    't.closed',
+                    't.sticky',
+                    't.moved_to'
+                ];
 
                 $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                             ->table_alias('t')
                             ->select_many($result['select'])
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'posts', array('t.id', '=', 'p.topic_id'), 'p')
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'posts', array('p.poster_id', '=', User::get()->id), null, true)
+//                            ->left_outer_join(ORM_TABLE_PREFIX.'posts',
+// array('t.id', '=', 'p.topic_id'), 'p')
+//                            ->left_outer_join(ORM_TABLE_PREFIX.'posts',
+// array('p.poster_id', '=', User::get()->id), null, true)
                     ->left_outer_join(
                         ORM_TABLE_PREFIX.'posts',
                         '(t.id = p.topic_id AND p.poster_id = '.User::get()->id.')',
@@ -215,10 +271,13 @@ class Forum
                 $status_text = [];
                 $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
                 $cur_topic['icon_type'] = 'icon';
-                $url_subject = Url::url_friendly($cur_topic['subject']);
+                $url_subject = Url::slug($cur_topic['subject']);
 
                 if (is_null($cur_topic['moved_to'])) {
-                    $cur_topic['last_post_formatted'] = '<a href="'.Router::pathFor('viewPost', ['pid' => $cur_topic['last_post_id']]).'#p'.$cur_topic['last_post_id'].'">'.Utils::format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
+                    $cur_topic['last_post_formatted'] = '<a href="'.
+                        Router::pathFor('viewPost', ['pid' => $cur_topic['last_post_id']]).'#p'.
+                        $cur_topic['last_post_id'].'">'.Utils::timeFormat($cur_topic['last_post']).
+                        '</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
                 } else {
                     $cur_topic['last_post_formatted'] = '- - -';
                 }
@@ -233,22 +292,38 @@ class Forum
                 }
 
                 if ($cur_topic['moved_to'] != 0) {
-                    $cur_topic['subject_formatted'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['moved_to'], 'name' => $url_subject]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_formatted'] = '<a href="'.
+                        Router::pathFor('Topic', ['id' => $cur_topic['moved_to'], 'name' => $url_subject]).'">'.
+                        Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.
+                        Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="movedtext">'.__('Moved').'</span>';
                     $cur_topic['item_status'] .= ' imoved';
                 } elseif ($cur_topic['closed'] == '0') {
-                    $cur_topic['subject_formatted'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_subject]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_formatted'] = '<a href="'.
+                        Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_subject]).'">'.
+                        Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.
+                        Utils::escape($cur_topic['poster']).'</span>';
                 } else {
-                    $cur_topic['subject_formatted'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_subject]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_formatted'] = '<a href="'.
+                        Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_subject]).'">'.
+                        Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.
+                        Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
                 }
 
-                if (!User::get()->is_guest && $cur_topic['last_post'] > User::get()->last_visit && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$forum_id]) || $tracked_topics['forums'][$forum_id] < $cur_topic['last_post']) && is_null($cur_topic['moved_to'])) {
+                if (!User::get()->is_guest && $cur_topic['last_post'] > User::get()->last_visit &&
+                    (!isset($tracked_topics['topics'][$cur_topic['id']]) ||
+                        $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) &&
+                    (!isset($tracked_topics['forums'][$forum_id]) ||
+                        $tracked_topics['forums'][$forum_id] < $cur_topic['last_post']) &&
+                    is_null($cur_topic['moved_to'])) {
                     $cur_topic['item_status'] .= ' inew';
                     $cur_topic['icon_type'] = 'icon icon-new';
                     $cur_topic['subject_formatted'] = '<strong>'.$cur_topic['subject_formatted'].'</strong>';
-                    $subject_new_posts = '<span class="newtext">[ <a href="'.Router::pathFor('topicAction', ['id' => $cur_topic['id'], 'action' => 'new']).'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
+                    $subject_new_posts = '<span class="newtext">[ <a href="'.
+                        Router::pathFor('topicAction', ['id' => $cur_topic['id'], 'action' => 'new']).
+                        '" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
                 } else {
                     $subject_new_posts = null;
                 }
@@ -259,7 +334,8 @@ class Forum
                 // Should we display the dot or not? :)
                 if (!User::get()->is_guest && ForumSettings::get('o_show_dot') == '1') {
                     if ($cur_topic['has_posted'] == User::get()->id) {
-                        $cur_topic['subject_formatted'] = '<strong class="ipost">·&#160;</strong>'.$cur_topic['subject_formatted'];
+                        $cur_topic['subject_formatted'] = '<strong class="ipost">·&#160;</strong>'.
+                            $cur_topic['subject_formatted'];
                         $cur_topic['item_status'] .= ' iposted';
                     }
                 }
@@ -267,7 +343,9 @@ class Forum
                 $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / User::get()->disp_posts);
 
                 if ($num_pages_topic > 1) {// FIXME rebuild url
-                    $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_subject.'/#').' ]</span>';
+                    $subject_multipage = '<span class="pagestext">[ '.
+                        Url::paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_subject.'/#').
+                        ' ]</span>';
                 } else {
                     $subject_multipage = null;
                 }
@@ -287,7 +365,7 @@ class Forum
         return $forum_data;
     }
 
-    public function display_topics_moderate($fid, $sort_by, $start_from)
+    public function displayTopicsModerate($fid, $sort_by, $start_from)
     {
         Container::get('hooks')->fire('model.forum.display_topics_start', $fid, $sort_by, $start_from);
 
@@ -295,10 +373,11 @@ class Forum
 
         // Get topic/forum tracking data
         if (!User::get()->is_guest) {
-            $tracked_topics = Track::get_tracked_topics();
+            $tracked_topics = Track::getTrackedTopics();
         }
 
-        // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the IDs here then later fetch the remaining data
+        // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the
+        // IDs here then later fetch the remaining data
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')->select('id')
                     ->where('forum_id', $fid)
                     ->order_by_expr('sticky DESC, '.$sort_by)
@@ -315,7 +394,20 @@ class Forum
 
             unset($result);
             // Select topics
-            $result['select'] = ['id', 'poster', 'subject', 'posted', 'last_post', 'last_post_id', 'last_poster', 'num_views', 'num_replies', 'closed', 'sticky', 'moved_to'];
+            $result['select'] = [
+                'id',
+                'poster',
+                'subject',
+                'posted',
+                'last_post',
+                'last_post_id',
+                'last_poster',
+                'num_views',
+                'num_replies',
+                'closed',
+                'sticky',
+                'moved_to'
+            ];
             $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')->select_many($result['select'])
                         ->where_in('id', $topic_ids)
                         ->order_by_desc('sticky')
@@ -330,10 +422,13 @@ class Forum
                 $status_text = [];
                 $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
                 $cur_topic['icon_type'] = 'icon';
-                $url_topic = Url::url_friendly($cur_topic['subject']);
+                $url_topic = Url::slug($cur_topic['subject']);
 
                 if (is_null($cur_topic['moved_to'])) {
-                    $cur_topic['last_post_disp'] = '<a href="'.Router::pathFor('viewPost', ['pid' => $cur_topic['last_post_id']]).'#p'.$cur_topic['last_post_id'].'">'.Utils::format_time($cur_topic['last_post']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
+                    $cur_topic['last_post_disp'] = '<a href="'.
+                        Router::pathFor('viewPost', ['pid' => $cur_topic['last_post_id']]).'#p'.
+                        $cur_topic['last_post_id'].'">'.Utils::timeFormat($cur_topic['last_post']).
+                        '</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
                     $cur_topic['ghost_topic'] = false;
                 } else {
                     $cur_topic['last_post_disp'] = '- - -';
@@ -350,22 +445,39 @@ class Forum
                 }
 
                 if ($cur_topic['moved_to'] != 0) {
-                    $cur_topic['subject_disp'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['moved_to'], 'name' => $url_topic]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.Router::pathFor(
+                        'Topic',
+                        ['id' => $cur_topic['moved_to'],
+                        'name' => $url_topic]
+                    ).'">'. Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.
+                        Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="movedtext">'.__('Moved').'</span>';
                     $cur_topic['item_status'] .= ' imoved';
                 } elseif ($cur_topic['closed'] == '0') {
-                    $cur_topic['subject_disp'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_topic]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.
+                        Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_topic]).'">'.
+                        Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.
+                        Utils::escape($cur_topic['poster']).'</span>';
                 } else {
-                    $cur_topic['subject_disp'] = '<a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_topic]).'">'.Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['poster']).'</span>';
+                    $cur_topic['subject_disp'] = '<a href="'.
+                        Router::pathFor('Topic', ['id' => $cur_topic['id'], 'name' => $url_topic]).'">'.
+                        Utils::escape($cur_topic['subject']).'</a> <span class="byuser">'.__('by').' '.
+                        Utils::escape($cur_topic['poster']).'</span>';
                     $status_text[] = '<span class="closedtext">'.__('Closed').'</span>';
                     $cur_topic['item_status'] .= ' iclosed';
                 }
 
-                if (!$cur_topic['ghost_topic'] && $cur_topic['last_post'] > User::get()->last_visit && (!isset($tracked_topics['topics'][$cur_topic['id']]) || $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) && (!isset($tracked_topics['forums'][$fid]) || $tracked_topics['forums'][$fid] < $cur_topic['last_post'])) {
+                if (!$cur_topic['ghost_topic'] && $cur_topic['last_post'] > User::get()->last_visit &&
+                    (!isset($tracked_topics['topics'][$cur_topic['id']]) ||
+                        $tracked_topics['topics'][$cur_topic['id']] < $cur_topic['last_post']) &&
+                    (!isset($tracked_topics['forums'][$fid]) ||
+                        $tracked_topics['forums'][$fid] < $cur_topic['last_post'])) {
                     $cur_topic['item_status'] .= ' inew';
                     $cur_topic['icon_type'] = 'icon icon-new';
                     $cur_topic['subject_disp'] = '<strong>'.$cur_topic['subject_disp'].'</strong>';
-                    $subject_new_posts = '<span class="newtext">[ <a href="'.Router::pathFor('Topic', ['id' => $cur_topic['id'], 'action' => 'new']).'" title="'.__('New posts info').'">'.__('New posts').'</a> ]</span>';
+                    $subject_new_posts = '<span class="newtext">[ <a href="'.
+                        Router::pathFor('Topic', ['id' => $cur_topic['id'], 'action' => 'new']).'" title="'.
+                        __('New posts info').'">'.__('New posts').'</a> ]</span>';
                 } else {
                     $subject_new_posts = null;
                 }
@@ -376,7 +488,9 @@ class Forum
                 $num_pages_topic = ceil(($cur_topic['num_replies'] + 1) / User::get()->disp_posts);
 
                 if ($num_pages_topic > 1) {// FIXME rebuild url
-                    $subject_multipage = '<span class="pagestext">[ '.Url::paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_topic.'/#').' ]</span>';
+                    $subject_multipage = '<span class="pagestext">[ '.
+                        Url::paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_topic.'/#').
+                        ' ]</span>';
                 } else {
                     $subject_multipage = null;
                 }
@@ -410,7 +524,8 @@ class Forum
         $num_topics = intval($stats_query['total_topics']);
         $num_replies = intval($stats_query['total_replies']);
 
-        $num_posts = $num_replies + $num_topics; // $num_posts is only the sum of all replies (we have to add the topic posts)
+        $num_posts = $num_replies + $num_topics; // $num_posts is only the sum of all replies
+        // (we have to add the topic posts)
 
         $select_update_forum = ['last_post', 'last_post_id', 'last_poster'];
 
@@ -457,7 +572,8 @@ class Forum
         $is_subscribed = \ORM::for_table(ORM_TABLE_PREFIX.'forum_subscriptions')
             ->where('user_id', User::get()->id)
             ->where('forum_id', $forum_id);
-        $is_subscribed = Container::get('hooks')->fireDB('model.forum.unsubscribe_forum_subscribed_query', $is_subscribed);
+        $is_subscribed = Container::get('hooks')
+            ->fireDB('model.forum.unsubscribe_forum_subscribed_query', $is_subscribed);
         $is_subscribed = $is_subscribed->find_one();
 
         if (!$is_subscribed) {
@@ -488,8 +604,10 @@ class Forum
 
         $authorized = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
                         ->table_alias('f')
-//                        ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-//                        ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
+//                        ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+// array('fp.forum_id', '=', 'f.id'), 'fp')
+//                        ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+// array('fp.group_id', '=', User::get()->g_id), null, true)
             ->left_outer_join(
                 ORM_TABLE_PREFIX.'forum_perms',
                 '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
@@ -508,7 +626,8 @@ class Forum
         $is_subscribed = \ORM::for_table(ORM_TABLE_PREFIX.'forum_subscriptions')
             ->where('user_id', User::get()->id)
             ->where('forum_id', $forum_id);
-        $is_subscribed = Container::get('hooks')->fireDB('model.forum.subscribe_forum_subscribed_query', $is_subscribed);
+        $is_subscribed = Container::get('hooks')
+            ->fireDB('model.forum.subscribe_forum_subscribed_query', $is_subscribed);
         $is_subscribed = $is_subscribed->find_one();
 
         if ($is_subscribed) {
@@ -527,7 +646,7 @@ class Forum
         $subscription->save();
     }
 
-    public function close_multiple_topics($action, $topics)
+    public function closeMultipleTopics($action, $topics)
     {
 //        $close_multiple_topics = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
 //                                    ->where_in('id', $topics);
@@ -539,7 +658,7 @@ class Forum
             ->save();
     }
 
-    public function delete_topics($topics, $fid)
+    public function deleteTopics($topics, $fid)
     {
         Container::get('hooks')->fire('model.forum.delete_topics', $topics, $fid);
 
@@ -564,7 +683,7 @@ class Forum
         if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN')) {
             $authorized = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
                             ->where_in('topic_id', $topics_sql)
-                            ->where('poster_id', Utils::get_admin_ids());
+                            ->where('poster_id', Utils::getAdminIds());
             $authorized = Container::get('hooks')->fireDB('model.forum.delete_topics_authorized', $authorized);
             $authorized = $authorized->find_many();
             if ($authorized) {
@@ -581,20 +700,23 @@ class Forum
         // Delete any redirect topics
         $delete_redirect_topics = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                                     ->where_in('moved_to', $topics_sql);
-        $delete_redirect_topics = Container::get('hooks')->fireDB('model.forum.delete_topics_redirect', $delete_redirect_topics);
+        $delete_redirect_topics = Container::get('hooks')
+            ->fireDB('model.forum.delete_topics_redirect', $delete_redirect_topics);
         $delete_redirect_topics = $delete_redirect_topics->delete_many();
 
         // Delete any subscriptions
         $delete_subscriptions = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
                                     ->where_in('topic_id', $topics_sql);
-        $delete_subscriptions = Container::get('hooks')->fireDB('model.forum.delete_topics_subscriptions', $delete_subscriptions);
+        $delete_subscriptions = Container::get('hooks')
+            ->fireDB('model.forum.delete_topics_subscriptions', $delete_subscriptions);
         $delete_subscriptions = $delete_subscriptions->delete_many();
 
         // Create a list of the post IDs in this topic and then strip the search index
         $find_ids = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
                         ->select('id')
                         ->where_in('topic_id', $topics_sql);
-        $find_ids = Container::get('hooks')->fireDB('model.forum.delete_topics_find_ids', $find_ids);
+        $find_ids = Container::get('hooks')
+            ->fireDB('model.forum.delete_topics_find_ids', $find_ids);
         $find_ids = $find_ids->find_many();
 
         $ids_post = [];
@@ -608,7 +730,7 @@ class Forum
         // We have to check that we actually have a list of post IDs since we could be deleting just a redirect topic
         if ($post_ids != '') {
             $search = new \RunBB\Core\Search();
-            $search->strip_search_index($post_ids);
+            $search->stripSearchIndex($post_ids);
         }
 
         // Delete posts
@@ -620,7 +742,7 @@ class Forum
         self::update($fid);
     }
 
-    public function merge_topics($fid)
+    public function mergeTopics($fid)
     {
         $fid = Container::get('hooks')->fire('model.forum.merge_topics_start', $fid);
 
@@ -655,7 +777,8 @@ class Forum
         $merge_to_tid = Container::get('hooks')->fire('model.forum.merge_topics_tid', $merge_to_tid);
 
         // Make any redirect topics point to our new, merged topic
-        $query = 'UPDATE '.ForumSettings::get('db_prefix').'topics SET moved_to='.$merge_to_tid.' WHERE moved_to IN('.implode(',', $topics).')';
+        $query = 'UPDATE '.ForumSettings::get('db_prefix').'topics SET moved_to='.$merge_to_tid.
+            ' WHERE moved_to IN('.implode(',', $topics).')';
 
         // Should we create redirect topics?
         if (Input::post('with_redirect')) {
@@ -689,7 +812,8 @@ class Forum
         // Delete the subscriptions
         $delete_subscriptions = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
                                     ->where_in('topic_id', $topics);
-        $delete_subscriptions = Container::get('hooks')->fireDB('model.forum.merge_topics_delete_subscriptions', $delete_subscriptions);
+        $delete_subscriptions = Container::get('hooks')
+            ->fireDB('model.forum.merge_topics_delete_subscriptions', $delete_subscriptions);
         $delete_subscriptions = $delete_subscriptions->delete_many();
 
         // If users subscribed to one of the topics, keep subscription for merged topic
@@ -702,7 +826,8 @@ class Forum
             $subscriptions = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
                                 ->create()
                                 ->set($subscriptions['insert']);
-            $subscriptions = Container::get('hooks')->fireDB('model.forum.merge_topics_insert_subscriptions', $subscriptions);
+            $subscriptions = Container::get('hooks')
+                ->fireDB('model.forum.merge_topics_insert_subscriptions', $subscriptions);
             $subscriptions = $subscriptions->save();
         }
 
@@ -711,7 +836,8 @@ class Forum
             $delete_topics = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
                                 ->where_in('id', $topics)
                                 ->where_not_equal('id', $merge_to_tid);
-            $delete_topics = Container::get('hooks')->fireDB('model.forum.merge_topics_delete_topics', $delete_topics);
+            $delete_topics = Container::get('hooks')
+                ->fireDB('model.forum.merge_topics_delete_topics', $delete_topics);
             $delete_topics = $delete_topics->delete_many();
         }
 

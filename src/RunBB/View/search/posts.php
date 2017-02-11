@@ -35,7 +35,7 @@ foreach ($display['cur_search'] as $search) {
                         echo  ' ';
 } ?><?= $search['forum'] ?></span> <span>»&#160;<a
                         href="<?= Router::pathFor('Topic', ['id' => $search['tid'], 'name' => $search['url_topic']]) ?>"><?= Utils::escape($search['subject']) ?></a></span> <span>»&#160;<a
-                        href="<?= Router::pathFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?= Utils::format_time($search['pposted']) ?></a></span></span>
+                        href="<?= Router::pathFor('viewPost', ['pid' => $search['pid']]) . '#p' . $search['pid'] ?>"><?= Utils::timeFormat($search['pposted']) ?></a></span></span>
         </h2>
 
         <div class="box">
@@ -46,7 +46,7 @@ foreach ($display['cur_search'] as $search) {
                             <dt><?= $search['pposter_disp'] ?></dt>
                             <?php if ($search['pid'] == $search['first_post_id']) : ?>
                                 <dd>
-                                    <span><?= __('Replies') . ' ' . Utils::forum_number_format($search['num_replies']) ?></span>
+                                    <span><?= __('Replies') . ' ' . Utils::numberFormat($search['num_replies']) ?></span>
                                 </dd>
                             <?php endif; ?>
                             <dd>

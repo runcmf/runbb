@@ -34,8 +34,10 @@ class Maintenance
 
         // If this is the first cycle of posts we empty the search index before we proceed
         if (Input::query('i_empty_index')) {
-            \ORM::for_table(ORM_TABLE_PREFIX.'search_words')->raw_execute('TRUNCATE '.ForumSettings::get('db_prefix').'search_words');
-            \ORM::for_table(ORM_TABLE_PREFIX.'search_matches')->raw_execute('TRUNCATE '.ForumSettings::get('db_prefix').'search_matches');
+            \ORM::for_table(ORM_TABLE_PREFIX.'search_words')
+                ->raw_execute('TRUNCATE '.ForumSettings::get('db_prefix').'search_words');
+            \ORM::for_table(ORM_TABLE_PREFIX.'search_matches')
+                ->raw_execute('TRUNCATE '.ForumSettings::get('db_prefix').'search_matches');
 
             // Reset the sequence for the search words (not needed for SQLite)
             switch (ForumSettings::get('db_type')) {
@@ -43,16 +45,18 @@ class Maintenance
                 case 'mysqli':
                 case 'mysql_innodb':
                 case 'mysqli_innodb':
-                    \ORM::for_table(ORM_TABLE_PREFIX.'search_words')->raw_execute('ALTER TABLE '.ForumSettings::get('db_prefix').'search_words auto_increment=1');
+                    \ORM::for_table(ORM_TABLE_PREFIX.'search_words')
+                        ->raw_execute('ALTER TABLE '.ForumSettings::get('db_prefix').'search_words auto_increment=1');
                     break;
-
-                case 'pgsql';
-                    \ORM::for_table(ORM_TABLE_PREFIX.'search_words')->raw_execute('SELECT setval(\''.ForumSettings::get('db_prefix').'search_words_id_seq\', 1, false)');
+                case 'pgsql':
+                    \ORM::for_table(ORM_TABLE_PREFIX.'search_words')
+                        ->raw_execute('SELECT setval(\''.
+                            ForumSettings::get('db_prefix').'search_words_id_seq\', 1, false)');
             }
         }
     }
 
-    public function get_query_str()
+    public function getQueryStr()
     {
         $query_str = '';
 
@@ -78,9 +82,14 @@ class Maintenance
             echo '<p><span>'.sprintf(__('Processing post'), $cur_item['id']).'</span></p>'."\n";
 
             if ($cur_item['id'] == $cur_item['first_post_id']) {
-                $this->search->update_search_index('post', $cur_item['id'], $cur_item['message'], $cur_item['subject']);
+                $this->search->updateSearchIndex(
+                    'post',
+                    $cur_item['id'],
+                    $cur_item['message'],
+                    $cur_item['subject']
+                );
             } else {
-                $this->search->update_search_index('post', $cur_item['id'], $cur_item['message']);
+                $this->search->updateSearchIndex('post', $cur_item['id'], $cur_item['message']);
             }
 
             $end_at = $cur_item['id'];
@@ -107,7 +116,8 @@ class Maintenance
     }
 
     //
-    // Delete topics from $forum_id that are "older than" $prune_date (if $prune_sticky is 1, sticky topics will also be deleted)
+    // Delete topics from $forum_id that are "older than" $prune_date (if $prune_sticky is 1, sticky
+    // topics will also be deleted)
     //
     public function prune($forum_id, $prune_sticky, $prune_date)
     {
@@ -158,12 +168,12 @@ class Maintenance
                         ->delete_many();
 
                 // We removed a bunch of posts, so now we have to update the search index
-                $this->search->strip_search_index($post_ids);
+                $this->search->stripSearchIndex($post_ids);
             }
         }
     }
 
-    public function prune_comply($prune_from, $prune_sticky)
+    public function pruneComply($prune_from, $prune_sticky)
     {
         $prune_days = intval(Input::post('prune_days'));
         $prune_days = Container::get('hooks')->fire('model.admin.maintenance.prune_comply.prune_days', $prune_days);
@@ -212,7 +222,7 @@ class Maintenance
         return Router::redirect(Router::pathFor('adminMaintenance'), __('Posts pruned redirect'));
     }
 
-    public function get_info_prune($prune_sticky, $prune_from)
+    public function getInfoPrune($prune_sticky, $prune_from)
     {
         $prune = [];
 
@@ -256,7 +266,7 @@ class Maintenance
         return $prune;
     }
 
-    public function get_categories()
+    public function getCategories()
     {
         $output = '';
 
@@ -284,14 +294,15 @@ class Maintenance
                 $cur_category = $forum->cid;
             }
 
-            $output .=  "\t\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$forum->fid.'">'.Utils::escape($forum->forum_name).'</option>'."\n";
+            $output .=  "\t\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$forum->fid.'">'.
+                Utils::escape($forum->forum_name).'</option>'."\n";
         }
 
         $output = Container::get('hooks')->fire('model.admin.maintenance.get_categories.output', $output);
         return $output;
     }
 
-    public function get_first_id()
+    public function getFirstId()
     {
         $first_id = '';
         $first_id_sql = \ORM::for_table(ORM_TABLE_PREFIX.'posts')

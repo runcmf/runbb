@@ -57,12 +57,14 @@ class Plugins
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')],
         ])->addTemplate('misc/modal.php')->display(false);
 /*
-        $zipFile = ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'] . "-" . $args['version'] . '.zip';
+        $zipFile = ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR .
+$args['name'] . "-" . $args['version'] . '.zip';
         $zipResource = fopen($zipFile, "w");
 
         // Get the zip file straight from GitHub
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://codeload.github.com/featherbb/' . $args['name'] . '/zip/' . $args['version']);
+        curl_setopt($ch, CURLOPT_URL, 'https://codeload.github.com/featherbb/' . $args['name'] .
+'/zip/' . $args['version']);
         curl_setopt($ch, CURLOPT_FAILONERROR, true);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -77,7 +79,8 @@ class Plugins
         fclose($zipResource);
 
         if (!$page) {
-            unlink(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'] . "-" . $args['version'] . '.zip');
+            unlink(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'] .
+"-" . $args['version'] . '.zip');
             throw new  RunBBException(__('Bad request'), 400);
         }
 
@@ -91,10 +94,12 @@ class Plugins
         $zip->close();
 
         if (file_exists(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'])) {
-            AdminUtils::delete_folder(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name']);
+            AdminUtils::deleteFolder(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name']);
         }
-        rename(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'] . "-" . $args['version'], ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name']);
-        unlink(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'] . "-" . $args['version'] . '.zip');
+        rename(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'] .
+"-" . $args['version'], ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name']);
+        unlink(ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR . $args['name'] .
+"-" . $args['version'] . '.zip');
 
         return Router::redirect(Router::pathFor('adminPlugins'), 'Plugin downloaded!');
 */
@@ -118,7 +123,8 @@ class Plugins
         $availablePlugins = Lister::getPlugins(
             $this->model->getList()
         );
-        $activePlugins = Container::get('cache')->isCached('activePlugins') ? Container::get('cache')->retrieve('activePlugins') : [];
+        $activePlugins = Container::get('cache')->isCached('activePlugins') ?
+            Container::get('cache')->retrieve('activePlugins') : [];
 
         $officialPlugins = [];//Lister::getOfficialPlugins();
 
@@ -205,10 +211,12 @@ class Plugins
     public function info($req, $res, $args)
     {
         $formattedPluginName =
-            str_replace(' ', '',
-//                ucwords(
+            str_replace(
+                ' ',
+                '',
+                //                ucwords(
                 str_replace(['-', '_'], ' ', $args['name'])
-//            )
+                //            )
             );
         $plugins = $this->model->getList();
         $plugKey = Utils::recursiveArraySearch($formattedPluginName, $plugins);

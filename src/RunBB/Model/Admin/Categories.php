@@ -11,7 +11,7 @@ namespace RunBB\Model\Admin;
 
 class Categories
 {
-    public function add_category($cat_name)
+    public function addCategory($cat_name)
     {
         $cat_name = Container::get('hooks')->fire('model.admin.categories.add_category', $cat_name);
 
@@ -23,7 +23,7 @@ class Categories
                 ->save();
     }
 
-    public function update_category(array $category)
+    public function updateCategory(array $category)
     {
         $category = Container::get('hooks')->fire('model.admin.categories.update_category', $category);
 
@@ -36,14 +36,16 @@ class Categories
                 ->save();
     }
 
-    public function delete_category($cat_to_delete)
+    public function deleteCategory($cat_to_delete)
     {
-        $cat_to_delete = Container::get('hooks')->fire('model.admin.categories.delete_category_start', $cat_to_delete);
+        $cat_to_delete = Container::get('hooks')
+            ->fire('model.admin.categories.delete_category_start', $cat_to_delete);
 
         $forums_in_cat = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
                             ->select('id')
                             ->where('cat_id', $cat_to_delete);
-        $forums_in_cat = Container::get('hooks')->fireDB('model.admin.categories.delete_forums_in_cat_query', $forums_in_cat);
+        $forums_in_cat = Container::get('hooks')
+            ->fireDB('model.admin.categories.delete_forums_in_cat_query', $forums_in_cat);
         $forums_in_cat = $forums_in_cat->find_many();
 
         foreach ($forums_in_cat as $forum) {
@@ -78,7 +80,7 @@ class Categories
         return true;
     }
 
-    public function get_cat_list()
+    public function getCatList()
     {
         $cat_list = [];
         $select_get_cat_list = ['id', 'cat_name', 'disp_position'];

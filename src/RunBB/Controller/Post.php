@@ -49,7 +49,8 @@ class Post
         Container::get('hooks')->fire('controller.post.create', $args['fid'], $args['tid'], $args['qid']);
 
         // Antispam feature
-        $lang_antispam_questions = require ForumEnv::get('FORUM_ROOT') . 'lang/' . User::get()->language . '/antispam.php';
+        $lang_antispam_questions = require ForumEnv::get('FORUM_ROOT') . 'lang/' .
+            User::get()->language . '/antispam.php';
         $index_questions = rand(0, count($lang_antispam_questions) - 1);
 
         // If $_POST['username'] is filled, we are facing a bot
@@ -58,7 +59,7 @@ class Post
         }
 
         // Fetch some info about the topic and/or the forum
-        $cur_posting = $this->model->get_info_post($args['tid'], $args['fid']);
+        $cur_posting = $this->model->getInfoPost($args['tid'], $args['fid']);
 
         $is_subscribed = $args['tid'] && $cur_posting['is_subscribed'];
 
@@ -70,7 +71,8 @@ class Post
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_posting['moderators'] != '') ? unserialize($cur_posting['moderators']) : [];
         $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') ||
-            (User::get()->g_moderator == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+            (User::get()->g_moderator == '1' &&
+                array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         // Do we have permission to post?
         if ((($args['tid'] && (($cur_posting['post_replies'] == '' && User::get()->g_post_replies == '0') ||
@@ -114,39 +116,39 @@ class Post
 //                }
 //            }
             // Setup some variables before post
-            $post = $this->model->setup_variables($errors, $is_admmod);
+            $post = $this->model->setupVariables($errors, $is_admmod);
 
             // Did everything go according to plan?
             if (empty($errors) && !Input::post('preview')) {
                 // If it's a reply
                 if ($args['tid']) {
                     // Insert the reply, get the new_pid
-                    $new = $this->model->insert_reply($post, $args['tid'], $cur_posting, $is_subscribed);
+                    $new = $this->model->insertReply($post, $args['tid'], $cur_posting, $is_subscribed);
 
                     // Should we send out notifications?
                     if (ForumSettings::get('o_topic_subscriptions') == '1') {
-                        $this->model->send_notifications_reply($args['tid'], $cur_posting, $new['pid'], $post);
+                        $this->model->sendNotificationsReply($args['tid'], $cur_posting, $new['pid'], $post);
                     }
                 } // If it's a new topic
                 elseif ($args['fid']) {
                     // Insert the topic, get the new_pid
-                    $new = $this->model->insert_topic($post, $args['fid']);
+                    $new = $this->model->insertTopic($post, $args['fid']);
 
                     // Should we send out notifications?
                     if (ForumSettings::get('o_forum_subscriptions') == '1') {
-                        $this->model->send_notifications_new_topic($post, $cur_posting, $new['tid']);
+                        $this->model->sendNotificationsNewTopic($post, $cur_posting, $new['tid']);
                     }
                 }
 
                 // If we previously found out that the email was banned
                 if (User::get()->is_guest && isset($errors['banned_email']) &&
                     ForumSettings::get('o_mailing_list') != '') {
-                    $this->model->warn_banned_user($post, $new['pid']);
+                    $this->model->warnBannedUser($post, $new['pid']);
                 }
 
                 // If the posting user is logged in, increment his/her post count
                 if (!User::get()->is_guest) {
-                    $this->model->increment_post_count($post, $new['tid']);
+                    $this->model->incrementPostCount($post, $new['tid']);
                 }
 
                 return Router::redirect(
@@ -163,14 +165,16 @@ class Post
             $action = __('Post a reply');
             $form = '<form id="post" method="post" action="' .
                 Router::pathFor('newReply', ['tid' => $args['tid']]) .
-                '" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+                '" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else'.
+                '{this.submit.disabled=false;return false;}">';
 
             // If a quote ID was specified in the url
             if (isset($args['qid'])) {
-                $quote = $this->model->get_quote_message($args['qid'], $args['tid']);
+                $quote = $this->model->getQuoteMessage($args['qid'], $args['tid']);
                 $form = '<form id="post" method="post" action="' .
                     Router::pathFor('newQuoteReply', ['tid' => $args['tid'], 'qid' => $args['qid']]) .
-                    '" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">';
+                    '" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else'.
+                    '{this.submit.disabled=false;return false;}">';
             }
         } // If a forum ID was specified in the url (new topic)
         elseif ($args['fid']) {
@@ -181,12 +185,12 @@ class Post
             throw new RunBBException(__('Bad request'), 404);
         }
 
-        $url_forum = Url::url_friendly($cur_posting['forum_name']);
+        $url_forum = Url::slug($cur_posting['forum_name']);
 
         $is_subscribed = $args['tid'] && $cur_posting['is_subscribed'];
 
         if (isset($cur_posting['subject'])) {
-            $url_topic = Url::url_friendly($cur_posting['subject']);
+            $url_topic = Url::slug($cur_posting['subject']);
         } else {
             $url_topic = '';
         }
@@ -210,11 +214,11 @@ class Post
         }
 
         // Get the current state of checkboxes
-        $checkboxes = $this->model->get_checkboxes($args['fid'], $is_admmod, $is_subscribed);
+        $checkboxes = $this->model->getCheckboxes($args['fid'], $is_admmod, $is_subscribed);
 
         // Check to see if the topic review is to be displayed
         if ($args['tid'] && ForumSettings::get('o_topic_review') != '0') {
-            $post_data = $this->model->topic_review($args['tid']);
+            $post_data = $this->model->topicReview($args['tid']);
         } else {
             $post_data = '';
         }
@@ -246,7 +250,7 @@ class Post
         Container::get('hooks')->fire('controller.post.delete');
 
         // Fetch some informations about the post, the topic and the forum
-        $cur_post = $this->model->get_info_delete($args['id']);
+        $cur_post = $this->model->getInfoDelete($args['id']);
 
         if (ForumSettings::get('o_censoring') == '1') {
             $cur_post['subject'] = Utils::censor($cur_post['subject']);
@@ -255,7 +259,8 @@ class Post
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : [];
         $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') ||
-            (User::get()->g_moderator == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+            (User::get()->g_moderator == '1' &&
+                array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         $is_topic_post = ($args['id'] == $cur_post['first_post_id']) ? true : false;
 
@@ -270,15 +275,16 @@ class Post
         }
 
         if ($is_admmod && User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&
-            in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+            in_array($cur_post['poster_id'], Utils::getAdminIds())) {
             throw new  RunBBException(__('No permission'), 403);
         }
 
         if (Request::isPost()) {
-            return $this->model->handle_deletion($is_topic_post, $args['id'], $cur_post['tid'], $cur_post['fid']);
+            return $this->model->handleDeletion($is_topic_post, $args['id'], $cur_post['tid'], $cur_post['fid']);
         }
 
-        $cur_post['message'] = Container::get('parser')->parseMessage($cur_post['message'], $cur_post['hide_smilies']);
+        $cur_post['message'] = Container::get('parser')
+            ->parseMessage($cur_post['message'], $cur_post['hide_smilies']);
 
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Delete post')],
@@ -294,12 +300,13 @@ class Post
         Container::get('hooks')->fire('controller.post.edit');
 
         // Fetch some informations about the post, the topic and the forum
-        $cur_post = $this->model->get_info_edit($args['id']);
+        $cur_post = $this->model->getInfoEdit($args['id']);
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
         $mods_array = ($cur_post['moderators'] != '') ? unserialize($cur_post['moderators']) : [];
         $is_admmod = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') ||
-            (User::get()->g_moderator == '1' && array_key_exists(User::get()->username, $mods_array))) ? true : false;
+            (User::get()->g_moderator == '1' &&
+                array_key_exists(User::get()->username, $mods_array))) ? true : false;
 
         $can_edit_subject = $args['id'] == $cur_post['first_post_id'];
 
@@ -315,7 +322,7 @@ class Post
         }
 
         if ($is_admmod && User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&
-            in_array($cur_post['poster_id'], Utils::get_admin_ids())) {
+            in_array($cur_post['poster_id'], Utils::getAdminIds())) {
             throw new  RunBBException(__('No permission'), 403);
         }
 
@@ -326,16 +333,16 @@ class Post
             Container::get('hooks')->fire('controller.post.edit.submit', $args['id']);
 
             // Let's see if everything went right
-            $errors = $this->model->check_errors_before_edit($can_edit_subject, $errors);
-//tdie($cur_post);
+            $errors = $this->model->checkErrorsBeforeEdit($can_edit_subject, $errors);
+
             // Setup some variables before post
-            $post = $this->model->setup_edit_variables($cur_post, $is_admmod, $can_edit_subject, $errors);
+            $post = $this->model->setupEditVariables($cur_post, $is_admmod, $can_edit_subject, $errors);
 
             // Did everything go according to plan?
             if (empty($errors) && !Input::post('preview')) {
                 Container::get('hooks')->fire('controller.post.edit.valid', $args['id']);
                 // Edit the post
-                $this->model->edit_post($args['id'], $can_edit_subject, $post, $cur_post, $is_admmod);
+                $this->model->editPost($args['id'], $can_edit_subject, $post, $cur_post, $is_admmod);
 
                 return Router::redirect(
                     Router::pathFor('viewPost', ['pid' => $args['id']]) . '#p' . $args['id'],
@@ -361,7 +368,7 @@ class Post
                 'errors' => $errors,
                 'preview_message' => '',//$preview_message,
                 'id' => $args['id'],
-                'checkboxes' => $this->model->get_edit_checkboxes($can_edit_subject, $is_admmod, $cur_post, 1),
+                'checkboxes' => $this->model->getEditCheckboxes($can_edit_subject, $is_admmod, $cur_post, 1),
                 'can_edit_subject' => $can_edit_subject,
                 'post' => $post,
             ])->addTemplate('edit.php')->display();
@@ -372,11 +379,11 @@ class Post
         $args['id'] = Container::get('hooks')->fire('controller.post.report', $args['id']);
 
         if (Request::isPost()) {
-            $this->model->insert_report($args['id']);
+            $this->model->insertReport($args['id']);
         }
 
         // Fetch some info about the post, the topic and the forum
-        $cur_post = $this->model->get_info_report($args['id']);
+        $cur_post = $this->model->getInfoReport($args['id']);
 
         if (ForumSettings::get('o_censoring') == '1') {
             $cur_post['subject'] = Utils::censor($cur_post['subject']);
@@ -396,6 +403,6 @@ class Post
     {
         $args['pid'] = Container::get('hooks')->fire('controller.post.gethost', $args['pid']);
 
-        $this->model->display_ip_address($args['pid']);
+        $this->model->displayIpAddress($args['pid']);
     }
 }

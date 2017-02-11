@@ -16,7 +16,7 @@ class Track
      * @param null $tracked_topics
      * @return bool
      */
-    public static function set_tracked_topics($tracked_topics = null)
+    public static function setTrackedTopics($tracked_topics = null)
     {
         if (!empty($tracked_topics)) {
             // Sort the arrays (latest read first)
@@ -26,14 +26,22 @@ class Track
             $tracked_topics = ['topics' => [], 'forums' => []];
         }
 
-        return setcookie(ForumSettings::get('cookie_name') . '_track', json_encode($tracked_topics), time() + ForumSettings::get('o_timeout_visit'), '/', '', false, true);
+        return setcookie(
+            ForumSettings::get('cookie_name') . '_track',
+            json_encode($tracked_topics),
+            time() + ForumSettings::get('o_timeout_visit'),
+            '/',
+            '',
+            false,
+            true
+        );
     }
 
     /**
      * Extract array of tracked topics from cookie
      * @return array|mixed
      */
-    public static function get_tracked_topics()
+    public static function getTrackedTopics()
     {
         $cookie_raw = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
 

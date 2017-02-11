@@ -76,7 +76,8 @@ class Languages
 
         $this->model->updateLangInfo($data);
         return Router::redirect(
-            Router::pathFor('adminLanguages'), ['success', 'Language Info Updated']// TODO translate
+            Router::pathFor('adminLanguages'),
+            ['success', 'Language Info Updated']// TODO translate
         );
     }
 
@@ -130,12 +131,13 @@ class Languages
         $grp = Input::query('grp') ? Input::query('grp') : Input::post('grp');
         $transtr = Input::post('transtr');
 
-        if($transtr) {
+        if ($transtr) {
             $this->model->update($transtr);
             $this->model->generateTranslation($lngId, $grp);
 
             return Router::redirect(
-                Router::pathFor('adminLanguages.showlangfiles', [], ['lng' => $lngId]), ['success', 'lang updated']// TODO translate
+                Router::pathFor('adminLanguages.showlangfiles', [], ['lng' => $lngId]),
+                ['success', 'lang updated']// TODO translate
             );
         }
 
@@ -154,10 +156,11 @@ class Languages
     {
         $text = Input::post('mailTemplateText');
 //tdie($text);
-        if($text) {
+        if ($text) {
             $this->model->updateMailTemplates($text);
             return Router::redirect(
-                Router::pathFor('adminLanguages'), ['success', 'Mail templates updated']// TODO translate
+                Router::pathFor('adminLanguages'),
+                ['success', 'Mail templates updated']// TODO translate
             );
         }
 
@@ -185,7 +188,8 @@ class Languages
         $this->model->exportLang($id);
 
         return Router::redirect(
-            Router::pathFor('adminLanguages'), ['success', 'Language exported']// TODO translate
+            Router::pathFor('adminLanguages'),
+            ['success', 'Language exported']// TODO translate
         );
     }
 
@@ -196,7 +200,7 @@ class Languages
         $out = 'Imported language: '."\n";
         $info = $this->model->importLang($code);
 
-        if(!empty($info)) {
+        if (!empty($info)) {
             foreach ($info as $i) {
                 $out .= 'lid: '.$i['lid'].', code: '.$i['code'].', name: '.$i['name'].",\n".
                 'locale: '.$i['locale'].', translations: '.$i['transcount'].",\n".
@@ -207,16 +211,18 @@ class Languages
         }
 
         return Router::redirect(
-            Router::pathFor('adminLanguages'), ['success', $out]// TODO translate, format
+            Router::pathFor('adminLanguages'),
+            ['success', $out]// TODO translate, format
         );
     }
 
     public function buildNewTranslation()
     {
         $agree = Input::post('iknow');
-        if(!$agree) {
+        if (!$agree) {
             return Router::redirect(
-                Router::pathFor('adminLanguages'), ['error', 'Click checkbox']// TODO translate, format
+                Router::pathFor('adminLanguages'),
+                ['error', 'Click checkbox']// TODO translate, format
             );
         }
 
@@ -232,7 +238,8 @@ class Languages
         $out .= $this->model->buildLang($data, $from);
 
         return Router::redirect(
-            Router::pathFor('adminLanguages'), ['success', $out]// TODO translate, format
+            Router::pathFor('adminLanguages'),
+            ['success', $out]// TODO translate, format
         );
     }
 
@@ -241,9 +248,10 @@ class Languages
         if (Request::isPost()) {
             $agree = Input::post('agree');
 
-            if(!$agree) {
+            if (!$agree) {
                 return Router::redirect(
-                    Router::pathFor('adminLanguages'), ['error', 'Click checkbox']// TODO translate
+                    Router::pathFor('adminLanguages'),
+                    ['error', 'Click checkbox']// TODO translate
                 );
             }
             $lid = Input::post('lid');
@@ -251,7 +259,8 @@ class Languages
             $this->model->deleteLanguage($lid);
 
             return Router::redirect(
-                Router::pathFor('adminLanguages'), ['success', 'Translation deleted']// TODO translate
+                Router::pathFor('adminLanguages'),
+                ['success', 'Translation deleted']// TODO translate
             );
         } else { // If the user hasn't confirmed
             $lid = Input::query('lng');
@@ -293,7 +302,7 @@ class Languages
 //                'name' => $lang
 //            ];
 //            // save to db
-//            $id = $this->model->add_data('languages', $data);
+//            $id = $this->model->addData('languages', $data);
 //
 //            // load mail templates
 //            foreach(glob($dir.$lang.'/mail_templates/*.tpl') as $t) {
@@ -303,7 +312,7 @@ class Languages
 //                    'text' => file_get_contents($t)
 //                ];
 //                // save to db
-//                $this->model->add_data('lang_mailtpls', $data);
+//                $this->model->addData('lang_mailtpls', $data);
 //            }
 //
 //            // load lang translations
@@ -327,7 +336,7 @@ class Languages
 //                            'msgstr' => $var->getTranslation()
 //                        ];
 //                        // save to db
-//                        $this->model->add_data('lang_trans', $data);
+//                        $this->model->addData('lang_trans', $data);
 //                    }
 //                }
 //            }

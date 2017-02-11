@@ -48,9 +48,9 @@ class AliasManager
      */
     public function __construct($namespacing)
     {
-        $this->aliases = array();
+        $this->aliases = [];
         $this->namespacer = new NamespaceManager();
-        $this->aliasLoader = array($this, 'loader');
+        $this->aliasLoader = [$this, 'loader'];
         $this->disable();
         $this->namespacing = $namespacing;
     }

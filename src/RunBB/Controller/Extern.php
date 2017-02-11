@@ -107,7 +107,6 @@ class Extern
         if (!defined('FORUM_EXTERN_MAX_SUBJECT_LENGTH')) {
             define('FORUM_EXTERN_MAX_SUBJECT_LENGTH', 30);
         }
-
     }
 
     public function display($req, $res, $args)
@@ -118,7 +117,7 @@ class Extern
 //        }
 
 //        if (User::get()->g_read_board == '0') {
-//            $this->http_authenticate_user();
+//            $this->httpAuthenticateUser();
 //            exit(__('No view'));
 //        }
 
@@ -177,7 +176,7 @@ class Extern
                     ->find_one();
 
                 if (!$cur_topic) {
-                    $this->http_authenticate_user();
+                    $this->httpAuthenticateUser();
                     exit(__('Bad request'));
                 }
 
@@ -188,15 +187,24 @@ class Extern
                 // Setup the feed
                 $feed = [
                     'title' => ForumSettings::get('o_board_title') . __('Title separator') . $cur_topic['subject'],
-                    'link' => Url::get('topic/' . $tid . '/' . Url::url_friendly($cur_topic['subject']) . '/'),
+                    'link' => Url::get('topic/' . $tid . '/' . Url::slug($cur_topic['subject']) . '/'),
                     'description' => sprintf(__('RSS description topic'), $cur_topic['subject']),
                     'items' => [],
                     'type' => 'posts'
                 ];
 
                 // Fetch $show posts
-                $select_print_posts = ['p.id', 'p.poster', 'p.message', 'p.hide_smilies', 'p.posted', 'p.poster_email',
-                    'p.poster_id', 'u.email_setting', 'u.email'];
+                $select_print_posts = [
+                    'p.id',
+                    'p.poster',
+                    'p.message',
+                    'p.hide_smilies',
+                    'p.posted',
+                    'p.poster_email',
+                    'p.poster_id',
+                    'u.email_setting',
+                    'u.email'
+                ];
 
                 $result = \ORM::for_table(ORM_TABLE_PREFIX . 'posts')
                     ->table_alias('p')
@@ -238,7 +246,7 @@ class Extern
                     $feed['items'][] = $item;
                 }
 
-                $output_func = 'output_' . $type;
+                $output_func = 'output' . ucfirst($type);
                 $this->$output_func($feed);
             } else {
                 $order_posted = isset($_GET['order']) && strtolower($_GET['order']) == 'posted';
@@ -319,8 +327,20 @@ class Extern
                     ];
 
                     // Fetch $show topics
-                    $select_print_posts = ['t.id', 't.poster', 't.subject', 't.posted', 't.last_post', 't.last_poster',
-                        'p.message', 'p.hide_smilies', 'u.email_setting', 'u.email', 'p.poster_id', 'p.poster_email'];
+                    $select_print_posts = [
+                        't.id',
+                        't.poster',
+                        't.subject',
+                        't.posted',
+                        't.last_post',
+                        't.last_poster',
+                        'p.message',
+                        'p.hide_smilies',
+                        'u.email_setting',
+                        'u.email',
+                        'p.poster_id',
+                        'p.poster_email'
+                    ];
 //            $where_print_posts = array(
 //                array('fp.read_forum' => 'IS NULL'),
 //                array('fp.read_forum' => '1')
@@ -358,7 +378,7 @@ class Extern
                             'id' => $cur_topic['id'],
                             'title' => $cur_topic['subject'],
                             'link' => Url::get('topic/' . $cur_topic['id'] . '/' .
-                                    Url::url_friendly($cur_topic['subject']) . '/')
+                                    Url::slug($cur_topic['subject']) . '/')
 //                                . ($order_posted ? '' : '/action/new/')
                             ,
                             'description' => $cur_topic['message'],
@@ -390,7 +410,7 @@ class Extern
                         $content = '<?php' . "\n\n" . '$feed = ' . var_export($feed, true) . ';' . "\n\n" .
                             '$cache_expire = ' . ($now + (ForumSettings::get('o_feed_ttl') * 60)) .
                             ';' . "\n\n" . '?>';
-                        $this->featherbb_write_cache_file('cache_' . $cache_id . '.php', $content);
+                        $this->writeCacheFile('cache_' . $cache_id . '.php', $content);
                     }
                 }
 
@@ -410,14 +430,13 @@ class Extern
                     }
                 }
 
-                $output_func = 'output_' . $type;
+                $output_func = 'output' . ucfirst($type);
                 $this->$output_func($feed);
             }
 
             exit;
         } // Show users online
-        elseif ($action == 'online' || $action == 'online_full')
-        {
+        elseif ($action == 'online' || $action == 'online_full') {
             // Fetch users online info and generate strings for output
             $num_guests = $num_users = 0;
             $users = [];
@@ -450,20 +469,19 @@ class Extern
             header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
             header('Pragma: public');
 
-            echo sprintf(__('Guests online'), Utils::forum_number_format($num_guests)) . '<br />' . "\n";
+            echo sprintf(__('Guests online'), Utils::numberFormat($num_guests)) . '<br />' . "\n";
 
             if ($action == 'online_full' && !empty($users)) {
                 echo sprintf(__('Users online'), implode(', ', $users)) . '<br />' . "\n";
             } else {
-                echo sprintf(__('Users online'), Utils::forum_number_format($num_users)) . '<br />' . "\n";
+                echo sprintf(__('Users online'), Utils::numberFormat($num_users)) . '<br />' . "\n";
             }
 
             exit;
         } // Show board statistics
-        elseif ($action == 'stats')
-        {
+        elseif ($action == 'stats') {
             if (!Container::get('cache')->isCached('users_info')) {
-                Container::get('cache')->store('users_info', Cache::get_users_info());
+                Container::get('cache')->store('users_info', Cache::getUsersInfo());
             }
 
             $stats = Container::get('cache')->retrieve('users_info');
@@ -482,13 +500,13 @@ class Extern
             header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
             header('Pragma: public');
 
-            echo sprintf(__('No of users'), Utils::forum_number_format($stats['total_users'])) . '<br />' . "\n";
+            echo sprintf(__('No of users'), Utils::numberFormat($stats['total_users'])) . '<br />' . "\n";
             echo sprintf(__('Newest user'), ((User::get()->g_view_users == '1') ? '<a href="' . Url::get('user/' .
                         $stats['last_user']['id'] . '/') . '">' .
                     Utils::escape($stats['last_user']['username']) . '</a>' :
                     Utils::escape($stats['last_user']['username']))) . '<br />' . "\n";
-            echo sprintf(__('No of topics'), Utils::forum_number_format($stats['total_topics'])) . '<br />' . "\n";
-            echo sprintf(__('No of posts'), Utils::forum_number_format($stats['total_posts'])) . '<br />' . "\n";
+            echo sprintf(__('No of topics'), Utils::numberFormat($stats['total_topics'])) . '<br />' . "\n";
+            echo sprintf(__('No of posts'), Utils::numberFormat($stats['total_posts'])) . '<br />' . "\n";
 
             exit;
         }
@@ -496,7 +514,7 @@ class Extern
         exit(__('Bad request'));
     }
 
-    function featherbb_write_cache_file($file, $content)
+    protected function writeCacheFile($file, $content)
     {
         $fh = @fopen(FORUM_CACHE_DIR . $file, 'wb');
         if (!$fh) {
@@ -525,7 +543,7 @@ class Extern
      * @param $str
      * @return mixed
      */
-    function escape_cdata($str)
+    protected function escapeCdata($str)
     {
         return str_replace(']]>', ']]&gt;', $str);
     }
@@ -550,7 +568,8 @@ class Extern
 //            ->find_result_set();
 //
 //        if (!$result) {
-//            exit('Unable to fetch guest information. Your database must contain both a guest user and a guest user group.');
+//            exit('Unable to fetch guest information. Your database must contain both a guest
+// user and a guest user group.');
 //        }
 //
 ////        foreach ($result as User::get()) ;
@@ -568,14 +587,16 @@ class Extern
 //                case 'sqlite':
 //                case 'sqlite3':
 //                    \ORM::for_table(ORM_TABLE_PREFIX . 'online')->raw_execute('REPLACE INTO ' .
-//                        ForumSettings::get('db_prefix') . 'online (user_id, ident, logged) VALUES(1, :ident, :logged)',
+//                        ForumSettings::get('db_prefix') . 'online (user_id, ident, logged)
+//  VALUES(1, :ident, :logged)',
 //                        [':ident' => $remote_addr, ':logged' => User::get()->logged]);
 //                    break;
 //
 //                default:
 //                    \ORM::for_table(ORM_TABLE_PREFIX . 'online')->raw_execute('INSERT INTO ' .
 //                        ForumSettings::get('db_prefix') .
-//                        'online (user_id, ident, logged) SELECT 1, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM ' .
+//                        'online (user_id, ident, logged) SELECT 1, :ident, :logged
+// WHERE NOT EXISTS (SELECT 1 FROM ' .
 //                        ForumSettings::get('db_prefix') . 'online WHERE ident=:ident)',
 //                        [':ident' => $remote_addr, ':logged' => User::get()->logged]);
 //                    break;
@@ -644,7 +665,7 @@ class Extern
     /**
      * Sends the proper headers for Basic HTTP Authentication
      */
-    function http_authenticate_user()
+    protected function httpAuthenticateUser()
     {
         if (!User::get()->is_guest) {
             return;
@@ -658,7 +679,7 @@ class Extern
      * Output $feed as RSS 2.0
      * @param $feed array
      */
-    function output_rss($feed)
+    protected function outputRss($feed)
     {
         // Send XML/no cache headers
         header('Content-Type: application/xml; charset=utf-8');
@@ -671,10 +692,10 @@ class Extern
         echo "\t" . '<channel>' . "\n";
         echo "\t\t" . '<atom:link href="' .
             Utils::escape(Url::current()) . '" rel="self" type="application/rss+xml" />' . "\n";
-        echo "\t\t" . '<title><![CDATA[' . $this->escape_cdata($feed['title']) . ']]></title>' . "\n";
+        echo "\t\t" . '<title><![CDATA[' . $this->escapeCdata($feed['title']) . ']]></title>' . "\n";
         echo "\t\t" . '<link>' . Utils::escape($feed['link']) . '</link>' . "\n";
         echo "\t\t" . '<description><![CDATA[' .
-            $this->escape_cdata($feed['description']) . ']]></description>' . "\n";
+            $this->escapeCdata($feed['description']) . ']]></description>' . "\n";
         echo "\t\t" . '<lastBuildDate>' . gmdate('r', count($feed['items']) ? $feed['items'][0]['pubdate'] :
                 time()) . '</lastBuildDate>' . "\n";
 
@@ -686,13 +707,13 @@ class Extern
 
         foreach ($feed['items'] as $item) {
             echo "\t\t" . '<item>' . "\n";
-            echo "\t\t\t" . '<title><![CDATA[' . $this->escape_cdata($item['title']) . ']]></title>' . "\n";
+            echo "\t\t\t" . '<title><![CDATA[' . $this->escapeCdata($item['title']) . ']]></title>' . "\n";
             echo "\t\t\t" . '<link>' . Utils::escape($item['link']) . '</link>' . "\n";
             echo "\t\t\t" . '<description><![CDATA[' .
-                $this->escape_cdata($item['description']) . ']]></description>' . "\n";
+                $this->escapeCdata($item['description']) . ']]></description>' . "\n";
             echo "\t\t\t" . '<author><![CDATA[' . (isset($item['author']['email']) ?
-                    $this->escape_cdata($item['author']['email']) : 'dummy@example.com') . ' (' .
-                $this->escape_cdata($item['author']['name']) . ')]]></author>' . "\n";
+                    $this->escapeCdata($item['author']['email']) : 'dummy@example.com') . ' (' .
+                $this->escapeCdata($item['author']['name']) . ')]]></author>' . "\n";
             echo "\t\t\t" . '<pubDate>' . gmdate('r', $item['pubdate']) . '</pubDate>' . "\n";
             echo "\t\t\t" . '<guid>' . Utils::escape($item['link']) . '</guid>' . "\n";
 
@@ -707,7 +728,7 @@ class Extern
      * Output $feed as Atom 1.0
      * @param $feed array
      */
-    function output_atom($feed)
+    protected function outputAtom($feed)
     {
         // Send XML/no cache headers
         header('Content-Type: application/atom+xml; charset=utf-8');
@@ -718,7 +739,7 @@ class Extern
         echo '<?xml version="1.0" encoding="utf-8"?>' . "\n";
         echo '<feed xmlns="http://www.w3.org/2005/Atom">' . "\n";
 
-        echo "\t" . '<title type="html"><![CDATA[' . $this->escape_cdata($feed['title']) . ']]></title>' . "\n";
+        echo "\t" . '<title type="html"><![CDATA[' . $this->escapeCdata($feed['title']) . ']]></title>' . "\n";
 
         echo "\t" . '<link rel="self" href="' . Utils::escape(Url::current()) . '"/>' . "\n";
         echo "\t" . '<link href="' . Utils::escape($feed['link']) . '"/>' . "\n";
@@ -737,17 +758,17 @@ class Extern
 
         foreach ($feed['items'] as $item) {
             echo "\t" . '<entry>' . "\n";
-            echo "\t\t" . '<title type="html"><![CDATA[' . $this->escape_cdata($item['title']) . ']]></title>' . "\n";
+            echo "\t\t" . '<title type="html"><![CDATA[' . $this->escapeCdata($item['title']) . ']]></title>' . "\n";
             echo "\t\t" . '<link rel="alternate" href="' . Utils::escape($item['link']) . '"/>' . "\n";
             echo "\t\t" . '<' . $content_tag . ' type="html"><![CDATA[' .
-                $this->escape_cdata($item['description']) . ']]></' .
+                $this->escapeCdata($item['description']) . ']]></' .
                 $content_tag . '>' . "\n";
             echo "\t\t" . '<author>' . "\n";
-            echo "\t\t\t" . '<name><![CDATA[' . $this->escape_cdata($item['author']['name']) . ']]></name>' . "\n";
+            echo "\t\t\t" . '<name><![CDATA[' . $this->escapeCdata($item['author']['name']) . ']]></name>' . "\n";
 
             if (isset($item['author']['email'])) {
                 echo "\t\t\t" . '<email><![CDATA[' .
-                    $this->escape_cdata($item['author']['email']) . ']]></email>' . "\n";
+                    $this->escapeCdata($item['author']['email']) . ']]></email>' . "\n";
             }
 
             if (isset($item['author']['uri'])) {
@@ -768,7 +789,7 @@ class Extern
      * Output $feed as XML
      * @param $feed array
      */
-    function output_xml($feed)
+    protected function outputXml($feed)
     {
         // Send XML/no cache headers
         header('Content-Type: application/xml; charset=utf-8');
@@ -785,14 +806,14 @@ class Extern
         foreach ($feed['items'] as $item) {
             echo "\t" . '<' . $forum_tag . ' id="' . $item['id'] . '">' . "\n";
 
-            echo "\t\t" . '<title><![CDATA[' . $this->escape_cdata($item['title']) . ']]></title>' . "\n";
+            echo "\t\t" . '<title><![CDATA[' . $this->escapeCdata($item['title']) . ']]></title>' . "\n";
             echo "\t\t" . '<link>' . Utils::escape($item['link']) . '</link>' . "\n";
-            echo "\t\t" . '<content><![CDATA[' . $this->escape_cdata($item['description']) . ']]></content>' . "\n";
+            echo "\t\t" . '<content><![CDATA[' . $this->escapeCdata($item['description']) . ']]></content>' . "\n";
             echo "\t\t" . '<author>' . "\n";
-            echo "\t\t\t" . '<name><![CDATA[' . $this->escape_cdata($item['author']['name']) . ']]></name>' . "\n";
+            echo "\t\t\t" . '<name><![CDATA[' . $this->escapeCdata($item['author']['name']) . ']]></name>' . "\n";
 
             if (isset($item['author']['email'])) {
-                echo "\t\t\t" . '<email><![CDATA[' . $this->escape_cdata($item['author']['email']) .
+                echo "\t\t\t" . '<email><![CDATA[' . $this->escapeCdata($item['author']['email']) .
                     ']]></email>' . "\n";
             }
 
@@ -813,7 +834,7 @@ class Extern
      * Output $feed as HTML (using <li> tags)
      * @param $feed array
      */
-    function output_html($feed)
+    protected function outputHtml($feed)
     {
         // Send the Content-type header in case the web server is setup to send something else
         header('Content-type: text/html; charset=utf-8');
@@ -823,8 +844,11 @@ class Extern
 
         foreach ($feed['items'] as $item) {
             if (utf8_strlen($item['title']) > FORUM_EXTERN_MAX_SUBJECT_LENGTH) {
-                $subject_truncated = Utils::escape(Utils::trim(utf8_substr($item['title'], 0,
-                        (FORUM_EXTERN_MAX_SUBJECT_LENGTH - 5)))) . ' …';
+                $subject_truncated = Utils::escape(Utils::trim(utf8_substr(
+                    $item['title'],
+                    0,
+                    (FORUM_EXTERN_MAX_SUBJECT_LENGTH - 5)
+                ))) . ' …';
             } else {
                 $subject_truncated = Utils::escape($item['title']);
             }

@@ -119,7 +119,8 @@ function utf8_to_unicode($str)
                        (($mUcs4 & 0xFFFFF800) == 0xD800) ||
                        // Codepoints outside the Unicode range are illegal
                        ($mUcs4 > 0x10FFFF)) {
-                        trigger_error('utf8_to_unicode: Illegal sequence or codepoint in UTF-8 at byte '.$i, E_USER_WARNING);
+                        trigger_error('utf8_to_unicode: Illegal sequence or codepoint in UTF-8 at byte '.
+                            $i, E_USER_WARNING);
                         return false;
                     }
 
@@ -203,7 +204,8 @@ function utf8_from_unicode($arr)
             echo chr(0x80 | (($arr[$k] >> 6) & 0x3f));
             echo chr(0x80 | ($arr[$k] & 0x3f));
         } else {
-            trigger_error('utf8_from_unicode: Codepoint out of Unicode range at index: '.$k.', value: '.$arr[$k], E_USER_WARNING);
+            trigger_error('utf8_from_unicode: Codepoint out of Unicode range at index: '.$k.', value: '.
+                $arr[$k], E_USER_WARNING);
 
             // Out of range
             return false;

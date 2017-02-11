@@ -12,7 +12,7 @@ class User extends \RunBB\Core\Statical\BaseProxy
             return Container::get('user');
         } else {
             // Load user from Db based on $id
-            return AuthModel::load_user($id);
+            return AuthModel::loadUser($id);
         }
     }
 }

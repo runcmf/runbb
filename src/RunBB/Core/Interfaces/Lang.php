@@ -56,7 +56,7 @@ class Lang extends BaseProxy
 
         self::$translator->loadTranslations(
             Translations::fromPoFile($tfile)->setDomain($domain)
-//            Translations::fromMoFile($tfile)->setDomain($domain)
+            //            Translations::fromMoFile($tfile)->setDomain($domain)
         );
     }
 }

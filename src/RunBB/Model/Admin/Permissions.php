@@ -14,7 +14,7 @@ use RunBB\Model\Cache;
 
 class Permissions
 {
-    public function update_permissions()
+    public function updatePermissions()
     {
         $form = array_map('intval', Input::post('form'));
         $form = Container::get('hooks')->fire('model.admin.permissions.update_permissions.form', $form);
@@ -26,7 +26,8 @@ class Permissions
             }
 
             // Only update values that have changed
-            if (array_key_exists('p_'.$key, Container::get('forum_settings')) && ForumSettings::get('p_'.$key) != $input) {
+            if (array_key_exists('p_'.$key, Container::get('forum_settings')) &&
+                ForumSettings::get('p_'.$key) != $input) {
                 \ORM::for_table(ORM_TABLE_PREFIX.'config')
                     ->where('conf_name', 'p_'.$key)
                     ->find_one()
@@ -36,8 +37,8 @@ class Permissions
         }
 
         // Regenerate the config cache
-        Container::get('cache')->store('config', Cache::get_config());
-        // $this->clear_feed_cache();
+        Container::get('cache')->store('config', Cache::getConfig());
+        // $this->clearFeedCache();
 
         return Router::redirect(Router::pathFor('adminPermissions'), __('Perms updated redirect'));
     }

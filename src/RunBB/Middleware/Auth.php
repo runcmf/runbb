@@ -22,7 +22,7 @@ use Firebase\JWT\JWT;
 
 class Auth
 {
-    protected function get_cookie_data($authCookie = null)
+    protected function getCookieData($authCookie = null)
     {
         if ($authCookie) {
             /*
@@ -56,7 +56,7 @@ class Auth
         }
     }
 
-    public function update_online()
+    public function updateOnline()
     {
         // Define this if you want this visit to affect the online list and the users last visit data
         if (!defined('FEATHER_QUIET_VISIT')) {
@@ -72,16 +72,36 @@ class Auth
                     case 'mysqli_innodb':
                     case 'sqlite':
                     case 'sqlite3':
-                        \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('REPLACE INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(:user_id, :ident, :logged)', [':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged]);
+                        \ORM::for_table(ORM_TABLE_PREFIX.'online')
+                            ->raw_execute(
+                                'REPLACE INTO '.ForumSettings::get('db_prefix').'online 
+                            (user_id, ident, logged) VALUES(:user_id, :ident, :logged)',
+                                [
+                                    ':user_id' => User::get()->id,
+                                    ':ident' => User::get()->username,
+                                    ':logged' => User::get()->logged
+                                ]
+                            );
                         break;
 
                     default:
-                        \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('INSERT INTO '.ForumSettings::get('db_prefix').'online (user_id, ident, logged) SELECT :user_id, :ident, :logged WHERE NOT EXISTS (SELECT 1 FROM '.ORM_TABLE_PREFIX.'online WHERE user_id=:user_id)', [':user_id' => User::get()->id, ':ident' => User::get()->username, ':logged' => User::get()->logged]);
+                        \ORM::for_table(ORM_TABLE_PREFIX.'online')
+                            ->raw_execute(
+                                'INSERT INTO '.ForumSettings::get('db_prefix').'online 
+                            (user_id, ident, logged) SELECT :user_id, :ident, :logged 
+                            WHERE NOT EXISTS (SELECT 1 FROM '.ORM_TABLE_PREFIX.'online 
+                            WHERE user_id=:user_id)',
+                                [
+                                    ':user_id' => User::get()->id,
+                                    ':ident' => User::get()->username,
+                                    ':logged' => User::get()->logged
+                                ]
+                            );
                         break;
                 }
 
                 // Reset tracked topics
-                Track::set_tracked_topics(null);
+                Track::setTrackedTopics(null);
             } else {
                 // Special case: We've timed out, but no other user has browsed the forums since we timed out
                 if (User::get()->logged < (Container::get('now')-ForumSettings::get('o_timeout_visit'))) {
@@ -94,12 +114,14 @@ class Auth
 
                 $idle_sql = (User::get()->idle == '1') ? ', idle=0' : '';
 
-                \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('UPDATE '.ForumSettings::get('db_prefix').'online SET logged='.Container::get('now').$idle_sql.' WHERE user_id=:user_id', [':user_id' => User::get()->id]);
+                \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute('UPDATE '.
+                    ForumSettings::get('db_prefix').'online SET logged='.Container::get('now').$idle_sql.
+                    ' WHERE user_id=:user_id', [':user_id' => User::get()->id]);
 
                 // Update tracked topics with the current expire time
                 $cookie_tracked_topics = Container::get('cookie')->get(ForumSettings::get('cookie_name').'_track');
                 if (isset($cookie_tracked_topics)) {
-                    Track::set_tracked_topics(json_decode($cookie_tracked_topics, true));
+                    Track::setTrackedTopics(json_decode($cookie_tracked_topics, true));
                 }
             }
         } else {
@@ -109,7 +131,7 @@ class Auth
         }
     }
 
-    public function update_users_online()
+    public function updateUsersOnline()
     {
         // Fetch all online list entries that are older than "o_timeout_online"
         $select_update_users_online = ['user_id', 'ident', 'logged', 'idle'];
@@ -125,7 +147,8 @@ class Auth
                 \ORM::for_table(ORM_TABLE_PREFIX.'online')->where('ident', $cur_user['ident'])
                     ->delete_many();
             } else {
-                // If the entry is older than "o_timeout_visit", update last_visit for the user in question, then delete him/her from the online list
+                // If the entry is older than "o_timeout_visit", update last_visit for the user in question,
+                // then delete him/her from the online list
                 if ($cur_user['logged'] < (Container::get('now')-ForumSettings::get('o_timeout_visit'))) {
                     \ORM::for_table(ORM_TABLE_PREFIX.'users')->where('id', $cur_user['user_id'])
                         ->find_one()
@@ -144,7 +167,7 @@ class Auth
         }
     }
 
-    public function check_bans()
+    public function checkBans()
     {
         // Admins and moderators aren't affected
         if (User::get()->is_admmod || !Container::get('bans')) {
@@ -168,7 +191,8 @@ class Auth
                 continue;
             }
 
-            if ($cur_ban['username'] != '' && utf8_strtolower(User::get()->username) == utf8_strtolower($cur_ban['username'])) {
+            if ($cur_ban['username'] != '' && utf8_strtolower(User::get()->username) ==
+                utf8_strtolower($cur_ban['username'])) {
                 $is_banned = true;
             }
 
@@ -195,17 +219,22 @@ class Auth
                 \ORM::for_table(ORM_TABLE_PREFIX.'online')
                     ->where('ident', User::get()->username)
                     ->delete_many();
-                throw new RunBBException(__('Ban message').' '.(($cur_ban['expire'] != '') ? __('Ban message 2').' '.strtolower(Utils::format_time($cur_ban['expire'], true)).'. ' : '').(($cur_ban['message'] != '') ? __('Ban message 3').'<br /><strong>'.Utils::escape($cur_ban['message']).'</strong><br />' : '<br /><br />').__('Ban message 4').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).'">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 403);
+                throw new RunBBException(__('Ban message').' '.(($cur_ban['expire'] != '') ?
+                        __('Ban message 2').' '.strtolower(Utils::timeFormat($cur_ban['expire'], true)).'. ' : '').
+                    (($cur_ban['message'] != '') ? __('Ban message 3').'<br /><strong>'.
+                        Utils::escape($cur_ban['message']).'</strong><br />' : '<br /><br />').
+                    __('Ban message 4').' <a href="mailto:'.Utils::escape(ForumSettings::get('o_admin_email')).
+                    '">'.Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 403);
             }
         }
 
         // If we removed any expired bans during our run-through, we need to regenerate the bans cache
         if ($bans_altered) {
-            Container::get('cache')->store('bans', Cache::get_bans());
+            Container::get('cache')->store('bans', Cache::getBans());
         }
     }
 
-    public function maintenance_message()
+    public function maintenanceMessage()
     {
         // Deal with newlines, tabs and multiple spaces
         $pattern = ["\t", '  ', '  '];
@@ -223,10 +252,11 @@ class Auth
     {
         $authCookie = Container::get('cookie')->get(ForumSettings::get('cookie_name'));
 
-        if ($jwt = $this->get_cookie_data($authCookie)) {
-            $user = AuthModel::load_user($jwt->data->userId);
+        if ($jwt = $this->getCookieData($authCookie)) {
+            $user = AuthModel::loadUser($jwt->data->userId);
 
-            $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ? Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
+            $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ?
+                Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
 
             $user->is_guest = false;
             $user->is_admmod = $user->g_id == ForumEnv::get('FEATHER_ADMIN') || $user->g_moderator == '1';
@@ -246,15 +276,15 @@ class Auth
             }
 
             // Refresh cookie to avoid re-logging between idle
-            $jwt = AuthModel::generate_jwt($user, $expires);
-            AuthModel::feather_setcookie('Bearer '.$jwt, $expires);
+            $jwt = AuthModel::generateJwt($user, $expires);
+            AuthModel::setCookie('Bearer '.$jwt, $expires);
 
             // Add user to DIC
             Container::set('user', $user);
 
-            $this->update_online();
+            $this->updateOnline();
         } else {
-            $user = AuthModel::load_user(1);
+            $user = AuthModel::loadUser(1);
 
             $user->disp_topics = ForumSettings::get('o_disp_topics_default');
             $user->disp_posts = ForumSettings::get('o_disp_posts_default');
@@ -279,7 +309,8 @@ class Auth
                     case 'sqlite3':
                         \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_execute(
                             'REPLACE INTO '.
-                            ForumSettings::get('db_prefix').'online (user_id, ident, logged) VALUES(1, :ident, :logged)',
+                            ForumSettings::get('db_prefix').'online (user_id, ident, logged) 
+                            VALUES(1, :ident, :logged)',
                             [':ident' => Utils::getIp(), ':logged' => $user->logged]
                         );
                         break;
@@ -302,7 +333,7 @@ class Auth
                     ->save();
             }
             // $jwt = AuthModel::generate_jwt($user, Container::get('now') + 31536000);
-            // AuthModel::feather_setcookie('Bearer '.$jwt, Container::get('now') + 31536000);
+            // AuthModel::setCookie('Bearer '.$jwt, Container::get('now') + 31536000);
             // Add $user as guest to DIC
             Container::set('user', $user);
         }
@@ -311,7 +342,7 @@ class Auth
         Lang::load('common');
 
         // TODO remove to plugin
-        if(class_exists('\Tracy\Debugger') && \Tracy\Debugger::isEnabled() && $user->is_admmod == false) {
+        if (class_exists('\Tracy\Debugger') && \Tracy\Debugger::isEnabled() && $user->is_admmod == false) {
             \Tracy\Debugger::$showBar = false;
         }
 
@@ -320,17 +351,17 @@ class Auth
 
         // Load bans from cache
         if (!Container::get('cache')->isCached('bans')) {
-            Container::get('cache')->store('bans', Cache::get_bans());
+            Container::get('cache')->store('bans', Cache::getBans());
         }
 
         // Add bans to the container
         Container::set('bans', Container::get('cache')->retrieve('bans'));
 
         // Check if current user is banned
-        $this->check_bans();
+        $this->checkBans();
 
         // Update online list
-        $this->update_users_online();
+        $this->updateUsersOnline();
 
         return $next($req, $res);
     }

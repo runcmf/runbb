@@ -17,7 +17,7 @@ class Utils
      * Return current timestamp (with microseconds) as a float
      * @return float
      */
-    public static function get_microtime()
+    public static function getMicrotime()
     {
         list($usec, $sec) = explode(' ', microtime());
         return ((float)$usec + (float)$sec);
@@ -32,24 +32,24 @@ class Utils
      * @param $str
      * @return string
      */
-    public static function strip_bad_multibyte_chars($str)
-    {
-        $result = '';
-        $length = self::strlen($str);
-
-        for ($i = 0; $i < $length; $i++) {
-            // Replace four-byte characters (11110www 10zzzzzz 10yyyyyy 10xxxxxx)
-            $ord = ord($str[$i]);
-            if ($ord >= 240 && $ord <= 244) {
-                $result .= '?';
-                $i += 3;
-            } else {
-                $result .= $str[$i];
-            }
-        }
-
-        return $result;
-    }
+//    public static function strip_bad_multibyte_chars($str)
+//    {
+//        $result = '';
+//        $length = self::strlen($str);
+//
+//        for ($i = 0; $i < $length; $i++) {
+//            // Replace four-byte characters (11110www 10zzzzzz 10yyyyyy 10xxxxxx)
+//            $ord = ord($str[$i]);
+//            if ($ord >= 240 && $ord <= 244) {
+//                $result .= '?';
+//                $i += 3;
+//            } else {
+//                $result .= $str[$i];
+//            }
+//        }
+//
+//        return $result;
+//    }
 
     /**
      * A wrapper for PHP's number_format function
@@ -57,7 +57,7 @@ class Utils
      * @param int $decimals
      * @return string
      */
-    public static function forum_number_format($number, $decimals = 0)
+    public static function numberFormat($number, $decimals = 0)
     {
         return is_numeric($number) ? number_format(
             $number,
@@ -78,7 +78,7 @@ class Utils
      * @param bool $no_text
      * @return false|string
      */
-    public static function format_time(
+    public static function timeFormat(
         $timestamp,
         $date_only = false,
         $date_format = null,
@@ -174,7 +174,7 @@ class Utils
      * @param $string
      * @return bool
      */
-    public static function is_all_uppercase($string)
+    public static function isAllUppercase($string)
     {
         return utf8_strtoupper($string) == $string && utf8_strtolower($string) != $string;
     }
@@ -188,7 +188,7 @@ class Utils
      * @param bool $callback
      * @return mixed
      */
-    public static function ucp_preg_replace($pattern, $replace, $subject, $callback = false)
+    public static function ucpPregReplace($pattern, $replace, $subject, $callback = false)
     {
         if ($callback) {
             $replaced = preg_replace_callback($pattern, create_function('$matches', 'return '.$replace.';'), $subject);
@@ -218,7 +218,7 @@ class Utils
      * @param $size
      * @return string
      */
-    public static function file_size($size)
+    public static function fileSize($size)
     {
         $units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB'];
 
@@ -235,7 +235,7 @@ class Utils
      * @param null $p
      * @return string
      */
-    public static function generate_page_title($page_title, $p = null)
+    public static function generatePageTitle($page_title, $p = null)
     {
         if (!is_array($page_title)) {
             $page_title = [$page_title];
@@ -244,7 +244,7 @@ class Utils
         $page_title = array_reverse($page_title);
 
         if ($p > 1) {
-            $page_title[0] .= ' ('.sprintf(__('Page'), self::forum_number_format($p)).')';
+            $page_title[0] .= ' ('.sprintf(__('Page'), self::numberFormat($p)).')';
         }
 
         $crumbs = implode(__('Title separator'), $page_title);
@@ -276,7 +276,7 @@ class Utils
      * @param int $gid
      * @return string
      */
-    public static function get_title($title = '', $name = '', $groupTitle = '', $gid = 0)
+    public static function getTitle($title = '', $name = '', $groupTitle = '', $gid = 0)
     {
         static $ban_list;
 
@@ -318,17 +318,17 @@ class Utils
         static $search_for, $replace_with;
 
         if (!Container::get('cache')->isCached('search_for')) {
-            Container::get('cache')->store('search_for', Cache::get_censoring('search_for'));
+            Container::get('cache')->store('search_for', Cache::getCensoring('search_for'));
         }
         $search_for = Container::get('cache')->retrieve('search_for');
 
         if (!Container::get('cache')->isCached('replace_with')) {
-            Container::get('cache')->store('replace_with', Cache::get_censoring('replace_with'));
+            Container::get('cache')->store('replace_with', Cache::getCensoring('replace_with'));
         }
         $replace_with = Container::get('cache')->retrieve('replace_with');
 
         if (!empty($search_for) && !empty($replace_with)) {
-            return substr(self::ucp_preg_replace($search_for, $replace_with, ' '.$text.' '), 1, -1);
+            return substr(self::ucpPregReplace($search_for, $replace_with, ' '.$text.' '), 1, -1);
         } else {
             return $text;
         }
@@ -338,11 +338,11 @@ class Utils
      * Fetch admin IDs
      * @return mixed
      */
-    public static function get_admin_ids()
+    public static function getAdminIds()
     {
         // Get Slim current session
         if (!Container::get('cache')->isCached('admin_ids')) {
-            Container::get('cache')->store('admin_ids', Cache::get_admin_ids());
+            Container::get('cache')->store('admin_ids', Cache::getAdminIds());
         }
 
         return Container::get('cache')->retrieve('admin_ids');
@@ -353,7 +353,7 @@ class Utils
      * @param $user_id
      * @return string
      */
-    public static function generate_avatar_markup($user_id)
+    public static function generateAvatarMarkup($user_id)
     {
         $filetypes = ['jpg', 'gif', 'png'];
         $avatar_markup = '';
@@ -475,7 +475,7 @@ class Utils
     {
         if (is_object($object)) {
             return array_map(__FUNCTION__, get_object_vars($object));
-        } else if (is_array($object)) {
+        } elseif (is_array($object)) {
             return array_map(__FUNCTION__, $object);
         } else {
             return $object;
@@ -488,11 +488,11 @@ class Utils
      * @param $haystack
      * @return bool|int|string
      */
-    public static function recursiveArraySearch($needle,$haystack)
+    public static function recursiveArraySearch($needle, $haystack)
     {
-        foreach($haystack as $key=>$value) {
+        foreach ($haystack as $key => $value) {
             $current_key=$key;
-            if($needle===$value OR (is_array($value) && self::recursiveArraySearch($needle,$value) !== false)) {
+            if ($needle===$value or (is_array($value) && self::recursiveArraySearch($needle, $value) !== false)) {
                 return $current_key;
             }
         }

@@ -17,7 +17,6 @@
 
 namespace RunBB\Core;
 
-
 class Remote
 {
     /**
@@ -49,7 +48,7 @@ class Remote
     public function getLangRepoList()
     {
         $data = json_decode(
-            $this->get_remote_contents($this->translationsInfoUrl)
+            $this->getRemoteContents($this->translationsInfoUrl)
         );
 
         $content = $data->encoding === 'base64' ? base64_decode($data->content) : [];
@@ -60,11 +59,11 @@ class Remote
      * @param null $code short language code 'en', 'ru' etc.
      * @return mixed base64 encoded content
      */
-    public function getLang($code=null)
+    public function getLang($code = null)
     {
         $url = $this->contentsUrl . 'runbb_translation_' . $code . '.json?ref=master';
         $data = json_decode(
-            $this->get_remote_contents($url)
+            $this->getRemoteContents($url)
         );
 
         return $data->content;
@@ -77,7 +76,7 @@ class Remote
     public function getExtensionsInfoList()
     {
         $data = json_decode(
-            $this->get_remote_contents($this->extensionsInfofoUrl)
+            $this->getRemoteContents($this->extensionsInfofoUrl)
         );
 
         $content = $data->encoding === 'base64' ? base64_decode($data->content) : [];
@@ -99,12 +98,12 @@ class Remote
      * @rettval false  error
      * @author Naoki Sawada
      **/
-    public function get_remote_contents(&$url, $timeout= 30, $redirect_max= 5, $ua = 'Mozilla/5.0', $fp = null )
+    public function getRemoteContents(&$url, $timeout = 30, $redirect_max = 5, $ua = 'Mozilla/5.0', $fp = null)
     {
         $method = (function_exists('curl_exec') &&
             !ini_get('safe_mode') &&
             !ini_get('open_basedir')) ?
-            'curl_get_contents' : 'fsock_get_contents';
+            'curlGetContents' : 'fsockGetContents';
         return $this->$method( $url, $timeout, $redirect_max, $ua, $fp );
     }
 
@@ -123,26 +122,26 @@ class Remote
      * @retval false  error
      * @author Naoki Sawada
      **/
-    protected function curl_get_contents( &$url, $timeout, $redirect_max, $ua, $outfp )
+    protected function curlGetContents(&$url, $timeout, $redirect_max, $ua, $outfp)
     {
         $ch = curl_init();
-        curl_setopt( $ch, CURLOPT_URL, $url );
-        curl_setopt( $ch, CURLOPT_HEADER, false );
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HEADER, false);
         if ($outfp) {
-            curl_setopt( $ch, CURLOPT_FILE, $outfp );
+            curl_setopt($ch, CURLOPT_FILE, $outfp);
         } else {
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            curl_setopt( $ch, CURLOPT_BINARYTRANSFER, true );
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
         }
-        curl_setopt( $ch, CURLOPT_LOW_SPEED_LIMIT, 1 );
-        curl_setopt( $ch, CURLOPT_LOW_SPEED_TIME, $timeout );
-        curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-        curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt( $ch, CURLOPT_MAXREDIRS, $redirect_max);
-        curl_setopt( $ch, CURLOPT_USERAGENT, $ua);
-        $result = curl_exec( $ch );
+        curl_setopt($ch, CURLOPT_LOW_SPEED_LIMIT, 1);
+        curl_setopt($ch, CURLOPT_LOW_SPEED_TIME, $timeout);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, $redirect_max);
+        curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+        $result = curl_exec($ch);
         $url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-        curl_close( $ch );
+        curl_close($ch);
         return $outfp? $outfp : $result;
     }
 
@@ -161,8 +160,8 @@ class Remote
      * @retval false  error
      * @author Naoki Sawada
      */
-    protected function fsock_get_contents( &$url, $timeout, $redirect_max, $ua, $outfp ) {
-
+    protected function fsockGetContents(&$url, $timeout, $redirect_max, $ua, $outfp)
+    {
         $connect_timeout = 3;
         $connect_try = 3;
         $method = 'GET';
@@ -173,7 +172,7 @@ class Remote
         $headers = '';
 
         $arr = parse_url($url);
-        if (!$arr){
+        if (!$arr) {
             // Bad request
             return false;
         }
@@ -194,23 +193,31 @@ class Remote
         $query .= "Host: ".$arr['host']."\r\n";
         $query .= "Accept: */*\r\n";
         $query .= "Connection: close\r\n";
-        if (!empty($ua)) $query .= "User-Agent: ".$ua."\r\n";
-        if (!is_null($getSize)) $query .= 'Range: bytes=0-' . ($getSize - 1) . "\r\n";
+        if (!empty($ua)) {
+            $query .= "User-Agent: ".$ua."\r\n";
+        }
+        if (!is_null($getSize)) {
+            $query .= 'Range: bytes=0-' . ($getSize - 1) . "\r\n";
+        }
 
         $query .= $headers;
 
         $query .= "\r\n";
 
         $fp = $connect_try_count = 0;
-        while( !$fp && $connect_try_count < $connect_try ) {
-
+        while (!$fp && $connect_try_count < $connect_try) {
             $errno = 0;
             $errstr = "";
             $fp =  fsockopen(
                 $ssl.$arr['host'],
                 $arr['port'],
-                $errno,$errstr,$connect_timeout);
-            if ($fp) break;
+                $errno,
+                $errstr,
+                $connect_timeout
+            );
+            if ($fp) {
+                break;
+            }
             $connect_try_count++;
             if (connection_aborted()) {
                 exit();
@@ -234,12 +241,12 @@ class Remote
 
         $_response = '';
         $header = '';
-        while($_response !== "\r\n"){
+        while ($_response !== "\r\n") {
             $_response = fgets($fp, $readsize);
             $header .= $_response;
         };
 
-        $rccd = array_pad(explode(' ',$header,2), 2, ''); // array('HTTP/1.1','200')
+        $rccd = array_pad(explode(' ', $header, 2), 2, ''); // array('HTTP/1.1','200')
         $rc = (int)$rccd[1];
 
         $ret = false;
@@ -249,22 +256,22 @@ class Remote
             case 303: // See Other
             case 302: // Moved Temporarily
             case 301: // Moved Permanently
-                $matches = array();
-                if (preg_match('/^Location: (.+?)(#.+)?$/im',$header,$matches) && --$redirect_max > 0) {
+                $matches = [];
+                if (preg_match('/^Location: (.+?)(#.+)?$/im', $header, $matches) && --$redirect_max > 0) {
                     $_url = $url;
                     $url = trim($matches[1]);
                     $hash = isset($matches[2])? trim($matches[2]) : '';
-                    if (!preg_match('/^https?:\//',$url)) { // no scheme
+                    if (!preg_match('/^https?:\//', $url)) { // no scheme
                         if ($url{0} != '/') { // Relative path
                             // to Absolute path
-                            $url = substr($url_path,0,strrpos($url_path,'/')).'/'.$url;
+                            $url = substr($url_path, 0, strrpos($url_path, '/')).'/'.$url;
                         }
                         // add sheme,host
                         $url = $url_base.$url;
                     }
                     if ($_url !== $url) {
                         fclose($fp);
-                        return $this->fsock_get_contents( $url, $timeout, $redirect_max, $ua, $outfp );
+                        return $this->fsockGetContents($url, $timeout, $redirect_max, $ua, $outfp);
                     }
                 }
                 break;
@@ -281,7 +288,7 @@ class Remote
             $outfp = fopen('php://temp', 'rwb');
             $body = true;
         }
-        while(fwrite($outfp, fread($fp, $readsize))) {
+        while (fwrite($outfp, fread($fp, $readsize))) {
             if ($timeout) {
                 $_status = socket_get_status($fp);
                 if ($_status['timed_out']) {

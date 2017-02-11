@@ -608,7 +608,7 @@ class Url
             // Add a previous page link
             if ($num_pages > 1 && $cur_page > 1) {
                 $pages[] = '<a rel="prev"'.(empty($pages) ? ' class="item1"' : '').' href="'.
-                    self::get_sublink($link, 'page/$1', ($cur_page - 1), $args).'">'.__('Previous').'</a>';
+                    self::getSublink($link, 'page/$1', ($cur_page - 1), $args).'">'.__('Previous').'</a>';
             }
 
             if ($cur_page > 3) {
@@ -628,12 +628,12 @@ class Url
                     $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.str_replace(
                         '#',
                         '',
-                        self::get_sublink($link, 'page/$1', $current, $args)
+                        self::getSublink($link, 'page/$1', $current, $args)
                     ).'">'.
-                        Utils::forum_number_format($current).'</a>';
+                        Utils::numberFormat($current).'</a>';
                 } else {
                     $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.
-                        Utils::forum_number_format($current).'</strong>';
+                        Utils::numberFormat($current).'</strong>';
                 }
             }
 
@@ -643,14 +643,14 @@ class Url
                 }
 
                 $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.
-                    self::get_sublink($link, 'page/$1', $num_pages, $args).'">'.
-                    Utils::forum_number_format($num_pages).'</a>';
+                    self::getSublink($link, 'page/$1', $num_pages, $args).'">'.
+                    Utils::numberFormat($num_pages).'</a>';
             }
 
             // Add a next page link
             if ($num_pages > 1 && !$link_to_all && $cur_page < $num_pages) {
                 $pages[] = '<a rel="next"'.(empty($pages) ? ' class="item1"' : '').' href="'.
-                    self::get_sublink($link, 'page/$1', ($cur_page + 1), $args).'">'.__('Next').'</a>';
+                    self::getSublink($link, 'page/$1', ($cur_page + 1), $args).'">'.__('Next').'</a>';
             }
         }
 
@@ -666,7 +666,7 @@ class Url
      * @param $link
      * @return string
      */
-    public static function paginate_old($num_pages, $cur_page, $link)
+    public static function paginateOld($num_pages, $cur_page, $link)
     {
         $pages = [];
         $link_to_all = false;
@@ -701,10 +701,10 @@ class Url
                     continue;
                 } elseif ($current != $cur_page || $link_to_all) {
                     $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.
-                        ($current == 1 ? '' : '&amp;p='.$current).'">'.Utils::forum_number_format($current).'</a>';
+                        ($current == 1 ? '' : '&amp;p='.$current).'">'.Utils::numberFormat($current).'</a>';
                 } else {
                     $pages[] = '<strong'.(empty($pages) ? ' class="item1"' : '').'>'.
-                        Utils::forum_number_format($current).'</strong>';
+                        Utils::numberFormat($current).'</strong>';
                 }
             }
 
@@ -714,7 +714,7 @@ class Url
                 }
 
                 $pages[] = '<a'.(empty($pages) ? ' class="item1"' : '').' href="'.$link.'&amp;p='.$num_pages.'">'.
-                    Utils::forum_number_format($num_pages).'</a>';
+                    Utils::numberFormat($num_pages).'</a>';
             }
 
             // Add a next page link
@@ -734,7 +734,7 @@ class Url
      * @param $str
      * @return string
      */
-    public static function url_friendly($str)
+    public static function slug($str)
     {
         $str = strtr($str, self::$url_replace);
         $str = strtolower(utf8_decode($str));
@@ -784,7 +784,7 @@ class Url
      * @param null $args
      * @return mixed|string
      */
-    private static function get_sublink($link, $sublink, $subarg, $args = null)
+    private static function getSublink($link, $sublink, $subarg, $args = null)
     {
         $base_url = self::base();
 
@@ -829,7 +829,7 @@ class Url
      * Fetch the base_url for static files, optionally support HTTPS and HTTP
      * @return mixed
      */
-    public static function base_static()
+    public static function baseStatic()
     {
 //        $url = Request::getUri()->getBasePath();
         $url = self::base();
@@ -838,7 +838,7 @@ class Url
     }
 
     //
-    // function is_valid($url) {
+    // function isValidUrl($url) {
     //
     // Return associative array of valid URI components, or FALSE if $url is not
     // RFC-3986 compliant. If the passed URL begins with: "www." or "ftp.", then
@@ -865,7 +865,7 @@ class Url
     //      [fragment] => fragone
     //      [url] => http://www.jmrware.com:80/articles?height=10&width=75#fragone
     // )
-    public static function is_valid($url)
+    public static function isValidUrl($url)
     {
         if (strpos($url, 'www.') === 0) {
             $url = 'http://'. $url;

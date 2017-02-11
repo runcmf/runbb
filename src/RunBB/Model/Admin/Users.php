@@ -16,7 +16,7 @@ use RunBB\Model\Cache;
 
 class Users
 {
-    public function get_num_ip($ip_stats)
+    public function getNumIp($ip_stats)
     {
         $num_ips = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->where('poster_id', $ip_stats)->group_by('poster_ip');
         $num_ips = Container::get('hooks')->fireDB('model.admin.model.admin.users.get_num_ip', $num_ips);
@@ -25,7 +25,7 @@ class Users
         return $num_ips;
     }
 
-    public function get_ip_stats($ip_stats, $start_from)
+    public function getIpStats($ip_stats, $start_from)
     {
         $ip_data = [];
 
@@ -52,7 +52,7 @@ class Users
         return $ip_data;
     }
 
-    public function get_num_users_ip($ip)
+    public function getNumUsersIp($ip)
     {
         $num_users = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->where('poster_ip', $ip)->distinct();
         $num_users = Container::get('hooks')
@@ -62,7 +62,7 @@ class Users
         return $num_users;
     }
 
-    public function get_num_users_search($conditions)
+    public function getNumUsersSearch($conditions)
     {
         $conditions = Container::get('hooks')
             ->fire('model.admin.model.users.get_num_users_search.conditions', $conditions);
@@ -77,7 +77,7 @@ class Users
         return $num_users;
     }
 
-    public function get_info_poster($ip, $start_from)
+    public function getInfoPoster($ip, $start_from)
     {
         $ip = Container::get('hooks')->fire('model.admin.model.users.get_info_poster.ip', $ip);
 
@@ -125,7 +125,7 @@ class Users
         return $info;
     }
 
-    public function move_users()
+    public function moveUsers()
     {
         $move = [];
 
@@ -259,7 +259,7 @@ class Users
         return $move;
     }
 
-    public function delete_users()
+    public function deleteUsers()
     {
         if (Input::post('users')) {
             $user_ids = is_array(Input::post('users')) ?
@@ -414,12 +414,12 @@ class Users
             // Delete user avatars
             $userProfile = new \RunBB\Model\Profile();
             foreach ($user_ids as $user_id) {
-                $userProfile->delete_avatar($user_id);
+                $userProfile->deleteAvatar($user_id);
             }
 
             // Regenerate the users info cache
             if (!Container::get('cache')->isCached('users_info')) {
-                Container::get('cache')->store('users_info', Cache::get_users_info());
+                Container::get('cache')->store('users_info', Cache::getUsersInfo());
             }
 
             $stats = Container::get('cache')->retrieve('users_info');
@@ -430,7 +430,7 @@ class Users
         return $user_ids;
     }
 
-    public function ban_users()
+    public function banUsers()
     {
         if (Input::post('users')) {
             $user_ids = is_array(Input::post('users')) ?
@@ -515,8 +515,11 @@ class Users
 
             // Overwrite the registration IP with one from the last post (if it exists)
             if ($ban_the_ip != 0) {
-                $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->raw_query('SELECT p.poster_id, p.poster_ip FROM ' .
-                    ForumSettings::get('db_prefix') . 'posts AS p INNER JOIN (SELECT MAX(id) AS id FROM ' . ForumSettings::get('db_prefix') . 'posts WHERE poster_id IN (' . implode(',', $user_ids) . ') GROUP BY poster_id) AS i ON p.id=i.id')->find_many();
+                $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->raw_query('SELECT p.poster_id, p.poster_ip 
+                FROM ' . ForumSettings::get('db_prefix') . 'posts AS p 
+                INNER JOIN (SELECT MAX(id) AS id FROM ' . ForumSettings::get('db_prefix') . 'posts 
+                WHERE poster_id IN (' . implode(',', $user_ids) . ') 
+                GROUP BY poster_id) AS i ON p.id=i.id')->find_many();
                 foreach ($result as $cur_address) {
                     $user_info[$cur_address['poster_id']]['ip'] = $cur_address['poster_ip'];
                 }
@@ -554,7 +557,7 @@ class Users
                 }
 
                 // Regenerate the bans cache
-                Container::get('cache')->store('bans', Cache::get_bans());
+                Container::get('cache')->store('bans', Cache::getBans());
 
                 return Router::redirect(Router::pathFor('adminUsers'), __('Users banned redirect'));
             }
@@ -562,7 +565,7 @@ class Users
         return $user_ids;
     }
 
-    public function get_user_search()
+    public function getUserSearch()
     {
         $form = Input::query('form', [], false);
         $form = Container::get('hooks')->fire('model.admin.model.users.get_user_search.form', $form);
@@ -688,7 +691,7 @@ class Users
         return $search;
     }
 
-    public function print_users($conditions, $order_by, $direction, $start_from)
+    public function printUsers($conditions, $order_by, $direction, $start_from)
     {
         $user_data = [];
 
@@ -706,7 +709,7 @@ class Users
 
         if ($result) {
             foreach ($result as $cur_user) {
-                $cur_user['user_title'] = Utils::get_title(
+                $cur_user['user_title'] = Utils::getTitle(
                     $cur_user->title,
                     $cur_user->username,
                     $cur_user->g_user_title,
@@ -727,7 +730,7 @@ class Users
         return $user_data;
     }
 
-    public function get_group_list()
+    public function getGroupList()
     {
         $output = '';
 

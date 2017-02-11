@@ -27,7 +27,7 @@ class Permissions
 
         // Update permissions
         if (Request::isPost()) {
-            return $this->model->update_permissions();
+            return $this->model->updatePermissions();
         }
 
         AdminUtils::generateAdminMenu('permissions');

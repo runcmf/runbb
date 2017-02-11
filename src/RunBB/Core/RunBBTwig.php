@@ -60,7 +60,7 @@ class RunBBTwig extends \Twig_Extension
             /**
              * Returns the translation of a string in a specific domain with or without arguments.
              */
-            new \Twig_SimpleFunction('transd', function ($str) {// FIXME check work
+            new \Twig_SimpleFunction('transd', function ($str) {
                 if (is_array($str)) {
                     return call_user_func_array('d__', $str);
                 } else {
@@ -69,10 +69,10 @@ class RunBBTwig extends \Twig_Extension
             }, ['is_safe' => ['html']]),
 
             /**
-             * return Url::base_static() value
+             * return Url::baseStatic() value
              */
             new \Twig_SimpleFunction('baseStatic', function () {
-                return Url::base_static();
+                return Url::baseStatic();
             }, ['is_safe' => ['html']]),
 
             /**
@@ -85,8 +85,8 @@ class RunBBTwig extends \Twig_Extension
             /**
              * return Url::base() value
              */
-            new \Twig_SimpleFunction('urlFriendly', function ($url) {
-                return Url::url_friendly($url);
+            new \Twig_SimpleFunction('slug', function ($url) {
+                return Url::slug($url);
             }, ['is_safe' => ['html']]),
 
             /**
@@ -128,8 +128,8 @@ class RunBBTwig extends \Twig_Extension
 //            }, ['is_safe' => ['html']]),
 
             /**
-             * return Container::get('utils')->format_time($var) result
-             * Container::get('utils')->format_time(
+             * return Container::get('utils')->timeFormat($var) result
+             * Container::get('utils')->timeFormat(
              *  $timestamp, $date_only, $date_format, $time_format, $time_only, $no_text
              * )
              */
@@ -141,16 +141,21 @@ class RunBBTwig extends \Twig_Extension
                 $time_only = false,
                 $no_text = false
             ) {
-                return Container::get('utils')->format_time(
-                    $timestamp, $date_only, $date_format, $time_format, $time_only, $no_text
+                return Container::get('utils')->timeFormat(
+                    $timestamp,
+                    $date_only,
+                    $date_format,
+                    $time_format,
+                    $time_only,
+                    $no_text
                 );
             }, ['is_safe' => ['html']]),
 
             /**
-             * return Utils::forum_number_format($var) result
+             * return Utils::numberFormat($var) result
              */
             new \Twig_SimpleFunction('formatNumber', function ($var) {
-                return Utils::forum_number_format($var);
+                return Utils::numberFormat($var);
             }, ['is_safe' => ['html']]),
 
             /**
@@ -163,10 +168,10 @@ class RunBBTwig extends \Twig_Extension
 
             /**
              * Format user title
-             * return Utils::get_title($title, $name, $groupTitle, $gid) result
+             * return Utils::getTitle($title, $name, $groupTitle, $gid) result
              */
-            new \Twig_SimpleFunction('formatTitle', function ($title, $name='', $groupTitle='', $gid='') {
-                return Utils::get_title($title, $name, $groupTitle, $gid);
+            new \Twig_SimpleFunction('formatTitle', function ($title, $name = '', $groupTitle = '', $gid = '') {
+                return Utils::getTitle($title, $name, $groupTitle, $gid);
             }, ['is_safe' => ['html']]),
 
             /**
@@ -180,10 +185,10 @@ class RunBBTwig extends \Twig_Extension
 
             /**
              * Generate breadcrumbs from an array of name and URLs
-             * return AdminUtils::breadcrumbs_admin($links) result
+             * return AdminUtils::breadcrumbsAdmin($links) result
              */
             new \Twig_SimpleFunction('breadcrumbsAdmin', function (array $links) {
-                return AdminUtils::breadcrumbs_admin($links);
+                return AdminUtils::breadcrumbsAdmin($links);
             }, ['is_safe' => ['html']]),
 
             /**
@@ -196,5 +201,4 @@ class RunBBTwig extends \Twig_Extension
             }, ['is_safe' => ['html']]),
         ];
     }
-
 }

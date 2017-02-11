@@ -87,8 +87,7 @@ class Hooks
                         $data = $vars;
                         continue;
                     }
-                    // TODO нарисовать тесты на нескольких плугах с одинаковыми хуками:
-                    // проверить если в массиве есть callable
+//                     проверить если в массиве есть callable
 //                    $data = array_merge($data, $vars);
                     $data = $data + $vars;
                 }

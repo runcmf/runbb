@@ -38,7 +38,8 @@ function utf8_byte_position()
 
     $result = [];
     $prev = [0, 0]; // Trivial byte index, character offset pair
-    $i = utf8_locate_next_chr($str, 300); // Use a short piece of str to estimate bytes per character. $i (& $j) -> byte indexes into $str
+    $i = utf8_locate_next_chr($str, 300); // Use a short piece of str to
+    // estimate bytes per character. $i (& $j) -> byte indexes into $str
     $c = strlen(utf8_decode(substr($str, 0, $i))); // $c -> character offset into $str
 
     // Deal with arguments from lowest to highest

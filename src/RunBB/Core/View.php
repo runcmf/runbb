@@ -15,12 +15,12 @@ use RunBB\Exception\RunBBException;
 
 class View
 {
-    protected $directories = [],
-    $templates,
-    $app,
-    $data,
-    $assets,
-    $validation = [
+    protected $directories = [];
+    protected $templates;
+    protected $app;
+    protected $data;
+    protected $assets;
+    protected $validation = [
         'page_number' => 'intval',
         'active_page' => 'strval',
         'is_indexed' => 'boolval',
@@ -33,7 +33,8 @@ class View
         'tid' => 'intval'
     ];
 
-    public $tplPath = '', $useTwig = false;
+    public $tplPath = '';
+    public $useTwig = false;
 
     /**
     * Constructor
@@ -183,7 +184,7 @@ class View
 
     protected function render($data = null, $nested = true)
     {
-        if($this->useTwig) {
+        if ($this->useTwig) {
             return $this->twigRender($data, $nested);
         }
 
@@ -215,24 +216,24 @@ class View
         $tpl = substr(str_replace(ForumEnv::get('FORUM_ROOT') . 'View/', '', $tpl), 0, -4);
         $file = ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/view/'.$tpl. '.html.twig';
 //bdump($file);
-        if(!file_exists($file)) {
+        if (!file_exists($file)) {
             // no template found. return to php
             $this->useTwig = false;
             return $this->render($data, $nested);
         }
 
         $data['nested'] = $nested;
-        $data['pageTitle'] = Utils::generate_page_title($data['title'], $data['page_number']);
+        $data['pageTitle'] = Utils::generatePageTitle($data['title'], $data['page_number']);
         $data['flashMessages'] = Container::get('flash')->getMessages();
         $data['style'] = $style;
         $data['navlinks'] = $this->buildNavLinks($data['active_page']);
 
-        if (file_exists(ForumEnv::get('WEB_ROOT').'style/themes/'.$this->getStyle().'/base_admin.css')) {
+        if (file_exists(ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/base_admin.css')) {
             $admStyle = '<link rel="stylesheet" type="text/css" href="'.
-                Url::base_static().'/style/themes/'.$this->getStyle().'/base_admin.css" />';
+                Url::baseStatic().'/style/themes/'.$style.'/base_admin.css" />';
         } else {
             $admStyle = '<link rel="stylesheet" type="text/css" href="'.
-                Url::base_static().'/style/imports/base_admin.css" />';
+                Url::baseStatic().'/style/imports/base_admin.css" />';
         }
         $data['admStyle'] = $admStyle;
         $tpl = '@forum/' . $tpl . '.html.twig';
@@ -257,11 +258,12 @@ class View
      * load assets for given style
      * @param $style
      */
-    public function loadThemeAssets($style) {
+    public function loadThemeAssets($style)
+    {
         $dir = ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/';
-        if(is_file($dir . 'bootstrap.php')) {
+        if (is_file($dir . 'bootstrap.php')) {
             $vars = include_once $dir . 'bootstrap.php';
-            if(empty($vars)) {
+            if (empty($vars)) {
                 return;
             }
             foreach ($vars as $key => $assets) {
@@ -293,7 +295,7 @@ class View
         $this->addTemplatesDirectory($this->tplPath.'/view', 9);
 
         // add path and alias if Twig enabled
-        if($this->useTwig) {
+        if ($this->useTwig) {
             $loader = Container::get('twig')->getLoader();
             $loader->addPath($this->tplPath . 'view', 'forum');
         }
@@ -404,7 +406,7 @@ class View
     {
         // Check if config file exists to avoid error when installing forum
         if (!Container::get('cache')->isCached('quickjump') && is_file(ForumEnv::get('FORUM_CONFIG_FILE'))) {
-            Container::get('cache')->store('quickjump', \RunBB\Model\Cache::get_quickjump());
+            Container::get('cache')->store('quickjump', \RunBB\Model\Cache::getQuickjump());
         }
 
         $title = Container::get('forum_settings') ? ForumSettings::get('o_board_title') : 'RunBB';
@@ -427,7 +429,7 @@ class View
         ];
 
         if (is_object(User::get()) && User::get()->is_admmod) {
-            $data['has_reports'] = \RunBB\Model\Admin\Reports::has_reports();
+            $data['has_reports'] = \RunBB\Model\Admin\Reports::hasReports();
         } else {
             // guest user. for modal. load reg data from Register.php
             Lang::load('login');
@@ -437,7 +439,8 @@ class View
 
             // FIXME rebuild
             // Antispam feature
-            $lang_antispam_questions = require ForumEnv::get('FORUM_ROOT').'lang/'.User::get()->language.'/antispam.php';
+            $lang_antispam_questions = require ForumEnv::get('FORUM_ROOT').
+                'lang/'.User::get()->language.'/antispam.php';
             $index_questions = rand(0, count($lang_antispam_questions)-1);
             $data['index_questions'] = $index_questions;
             $data['languages'] = \RunBB\Core\Lister::getLangs();
@@ -446,12 +449,13 @@ class View
         }
 
         if (ForumEnv::get('FEATHER_SHOW_INFO')) {
-            $data['exec_info'] = \RunBB\Model\Debug::get_info();
+            $data['exec_info'] = \RunBB\Model\Debug::getInfo();
             if (ForumEnv::get('FEATHER_SHOW_QUERIES')) {
-                $data['queries_info'] = \RunBB\Model\Debug::get_queries();
+                $data['queries_info'] = \RunBB\Model\Debug::getQueries();
             }
         }
-        $data['logOutLink'] = Router::pathFor('logout',
+        $data['logOutLink'] = Router::pathFor(
+            'logout',
             ['token' => Random::hash(User::get()->id.Random::hash(Utils::getIp()))]
         );
 
@@ -521,45 +525,6 @@ class View
             ];
         }
 
-//        if (User::get()->is_guest) {
-//            $navlinks[] = [
-//                'id' => 'navregister',
-//                'active' => ($active_page == 'register') ? ' class="isactive"' : '',
-//                'href' => Router::pathFor('register'),
-//                'text' => __('Register')
-//            ];
-//            $navlinks[] = [
-//                'id' => 'navlogin',
-//                'active' => ($active_page == 'login') ? ' class="isactive"' : '',
-//                'href' => Router::pathFor('login'),
-//                'text' => __('Login')
-//            ];
-//        } else {
-//            $navlinks[] = [
-//                'id' => 'navprofile',
-//                'active' => ($active_page == 'profile') ? ' class="isactive"' : '',
-//                'href' => Router::pathFor('userProfile', ['id' => User::get()->id]),
-//                'text' => __('Profile')
-//            ];
-//            if (User::get()->is_admmod) {
-//                $navlinks[] = [
-//                    'id' => 'navadmin',
-//                    'active' => ($active_page == 'admin') ? ' class="isactive"' : '',
-//                    'href' => Router::pathFor('adminIndex'),
-//                    'text' => __('Admin')
-//                ];
-//            }
-//            $navlinks[] = [
-//                'id' => 'navlogout',
-//                'active' => ($active_page == 'logout') ? ' class="isactive"' : '',
-//                'href' => Router::pathFor(
-//                    'logout',
-//                    ['token' => Random::hash(User::get()->id.Random::hash(Utils::getIp()))]
-//                ),
-//                'text' => __('Logout')
-//            ];
-//        }
-
         // Are there any additional navlinks we should insert into the array before imploding it?
         $hooksLinks = Container::get('hooks')->fire('view.header.navlinks', []);
         $extraLinks = ForumSettings::get('o_additional_navlinks')."\n".implode("\n", $hooksLinks);
@@ -570,9 +535,12 @@ class View
                 for ($i = 0; $i < $num_links; ++$i) {
                     array_splice(
                         $navlinks,
-                        $results[1][$i], 0, ['<li id="navextra'.($i + 1).'"'.
+                        $results[1][$i],
+                        0,
+                        ['<li id="navextra'.($i + 1).'"'.
                         (($active_page == 'navextra'.($i + 1)) ? ' class="isactive"' : '').'>'.
-                        $results[2][$i].'</li>']);
+                        $results[2][$i].'</li>']
+                    );
                 }
             }
         }

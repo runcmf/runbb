@@ -43,15 +43,16 @@ class Register
 
         $user['timezone'] = isset($user['timezone']) ? $user['timezone'] : ForumSettings::get('o_default_timezone');
         $user['dst'] = isset($user['dst']) ? $user['dst'] : ForumSettings::get('o_default_dst');
-        $user['email_setting'] = isset($user['email_setting']) ? $user['email_setting'] : ForumSettings::get('o_default_email_setting');
+        $user['email_setting'] = isset($user['email_setting']) ? $user['email_setting'] :
+            ForumSettings::get('o_default_email_setting');
         $user['errors'] = '';
 
         if (Request::isPost()) {
-            $user = $this->model->check_for_errors();
+            $user = $this->model->checkForErrors();
 
             // Did everything go according to plan? Insert the user
             if (empty($user['errors'])) {
-                return $this->model->insert_user($user);
+                return $this->model->insertUser($user);
             }
         }
 

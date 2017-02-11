@@ -5,7 +5,7 @@
  <!-- display progress -->
  <arg value="p"/>
  <!-- use colors in output -->
- <!--<arg name="colors"/>-->
+ <arg name="colors"/>
 
  <!-- inherit rules from: -->
  <rule ref="PSR2"/>
@@ -17,6 +17,9 @@
 
  <!-- Paths to exclude -->
  <!--<exclude-pattern>^/tests/*</exclude-pattern>-->
- <exclude-pattern>*/web/*</exclude-pattern>
+ <exclude-pattern>^/docs/*</exclude-pattern>
+ <exclude-pattern>^/vendor/*</exclude-pattern>
+ <exclude-pattern>^/web/*</exclude-pattern>
+ <exclude-pattern>*/View/*</exclude-pattern>
  <exclude-pattern>*/lang/*</exclude-pattern>
 </ruleset>

@@ -18,7 +18,7 @@ use RunBB\Model\Auth as AuthModel;
 class Profile
 {
 
-    public function change_pass($id)
+    public function changePass($id)
     {
         $id = Container::get('hooks')->fire('model.profile.change_pass_start', $id);
 
@@ -124,8 +124,8 @@ class Profile
 
             if (User::get()->id == $id) {
                 $expire = time() + ForumSettings::get('o_timeout_visit');
-                $jwt = AuthModel::generate_jwt(User::get(), $expire);
-                AuthModel::feather_setcookie('Bearer '.$jwt, $expire);
+                $jwt = AuthModel::generateJwt(User::get(), $expire);
+                AuthModel::setCookie('Bearer '.$jwt, $expire);
             }
 
             Container::get('hooks')->fire('model.profile.change_pass');
@@ -136,7 +136,7 @@ class Profile
         }
     }
 
-    public function change_email($id)
+    public function changeEmail($id)
     {
         $id = Container::get('hooks')->fire('model.profile.change_email_start', $id);
 
@@ -207,12 +207,12 @@ class Profile
             // Validate the email address
             $new_email = strtolower(Utils::trim(Input::post('req_new_email')));
             $new_email = Container::get('hooks')->fire('model.profile.change_email_new_email', $new_email);
-            if (!Container::get('email')->is_valid_email($new_email)) {
+            if (!Container::get('email')->isValidEmail($new_email)) {
                 throw new  RunBBException(__('Invalid email'), 400);
             }
 
             // Check if it's a banned email address
-            if (Container::get('email')->is_banned_email($new_email)) {
+            if (Container::get('email')->isBannedEmail($new_email)) {
                 if (ForumSettings::get('p_allow_banned_email') == '0') {
                     throw new  RunBBException(__('Banned email'), 403);
                 } elseif (ForumSettings::get('o_mailing_list') != '') {
@@ -240,7 +240,7 @@ class Profile
                         ->fire('model.profile.change_email_mail_message', $mail_message);
 
                     Container::get('email')
-                        ->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+                        ->dispatchMail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
                 }
             }
 
@@ -285,7 +285,7 @@ class Profile
                         ->fire('model.profile.change_email_mail_dupe_message', $mail_message);
 
                     Container::get('email')
-                        ->feather_mail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
+                        ->dispatchMail(ForumSettings::get('o_mailing_list'), $mail_subject, $mail_message);
                 }
             }
 
@@ -330,7 +330,7 @@ class Profile
             $mail_message = Container::get('hooks')
                 ->fire('model.profile.change_email_mail_activate_message', $mail_message);
 
-            Container::get('email')->feather_mail($new_email, $mail_subject, $mail_message);
+            Container::get('email')->dispatchMail($new_email, $mail_subject, $mail_message);
 
             Container::get('hooks')->fire('model.profile.change_email_sent');
 
@@ -341,7 +341,7 @@ class Profile
         Container::get('hooks')->fire('model.profile.change_email');
     }
 
-    public function upload_avatar($id, $files_data)
+    public function uploadAvatar($id, $files_data)
     {
         $files_data = Container::get('hooks')->fire('model.profile.upload_avatar_start', $files_data, $id);
 
@@ -393,7 +393,7 @@ class Profile
             // Make sure the file isn't too big
             if ($uploaded_file['size'] > ForumSettings::get('o_avatars_size')) {
                 throw new  RunBBException(__('Too large').' '.
-                    Utils::forum_number_format(ForumSettings::get('o_avatars_size')).' '.__('bytes').'.');
+                    Utils::numberFormat(ForumSettings::get('o_avatars_size')).' '.__('bytes').'.');
             }
 
             // Move the file to the avatar directory. We do this before checking the width/height to
@@ -437,9 +437,11 @@ class Profile
             }
 
             // Delete any old avatars and put the new one in place
-            $this->delete_avatar($id);
-            @rename(ForumEnv::get('WEB_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp',
-                ForumEnv::get('WEB_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.$extension);
+            $this->deleteAvatar($id);
+            @rename(
+                ForumEnv::get('WEB_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.'.tmp',
+                ForumEnv::get('WEB_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.$extension
+            );
             @chmod(ForumEnv::get('WEB_ROOT').ForumSettings::get('o_avatars_dir').'/'.$id.$extension, 0644);
         } else {
             throw new  RunBBException(__('Unknown failure'));
@@ -456,7 +458,7 @@ class Profile
     //
     // Deletes any avatars owned by the specified user ID
     //
-    public function delete_avatar($user_id)
+    public function deleteAvatar($user_id)
     {
         $filetypes = ['jpg', 'gif', 'png'];
 
@@ -468,7 +470,7 @@ class Profile
         }
     }
 
-    public function update_group_membership($id)
+    public function updateGroupMembership($id)
     {
         $id = Container::get('hooks')->fire('model.profile.update_group_membership_start', $id);
 
@@ -491,14 +493,14 @@ class Profile
 
         // Regenerate the users info cache
         if (!Container::get('cache')->isCached('users_info')) {
-            Container::get('cache')->store('users_info', Cache::get_users_info());
+            Container::get('cache')->store('users_info', Cache::getUsersInfo());
         }
 
         $stats = Container::get('cache')->retrieve('users_info');
 
         if ($old_group_id->group_id == ForumEnv::get('FEATHER_ADMIN') ||
             $new_group_id == ForumEnv::get('FEATHER_ADMIN')) {
-            Container::get('cache')->store('admin_ids', Cache::get_admin_ids());
+            Container::get('cache')->store('admin_ids', Cache::getAdminIds());
         }
 
         $new_group_mod = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
@@ -512,7 +514,7 @@ class Profile
         //rom the moderator list in all forums as well
         if ($new_group_id != ForumEnv::get('FEATHER_ADMIN') && $new_group_mod->g_moderator != '1') {
             // Loop through all forums
-            $result = $this->loop_mod_forums();
+            $result = $this->loopModForums();
 
             foreach ($result as $cur_forum) {
                 $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : [];
@@ -545,7 +547,7 @@ class Profile
         ), __('Group membership redirect'));
     }
 
-    public function get_username($id)
+    public function getUsername($id)
     {
         // Get the username of the user we are processing
         $username = \ORM::for_table(ORM_TABLE_PREFIX.'users')
@@ -556,7 +558,7 @@ class Profile
         return Container::get('hooks')->fire('model.profile.get_username', $username->username);
     }
 
-    public function loop_mod_forums()
+    public function loopModForums()
     {
         $result['select'] = ['id', 'moderators'];
 
@@ -568,14 +570,14 @@ class Profile
         return $result;
     }
 
-    public function update_mod_forums($id)
+    public function updateModForums($id)
     {
-        $username = $this->get_username($id);
+        $username = $this->getUsername($id);
 
         $moderator_in = (Input::post('moderator_in')) ? array_keys(Input::post('moderator_in')) : [];
 
         // Loop through all forums
-        $result = $this->loop_mod_forums();
+        $result = $this->loopModForums();
 
         foreach ($result as $cur_forum) {
             $cur_moderators = ($cur_forum['moderators'] != '') ? unserialize($cur_forum['moderators']) : [];
@@ -618,12 +620,12 @@ class Profile
         ), __('Update forums redirect'));
     }
 
-    public function ban_user($id)
+    public function banUser($id)
     {
         $id = Container::get('hooks')->fire('model.profile.ban_user_start', $id);
 
         // Get the username of the user we are banning
-        $username = $this->get_username($id);
+        $username = $this->getUsername($id);
 
         // Check whether user is already banned
         $ban_id = \ORM::for_table(ORM_TABLE_PREFIX.'bans')
@@ -641,7 +643,7 @@ class Profile
         }
     }
 
-    public function promote_user($id)
+    public function promoteUser($id)
     {
         $id = Container::get('hooks')->fire('model.profile.promote_user_start', $id);
 
@@ -673,7 +675,7 @@ class Profile
         return Router::redirect(Router::pathFor('viewPost', ['pid' => $pid]).'#p'.$pid, __('User promote redirect'));
     }
 
-    public function delete_user($id)
+    public function deleteUser($id)
     {
         $id = Container::get('hooks')->fire('model.profile.delete_user_start', $id);
 
@@ -704,7 +706,7 @@ class Profile
 
             if ($group_id == ForumEnv::get('FEATHER_ADMIN') || $group_mod->g_moderator == '1') {
                 // Loop through all forums
-                $result = $this->loop_mod_forums();
+                $result = $this->loopModForums();
 
                 foreach ($result as $cur_forum) {
                     $cur_moderators = ($cur_forum['moderators'] != '') ?
@@ -805,15 +807,15 @@ class Profile
             $delete_user = $delete_user->delete_many();
 
             // Delete user avatar
-            $this->delete_avatar($id);
+            $this->deleteAvatar($id);
 
             // Regenerate the users info cache
-            Container::get('cache')->store('users_info', Cache::get_users_info());
+            Container::get('cache')->store('users_info', Cache::getUsersInfo());
 
             $stats = Container::get('cache')->retrieve('users_info');
 
             if ($group_id == ForumEnv::get('FEATHER_ADMIN')) {
-                Container::get('cache')->store('admin_ids', Cache::get_admin_ids());
+                Container::get('cache')->store('admin_ids', Cache::getAdminIds());
             }
 
             Container::get('hooks')->fire('model.profile.delete_user');
@@ -822,7 +824,7 @@ class Profile
         }
     }
 
-    public function fetch_user_group($id)
+    public function fetchUserGroup($id)
     {
         $info = [];
 
@@ -847,7 +849,7 @@ class Profile
         return $info;
     }
 
-    public function update_profile($id, $info, $section)
+    public function updateProfile($id, $info, $section)
     {
         $info = Container::get('hooks')->fire('model.profile.update_profile_start', $info, $id, $section);
 
@@ -858,7 +860,6 @@ class Profile
         // Validate input depending on section
         switch ($section) {
             case 'essentials':
-            {
                 $form = [
                     'timezone'        => floatval(Input::post('form_timezone')),
                     'dst'            => Input::post('form_dst') ? '1' : '0',
@@ -885,7 +886,7 @@ class Profile
 
                         if ($form['username'] != $info['old_username']) {
                             $errors = '';
-                            $errors = $this->check_username($form['username'], $errors, $id);
+                            $errors = $this->checkUsername($form['username'], $errors, $id);
                             if (!empty($errors)) {
                                 throw new  RunBBException($errors[0]);
                             }
@@ -903,16 +904,15 @@ class Profile
                 if (ForumSettings::get('o_regs_verify') == '0' || User::get()->is_admmod) {
                     // Validate the email address
                     $form['email'] = strtolower(Utils::trim(Input::post('req_email')));
-                    if (!Container::get('email')->is_valid_email($form['email'])) {
+                    if (!Container::get('email')->isValidEmail($form['email'])) {
                         throw new  RunBBException(__('Invalid email'));
                     }
                 }
 
                 break;
-            }
+
 
             case 'personal':
-            {
                 $form = [
                     'realname'     => Input::post('form_realname') ? Utils::trim(Input::post('form_realname')) : '',
                     'url'          => Input::post('form_url') ? Utils::trim(Input::post('form_url')) : '',
@@ -922,7 +922,7 @@ class Profile
                 // Add http:// if the URL doesn't contain it already (while allowing https://, too)
                 if (User::get()->g_post_links == '1') {
                     if ($form['url'] != '') {
-                        $url = Url::is_valid($form['url']);
+                        $url = Url::isValidUrl($form['url']);
 
                         if ($url === false) {
                             throw new  RunBBException(__('Invalid website URL'));
@@ -960,10 +960,8 @@ class Profile
                 }
 
                 break;
-            }
 
             case 'messaging':
-            {
                 $form = [
                     'jabber'        => Utils::trim(Input::post('form_jabber')),
                     'icq'            => Utils::trim(Input::post('form_icq')),
@@ -978,10 +976,9 @@ class Profile
                 }
 
                 break;
-            }
+
 
             case 'personality':
-            {
                 $form = [];
 
                 // Clean up signature from POST
@@ -999,7 +996,7 @@ class Profile
                         throw new  RunBBException(sprintf(__('Sig too many lines'), ForumSettings::get('p_sig_lines')));
                     } elseif ($form['signature'] &&
                         ForumSettings::get('p_sig_all_caps') == '0' &&
-                        Utils::is_all_uppercase($form['signature']) &&
+                        Utils::isAllUppercase($form['signature']) &&
                         !User::get()->is_admmod) {
                         $form['signature'] = utf8_ucwords(utf8_strtolower($form['signature']));
                     }
@@ -1018,10 +1015,8 @@ class Profile
                 }
 
                 break;
-            }
 
             case 'display':
-            {
                 $form = [
                     'disp_topics'        => Utils::trim(Input::post('form_disp_topics')),
                     'disp_posts'        => Utils::trim(Input::post('form_disp_posts')),
@@ -1067,10 +1062,8 @@ class Profile
                 }
 
                 break;
-            }
 
             case 'privacy':
-            {
                 $form = [
                     'email_setting'            => intval(Input::post('form_email_setting')),
                     'notify_with_post'        => Input::post('form_notify_with_post') ? '1' : '0',
@@ -1082,7 +1075,6 @@ class Profile
                 }
 
                 break;
-            }
 
             default:
                 throw new  RunBBException(__('Bad request'), 404);
@@ -1178,7 +1170,7 @@ class Profile
 
             if ($group_id->group_id == ForumEnv::get('FEATHER_ADMIN') || $group_mod->g_moderator == '1') {
                 // Loop through all forums
-                $result = $this->loop_mod_forums();
+                $result = $this->loopModForums();
 
                 foreach ($result as $cur_forum) {
                     $cur_moderators = ($cur_forum['moderators'] != '') ?
@@ -1202,14 +1194,14 @@ class Profile
 
             // Regenerate the users info cache
             if (!Container::get('cache')->isCached('users_info')) {
-                Container::get('cache')->store('users_info', Cache::get_users_info());
+                Container::get('cache')->store('users_info', Cache::getUsersInfo());
             }
 
             $stats = Container::get('cache')->retrieve('users_info');
 
             // Check if the bans table was updated and regenerate the bans cache when needed
             if ($bans_updated) {
-                Container::get('cache')->store('bans', Cache::get_bans());
+                Container::get('cache')->store('bans', Cache::getBans());
             }
         }
 
@@ -1221,7 +1213,7 @@ class Profile
         ), __('Profile redirect'));
     }
 
-    public function get_user_info($id)
+    public function getUserInfo($id)
     {
         $user['select'] = [
             'u.id',
@@ -1278,7 +1270,7 @@ class Profile
         $user_info['personal'][] = '<dt>'.__('Username').'</dt>';
         $user_info['personal'][] = '<dd>'.Utils::escape($user->username).'</dd>';
 
-        $user_title_field = Utils::get_title($user->title);
+        $user_title_field = Utils::getTitle($user->title);
         $user_info['personal'][] = '<dt>'.__('Title').'</dt>';
         $user_info['personal'][] = '<dd>'.((ForumSettings::get('o_censoring') == '1') ?
                 Utils::censor($user_title_field) : $user_title_field).'</dd>';
@@ -1345,7 +1337,7 @@ class Profile
         }
 
         if (ForumSettings::get('o_avatars') == '1') {
-            $avatar_field = Utils::generate_avatar_markup($user->id);
+            $avatar_field = Utils::generateAvatarMarkup($user->id);
             if ($avatar_field != '') {
                 $user_info['personality'][] = '<dt>'.__('Avatar').'</dt>';
                 $user_info['personality'][] = '<dd>'.$avatar_field.'</dd>';
@@ -1361,7 +1353,7 @@ class Profile
 
         $posts_field = '';
         if (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) {
-            $posts_field = Utils::forum_number_format($user['num_posts']);
+            $posts_field = Utils::numberFormat($user['num_posts']);
         }
         if (User::get()->g_search == '1') {
             $quick_searches = [];
@@ -1387,18 +1379,18 @@ class Profile
 
         if ($user->num_posts > 0) {
             $user_info['activity'][] = '<dt>'.__('Last post').'</dt>';
-            $user_info['activity'][] = '<dd>'.Utils::format_time($user->last_post).'</dd>';
+            $user_info['activity'][] = '<dd>'.Utils::timeFormat($user->last_post).'</dd>';
         }
 
         $user_info['activity'][] = '<dt>'.__('Registered').'</dt>';
-        $user_info['activity'][] = '<dd>'.Utils::format_time($user->registered, true).'</dd>';
+        $user_info['activity'][] = '<dd>'.Utils::timeFormat($user->registered, true).'</dd>';
 
         $user_info = Container::get('hooks')->fire('model.profile.parse_user_info', $user_info);
 
         return $user_info;
     }
 
-    public function edit_essentials($id, $user)
+    public function editEssentials($id, $user)
     {
         $user_disp = [];
 
@@ -1442,7 +1434,7 @@ class Profile
             $user_disp['posts_field'] .= '<label>'.__('Posts').'<br /><input type="text" name="num_posts" value="'.
                 $user->num_posts.'" size="8" maxlength="8" /><br /></label>';
         } elseif (ForumSettings::get('o_show_post_count') == '1' || User::get()->is_admmod) {
-            $posts_actions[] = sprintf(__('Posts info'), Utils::forum_number_format($user->num_posts));
+            $posts_actions[] = sprintf(__('Posts info'), Utils::numberFormat($user->num_posts));
         }
 
         if (User::get()->g_search == '1' || User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) {
@@ -1465,7 +1457,7 @@ class Profile
         return $user_disp;
     }
 
-    public function get_group_list($user)
+    public function getGroupList($user)
     {
         $output = '';
 
@@ -1496,7 +1488,7 @@ class Profile
         return $output;
     }
 
-    public function get_forum_list($id)
+    public function getForumList($id)
     {
         $output = '';
 
@@ -1546,7 +1538,7 @@ class Profile
     //
     // Check username
     //
-    public function check_username($username, $errors, $exclude_id = null)
+    public function checkUsername($username, $errors, $exclude_id = null)
     {
         // Include UTF-8 function
         require_once ForumEnv::get('FORUM_ROOT').'Helpers/utf8/strcasecmp.php';
@@ -1571,7 +1563,8 @@ class Profile
         } elseif ((strpos($username, '[') !== false || strpos($username, ']') !== false) &&
             strpos($username, '\'') !== false && strpos($username, '"') !== false) {
             $errors[] = __('Username reserved chars');
-        } elseif (preg_match('%(?:\[/?(?:b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|\*|topic|post|forum|user)\]|\[(?:img|url|quote|list)=)%i', $username)) {
+        } elseif (preg_match('%(?:\[/?(?:b|u|s|ins|del|em|i|h|colou?r|quote|code|img|url|email|list|\*|topic'.
+            '|post|forum|user)\]|\[(?:img|url|quote|list)=)%i', $username)) {
             $errors[] = __('Username BBCode');
         }
 
@@ -1584,7 +1577,13 @@ class Profile
         $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_query('SELECT username FROM '.
-            ForumSettings::get('db_prefix').'users WHERE (UPPER(username)=UPPER(:username1) OR UPPER(username)=UPPER(:username2)) AND id>1'.$query, [':username1' => $username, ':username2' => Utils::ucp_preg_replace('%[^\p{L}\p{N}]%u', '', $username)])->find_one();
+            ForumSettings::get('db_prefix').'users 
+            WHERE (UPPER(username)=UPPER(:username1) 
+            OR UPPER(username)=UPPER(:username2)) 
+            AND id>1'.$query, [
+                ':username1' => $username,
+                ':username2' => Utils::ucpPregReplace('%[^\p{L}\p{N}]%u', '', $username)
+            ])->find_one();
 
         if ($result) {
             $busy = $result['username'];
@@ -1602,7 +1601,7 @@ class Profile
         return $errors;
     }
 
-    public function get_info_mail($recipient_id)
+    public function getInfoMail($recipient_id)
     {
         $recipient_id = Container::get('hooks')->fire('model.profile.get_info_mail_start', $recipient_id);
 
@@ -1626,7 +1625,7 @@ class Profile
         return $mail;
     }
 
-    public function send_email($mail)
+    public function sendEmail($mail)
     {
         $mail = Container::get('hooks')->fire('model.profile.send_email_start', $mail);
 
@@ -1672,7 +1671,7 @@ class Profile
 
         $mail_message = Container::get('hooks')->fire('model.profile.send_email_mail_message', $mail_message);
 
-        Container::get('email')->feather_mail(
+        Container::get('email')->dispatchMail(
             $mail['recipient_email'],
             $mail_subject,
             $mail_message,
@@ -1696,14 +1695,12 @@ class Profile
         return Router::redirect(Router::pathFor('home'), __('Email sent redirect'));
     }
 
-    public function display_ip_info($ip)
+    public function displayIpInfo($ip)
     {
         $ip = Container::get('hooks')->fire('model.profile.display_ip_info', $ip);
         throw new  RunBBException(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(
             __('Host info 2'),
             @gethostbyaddr($ip)
-        ).'<br /><br /><a href="'.
-            Router::pathFor('usersIpShow', ['ip' => $ip]).'">'.
-            __('Show more users').'</a>');
+        ).'<br /><br /><a href="'. Router::pathFor('usersIpShow', ['ip' => $ip]).'">'. __('Show more users').'</a>');
     }
 }

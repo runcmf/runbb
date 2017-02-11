@@ -17,7 +17,6 @@
 
 namespace RunBB\Model\Admin;
 
-
 class Templates
 {
 
