@@ -36,14 +36,14 @@ class Parser
         $cache_file = ForumEnv::get('FORUM_CACHE_DIR').'cache_parser_data.php';
 
         // If RESET button pushed, or no cache file, re-compile master bbcode source file.
-        if (Input::post('reset') || !file_exists($cache_file)) {
-            require_once(ForumEnv::get('FORUM_ROOT').'Core/parser/bbcd_source.php');
-            require_once(ForumEnv::get('FORUM_ROOT').'Core/parser/bbcd_compile.php');
-            return Router::redirect(Router::pathFor('adminParser'), $lang_admin_parser['reset_success']);
-        }
+//        if (Input::post('reset') || !file_exists($cache_file)) {
+//            require_once(ForumEnv::get('FORUM_ROOT').'Core/parser/bbcd_source.php');
+//            require_once(ForumEnv::get('FORUM_ROOT').'Core/parser/bbcd_compile.php');
+//            return Router::redirect(Router::pathFor('adminParser'), $lang_admin_parser['reset_success']);
+//        }
 
         // Load the current BBCode $pd array from RunBB/Core/parser/parser_data.inc.php.
-        require_once($cache_file);            // Fetch $pd compiled global regex data.
+//        require_once($cache_file);            // Fetch $pd compiled global regex data.
         $bbcd = $pd['bbcd'];                // Local scratch copy of $bbcd.
         $smilies = $pd['smilies'];            // Local scratch copy of $smilies.
         $config = $pd['config'];            // Local scratch copy of $config.
@@ -62,7 +62,7 @@ class Parser
                                 if ($f['size'] > 0 && $f['size'] <= ForumSettings::get('o_avatars_size')) {
                                     if (move_uploaded_file(
                                         $f['tmp_name'],
-                                        ForumEnv::get('WEB_ROOT') . 'style/img/smilies/'. $name
+                                        ForumEnv::get('WEB_ROOT') . 'img/smilies/'. $name
                                     )) {
                                         return Router::redirect(
                                             Router::pathFor('adminParser'),
@@ -222,6 +222,6 @@ class Parser
                 'config' => $config,
                 'smilies' =>    $smilies,
                 'i'     =>  -1,
-            ])->addTemplate('admin/parser.php')->display();
+            ])->addTemplate('@forum/admin/parser')->display();
     }
 }

@@ -55,7 +55,7 @@ class Plugins
             'category' => $category,
             'pluginInfo' => base64_encode(json_encode($plug)),
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')],
-        ])->addTemplate('misc/modal.php')->display(false);
+        ])->addTemplate('@forum/misc/modal')->display(false);
 /*
         $zipFile = ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR .
 $args['name'] . "-" . $args['version'] . '.zip';
@@ -118,7 +118,7 @@ $args['name'] . "-" . $args['version'] . '.zip';
 
         Container::get('hooks')->fire('controller.admin.plugins.index');
 
-        View::addAsset('js', 'style/imports/common.js', ['type' => 'text/javascript']);
+        View::addAsset('js', 'assets/js/common.js', ['type' => 'text/javascript']);
 
         $availablePlugins = Lister::getPlugins(
             $this->model->getList()
@@ -137,7 +137,7 @@ $args['name'] . "-" . $args['version'] . '.zip';
             'activePlugins' => $activePlugins,
             'officialPlugins' => $officialPlugins,
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')],
-        ])->addTemplate('admin/plugins.php')->display();
+        ])->addTemplate('@forum/admin/plugins')->display();
     }
 
     /**
@@ -243,7 +243,7 @@ $args['name'] . "-" . $args['version'] . '.zip';
     {
         Container::get('hooks')->fire('controller.admin.plugins.repoList');
 
-        View::addAsset('js', 'style/imports/common.js', ['type' => 'text/javascript']);
+        View::addAsset('js', 'assets/js/common.js', ['type' => 'text/javascript']);
 
         AdminUtils::generateAdminMenu('plugins');
 
@@ -265,6 +265,6 @@ $args['name'] . "-" . $args['version'] . '.zip';
             'active_page' => 'admin',
             'repoList' => $repoList,
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')],
-        ])->addTemplate('admin/pluginsRepo.php')->display();
+        ])->addTemplate('@forum/admin/pluginsRepo')->display();
     }
 }

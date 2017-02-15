@@ -86,7 +86,7 @@ class Utils
         $time_only = false,
         $no_text = false
     ) {
-    
+
         if ($timestamp == '') {
             return __('Never');
         }
@@ -104,8 +104,8 @@ class Utils
         }
 
         $date = gmdate($date_format, $timestamp);
-        $today = gmdate($date_format, $now+$diff);
-        $yesterday = gmdate($date_format, $now+$diff-86400);
+        $today = gmdate($date_format, $now + $diff);
+        $yesterday = gmdate($date_format, $now + $diff - 86400);
 
         if (!$no_text) {
             if ($date == $today) {
@@ -120,7 +120,7 @@ class Utils
         } elseif ($time_only) {
             return gmdate($time_format, $timestamp);
         } else {
-            return $date.' '.gmdate($time_format, $timestamp);
+            return $date . ' ' . gmdate($time_format, $timestamp);
         }
     }
 
@@ -191,7 +191,11 @@ class Utils
     public static function ucpPregReplace($pattern, $replace, $subject, $callback = false)
     {
         if ($callback) {
-            $replaced = preg_replace_callback($pattern, create_function('$matches', 'return '.$replace.';'), $subject);
+            $replaced = preg_replace_callback(
+                $pattern,
+                create_function('$matches', 'return ' . $replace . ';'),
+                $subject
+            );
         } else {
             $replaced = preg_replace($pattern, $replace, $subject);
         }
@@ -226,7 +230,7 @@ class Utils
             $size /= 1024;
         }
 
-        return __('Size unit '.$units[$i], round($size, 2));
+        return __('Size unit ' . $units[$i], round($size, 2));
     }
 
     /**
@@ -244,7 +248,7 @@ class Utils
         $page_title = array_reverse($page_title);
 
         if ($p > 1) {
-            $page_title[0] .= ' ('.sprintf(__('Page'), self::numberFormat($p)).')';
+            $page_title[0] .= ' (' . sprintf(__('Page'), self::numberFormat($p)) . ')';
         }
 
         $crumbs = implode(__('Title separator'), $page_title);
@@ -254,17 +258,17 @@ class Utils
 
     /**
      * Generate breadcrumbs on top of page
-     * @var $crumbs: array('optionnal/url' => 'Text displayed')
-     * @var $rightCrumb: array('link' => 'url/of/action', 'text' => 'Text displayed')
+     * @var $crumbs : array('optionnal/url' => 'Text displayed')
+     * @var $rightCrumb : array('link' => 'url/of/action', 'text' => 'Text displayed')
      *
      * @return text
      */
     public static function generateBreadcrumbs(array $crumbs = [], array $rightCrumb = [])
     {
         \View::setPageInfo([
-            'rightCrumb'    =>    $rightCrumb,
-            'crumbs'    =>    $crumbs,
-            ], 1)->addTemplate('breadcrumbs.php');
+            'rightCrumb' => $rightCrumb,
+            'crumbs' => $crumbs,
+        ], 1)->addTemplate('breadcrumbs');
     }
 
     /**
@@ -328,7 +332,7 @@ class Utils
         $replace_with = Container::get('cache')->retrieve('replace_with');
 
         if (!empty($search_for) && !empty($replace_with)) {
-            return substr(self::ucpPregReplace($search_for, $replace_with, ' '.$text.' '), 1, -1);
+            return substr(self::ucpPregReplace($search_for, $replace_with, ' ' . $text . ' '), 1, -1);
         } else {
             return $text;
         }
@@ -359,13 +363,14 @@ class Utils
         $avatar_markup = '';
 
         foreach ($filetypes as $cur_type) {
-            $path = ForumSettings::get('o_avatars_dir').'/'.$user_id.'.'.$cur_type;
+            $path = ForumSettings::get('o_avatars_dir') . '/' . $user_id . '.' . $cur_type;
 
-            if (file_exists(ForumEnv::get('WEB_ROOT').$path) &&
-                $img_size = getimagesize(ForumEnv::get('WEB_ROOT').$path)) {
-                $avatar_markup = '<img class="avatar" src="'.
-                    \RunBB\Core\Utils::escape(Container::get('url')->base().$path.'?m='.
-                        filemtime(ForumEnv::get('WEB_ROOT').$path)).'" '.$img_size[3].' alt="" />';
+            if (file_exists(ForumEnv::get('WEB_ROOT') . $path) &&
+                $img_size = getimagesize(ForumEnv::get('WEB_ROOT') . $path)
+            ) {
+                $avatar_markup = '<img class="avatar" src="' .
+                    \RunBB\Core\Utils::escape(Container::get('url')->base() . $path . '?m=' .
+                        filemtime(ForumEnv::get('WEB_ROOT') . $path)) . '" ' . $img_size[3] . ' alt="" />';
                 break;
             }
         }
@@ -406,8 +411,8 @@ class Utils
     {
         $dir = opendir($src);
         @mkdir($dst);
-        while (false !== ( $file = readdir($dir))) {
-            if (( $file != '.' ) && ( $file != '..' )) {
+        while (false !== ($file = readdir($dir))) {
+            if (($file != '.') && ($file != '..')) {
                 if (is_dir($src . '/' . $file)) {
                     self::recurseCopy($src . '/' . $file, $dst . '/' . $file);
                 } else {
@@ -425,7 +430,7 @@ class Utils
      */
     public static function recurseDelete($dir)
     {
-        $files = array_diff(scandir($dir), ['.','..']);
+        $files = array_diff(scandir($dir), ['.', '..']);
         foreach ($files as $file) {
             (is_dir("$dir/$file")) ? self::recurseDelete("$dir/$file") : unlink("$dir/$file");
         }
@@ -437,25 +442,25 @@ class Utils
         $response = '<ul>';
         if (false !== $data) {
             foreach ($data as $key => $val) {
-                $response.= '<li>';
+                $response .= '<li>';
                 if (!is_array($val)) {
                     if (is_object($val)) {
                         $response .= json_encode((array)$val);
                     } else {
-                        $response.= $val;
+                        $response .= $val;
                     }
                 } else {
                     if (!$flatten) {
-                        $response.= self::arrayToList($val);
+                        $response .= self::arrayToList($val);
                     } else {
                         // pulls the sub array into the current list context
-                        $response.= substr($response, 0, strlen($response)-5) . self::arrayToList($val);
+                        $response .= substr($response, 0, strlen($response) - 5) . self::arrayToList($val);
                     }
                 }
-                $response.= '</li>';
+                $response .= '</li>';
             }
         }
-        $response.= '</ul>';
+        $response .= '</ul>';
         return $response;
     }
 
@@ -491,8 +496,8 @@ class Utils
     public static function recursiveArraySearch($needle, $haystack)
     {
         foreach ($haystack as $key => $value) {
-            $current_key=$key;
-            if ($needle===$value or (is_array($value) && self::recursiveArraySearch($needle, $value) !== false)) {
+            $current_key = $key;
+            if ($needle === $value or (is_array($value) && self::recursiveArraySearch($needle, $value) !== false)) {
                 return $current_key;
             }
         }

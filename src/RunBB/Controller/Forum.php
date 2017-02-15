@@ -45,9 +45,10 @@ class Forum
 
         // Can we or can we not post new topics?
         if (($cur_forum['post_topics'] == '' && User::get()->g_post_topics == '1') ||
-            $cur_forum['post_topics'] == '1' || $is_admmod) {
-            $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.
-                Router::pathFor('newTopic', ['fid' => $args['fid']]).'">'.__('Post topic').'</a></p>'."\n";
+            $cur_forum['post_topics'] == '1' || $is_admmod
+        ) {
+            $post_link = "\t\t\t" . '<div class="pull-right"><a class="btn btn-primary btn-sm" href="' .
+                Router::pathFor('newTopic', ['fid' => $args['fid']]) . '">' . __('Post topic') . '</a></div>' . "\n";
         } else {
             $post_link = '';
         }
@@ -60,8 +61,8 @@ class Forum
         $url_forum = Url::slug($cur_forum['forum_name']);
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.
-            Url::paginate($num_pages, $p, 'forum/'.$args['fid'].'/'.$url_forum.'/#');
+        $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' .
+            Url::paginate($num_pages, $p, 'forum/' . $args['fid'] . '/' . $url_forum . '/#');
 
         $forum_actions = $this->model->getForumActions(
             $args['fid'],
@@ -73,27 +74,27 @@ class Forum
         if ($num_pages > 1) {
             if ($p > 1) {
                 View::addAsset('prev', Router::pathFor('ForumPaginate', ['id' => $args['fid'],
-                    'name' => $url_forum, 'page' => intval($p-1)]));
+                    'name' => $url_forum, 'page' => intval($p - 1)]));
             }
             if ($p < $num_pages) {
                 View::addAsset('next', Router::pathFor('ForumPaginate', ['id' => $args['fid'],
-                    'name' => $url_forum, 'page' => intval($p+1)]));
+                    'name' => $url_forum, 'page' => intval($p + 1)]));
             }
         }
 
         if (ForumSettings::get('o_feed_type') == '1') {
-            View::addAsset('feed', Router::pathFor('extern') . '?action=feed&amp;fid='.
-                $args['fid'].'&amp;type=rss', ['title' => __('RSS forum feed')]);
+            View::addAsset('feed', Router::pathFor('extern') . '?action=feed&amp;fid=' .
+                $args['fid'] . '&amp;type=rss', ['title' => __('RSS forum feed')]);
         } elseif (ForumSettings::get('o_feed_type') == '2') {
-            View::addAsset('feed', Router::pathFor('extern') . '?action=feed&amp;fid='.
-                $args['fid'].'&amp;type=atom', ['title' => __('Atom forum feed')]);
+            View::addAsset('feed', Router::pathFor('extern') . '?action=feed&amp;fid=' .
+                $args['fid'] . '&amp;type=atom', ['title' => __('Atom forum feed')]);
         }
 
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), Utils::escape($cur_forum['forum_name'])],
             'active_page' => 'Forum',
-            'page_number'  =>  $p,
-            'paging_links'  =>  $paging_links,
+            'page_number' => $p,
+            'paging_links' => $paging_links,
             'is_indexed' => true,
             'id' => $args['fid'],
             'fid' => $args['fid'],
@@ -103,7 +104,7 @@ class Forum
             'start_from' => $start_from,
             'url_forum' => $url_forum,
             'forum_actions' => $forum_actions,
-        ])->addTemplate('forum.php')->display();
+        ])->addTemplate('@forum/forum')->display();
     }
 
     public function moderate($req, $res, $args)
@@ -115,7 +116,8 @@ class Forum
         $mods_array = ($moderators != '') ? unserialize($moderators) : [];
 
         if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&
-            (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))) {
+            (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))
+        ) {
             throw new  RunBBException(__('No permission'), 403);
         }
 
@@ -146,11 +148,11 @@ class Forum
             'p' => $p,
             'url_forum' => $url_forum,
             'cur_forum' => $cur_forum,
-            'paging_links' => '<span class="pages-label">'.__('Pages').' </span>'.
-                Url::paginate($num_pages, $p, 'forum/moderate/'.$args['fid'].'/#'),
+            'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' .
+                Url::paginate($num_pages, $p, 'forum/moderate/' . $args['fid'] . '/#'),
             'topic_data' => $this->model->displayTopicsModerate($args['fid'], $sort_by, $start_from),
             'start_from' => $start_from,
-            ])->addTemplate('moderate/moderator_forum.php')->display();
+        ])->addTemplate('@forum/moderate/moderator_forum')->display();
     }
 
     public function markread($req, $res, $args)
@@ -189,7 +191,8 @@ class Forum
         $mods_array = ($moderators != '') ? unserialize($moderators) : [];
 
         if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&
-            (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))) {
+            (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))
+        ) {
             throw new  RunBBException(__('No permission'), 403);
         }
 
@@ -214,13 +217,13 @@ class Forum
             }
 
             View::setPageInfo([
-                    'action'    =>    'multi',
-                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
-                    'active_page' => 'moderate',
-                    'id'    =>    $args['fid'],
-                    'topics'    =>    implode(',', array_map('intval', array_keys($topics))),
-                    'list_forums'   => $topicModel->getForumListMove($args['fid']),
-                ])->addTemplate('moderate/move_topics.php')->display();
+                'action' => 'multi',
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
+                'active_page' => 'moderate',
+                'id' => $args['fid'],
+                'topics' => implode(',', array_map('intval', array_keys($topics))),
+                'list_forums' => $topicModel->getForumListMove($args['fid']),
+            ])->addTemplate('@forum/moderate/move_topics')->display();
         } // Merge two or more topics
         elseif (Input::post('merge_topics') || Input::post('merge_topics_comply')) {
             if (Input::post('merge_topics_comply')) {
@@ -237,11 +240,11 @@ class Forum
             }
 
             View::setPageInfo([
-                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
-                    'active_page' => 'moderate',
-                    'id'    =>    $args['fid'],
-                    'topics'    =>    $topics,
-                ])->addTemplate('moderate/merge_topics.php')->display();
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
+                'active_page' => 'moderate',
+                'id' => $args['fid'],
+                'topics' => $topics,
+            ])->addTemplate('@forum/moderate/merge_topics')->display();
         } // Delete one or more topics
         elseif (Input::post('delete_topics') || Input::post('delete_topics_comply')) {
             $topics = Input::post('topics') ? Input::post('topics') : [];
@@ -258,11 +261,11 @@ class Forum
             }
 
             View::setPageInfo([
-                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
-                    'active_page' => 'moderate',
-                    'id'    =>    $args['fid'],
-                    'topics'    =>    $topics,
-                ])->addTemplate('moderate/delete_topics.php')->display();
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
+                'active_page' => 'moderate',
+                'id' => $args['fid'],
+                'topics' => $topics,
+            ])->addTemplate('@forum/moderate/delete_topics')->display();
         } // Open or close one or more topics
         elseif (Input::post('open') || Input::post('close')) {
             $action = (Input::post('open')) ? 0 : 1;

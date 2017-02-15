@@ -39,11 +39,11 @@ class Censoring
         AdminUtils::generateAdminMenu('censoring');
 
         return View::setPageInfo([
-                'title'    =>    [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Censoring')],
-                'focus_element'    =>    ['censoring', 'new_search_for'],
-                'active_page'    =>    'admin',
-                'admin_console'    =>    true,
-                'word_data'    =>    $this->model->getWords(),
-            ])->addTemplate('admin/censoring.php')->display();
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Censoring')],
+            'focus_element' => ['censoring', 'new_search_for'],
+            'active_page' => 'admin',
+            'admin_console' => true,
+            'word_data' => $this->model->getWords(),
+        ])->addTemplate('@forum/admin/censoring')->display();
     }
 }

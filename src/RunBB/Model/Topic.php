@@ -229,7 +229,7 @@ class Topic
 
         if ($closed == '0') {
             if (($post_replies == '' && User::get()->g_post_replies == '1') || $post_replies == '1' || $is_admmod) {
-                $post_link = "\t\t\t".'<p class="postlink conr"><a href="'.
+                $post_link = "\t\t\t".'<p class="postlink conr"><a class="btn btn-primary btn-sm" href="'.
                     Router::pathFor('newReply', ['tid' => $topic_id]).'">'.__('Post reply').'</a></p>'."\n";
             } else {
                 $post_link = '';
@@ -238,8 +238,8 @@ class Topic
             $post_link = __('Topic closed');
 
             if ($is_admmod) {
-                $post_link .= ' / <a href="'.Router::pathFor('newReply', ['tid' => $topic_id]).'">'.
-                    __('Post reply').'</a>';
+                $post_link .= ' / <a class="btn btn-primary btn-sm" href="'.
+                    Router::pathFor('newReply', ['tid' => $topic_id]).'">'. __('Post reply').'</a>';
             }
 
             $post_link = "\t\t\t".'<p class="postlink conr">'.$post_link.'</p>'."\n";
@@ -390,12 +390,12 @@ class Topic
         if (!User::get()->is_guest && ForumSettings::get('o_topic_subscriptions') == '1') {
             if ($is_subscribed) {
                 // I apologize for the variable naming here. It's a mix of subscription and action I guess :-)
-                $subscraction = "\t\t".'<p class="subscribelink clearb"><span>'.__('Is subscribed').
-                    ' - </span><a href="'.Router::pathFor('unsubscribeTopic', ['id' => $topic_id]).'">'.
-                    __('Unsubscribe').'</a></p>'."\n";
+                $subscraction = "\t\t".'<span>'.__('Is subscribed').
+                    ' - </span><a class="btn btn-primary btn-sm" href="'.
+                    Router::pathFor('unsubscribeTopic', ['id' => $topic_id]).'">'. __('Unsubscribe').'</a>'."\n";
             } else {
-                $subscraction = "\t\t".'<p class="subscribelink clearb"><a href="'.
-                    Router::pathFor('subscribeTopic', ['id' => $topic_id]).'">'.__('Subscribe').'</a></p>'."\n";
+                $subscraction = "\t\t".'<a class="btn btn-primary btn-sm" href="'.
+                    Router::pathFor('subscribeTopic', ['id' => $topic_id]).'">'.__('Subscribe').'</a>'."\n";
             }
         } else {
             $subscraction = '';
@@ -1215,49 +1215,57 @@ class Topic
             // Generation post action array (quote, edit, delete etc.)
             if (!$is_admmod) {
                 if (!User::get()->is_guest) {
-                    $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.
-                        Router::pathFor('report', ['id' => $cur_post['id']]).'">'.__('Report').'</a></span></li>';
+                    $cur_post['post_actions'][] = '<li class="postreport">'.
+                        '<a class="btn btn-primary btn-xs" href="'.
+                        Router::pathFor('report', ['id' => $cur_post['id']]).'" title="'.__('Report').'">'.
+                        '<i class="fa fa-bullhorn" aria-hidden="true"></i></a></li>';
                 }
 
                 if ($cur_topic['closed'] == '0') {
                     if ($cur_post['poster_id'] == User::get()->id) {
                         if ((($start_from + $post_count) == 1 && User::get()->g_delete_topics == '1') ||
                             (($start_from + $post_count) > 1 && User::get()->g_delete_posts == '1')) {
-                            $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.
-                                Router::pathFor('deletePost', ['id' => $cur_post['id']]).'">'.
-                                __('Delete').'</a></span></li>';
+                            $cur_post['post_actions'][] = '<li class="postdelete">'.
+                                '<a class="btn btn-primary btn-xs" href="'.
+                                Router::pathFor('deletePost', ['id' => $cur_post['id']]).'" title="'.__('Delete').'">'
+                                .'<i class="fa fa-trash" aria-hidden="true"></i></a></li>';
                         }
                         if (User::get()->g_edit_posts == '1') {
-                            $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.
-                                Router::pathFor('editPost', ['id' => $cur_post['id']]).'">'.
-                                __('Edit').'</a></span></li>';
+                            $cur_post['post_actions'][] = '<li class="postedit">'.
+                                '<a class="btn btn-primary btn-xs" href="'.
+                                Router::pathFor('editPost', ['id' => $cur_post['id']]).'" title="'.__('Edit').'">'
+                                .'<i class="fa fa-pencil" aria-hidden="true"></i></a></li>';
                         }
                     }
 
                     if (($cur_topic['post_replies'] == '' && User::get()->g_post_replies == '1') ||
                         $cur_topic['post_replies'] == '1') {
-                        $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.
-                            Router::pathFor('newQuoteReply', ['tid' => $topic_id, 'qid' => $cur_post['id']]).'">'.
-                            __('Quote').'</a></span></li>';
+                        $cur_post['post_actions'][] = '<li class="postquote">'.
+                            '<a class="btn btn-primary btn-xs" href="'.
+                            Router::pathFor('newQuoteReply', ['tid' => $topic_id, 'qid' => $cur_post['id']]).'" '.
+                            'title="'.__('Quote').'"><i class="fa fa-quote-right" aria-hidden="true"></i></a></li>';
                     }
                 }
             } else {
-                $cur_post['post_actions'][] = '<li class="postreport"><span><a href="'.
-                    Router::pathFor('report', ['id' => $cur_post['id']]).'">'.__('Report').'</a></span></li>';
+                $cur_post['post_actions'][] = '<li class="postreport"><a class="btn btn-primary btn-xs" href="'.
+                    Router::pathFor('report', ['id' => $cur_post['id']]).'" title="'.__('Report').'">'
+                    .'<i class="fa fa-bullhorn" aria-hidden="true"></i></a></li>';
 //                if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || !in_array($cur_post['poster_id'],
 // $admin_ids)) {
-                if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || !in_array(
-                    $cur_post['poster_id'],
-                    Utils::getAdminIds()
-                )) {
-                    $cur_post['post_actions'][] = '<li class="postdelete"><span><a href="'.
-                        Router::pathFor('deletePost', ['id' => $cur_post['id']]).'">'.__('Delete').'</a></span></li>';
-                    $cur_post['post_actions'][] = '<li class="postedit"><span><a href="'.
-                        Router::pathFor('editPost', ['id' => $cur_post['id']]).'">'.__('Edit').'</a></span></li>';
+                if (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') ||
+                    !in_array($cur_post['poster_id'], Utils::getAdminIds())
+                ) {
+                    $cur_post['post_actions'][] = '<li class="postdelete">'.
+                        '<a class="btn btn-primary btn-xs" href="'.
+                        Router::pathFor('deletePost', ['id' => $cur_post['id']]).'" title="'.__('Delete').'">'.
+                        '<i class="fa fa-trash" aria-hidden="true"></i></a></li>';
+                    $cur_post['post_actions'][] = '<li class="postedit"><a class="btn btn-primary btn-xs" href="'.
+                        Router::pathFor('editPost', ['id' => $cur_post['id']]).'" title="'.__('Edit').'">'.
+                        '<i class="fa fa-pencil" aria-hidden="true"></i></a></li>';
                 }
-                $cur_post['post_actions'][] = '<li class="postquote"><span><a href="'.
-                    Router::pathFor('newQuoteReply', ['tid' => $topic_id, 'qid' => $cur_post['id']]).'">'.
-                    __('Quote').'</a></span></li>';
+                $cur_post['post_actions'][] = '<li class="postquote"><a class="btn btn-primary btn-xs" href="'.
+                    Router::pathFor('newQuoteReply', ['tid' => $topic_id, 'qid' => $cur_post['id']]).'" '.
+                    'title="'.__('Quote').'"><i class="fa fa-quote-right" aria-hidden="true"></i></a></li>';
             }
 
             // Perform the main parsing of the message (BBCode, smilies, censor words etc)
@@ -1313,8 +1321,21 @@ class Topic
         }
 
         // Retrieve the posts (and their respective poster)
-        $result['select'] = ['u.username', 'u.title', 'u.num_posts', 'g.g_id', 'g.g_user_title', 'p.id',
-            'p.poster', 'p.poster_id', 'p.message', 'p.hide_smilies', 'p.posted', 'p.edited', 'p.edited_by'];
+        $result['select'] = [
+            'u.username',
+            'u.title',
+            'u.num_posts',
+            'g.g_id',
+            'g.g_user_title',
+            'p.id',
+            'p.poster',
+            'p.poster_id',
+            'p.message',
+            'p.hide_smilies',
+            'p.posted',
+            'p.edited',
+            'p.edited_by'
+        ];
 
         $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
                     ->table_alias('p')
@@ -1380,7 +1401,7 @@ class Topic
                         ->find_one()
                         ->set_expr('num_views', 'num_views+1');
             $query = Container::get('hooks')->fire('model.topic.increment_views', $query);
-            $query = $query->save();
+            $query->save();
         }
     }
 }

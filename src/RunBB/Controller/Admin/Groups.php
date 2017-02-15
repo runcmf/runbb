@@ -36,12 +36,12 @@ class Groups
         AdminUtils::generateAdminMenu('groups');
 
         View::setPageInfo([
-                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
-                'active_page' => 'admin',
-                'admin_console' => true,
-                'groups' => $groups,
-                'cur_index' => 5,
-            ])->addTemplate('admin/groups/admin_groups.php')->display();
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
+            'active_page' => 'admin',
+            'admin_console' => true,
+            'groups' => $groups,
+            'cur_index' => 5,
+        ])->addTemplate('@forum/admin/groups/admin_groups')->display();
     }
 
     public function delete($req, $res, $args)
@@ -71,22 +71,22 @@ class Groups
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
                     'active_page' => 'admin',
                     'admin_console' => true,
-                    'group_title'      =>  $this->model->getGroupTitle($args['id']),
-                    'id'    => $args['id'],
-                    ])->addTemplate('admin/groups/confirm_delete.php')->display();
+                    'group_title' => $this->model->getGroupTitle($args['id']),
+                    'id' => $args['id'],
+                ])->addTemplate('@forum/admin/groups/confirm_delete')->display();
             }
         }
 
         AdminUtils::generateAdminMenu('groups');
 
         return View::setPageInfo([
-                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
-                'active_page' => 'admin',
-                'admin_console' => true,
-                'id'    => $args['id'],
-                'group_info'      =>  $this->model->getTitleMembers($args['id']),
-                'group_list_delete'      =>  $this->model->getGroupListDelete($args['id']),
-            ])->addTemplate('admin/groups/delete_group.php')->display();
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
+            'active_page' => 'admin',
+            'admin_console' => true,
+            'id' => $args['id'],
+            'group_info' => $this->model->getTitleMembers($args['id']),
+            'group_list_delete' => $this->model->getGroupListDelete($args['id']),
+        ])->addTemplate('@forum/admin/groups/delete_group')->display();
     }
 
     public function addedit($req, $res, $args)
@@ -106,16 +106,16 @@ class Groups
             $group = $this->model->infoAddGroup($groups, $id);
 
             View::setPageInfo([
-                    'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
-                    'active_page' => 'admin',
-                    'admin_console' => true,
-                    'focus_element' => ['groups2', 'req_title'],
-                    'required_fields' => ['req_title' => __('Group title label')],
-                    'group'    =>    $group,
-                    'groups'    =>    $groups,
-                    'id'    => $id,//$args['id'],
-                    'group_list'    => $this->model->getGroupList($groups, $group),
-                ])->addTemplate('admin/groups/add_edit_group.php')->display();
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('User groups')],
+                'active_page' => 'admin',
+                'admin_console' => true,
+                'focus_element' => ['groups2', 'req_title'],
+                'required_fields' => ['req_title' => __('Group title label')],
+                'group' => $group,
+                'groups' => $groups,
+                'id' => $id,//$args['id'],
+                'group_list' => $this->model->getGroupList($groups, $group),
+            ])->addTemplate('@forum/admin/groups/add_edit_group')->display();
         }
     }
 }

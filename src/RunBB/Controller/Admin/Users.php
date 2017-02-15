@@ -41,7 +41,7 @@ class Users
                 'active_page' => 'moderate',
                 'admin_console' => true,
                 'move' => $this->model->moveUsers(),
-            ])->addTemplate('admin/users/move_users.php')->display();
+            ])->addTemplate('@forum/admin/users/move_users')->display();
         }
 
 
@@ -59,7 +59,7 @@ class Users
                 'active_page' => 'moderate',
                 'admin_console' => true,
                 'user_ids' => $this->model->deleteUsers(),
-            ])->addTemplate('admin/users/delete_users.php')->display();
+            ])->addTemplate('@forum/admin/users/delete_users')->display();
         }
 
         // Ban multiple users
@@ -77,7 +77,7 @@ class Users
                 'focus_element' => ['bans2', 'ban_message'],
                 'admin_console' => true,
                 'user_ids' => $this->model->banUsers(),
-            ])->addTemplate('admin/users/ban_users.php')->display();
+            ])->addTemplate('@forum/admin/users/ban_users')->display();
         }
 
         // Display bans
@@ -104,7 +104,7 @@ class Users
             $can_ban = User::get()->g_id == ForumEnv::get('FEATHER_ADMIN') || (User::get()->g_moderator == '1' &&
                     User::get()->g_mod_ban_users == '1');
             $can_action = ($can_delete || $can_ban || $can_move) && $num_users > 0;
-            View::addAsset('js', 'style/imports/common.js', ['type' => 'text/javascript']);
+            View::addAsset('js', 'assets/js/common.js', ['type' => 'text/javascript']);
 
             View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'),
@@ -124,7 +124,7 @@ class Users
                     $search['direction'],
                     $start_from
                 ),
-            ])->addTemplate('admin/users/find_users.php')->display();
+            ])->addTemplate('@forum/admin/users/find_users')->display();
         } else {
             AdminUtils::generateAdminMenu('users');
 
@@ -134,7 +134,7 @@ class Users
                 'admin_console' => true,
                 'focus_element' => ['find_user', 'form[username]'],
                 'group_list' => $this->model->getGroupList(),
-            ])->addTemplate('admin/users/admin_users.php')->display();
+            ])->addTemplate('@forum/admin/users/admin_users')->display();
         }
     }
 
@@ -163,7 +163,7 @@ class Users
                 Url::paginateOld($num_pages, $p, '?ip_stats=' . $args['id']),
             'start_from' => $start_from,
             'ip_data' => $this->model->getIpStats($args['id'], $start_from),
-        ])->addTemplate('admin/users/search_ip.php')->display();
+        ])->addTemplate('@forum/admin/users/search_ip')->display();
     }
 
     // Show IP statistics for a certain user IP
@@ -208,6 +208,6 @@ class Users
             'page' => $p,
             'start_from' => $start_from,
             'info' => $this->model->getInfoPoster($search_ip, $start_from),
-        ])->addTemplate('admin/users/show_users.php')->display();
+        ])->addTemplate('@forum/admin/users/show_users')->display();
     }
 }

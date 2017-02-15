@@ -251,7 +251,7 @@ class Install
             `time_format` tinyint(1) NOT NULL DEFAULT '0',
             `date_format` tinyint(1) NOT NULL DEFAULT '0',
             `language` varchar(25) NOT NULL DEFAULT 'English',
-            `style` varchar(25) NOT NULL DEFAULT 'FeatherBB',
+            `style` varchar(25) NOT NULL DEFAULT 'runbb',
             `num_posts` int(10) unsigned NOT NULL DEFAULT '0',
             `last_post` int(10) unsigned DEFAULT NULL,
             `last_search` int(10) unsigned DEFAULT NULL,

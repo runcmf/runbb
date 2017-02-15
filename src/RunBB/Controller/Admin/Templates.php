@@ -42,6 +42,6 @@ class Templates
             'admin_console' => true,
             'php_os' => PHP_OS,
             'phpversion' => phpversion()
-        ])->addTemplate('admin/statistics.php')->display();
+        ])->addTemplate('@forum/admin/templates/admin_templates')->display();
     }
 }

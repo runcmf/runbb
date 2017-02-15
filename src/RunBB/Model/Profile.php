@@ -1703,4 +1703,20 @@ class Profile
             @gethostbyaddr($ip)
         ).'<br /><br /><a href="'. Router::pathFor('usersIpShow', ['ip' => $ip]).'">'. __('Show more users').'</a>');
     }
+
+    public function changeStyle()
+    {
+        $user = \ORM::forTable(ORM_TABLE_PREFIX.'users')
+            ->find_one(User::get()->id);
+        $user->style = Input::post('styleToChange');
+        $user->save();
+    }
+
+    public function changeLanguage()
+    {
+        $user = \ORM::forTable(ORM_TABLE_PREFIX.'users')
+            ->find_one(User::get()->id);
+        $user->language = Input::post('languageToChange');
+        $user->save();
+    }
 }

@@ -25,7 +25,7 @@ class AdminUtils
             'page'    =>    $page,
             'is_admin'    =>    $is_admin,
             'plugins'    =>    $plugins,
-            ], 1)->addTemplate('admin/menu.php');
+            ], 1);//->addTemplate('admin/menu');
     }
 
     /**

@@ -245,7 +245,7 @@ class Auth
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Maintenance')],
             'msg'    =>    $message,
             'backlink'    =>   false,
-        ])->addTemplate('maintenance.php')->display();
+        ])->addTemplate('@forum/maintenance')->display();
     }
 
     public function __invoke($req, $res, $next)
@@ -271,7 +271,7 @@ class Auth
                 $user->language = ForumSettings::get('o_default_lang');
             }
 
-            if (!file_exists(ForumEnv::get('WEB_ROOT').'style/themes/'.$user->style.'/style.css')) {
+            if (!file_exists(ForumEnv::get('WEB_ROOT').'themes/'.$user->style.'/style.css')) {
                 $user->style = ForumSettings::get('o_default_style');
             }
 
@@ -346,8 +346,8 @@ class Auth
             \Tracy\Debugger::$showBar = false;
         }
 
-        // load theme assets also set setStyle
-        Container::get('template')->loadThemeAssets($user->style);
+        // load theme assets, also set setStyle, also init template engine, also load template config
+        Container::get('template')->setStyle($user->style);
 
         // Load bans from cache
         if (!Container::get('cache')->isCached('bans')) {

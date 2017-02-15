@@ -717,7 +717,8 @@ class Search
 
         // If we're on the new posts search, display a "mark all as read" link
         if (!User::get()->is_guest && $search_type[0] == 'action' && $search_type[1] == 'show_new') {
-            $search['forum_actions'][] = '<a href="'.Router::pathFor('markRead').'">'.__('Mark all as read').'</a>';
+            $search['forum_actions'][] = '<a class="btn btn-primary btn-xs" href="'.
+                Router::pathFor('markRead').'">'.__('Mark all as read').'</a>';
         }
 
         // Fetch results to display

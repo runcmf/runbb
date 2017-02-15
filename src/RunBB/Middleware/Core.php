@@ -33,7 +33,7 @@ class Core
         'X-Frame-Options' => 'deny'];
     protected static $queryLog = [];
 
-    public function __construct(\Slim\Container $c, array $data = [])
+    public function __construct(\Slim\Container $c)
     {
         $this->c = $c;
         // Handle empty values in data
@@ -44,7 +44,7 @@ class Core
             'web_root' => '',
             'debug' => false
             ],
-            $data
+            $c['settings']['runbb']
         );
 
         // Define some core variables
@@ -57,10 +57,12 @@ class Core
         $this->forum_env['APP_ROOT'] = $data['root_dir'];//ForumEnv::get('APP_ROOT')
         $this->forum_env['WEB_PLUGINS'] = 'ext';
         $this->forum_env['SLIM_SETTINGS'] = $c['settings']['runbb'];
-        $this->forum_env['TPL_ENGINE'] = ($data['tplEngine'] === 'twig') ? 'twig' : 'php';
 
         // Populate forum_env
         $this->forum_env = array_merge(self::loadDefaultForumEnv(), $this->forum_env);
+
+        // Load debugger helper
+        require $this->forum_env['FORUM_ROOT'] . 'Helpers/shortcuts.php';
 
         // Load IdiORM
         // TODO move to global separately forum ???
@@ -69,9 +71,6 @@ class Core
         // Load & init utf8 files
         require $this->forum_env['FORUM_ROOT'] . 'Helpers/utf8/utf8.php';
         initUTF8();
-
-        // Populate Slim object with forum_env vars
-        Container::set('forum_env', $this->forum_env);
 
         // Force POSIX locale (to prevent functions such as strtolower() from messing up UTF-8 strings)
         setlocale(LC_CTYPE, 'C');
@@ -125,14 +124,23 @@ class Core
         $config['db_prefix'] = (!empty($config['db_prefix'])) ? $config['db_prefix'] : '';
         switch ($config['db_type']) {
             case 'mysql':
+                if (!extension_loaded('pdo_mysql')) {
+                    throw new \RunBB\Exception\RunBBException('Driver pdo_mysql not installed.', 500);
+                }
                 \ORM::configure('mysql:host=' . $config['db_host'] . ';dbname=' . $config['db_name']);
                 \ORM::configure('driver_options', [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
                 break;
             case 'sqlite':
             case 'sqlite3':
+                if (!extension_loaded('pdo_sqlite')) {
+                    throw new \RunBB\Exception\RunBBException('Driver pdo_mysql not installed.', 500);
+                }
                 \ORM::configure('sqlite:./' . $config['db_name']);
                 break;
             case 'pgsql':
+                if (!extension_loaded('pdo_pgsql')) {
+                    throw new \RunBB\Exception\RunBBException('Driver pdo_mysql not installed.', 500);
+                }
                 \ORM::configure('pgsql:host=' . $config['db_host'] . 'dbname=' . $config['db_name']);
                 break;
         }
@@ -167,49 +175,16 @@ class Core
 
     public function __invoke($req, $res, $next)
     {
-        // Load RunBB cache
-        Container::set('cache', function ($container) {
-            return new \RunBB\Core\Cache([
-                'name' => 'runbb',
-                'path' => $this->forum_env['FORUM_CACHE_DIR'],
-                'extension' => '.cache'
-            ]);
-        });
-
-        if (!is_file(ForumEnv::get('FORUM_CONFIG_FILE'))) {
-            // Reset cache
-            Container::get('cache')->flush();
-            $installer = new \RunBB\Controller\Install($this->c);
-            return $installer->run();
-        }
-
-        // Load config from disk
-        $config = include ForumEnv::get('FORUM_CONFIG_FILE');
-        if (!empty($config)) {
-            $this->forum_settings = array_merge(self::loadDefaultForumSettings(), $config);
-        } else {
-            $this->c['response']->withStatus(500); // Send forbidden header
-            return $this->c['response']->getBody()->write('Wrong config file format');
-        }
-
-        // Init DB and configure Slim
-        self::initDb($this->forum_settings, ForumEnv::get('FEATHER_SHOW_INFO'));
-        Config::set('displayErrorDetails', ForumEnv::get('FEATHER_DEBUG'));
-
-        if (!Container::get('cache')->isCached('config')) {
-            Container::get('cache')->store('config', \RunBB\Model\Cache::getConfig());
-        }
-        // Finalize forum_settings array
-        $this->forum_settings = array_merge(Container::get('cache')->retrieve('config'), $this->forum_settings);
-        Container::set('forum_settings', $this->forum_settings);
-        // init languages
-        Lang::construct();
         // Set headers
         $res = $this->setHeaders($res);
+
         // Block prefetch requests
         if ((isset($this->c->environment['HTTP_X_MOZ'])) && ($this->c->environment['HTTP_X_MOZ'] == 'prefetch')) {
-            return $this->c->response->withStatus(403); // Send forbidden header
+            $res = $res->withStatus(403);
+            return $next($req, $res);
         }
+        // Populate Slim object with forum_env vars
+        Container::set('forum_env', $this->forum_env);
         // Load utils class
         Container::set('utils', function ($container) {
             return new Utils();
@@ -219,6 +194,14 @@ class Core
         // Define now var
         Container::set('now', function () {
             return time();
+        });
+        // Load RunBB cache
+        Container::set('cache', function ($container) {
+            return new \RunBB\Core\Cache([
+                'name' => 'runbb',
+                'path' => $this->forum_env['FORUM_CACHE_DIR'],
+                'extension' => '.cache'
+            ]);
         });
         // Load permissions
         Container::set('perms', function ($container) {
@@ -232,21 +215,6 @@ class Core
         Container::set('template', function ($container) {
             return new View();
         });
-        // register twig
-        Container::set('twig', function ($container) {
-            // after load user set namespace for forum
-            $twig = new \Twig_Environment(new \Twig_Loader_Filesystem(), [
-                    'cache' => $this->forum_env['APP_ROOT'] . 'var/cache/twig',
-                    'debug' => true,
-                ]);
-            // load extensions
-            $twig->addExtension(new \Twig_Extension_Profiler($container['twig_profile']));
-            if (ForumEnv::get('FEATHER_DEBUG')) {
-                $twig->addExtension(new \Twig_Extension_Debug());
-            }
-            $twig->addExtension(new \RunBB\Core\RunBBTwig);
-            return $twig;
-        });
         // Load url class
         Container::set('url', function ($container) {
             return new Url();
@@ -259,8 +227,6 @@ class Core
         Container::set('hooks', function ($container) {
             return new Hooks();
         });
-        // This is the very first hook fired
-        Container::get('hooks')->fire('core.start');
         // Load email class
         Container::set('email', function ($container) {
             return new Email();
@@ -276,6 +242,43 @@ class Core
         Container::set('flash', function ($c) {
             return new \Slim\Flash\Messages;
         });
+
+        // This is the very first hook fired
+        Container::get('hooks')->fire('core.start');
+
+        // init languages
+        Lang::construct();
+
+        // check config exists or goto install
+        if (!is_file(ForumEnv::get('FORUM_CONFIG_FILE'))) {
+            // Reset cache
+            Container::get('cache')->flush();
+            $installer = new \RunBB\Controller\Install($this->c);
+            return $installer->run();
+        }
+        // Load config from disk
+        $config = include ForumEnv::get('FORUM_CONFIG_FILE');
+        if (!empty($config)) {
+            $this->forum_settings = array_merge(self::loadDefaultForumSettings(), $config);
+        } else {
+            $this->c['response']->withStatus(500); // Send forbidden header
+//            return $this->c['response']->getBody()->write('Wrong config file format');
+            $res->getBody()->write('Wrong config file format');
+            return $next($req, $res);
+        }
+
+        // Init DB and configure Slim
+        self::initDb($this->forum_settings, ForumEnv::get('FEATHER_SHOW_INFO'));
+        Config::set('displayErrorDetails', ForumEnv::get('FEATHER_DEBUG'));
+
+        if (!Container::get('cache')->isCached('config')) {
+            Container::get('cache')->store('config', \RunBB\Model\Cache::getConfig());
+        }
+
+        // Finalize forum_settings array
+        $this->forum_settings = array_merge(Container::get('cache')->retrieve('config'), $this->forum_settings);
+        Container::set('forum_settings', $this->forum_settings);
+
         // Define time formats and add them to the container
         Container::set('forum_time_formats', array_unique([
             ForumSettings::get('o_time_format'),
@@ -289,7 +292,6 @@ class Core
         // Run activated plugins
         self::loadPlugins();
 
-        // Call RunBBAuth middleware
         return $next($req, $res);
     }
 }

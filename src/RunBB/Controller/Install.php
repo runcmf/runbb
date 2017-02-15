@@ -26,7 +26,7 @@ class Install
     protected $available_langs;
     protected $optional_fields = ['db_user', 'db_pass', 'db_prefix'];
     protected $install_lang = 'English';
-    protected $default_style = 'FeatherBB';
+    protected $default_style = 'runbb';
     protected $config_keys = ['db_type', 'db_host', 'db_name', 'db_user', 'db_pass', 'db_prefix'];
     protected $errors = [];
     protected $dbConfig = [];
@@ -38,21 +38,24 @@ class Install
         $this->c = $c;
         $this->model = new \RunBB\Model\Install();
         $this->available_langs = Lister::getLangs();
-        if (!is_dir(ForumEnv::get('WEB_ROOT') . 'style/themes/')) {
+        if (!is_dir(ForumEnv::get('WEB_ROOT') . 'themes/')) {
             $this->installStyles();
         }
         Container::set('user', null);
-        View::setStyle('FeatherBB');
-        $dbCfg = $this->c['settings']['db'];
+        View::setStyle('runbb');
 
-        $this->dbConfig = [
-            'db_type' => $dbCfg['default'],
-            'db_host' => $dbCfg['connections'][$dbCfg['default']]['host'],
-            'db_name' => $dbCfg['connections'][$dbCfg['default']]['database'],
-            'db_user' => $dbCfg['connections'][$dbCfg['default']]['username'],
-            'db_pass' => $dbCfg['connections'][$dbCfg['default']]['password'],
-            'db_prefix' => $dbCfg['connections'][$dbCfg['default']]['prefix']
-        ];
+        $this->dbConfig = [];
+        if (isset($this->c['settings']['db'])) {
+            $dbCfg = $this->c['settings']['db'];
+            $this->dbConfig = [
+                'db_type' => $dbCfg['default'],
+                'db_host' => $dbCfg['connections'][$dbCfg['default']]['host'],
+                'db_name' => $dbCfg['connections'][$dbCfg['default']]['database'],
+                'db_user' => $dbCfg['connections'][$dbCfg['default']]['username'],
+                'db_pass' => $dbCfg['connections'][$dbCfg['default']]['password'],
+                'db_prefix' => $dbCfg['connections'][$dbCfg['default']]['prefix']
+            ];
+        }
     }
 
     public function run()
@@ -68,7 +71,7 @@ class Install
         $csrf = new \RunBB\Middleware\Csrf();
         $csrf->generateNewToken(Container::get('request'));
 
-        Lang::load('install');//, 'RunBB', $this->install_lang);
+        Lang::load('install', 'RunBB', __DIR__ . '/../lang');
 
         if (Request::isPost() && empty(Input::getParsedBodyParam('choose_lang'))) {
             $missing_fields = [];
@@ -82,7 +85,8 @@ class Install
                     // If the field is required, or if user and pass are missing even
                     // though mysql or pgsql are selected as DB
                     if (!in_array($field, $this->optional_fields)
-                        || (in_array($field, ['db_user']) && in_array($data['db_type'], ['mysql', 'pgsql']))) {
+                        || (in_array($field, ['db_user']) && in_array($data['db_type'], ['mysql', 'pgsql']))
+                    ) {
                         $missing_fields[] = $field;
                     }
                 }
@@ -106,27 +110,29 @@ class Install
                     $this->errors[] = __('Username 3');
                 } elseif (preg_match('%[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}%', $data['username'])
                     || preg_match(
-                        '%((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:)'.
-                        '{6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]'.
-                        '{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|'.
-                        '(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|'.
-                        '(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|'.
-                        '(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}'.
-                        '(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:)'.
-                        '{0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|'.
-                        '(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|'.
-                        '(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|'.
-                        '([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|'.
+                        '%((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:)' .
+                        '{6}:[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){5}:([0-9A-Fa-f]{1,4}:)?[0-9A-Fa-f]' .
+                        '{1,4})|(([0-9A-Fa-f]{1,4}:){4}:([0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})|' .
+                        '(([0-9A-Fa-f]{1,4}:){3}:([0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})|' .
+                        '(([0-9A-Fa-f]{1,4}:){2}:([0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})|' .
+                        '(([0-9A-Fa-f]{1,4}:){6}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}' .
+                        '(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|(([0-9A-Fa-f]{1,4}:)' .
+                        '{0,5}:((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|' .
+                        '(2[0-4]\d)|(\d{1,2}))\b))|(::([0-9A-Fa-f]{1,4}:){0,5}((\b((25[0-5])|(1\d{2})|(2[0-4]\d)|' .
+                        '(\d{1,2}))\b)\.){3}(\b((25[0-5])|(1\d{2})|(2[0-4]\d)|(\d{1,2}))\b))|' .
+                        '([0-9A-Fa-f]{1,4}::([0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})|' .
                         '(::([0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){1,7}:))%',
                         $data['username']
-                    )) {
+                    )
+                ) {
                     $this->errors[] = __('Username 4');
                 } elseif ((strpos($data['username'], '[') !== false
                         || strpos($data['username'], ']') !== false) &&
                     strpos($data['username'], '\'') !== false &&
-                    strpos($data['username'], '"') !== false) {
+                    strpos($data['username'], '"') !== false
+                ) {
                     $this->errors[] = __('Username 5');
-                } elseif (preg_match('%(?:\[/?(?:b|u|i|h|colou?r|quote|code|img|url|email|list)\]|'.
+                } elseif (preg_match('%(?:\[/?(?:b|u|i|h|colou?r|quote|code|img|url|email|list)\]|' .
                     '\[(?:code|quote|list)=)%i', $data['username'])) {
                     $this->errors[] = __('Username 6');
                 }
@@ -153,14 +159,15 @@ class Install
                 }
 
                 // Check if default avatar directory is writable
-                if (!is_writable(ForumEnv::get('WEB_ROOT') . 'style/img/avatars/')) {
-                    $this->errors[] = sprintf(__('Alert avatar'), ForumEnv::get('WEB_ROOT') . 'style/img/avatars/');
+                if (!is_writable(ForumEnv::get('WEB_ROOT') . 'assets/img/avatars/')) {
+                    $this->errors[] = sprintf(__('Alert avatar'), ForumEnv::get('WEB_ROOT') . 'assets/img/avatars/');
                 }
 
                 // Validate db_prefix if existing
                 if (!empty($data['db_prefix']) && ((strlen($data['db_prefix']) > 0 &&
                         (!preg_match('%^[a-zA-Z_][a-zA-Z0-9_]*$%', $data['db_prefix']) ||
-                            strlen($data['db_prefix']) > 40)))) {
+                            strlen($data['db_prefix']) > 40)))
+                ) {
                     $this->errors[] = sprintf(__('Table prefix error'), $data['db_prefix']);
                 }
             }
@@ -170,10 +177,9 @@ class Install
                 return View::setPageInfo([
                     'languages' => $this->available_langs,
                     'supported_dbs' => $this->supported_dbs,
-//                    'dbConfig' => $this->dbConfig,
                     'data' => $data,
                     'errors' => $this->errors,
-                ])->addTemplate('install.php')->display(false);
+                ])->addTemplate('@forum/install')->display(false);
             } else {
                 $data['default_style'] = $this->default_style;
                 $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), ['on', 'true', '1']) ? 1 : 0;
@@ -193,7 +199,7 @@ class Install
                 'dbConfig' => $this->dbConfig,
                 'data' => $data,
                 'alerts' => [],
-            ])->addTemplate('install.php')->display(false);
+            ])->addTemplate('@forum/install')->display(false);
         }
     }
 
@@ -232,8 +238,8 @@ class Install
         $data['db_prefix'] = (!empty($data['db_prefix'])) ? $data['db_prefix'] : '';
         // Init DB
         Core::initDb($data);
-        // Load appropriate language
-        Lang::load('install', 'RunBB', $data['default_lang']);
+        // Load appropriate language ???
+//        Lang::load('install', 'RunBB', __DIR__ . '/../lang');
 
         // Create common tables
         foreach ($this->model->getDatabaseScheme() as $table => $sql) {
@@ -243,7 +249,6 @@ class Install
             }
         }
 
-        // FIXME move lang shema to installer
         // create languages tables
         $langModel = new \RunBB\Model\Admin\Languages();
         $lanTables = $langModel->getDatabaseScheme();
@@ -253,6 +258,8 @@ class Install
                 $this->errors[] = 'A problem was encountered while creating table ' . $table;
             }
         }
+        // import english from repo
+        $info = $langModel->importLang('en');
 
         // Populate group table with default values
         foreach ($this->model->loadDefaultGroups() as $group_name => $group_data) {
@@ -308,7 +315,6 @@ class Install
         $this->model->addMockForum($this->model->loadMockForumData($data));
         // Store config in DB
         $this->model->saveConfig($this->loadDefaultConfig($data));
-
         // Handle .htaccess
         if (function_exists('apache_get_modules') && in_array('mod_rewrite', apache_get_modules())) {
             $this->writeHtaccess();
@@ -378,7 +384,7 @@ class Install
             'o_default_email_setting' => 1,
             'o_mailing_list' => $data['email'],
             'o_avatars' => $data['avatars'],
-            'o_avatars_dir' => '/style/img/avatars',
+            'o_avatars_dir' => '/assets/img/avatars',
             'o_avatars_width' => 100,
             'o_avatars_height' => 100,
             'o_avatars_size' => 10240,

@@ -107,7 +107,7 @@ class Post
 
             // Let's see if everything went right
 //            $errors =
-                $this->model->checkErrorsBeforePost($args['fid'], $args['tid'], $args['qid'], $pid, $page, $errors);
+            $this->model->checkErrorsBeforePost($args['fid'], $args['tid'], $args['qid'], $pid, $page, $errors);
 //            if (!empty($errors)) {
 //                $errors = $errors[0];
 //                if ($errors[0] === 'debug') {
@@ -142,7 +142,8 @@ class Post
 
                 // If we previously found out that the email was banned
                 if (User::get()->is_guest && isset($errors['banned_email']) &&
-                    ForumSettings::get('o_mailing_list') != '') {
+                    ForumSettings::get('o_mailing_list') != ''
+                ) {
                     $this->model->warnBannedUser($post, $new['pid']);
                 }
 
@@ -165,7 +166,7 @@ class Post
             $action = __('Post a reply');
             $form = '<form id="post" method="post" action="' .
                 Router::pathFor('newReply', ['tid' => $args['tid']]) .
-                '" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else'.
+                '" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else' .
                 '{this.submit.disabled=false;return false;}">';
 
             // If a quote ID was specified in the url
@@ -173,7 +174,7 @@ class Post
                 $quote = $this->model->getQuoteMessage($args['qid'], $args['tid']);
                 $form = '<form id="post" method="post" action="' .
                     Router::pathFor('newQuoteReply', ['tid' => $args['tid'], 'qid' => $args['qid']]) .
-                    '" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else'.
+                    '" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else' .
                     '{this.submit.disabled=false;return false;}">';
             }
         } // If a forum ID was specified in the url (new topic)
@@ -214,7 +215,7 @@ class Post
         }
 
         // Get the current state of checkboxes
-        $checkboxes = $this->model->getCheckboxes($args['fid'], $is_admmod, $is_subscribed);
+//        $checkboxes = $this->model->getCheckboxes($args['fid'], $is_admmod, $is_subscribed);
 
         // Check to see if the topic review is to be displayed
         if ($args['tid'] && ForumSettings::get('o_topic_review') != '0') {
@@ -224,25 +225,26 @@ class Post
         }
 
         return View::setPageInfo([
-                'title' => [Utils::escape(ForumSettings::get('o_board_title')), $action],
-                'required_fields' => $required_fields,
-                'focus_element' => $focus_element,
-                'active_page' => 'post',
-                'post' => $post,
-                'tid' => $args['tid'],
-                'fid' => $args['fid'],
-                'cur_posting' => $cur_posting,
-                'lang_antispam_questions' => $lang_antispam_questions,
-                'index_questions' => $index_questions,
-                'checkboxes' => $checkboxes,
-                'action' => $action,
-                'form' => $form,
-                'post_data' => $post_data,
-                'url_forum' => $url_forum,
-                'url_topic' => $url_topic,
-                'quote' => $quote,
-                'errors' => $errors,
-            ])->addTemplate('post.php')->display();
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), $action],
+            'required_fields' => $required_fields,
+            'focus_element' => $focus_element,
+            'active_page' => 'post',
+            'post' => $post,
+            'tid' => $args['tid'],
+            'fid' => $args['fid'],
+            'cur_posting' => $cur_posting,
+            'lang_antispam_questions' => $lang_antispam_questions,
+            'index_questions' => $index_questions,
+//            'checkboxes' => $checkboxes,
+            'checkboxes' => $this->model->getCheckboxes($args['fid'], $is_admmod, $is_subscribed),
+            'action' => $action,
+            'form' => $form,
+            'post_data' => $post_data,
+            'url_forum' => $url_forum,
+            'url_topic' => $url_topic,
+            'quote' => $quote,
+            'errors' => $errors,
+        ])->addTemplate('@forum/post')->display();
     }
 
     public function delete($req, $res, $args)
@@ -275,7 +277,8 @@ class Post
         }
 
         if ($is_admmod && User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&
-            in_array($cur_post['poster_id'], Utils::getAdminIds())) {
+            in_array($cur_post['poster_id'], Utils::getAdminIds())
+        ) {
             throw new  RunBBException(__('No permission'), 403);
         }
 
@@ -292,7 +295,7 @@ class Post
             'cur_post' => $cur_post,
             'id' => $args['id'],
             'is_topic_post' => $is_topic_post
-        ])->addTemplate('delete.php')->display();
+        ])->addTemplate('@forum/delete')->display();
     }
 
     public function editpost($req, $res, $args)
@@ -317,12 +320,14 @@ class Post
 
         // Do we have permission to edit this post?
         if ((User::get()->g_edit_posts == '0' || $cur_post['poster_id'] != User::get()->id ||
-                $cur_post['closed'] == '1') && !$is_admmod) {
+                $cur_post['closed'] == '1') && !$is_admmod
+        ) {
             throw new  RunBBException(__('No permission'), 403);
         }
 
         if ($is_admmod && User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&
-            in_array($cur_post['poster_id'], Utils::getAdminIds())) {
+            in_array($cur_post['poster_id'], Utils::getAdminIds())
+        ) {
             throw new  RunBBException(__('No permission'), 403);
         }
 
@@ -361,17 +366,17 @@ class Post
 //        }
 
         View::setPageInfo([
-                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Edit post')],
-                'required_fields' => ['req_subject' => __('Subject'), 'req_message' => __('Message')],
-                'focus_element' => ['edit', 'req_message'],
-                'cur_post' => $cur_post,
-                'errors' => $errors,
-                'preview_message' => '',//$preview_message,
-                'id' => $args['id'],
-                'checkboxes' => $this->model->getEditCheckboxes($can_edit_subject, $is_admmod, $cur_post, 1),
-                'can_edit_subject' => $can_edit_subject,
-                'post' => $post,
-            ])->addTemplate('edit.php')->display();
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Edit post')],
+            'required_fields' => ['req_subject' => __('Subject'), 'req_message' => __('Message')],
+            'focus_element' => ['edit', 'req_message'],
+            'cur_post' => $cur_post,
+            'errors' => $errors,
+            'preview_message' => '',//$preview_message,
+            'id' => $args['id'],
+            'checkboxes' => $this->model->getEditCheckboxes($can_edit_subject, $is_admmod, $cur_post, 1),
+            'can_edit_subject' => $can_edit_subject,
+            'post' => $post,
+        ])->addTemplate('@forum/edit')->display();
     }
 
     public function report($req, $res, $args)
@@ -396,7 +401,7 @@ class Post
             'focus_element' => ['report', 'req_reason'],
             'id' => $args['id'],
             'cur_post' => $cur_post
-        ])->addTemplate('misc/report.php')->display();
+        ])->addTemplate('@forum/misc/report')->display();
     }
 
     public function gethost($req, $res, $args)

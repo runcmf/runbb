@@ -151,15 +151,16 @@ class Forum
         if (!User::get()->is_guest) {
             if ($subscriptions == 1) {
                 if ($is_subscribed) {
-                    $forum_actions[] = '<span>'.__('Is subscribed').' - </span><a href="'.
+                    $forum_actions[] = '<span>'.__('Is subscribed').
+                        ' - </span><a class="btn btn-primary btn-sm" href="'.
                         Router::pathFor('unsubscribeForum', ['id' => $forum_id]).'">'.__('Unsubscribe').'</a>';
                 } else {
-                    $forum_actions[] = '<a href="'.
+                    $forum_actions[] = '<a class="btn btn-primary btn-sm" href="'.
                         Router::pathFor('subscribeForum', ['id' => $forum_id]).'">'.__('Subscribe').'</a>';
                 }
             }
 
-            $forum_actions[] = '<a href="'.
+            $forum_actions[] = '<a class="btn btn-primary btn-sm" href="'.
                 Router::pathFor('markForumRead', ['id' => $forum_id]).'">'.__('Mark forum read').'</a>';
         }
 
@@ -276,8 +277,8 @@ class Forum
                 if (is_null($cur_topic['moved_to'])) {
                     $cur_topic['last_post_formatted'] = '<a href="'.
                         Router::pathFor('viewPost', ['pid' => $cur_topic['last_post_id']]).'#p'.
-                        $cur_topic['last_post_id'].'">'.Utils::timeFormat($cur_topic['last_post']).
-                        '</a> <span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
+                        $cur_topic['last_post_id'].'">'.Utils::timeFormat($cur_topic['last_post']).'</a><br />'.
+                        '<span class="byuser">'.__('by').' '.Utils::escape($cur_topic['last_poster']).'</span>';
                 } else {
                     $cur_topic['last_post_formatted'] = '- - -';
                 }

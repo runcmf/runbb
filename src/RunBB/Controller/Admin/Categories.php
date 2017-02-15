@@ -49,9 +49,9 @@ class Categories
         }
 
         foreach (Input::post('cat') as $cat_id => $properties) {
-            $category = ['id' => (int) $cat_id,
-                              'name' => Utils::escape($properties['name']),
-                              'order' => (int) $properties['order'], ];
+            $category = ['id' => (int)$cat_id,
+                'name' => Utils::escape($properties['name']),
+                'order' => (int)$properties['order'],];
             if ($category['name'] == '') {
                 return Router::redirect(Router::pathFor('adminCategories'), __('Must enter name message'));
             }
@@ -68,7 +68,7 @@ class Categories
     {
         Container::get('hooks')->fire('controller.admin.categories.delete');
 
-        $cat_to_delete = (int) Input::post('cat_to_delete');
+        $cat_to_delete = (int)Input::post('cat_to_delete');
 
         if ($cat_to_delete < 1) {
             throw new  RunBBException(__('Bad request'), '400');
@@ -92,10 +92,10 @@ class Categories
         AdminUtils::generateAdminMenu('categories');
 
         View::setPageInfo([
-                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Categories')],
-                'active_page' => 'admin',
-                'admin_console' => true,
-                'cat_list' => $this->model->getCatList(),
-            ])->addTemplate('admin/categories.php')->display();
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Categories')],
+            'active_page' => 'admin',
+            'admin_console' => true,
+            'cat_list' => $this->model->getCatList(),
+        ])->addTemplate('@forum/admin/categories')->display();
     }
 }

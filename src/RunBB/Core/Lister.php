@@ -66,7 +66,7 @@ class Lister
     {
         $styles = [];
 
-        $iterator = new \DirectoryIterator(ForumEnv::get('WEB_ROOT').'style/themes/');
+        $iterator = new \DirectoryIterator(ForumEnv::get('WEB_ROOT').'themes/');
         foreach ($iterator as $child) {
             if (!$child->isDot() && $child->isDir() &&
                 file_exists($child->getPathname().DIRECTORY_SEPARATOR.'style.css')) {

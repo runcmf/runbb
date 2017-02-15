@@ -1,3 +1,7 @@
+###2017-02-14
+* remove php templates. used only twig  
+* fix installer
+
 ###2017-02-11
 * PSR2 reformat, validation with CodeSniffer.
 

@@ -823,7 +823,8 @@ class Url
     public static function current()
     {
         return Request::getUri()->getScheme().'://'.Request::getUri()->getHost().
-            Request::getUri()->getPath().'?'.Request::getUri()->getQuery();
+            Request::getUri()->getPath().
+            (!empty(Request::getUri()->getQuery()) ? '?'.Request::getUri()->getQuery() : '');
     }
     /**
      * Fetch the base_url for static files, optionally support HTTPS and HTTP

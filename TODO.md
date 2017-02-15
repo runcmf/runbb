@@ -1,7 +1,6 @@
 ### rebuild 
 
 1. modal reg form captcha question
-2. twig ???  
 
 
 // optimize autoloader wit -o  

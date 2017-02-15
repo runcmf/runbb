@@ -141,7 +141,7 @@ class Topic
             'lang_antispam_questions' => $lang_antispam_questions,
             'url_forum' => $url_forum,
             'url_topic' => $url_topic,
-        ])->addTemplate('topic.php')->display();
+        ])->addTemplate('@forum/topic')->display();
 
         // Increment "num_views" for topic
         $this->model->incrementViews($args['id']);
@@ -231,7 +231,7 @@ class Topic
             'action' => 'single',
             'topics' => $args['tid'],
             'list_forums' => $this->model->getForumListMove($args['fid']),
-        ])->addTemplate('moderate/move_topics.php')->display();
+        ])->addTemplate('@forum/moderate/move_topics')->display();
     }
 
     public function moderate($req, $res, $args)
@@ -244,7 +244,8 @@ class Topic
         $mods_array = ($moderators != '') ? unserialize($moderators) : [];
 
         if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&
-            (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))) {
+            (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))
+        ) {
             throw new  RunBBException(__('No permission'), 403);
         }
 
@@ -267,7 +268,7 @@ class Topic
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
                 'active_page' => 'moderate',
                 'posts' => $posts,
-            ])->addTemplate('moderate/delete_posts.php')->display();
+            ])->addTemplate('moderate/delete_posts')->display();
         } elseif (Input::post('split_posts_comply')) {
             return $this->model->splitPosts($args['id'], $args['fid'], $p);
         } elseif (Input::post('split_posts')) {
@@ -279,7 +280,7 @@ class Topic
                 'id' => $args['id'],
                 'posts' => $this->model->splitPosts($args['id'], $args['fid'], $p),
                 'list_forums' => $this->model->getForumListSplit($args['fid']),
-            ])->addTemplate('moderate/split_posts.php')->display();
+            ])->addTemplate('moderate/split_posts')->display();
         } else {
             // Show the moderate posts view
 
@@ -309,7 +310,7 @@ class Topic
                 'post_data' => $this->model->displayPostsModerate($args['id'], $start_from),
                 'button_status' => $button_status,
                 'start_from' => $start_from,
-            ])->addTemplate('moderate/posts_view.php')->display();
+            ])->addTemplate('moderate/posts_view')->display();
         }
     }
 

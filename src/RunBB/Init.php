@@ -19,6 +19,7 @@
 namespace RunBB;
 
 use RunBB\Core\Interfaces\SlimStatic;
+use RunBB\Core\View;
 use RunBB\Middleware\Logged as IsLogged;
 use RunBB\Middleware\ReadBoard as CanReadBoard;
 use RunBB\Middleware\Admin as IsAdmin;
@@ -72,15 +73,15 @@ class Init
     {
         $forumMenu = $menu->createItem('forum', [
             'label' => 'Forum',
-            'icon'  => 'comments',
-            'url'   => '#'
+            'icon' => 'comments',
+            'url' => '#'
         ]);
         $forumMenu->setAttribute('class', 'nav nav-second-level');
 
         $dashboardMenu = $menu->createItem('forum-dashboard', [
             'label' => 'Dashboard',
-            'icon'  => 'dashboard',
-            'url'   => $url.'/admin/forum'
+            'icon' => 'dashboard',
+            'url' => $url . '/admin/forum'
         ]);
 
 //        $configMenu = $menu->createItem('forum-config', [
@@ -134,23 +135,19 @@ class Init
                     'message' => $e->getMessage(),
                     'back' => true,
                 ];
-                // Hide internal mechanism from guest
-//        if (User::get()->is_guest) {
-//            $error['message'] = 'There was an internal error'; // TODO : translation
-//        } else
                 if (isset(User::get()->is_admmod) && User::get()->is_admmod === true) {
                     // show last 5 trace lines
                     if (count($e->getTrace()) > 1) {
                         $trace = $e->getTrace();
-                        $msg='backtrace:<br/>';
-                        for ($i=0; $i < 5; $i++) {
+                        $msg = 'backtrace:<br/>';
+                        for ($i = 0; $i < 5; $i++) {
                             if (isset($trace[$i]['file'])) {
                                 $msg .= '<p>' . $i . ': file: &nbsp; &nbsp; &nbsp;' .
                                     str_replace(ForumEnv::get('APP_ROOT'), '', $trace[$i]['file']) .
                                     ' [' . $trace[$i]['line'] . ']</p>';
                             } else {
                                 $msg .= '<p>' . $i . ': ' .
-                                    'class: &nbsp;'. $trace[$i]['class'] . ' [' . $trace[$i]['function'] . ']</p>';
+                                    'class: &nbsp;' . $trace[$i]['class'] . ' [' . $trace[$i]['function'] . ']</p>';
                             }
                         }
                         $error['message'] = $error['message'] . '<br /><br />' . $msg;
@@ -160,12 +157,14 @@ class Init
                 if (method_exists($e, 'hasBacklink')) {
                     $error['back'] = $e->hasBacklink();
                 }
-
-                return View::setPageInfo([
-                    'title' => [\RunBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')],
-                    'msg'    =>    html_entity_decode($error['message']),
-                    'backlink'    => $error['back'],
-                ])->addTemplate('error.php')->display();
+                if (!Container::get('template')->loader->exists('@forum/error.html.twig')) {
+                    Container::get('template')->setStyle('runbb');
+                }
+                return Container::get('template')->setPageInfo([
+                    'title' => [\RunBB\Core\Utils::escape(ForumSettings::get('o_board_title')), 'Error'],
+                    'msg' => html_entity_decode($error['message']),
+                    'backlink' => $error['back'],
+                ])->addTemplate('@forum/error')->display();
             };
         };
         $c['phpErrorHandler'] = function ($c) {
@@ -173,11 +172,11 @@ class Init
         };
         $c['notAllowedHandler'] = function ($c) {
             return function ($req, $res, $methods) {
-                return View::setPageInfo([
+                return Container::get('template')->setPageInfo([
                     'title' => [\RunBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')],
-                    'msg'    =>    'Method must be one of: ' . implode(', ', $methods),
-                    'backlink'    => true,
-                ])->addTemplate('error.php')
+                    'msg' => 'Method must be one of: ' . implode(', ', $methods),
+                    'backlink' => true,
+                ])->addTemplate('@forum/error')
                     ->display()
                     ->withHeader('Allow', implode(', ', $methods))
                     ->withStatus(405);
@@ -186,7 +185,7 @@ class Init
 
         $this->app->add(new \RunBB\Middleware\Csrf);
         $this->app->add(new \RunBB\Middleware\Auth);
-        $this->app->add(new \RunBB\Middleware\Core($c, $c['settings']['runbb']));
+        $this->app->add(new \RunBB\Middleware\Core($c));
         // Permanently redirect paths with a trailing slash
         // to their non-trailing counterpart
         $this->app->add(function ($req, $res, $next) {

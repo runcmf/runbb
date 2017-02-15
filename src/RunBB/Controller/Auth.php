@@ -34,7 +34,7 @@ class Auth
             Container::get('hooks')->fire('controller.login');
             $form_username = Input::post('req_username');
             $form_password = Input::post('req_password');
-            $save_pass = (bool) Input::post('save_pass');
+            $save_pass = (bool)Input::post('save_pass');
 
             $user = ModelAuth::getUserFromName($form_username);
 
@@ -57,16 +57,16 @@ class Auth
                     $expire = Container::get('hooks')->fire('controller.expire_login', $expire);
 
                     $jwt = ModelAuth::generateJwt($user, $expire);
-                    ModelAuth::setCookie('Bearer '.$jwt, $expire);
+                    ModelAuth::setCookie('Bearer ' . $jwt, $expire);
 
                     return Router::redirect(Router::pathFor('home'), __('Login redirect'));
                 }// else {
-                    //throw new  RunBBException(__('Wrong user/pass').' <a href="'.
+                //throw new  RunBBException(__('Wrong user/pass').' <a href="'.
                 //Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
                 //}
             } //else {
-                throw new  RunBBException(__('Wrong user/pass').' <a href="'.
-                    Router::pathFor('resetPassword').'">'.__('Forgotten pass').'</a>', 403);
+            throw new  RunBBException(__('Wrong user/pass') . ' <a href="' .
+                Router::pathFor('resetPassword') . '">' . __('Forgotten pass') . '</a>', 403);
             //}
         } else {
             View::setPageInfo([
@@ -74,7 +74,7 @@ class Auth
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Login')],
                 'required_fields' => ['req_username' => __('Username'), 'req_password' => __('Password')],
                 'focus_element' => ['login', 'req_username'],
-            ])->addTemplate('login/form.php')->display();
+            ])->addTemplate('@forum/login/form')->display();
         }
     }
 
@@ -83,7 +83,8 @@ class Auth
         $token = Container::get('hooks')->fire('controller.logout', $args['token']);
 
         if (User::get()->is_guest || !isset($token) ||
-            $token != Random::hash(User::get()->id.Random::hash(Utils::getIp()))) {
+            $token != Random::hash(User::get()->id . Random::hash(Utils::getIp()))
+        ) {
             return Router::redirect(Router::pathFor('home'), 'Not logged in');
         }
 
@@ -116,17 +117,17 @@ class Auth
 
             if ($user) {
                 // Load the "activate password" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
-                    User::get()->language.'/mail_templates/activate_password.tpl'));
+                $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT') . 'lang/' .
+                    User::get()->language . '/mail_templates/activate_password.tpl'));
                 $mail_tpl = Container::get('hooks')->fire('controller.mail_tpl_password_forgotten', $mail_tpl);
 
                 // The first row contains the subject
                 $first_crlf = strpos($mail_tpl, "\n");
-                $mail_subject = trim(substr($mail_tpl, 8, $first_crlf-8));
+                $mail_subject = trim(substr($mail_tpl, 8, $first_crlf - 8));
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
 
                 // Do the generic replacements first (they apply to all emails sent out here)
-                $mail_message = str_replace('<base_url>', Url::base().'/', $mail_message);
+                $mail_message = str_replace('<base_url>', Url::base() . '/', $mail_message);
                 $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
 
                 $mail_message = Container::get('hooks')->fire(
@@ -135,7 +136,8 @@ class Auth
                 );
 
                 if ($user->last_email_sent != '' && (time() - $user->last_email_sent) < 3600 &&
-                    (time() - $user->last_email_sent) >= 0) {
+                    (time() - $user->last_email_sent) >= 0
+                ) {
                     throw new  RunBBException(sprintf(
                         __('Email flood'),
                         intval((3600 - (time() - $user->last_email_sent)) / 60)
@@ -152,7 +154,7 @@ class Auth
                 $cur_mail_message = str_replace('<username>', $user->username, $mail_message);
                 $cur_mail_message = str_replace(
                     '<activation_url>',
-                    Url::base().Router::pathFor(
+                    Url::base() . Router::pathFor(
                         'profileAction',
                         ['id' => $user->id, 'action' => 'change_pass'],
                         ['key' => $new_password_key]
@@ -167,20 +169,20 @@ class Auth
 
                 Container::get('email')->dispatchMail($email, $mail_subject, $cur_mail_message);
 
-                return Router::redirect(Router::pathFor('home'), __('Forget mail').' <a href="mailto:'.
-                    Utils::escape(ForumSettings::get('o_admin_email')).'">'.
-                    Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 200);
+                return Router::redirect(Router::pathFor('home'), __('Forget mail') . ' <a href="mailto:' .
+                    Utils::escape(ForumSettings::get('o_admin_email')) . '">' .
+                    Utils::escape(ForumSettings::get('o_admin_email')) . '</a>.', 200);
             } else {
-                throw new  RunBBException(__('No email match').' '.Utils::escape($email).'.', 400);
+                throw new  RunBBException(__('No email match') . ' ' . Utils::escape($email) . '.', 400);
             }
         }
 
         View::setPageInfo([
 //                'errors'    =>    $this->model->password_forgotten(),
-                'active_page' => 'login',
-                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Request pass')],
-                'required_fields' => ['req_email' => __('Email')],
-                'focus_element' => ['request_pass', 'req_email'],
-            ])->addTemplate('login/password_forgotten.php')->display();
+            'active_page' => 'login',
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Request pass')],
+            'required_fields' => ['req_email' => __('Email')],
+            'focus_element' => ['request_pass', 'req_email'],
+        ])->addTemplate('@forum/login/password_forgotten')->display();
     }
 }

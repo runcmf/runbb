@@ -32,8 +32,9 @@ class Register
         }
 
         // Antispam feature
-        $lang_antispam_questions = require ForumEnv::get('FORUM_ROOT').'lang/'.User::get()->language.'/antispam.php';
-        $index_questions = rand(0, count($lang_antispam_questions)-1);
+        $lang_antispam_questions = require ForumEnv::get('FORUM_ROOT') . 'lang/' .
+            User::get()->language . '/antispam.php';
+        $index_questions = rand(0, count($lang_antispam_questions) - 1);
 
         // Display an error message if new registrations are disabled
         // If $_REQUEST['username'] or $_REQUEST['password'] are filled, we are facing a bot
@@ -64,17 +65,17 @@ class Register
                 'req_password1' => __('Password'),
                 'req_password2' => __('Confirm pass'),
                 'req_email1' => __('Email'),
-                'req_email2' => __('Email').' 2',
+                'req_email2' => __('Email') . ' 2',
                 'captcha' => __('Robot title')
             ],
             'active_page' => 'register',
             'is_indexed' => true,
             'errors' => $user['errors'],
-            'index_questions'    =>    $index_questions,
+            'index_questions' => $index_questions,
             'languages' => \RunBB\Core\Lister::getLangs(),
             'question' => array_keys($lang_antispam_questions),
             'qencoded' => md5(array_keys($lang_antispam_questions)[$index_questions]),
-        ])->addTemplate('register/form.php')->display();
+        ])->addTemplate('@forum/register/form')->display();
     }
 
     public function cancel($req, $res, $args)
@@ -103,8 +104,8 @@ class Register
         }
 
         View::setPageInfo([
-                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Register'), __('Forum rules')],
-                'active_page' => 'register',
-            ])->addTemplate('register/rules.php')->display();
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Register'), __('Forum rules')],
+            'active_page' => 'register',
+        ])->addTemplate('@forum/register/rules')->display();
     }
 }

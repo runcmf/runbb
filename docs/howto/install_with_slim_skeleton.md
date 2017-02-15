@@ -40,12 +40,11 @@ $ composer require runcmf/runbb:dev-master
 **3.** add to `src/settings.php`
 ```php
         'runbb' => [
-            'config_file' => 'config.php',
+            'config_file' => 'config.php',// any_name.php
             'cache_dir' => DIR . 'var/cache/RunBB/',
             'web_root' => DIR . 'public/',
-            'tplEngine' => '',// live empty for php or `twig`
             'root_dir' => DIR,
-            'debug' => 'info', // false || info (only page generate time, mem usage and peak)
+            'debug' => true, // false, true (page generate time, mem usage and peak)
         ]
 ```
 
@@ -71,12 +70,11 @@ return [
             'level' => \Monolog\Logger::DEBUG,
         ],
         'runbb' => [
-            'config_file' => 'config.php',
+            'config_file' => 'config.php',// any_name.php
             'cache_dir' => DIR . 'var/cache/RunBB/',
             'web_root' => DIR . 'public/',
-            'tplEngine' => '',// live empty for php or `twig`
             'root_dir' => DIR,
-            'debug' => 'info', // false || info (only page generate time, mem usage and peak)
+            'debug' => true, // false, true (page generate time, mem usage and peak)
         ]
     ],
 ];

@@ -36,7 +36,7 @@ class Index
             'online' => $this->model->fetchUsersOnline(),
             'forum_actions' => $this->model->getForumActions(),
             'cur_cat' => 0
-        ])->addTemplate('index.php')->display();
+        ])->addTemplate('@forum/index')->display();
     }
 
     public function rules()
@@ -44,14 +44,15 @@ class Index
         Container::get('hooks')->fire('controller.index.rules');
 
         if (ForumSettings::get('o_rules') == '0' || (User::get()->is_guest &&
-                User::get()->g_read_board == '0' && ForumSettings::get('o_regs_allow') == '0')) {
+                User::get()->g_read_board == '0' && ForumSettings::get('o_regs_allow') == '0')
+        ) {
             throw new  RunBBException(__('Bad request'), 404);
         }
 
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Forum rules')],
             'active_page' => 'rules'
-        ])->addTemplate('misc/rules.php')->display();
+        ])->addTemplate('@forum/misc/rules')->display();
     }
 
     public function markread()

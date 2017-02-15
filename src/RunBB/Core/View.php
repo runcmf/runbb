@@ -33,8 +33,8 @@ class View
         'tid' => 'intval'
     ];
 
-    public $tplPath = '';
-    public $useTwig = false;
+    public $twig;
+    public $loader = null;
 
     /**
     * Constructor
@@ -42,8 +42,21 @@ class View
     public function __construct()
     {
         $this->data = new \RunBB\Helpers\Set();
-        // Set default dir for view fallback
-        $this->addTemplatesDirectory(ForumEnv::get('FORUM_ROOT') . 'View/', 10);
+        $this->loader = new \Twig_Loader_Filesystem();
+        $this->twig = new \Twig_Environment($this->loader, [
+            'cache' => ForumEnv::get('APP_ROOT') . 'var/cache/twig',
+            'debug' => true,
+        ]);
+        // load extensions
+        $this->twig->addExtension(new \Twig_Extension_Profiler(
+            Container::get('twig_profile')
+        ));
+        if (ForumEnv::get('FEATHER_DEBUG')) {
+            $this->twig->addExtension(new \Twig_Extension_Debug());
+        }
+        $this->twig->addExtension(new \RunBB\Core\RunBBTwig);
+
+        return $this;
     }
 
     /********************************************************************************
@@ -111,52 +124,19 @@ class View
     * Resolve template paths
     *******************************************************************************/
 
-    public function addTemplatesDirectory($data, $priority = 10)
-    {
-        $directories = (array) $data;
-        foreach ($directories as $key => $tpl_dir) {
-            if (is_dir($tpl_dir)) {
-                $this->directories[(int) $priority][] = rtrim((string) $tpl_dir, DIRECTORY_SEPARATOR);
-            }
-        }
-        return $this;
-    }
-
     /**
-    * Get templates directories ordered by priority
-    * @return string
-    */
-    public function getTemplatesDirectory()
-    {
-        $output = [];
-        if (count($this->directories) > 1) {
-            ksort($this->directories);
-        }
-        foreach ($this->directories as $priority) {
-            if (!empty($priority)) {
-                foreach ($priority as $tpl_dir) {
-                    $output[] = $tpl_dir;
-                }
-            }
-        }
-        return $output;
-    }
-
-    /**
-     * Get fully qualified path to template file using templates base directory
-     * @param string $file The template file pathname relative to templates base directory
-     * @return string
-     * @throws RunBBException
+     * @param string $dir
+     * @param string $alias
+     * @return $this
      */
-    public function getTemplatePathname($file)
+    public function addTemplatesDirectory($dir = '', $alias = 'forum')
     {
-        foreach ($this->getTemplatesDirectory() as $tpl_dir) {
-            $pathname = realpath($tpl_dir . DIRECTORY_SEPARATOR . ltrim($file, DIRECTORY_SEPARATOR));
-            if (is_file($pathname)) {
-                return (string) $pathname;
-            }
-        }
-        throw new RunBBException("View cannot add template `$file` to stack because the template does not exist");
+//        if ($this->loader === null) {
+//            $this->loader = $this->twig->getLoader();
+//        }
+        $this->loader->addPath($dir, $alias);
+
+        return $this;
     }
 
     /********************************************************************************
@@ -165,89 +145,37 @@ class View
 
     public function display($nested = true)
     {
-//        if (User::get()) {
-//            $this->setStyle(User::get()->style);
-//        }
-        return $this->fetch($nested);
-    }
-
-    protected function fetch($nested = true)
-    {
         $data = [];
         $data = array_merge($this->getDefaultPageInfo(), $this->data->all(), (array) $data);
-        $data['feather'] = true;
-        $data['assets'] = $this->getAssets();
         $data = Container::get('hooks')->fire('view.alter_data', $data);
+//        $data['feather'] = true;
+        $data['assets'] = $this->getAssets();
 
-        return $this->render($data, $nested);
-    }
-
-    protected function render($data = null, $nested = true)
-    {
-        if ($this->useTwig) {
-            return $this->twigRender($data, $nested);
-        }
-
-        extract($data);
-        ob_start();
-        // Include view files
-        if ($nested) {
-            include $this->getTemplatePathname('header.php');
-        }
-        foreach ($this->getTemplates() as $tpl) {
-            include $tpl;
-        }
-        if ($nested) {
-            include $this->getTemplatePathname('footer.php');
-        }
-
-        $output = ob_get_clean();
-        Response::getBody()->write($output);
-
-        return Container::get('response');
-    }
-
-    protected function twigRender(& $data = null, & $nested = true)
-    {
         $templates = $this->getTemplates();
-//dump($templates);
         $style = $this->getStyle();
         $tpl = trim(array_pop($templates));// get last in array
-        $tpl = substr(str_replace(ForumEnv::get('FORUM_ROOT') . 'View/', '', $tpl), 0, -4);
-        $file = ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/view/'.$tpl. '.html.twig';
-//bdump($file);
-        if (!file_exists($file)) {
-            // no template found. return to php
-            $this->useTwig = false;
-            return $this->render($data, $nested);
-        }
 
         $data['nested'] = $nested;
         $data['pageTitle'] = Utils::generatePageTitle($data['title'], $data['page_number']);
         $data['flashMessages'] = Container::get('flash')->getMessages();
         $data['style'] = $style;
         $data['navlinks'] = $this->buildNavLinks($data['active_page']);
+        $data['languagesQSelect'] = \RunBB\Core\Lister::getLangs();
+        $data['stylesQSelect'] = \RunBB\Core\Lister::getStyles();
+        $data['currentPage'] = Url::current();
 
-        if (file_exists(ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/base_admin.css')) {
+        if (file_exists(ForumEnv::get('WEB_ROOT').'themes/'.$style.'/base_admin.css')) {
             $admStyle = '<link rel="stylesheet" type="text/css" href="'.
-                Url::baseStatic().'/style/themes/'.$style.'/base_admin.css" />';
+                Url::baseStatic().'/themes/'.$style.'/base_admin.css" />';
         } else {
             $admStyle = '<link rel="stylesheet" type="text/css" href="'.
-                Url::baseStatic().'/style/imports/base_admin.css" />';
+                Url::baseStatic().'/imports/base_admin.css" />';
         }
         $data['admStyle'] = $admStyle;
-        $tpl = '@forum/' . $tpl . '.html.twig';
 
-        try {
-            $output = Container::get('twig')->render($tpl, $data);
-        } catch (\Twig_Error $e) {
-            // try return to php template show error
-            $this->useTwig = false;
-            throw new RunBBException('Twig Exception, file: '.$e->getFile()
-                .' line: '.$e->getLine().' message: '.$e->getMessage());
-        }
-
-        Response::getBody()->write($output);
+        Response::getBody()->write(
+            $this->twig->render($tpl. '.html.twig', $data)
+        );
         return Container::get('response');
     }
     /********************************************************************************
@@ -255,16 +183,22 @@ class View
     *******************************************************************************/
 
     /**
-     * load assets for given style
+     * Initialise style, load assets for given style
      * @param $style
+     * @throws RunBBException
      */
-    public function loadThemeAssets($style)
+    public function setStyle($style)
     {
-        $dir = ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/';
+        $dir = ForumEnv::get('WEB_ROOT').'themes/'.$style.'/';
+        if (!is_dir($dir)) {
+            throw new RunBBException('The style '.$style.' doesn\'t exist');
+        }
+
         if (is_file($dir . 'bootstrap.php')) {
             $vars = include_once $dir . 'bootstrap.php';
-            if (empty($vars)) {
-                return;
+            // file exist but return nothing
+            if (!is_array($vars)) {
+                $vars = [];
             }
             foreach ($vars as $key => $assets) {
                 if ($key === 'jsraw' || !in_array($key, ['js', 'jshead', 'css'])) {
@@ -277,28 +211,18 @@ class View
                     $this->addAsset($key, $asset, $params);
                 }
             }
-            $this->set('jsraw', $vars['jsraw']);
+            $this->set('jsraw', isset($vars['jsraw']) ? $vars['jsraw'] : '');
         }
 
-        $this->useTwig = ForumEnv::get('TPL_ENGINE') === 'twig' ? true : false;
-
-        $this->setStyle($style);
-    }
-
-    public function setStyle($style)
-    {
-        $this->tplPath = ForumEnv::get('WEB_ROOT').'style/themes/'.$style.'/';
-        if (!is_dir($this->tplPath)) {
-            throw new RunBBException('The style '.$style.' doesn\'t exist');
+        if (isset($vars['themeTemplates']) && $vars['themeTemplates'] == true) {
+            $templatesDir = ForumEnv::get('WEB_ROOT').'themes/'.$style.'/view';
+        } else {
+            $templatesDir = ForumEnv::get('FORUM_ROOT') . 'View/';
         }
+
         $this->data->set('style', (string) $style);
-        $this->addTemplatesDirectory($this->tplPath.'/view', 9);
 
-        // add path and alias if Twig enabled
-        if ($this->useTwig) {
-            $loader = Container::get('twig')->getLoader();
-            $loader->addPath($this->tplPath . 'view', 'forum');
-        }
+        $this->addTemplatesDirectory($templatesDir);
     }
 
     public function getStyle()
@@ -360,7 +284,8 @@ class View
     {
         $tpl = (array) $tpl;
         foreach ($tpl as $key => $tpl_file) {
-            $this->templates[(int) $priority][] = $this->getTemplatePathname((string) $tpl_file);
+//            $this->templates[(int) $priority][] = $this->getTemplatePathname((string) $tpl_file);
+            $this->templates[(int) $priority][] = (string) $tpl_file;
         }
         return $this;
     }
@@ -428,24 +353,32 @@ class View
             'tid' => null,
         ];
 
-        if (is_object(User::get()) && User::get()->is_admmod) {
-            $data['has_reports'] = \RunBB\Model\Admin\Reports::hasReports();
-        } else {
-            // guest user. for modal. load reg data from Register.php
-            Lang::load('login');
-            Lang::load('register');
-            Lang::load('prof_reg');
-            Lang::load('antispam');
+        if (User::get() !== null) {
+            if (User::get()->is_admmod) {
+                $data['has_reports'] = \RunBB\Model\Admin\Reports::hasReports();
+            }
+            // check db configured
+            if (\ORM::get_config()['username'] !== null) {
+                // guest user. for modal. load reg data from Register.php
+                Lang::load('login');
+                Lang::load('register');
+                Lang::load('prof_reg');
+                Lang::load('antispam');
 
-            // FIXME rebuild
-            // Antispam feature
-            $lang_antispam_questions = require ForumEnv::get('FORUM_ROOT').
-                'lang/'.User::get()->language.'/antispam.php';
-            $index_questions = rand(0, count($lang_antispam_questions)-1);
-            $data['index_questions'] = $index_questions;
-            $data['languages'] = \RunBB\Core\Lister::getLangs();
-            $data['question'] = array_keys($lang_antispam_questions);
-            $data['qencoded'] = md5(array_keys($lang_antispam_questions)[$index_questions]);
+                // FIXME rebuild
+                // Antispam feature
+                $lang_antispam_questions = require ForumEnv::get('FORUM_ROOT') .
+                    'lang/' . User::get()->language . '/antispam.php';
+                $index_questions = rand(0, count($lang_antispam_questions) - 1);
+                $data['index_questions'] = $index_questions;
+                $data['languages'] = \RunBB\Core\Lister::getLangs();
+                $data['question'] = array_keys($lang_antispam_questions);
+                $data['qencoded'] = md5(array_keys($lang_antispam_questions)[$index_questions]);
+                $data['logOutLink'] = Router::pathFor(
+                    'logout',
+                    ['token' => Random::hash(User::get()->id.Random::hash(Utils::getIp()))]
+                );
+            }
         }
 
         if (ForumEnv::get('FEATHER_SHOW_INFO')) {
@@ -454,10 +387,6 @@ class View
                 $data['queries_info'] = \RunBB\Model\Debug::getQueries();
             }
         }
-        $data['logOutLink'] = Router::pathFor(
-            'logout',
-            ['token' => Random::hash(User::get()->id.Random::hash(Utils::getIp()))]
-        );
 
         return $data;
     }
@@ -487,6 +416,10 @@ class View
     protected function buildNavLinks($active_page = '')
     {
         $navlinks = [];
+        // user not initialized, possible we in install
+        if (User::get() === null) {
+            return $navlinks;
+        }
 
         $navlinks[] = [
             'id' => 'navindex',

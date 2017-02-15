@@ -100,7 +100,11 @@ class RunBBTwig extends \Twig_Extension
              * return User::get()->value
              */
             new \Twig_SimpleFunction('userGet', function ($val) {
-                return User::get()->$val;
+                if (User::get()) {
+                    return User::get()->$val;
+                } else {
+                    return $val;
+                }
             }, ['is_safe' => ['html']]),
 
             /**
@@ -118,14 +122,6 @@ class RunBBTwig extends \Twig_Extension
                     return md5($var);
                 }// TODO add types
             }, ['is_safe' => ['html']]),
-
-            /**
-             * return preg_match_all result
-             */
-//            new \Twig_SimpleFunction('pregMatchAll', function ($preg, &$val) {
-//                preg_match_all($preg, $val, $results);
-//                return $results;
-//            }, ['is_safe' => ['html']]),
 
             /**
              * return Container::get('utils')->timeFormat($var) result

@@ -1517,14 +1517,16 @@ class Post
 
         $checkboxes = [];
         if ($fid && $is_admmod) {
-            $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.
+            $checkboxes[] = '<label class="checkbox-inline">'.
+                '<input type="checkbox" name="stick_topic" value="1" tabindex="'.
                 ($cur_index++).'"'.(Input::post('stick_topic') ? ' checked="checked"' : '').' />'.
                 __('Stick topic').'<br /></label>';
         }
 
         if (!User::get()->is_guest) {
             if (ForumSettings::get('o_smilies') == '1') {
-                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.
+                $checkboxes[] = '<label class="checkbox-inline">'.
+                    '<input type="checkbox" name="hide_smilies" value="1" tabindex="'.
                     ($cur_index++).'"'.(Input::post('hide_smilies') ? ' checked="checked"' : '').' />'.
                     __('Hide smilies').'<br /></label>';
             }
@@ -1543,12 +1545,14 @@ class Post
                     $subscr_checked = true;
                 }
 
-                $checkboxes[] = '<label><input type="checkbox" name="subscribe" value="1" tabindex="'.
+                $checkboxes[] = '<label class="checkbox-inline">'.
+                    '<input type="checkbox" name="subscribe" value="1" tabindex="'.
                     ($cur_index++).'"'.($subscr_checked ? ' checked="checked"' : '').' />'.
                     ($is_subscribed ? __('Stay subscribed') : __('Subscribe')).'<br /></label>';
             }
         } elseif (ForumSettings::get('o_smilies') == '1') {
-            $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.
+            $checkboxes[] = '<label class="checkbox-inline">'.
+                '<input type="checkbox" name="hide_smilies" value="1" tabindex="'.
                 ($cur_index++).'"'.(Input::post('hide_smilies') ? ' checked="checked"' : '').' />'.
                 __('Hide smilies').'<br /></label>';
         }
@@ -1572,30 +1576,34 @@ class Post
 
         if ($can_edit_subject && $is_admmod) {
             if (Input::post('stick_topic') || $cur_post['sticky'] == '1') {
-                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" '.
+                $checkboxes[] = '<label class="checkbox-inline"><input type="checkbox" name="stick_topic" value="1" '.
                     'checked="checked" tabindex="'.($cur_index++).'" />'.__('Stick topic').'<br /></label>';
             } else {
-                $checkboxes[] = '<label><input type="checkbox" name="stick_topic" value="1" tabindex="'.
+                $checkboxes[] = '<label class="checkbox-inline">'.
+                    '<input type="checkbox" name="stick_topic" value="1" tabindex="'.
                     ($cur_index++).'" />'.__('Stick topic').'<br /></label>';
             }
         }
 
         if (ForumSettings::get('o_smilies') == '1') {
             if (Input::post('hide_smilies') || $cur_post['hide_smilies'] == '1') {
-                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" '.
+                $checkboxes[] = '<label class="checkbox-inline"><input type="checkbox" name="hide_smilies" value="1" '.
                     'checked="checked" tabindex="'.($cur_index++).'" />'.__('Hide smilies').'<br /></label>';
             } else {
-                $checkboxes[] = '<label><input type="checkbox" name="hide_smilies" value="1" tabindex="'.
+                $checkboxes[] = '<label class="checkbox-inline">'.
+                    '<input type="checkbox" name="hide_smilies" value="1" tabindex="'.
                     ($cur_index++).'" />'.__('Hide smilies').'<br /></label>';
             }
         }
 
         if ($is_admmod) {
             if (Request::isPost() && Input::post('silent') || Request::isPost() == '') {
-                $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.
+                $checkboxes[] = '<label class="checkbox-inline">'.
+                    '<input type="checkbox" name="silent" value="1" tabindex="'.
                     ($cur_index++).'" checked="checked" />'.__('Silent edit').'<br /></label>';
             } else {
-                $checkboxes[] = '<label><input type="checkbox" name="silent" value="1" tabindex="'.
+                $checkboxes[] = '<label class="checkbox-inline">'.
+                    '<input type="checkbox" name="silent" value="1" tabindex="'.
                     ($cur_index++).'" />'.__('Silent edit').'<br /></label>';
             }
         }

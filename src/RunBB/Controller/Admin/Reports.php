@@ -36,11 +36,11 @@ class Reports
         AdminUtils::generateAdminMenu('reports');
 
         return View::setPageInfo([
-                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Reports')],
-                'active_page' => 'admin',
-                'admin_console' => true,
-                'report_data'   =>  $this->model->getReports(),
-                'report_zapped_data'   =>  $this->model->getZappedReports(),
-            ])->addTemplate('admin/reports.php')->display();
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Reports')],
+            'active_page' => 'admin',
+            'admin_console' => true,
+            'report_data' => $this->model->getReports(),
+            'report_zapped_data' => $this->model->getZappedReports(),
+        ])->addTemplate('@forum/admin/reports')->display();
     }
 }

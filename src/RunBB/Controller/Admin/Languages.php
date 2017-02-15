@@ -49,7 +49,7 @@ class Languages
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), 'Languages'],// TODO translate
             'admin_console' => true,
             'langList' => $this->model->getLangList()
-        ])->addTemplate('admin/lang/admin_lang.php')->display();
+        ])->addTemplate('@forum/admin/lang/admin_lang')->display();
     }
 
     public function langInfo()
@@ -59,7 +59,7 @@ class Languages
         // show modal
         return View::setPageInfo([
             'info' => $this->model->getLangInfo($id)
-        ])->addTemplate('admin/lang/langInfo.php')->display(false);
+        ])->addTemplate('@forum/admin/lang/langInfo')->display(false);
     }
 
     public function saveLangInfo($id)
@@ -94,7 +94,7 @@ class Languages
             'admin_console' => true,
             'langinfo' => $this->model->getLangInfo($id),
             'domainList' => $this->model->getDomainList($id)
-        ])->addTemplate('admin/lang/domainList.php')->display();
+        ])->addTemplate('@forum/admin/lang/domainList')->display();
     }
 
     public function showRepo()
@@ -118,7 +118,7 @@ class Languages
                 __('Admin'), 'Languages Repository'],// TODO translate
             'admin_console' => true,
             'langList' => $repoList
-        ])->addTemplate('admin/lang/repoList.php')->display();
+        ])->addTemplate('@forum/admin/lang/repoList')->display();
     }
 
     public function editLang()
@@ -149,13 +149,12 @@ class Languages
             'grp' => $grp,
             'langinfo' => $this->model->getLangInfo($lngId),
             'translateList' => $this->model->getTranslationsByDomain((int)$lngId, $grp)
-        ])->addTemplate('admin/lang/editLang.php')->display();
+        ])->addTemplate('@forum/admin/lang/editLang')->display();
     }
 
     public function showMailTemplates()
     {
         $text = Input::post('mailTemplateText');
-//tdie($text);
         if ($text) {
             $this->model->updateMailTemplates($text);
             return Router::redirect(
@@ -170,7 +169,6 @@ class Languages
         AdminUtils::generateAdminMenu('languages');
 
         $tpls = $this->model->getMailTemplatesById($id);
-//tdie($tpls);
         return View::setPageInfo([
             'active_page' => 'admin',
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), 'Languages'],// TODO translate
@@ -178,7 +176,7 @@ class Languages
             'lng' => $id,
             'name' => $name,
             'templates' => $tpls
-        ])->addTemplate('admin/lang/mailTplList.php')->display();
+        ])->addTemplate('@forum/admin/lang/mailTplList')->display();
     }
 
     public function exportLanguage()
@@ -197,14 +195,14 @@ class Languages
     {
         $code = Input::query('lng');
 
-        $out = 'Imported language: '."\n";
+        $out = 'Imported language: ' . "\n";
         $info = $this->model->importLang($code);
 
         if (!empty($info)) {
             foreach ($info as $i) {
-                $out .= 'lid: '.$i['lid'].', code: '.$i['code'].', name: '.$i['name'].",\n".
-                'locale: '.$i['locale'].', translations: '.$i['transcount'].",\n".
-                'mail templates: '.$i['mailTemplates']."\n";
+                $out .= 'lid: ' . $i['lid'] . ', code: ' . $i['code'] . ', name: ' . $i['name'] . ",\n" .
+                    'locale: ' . $i['locale'] . ', translations: ' . $i['transcount'] . ",\n" .
+                    'mail templates: ' . $i['mailTemplates'] . "\n";
             }
         } else {
             $out .= 0;
@@ -271,12 +269,12 @@ class Languages
 
             View::setPageInfo([
                 'active_page' => 'admin',
-                'title'    =>    [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')],
-                'active_page'    =>    'admin',
-                'admin_console'    =>    true,
+                'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')],
+                'active_page' => 'admin',
+                'admin_console' => true,
                 'lid' => $lid,
                 'language' => $info->name
-            ])->addTemplate('admin/lang/deleteLang.php')->display();
+            ])->addTemplate('@forum/admin/lang/deleteLang')->display();
         }
     }
 

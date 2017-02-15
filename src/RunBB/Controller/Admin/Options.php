@@ -40,6 +40,6 @@ class Options
             'times' => $this->model->getTimes(),
             'smtp_pass' => (!empty(ForumSettings::get('o_smtp_pass')) ?
                 Random::key(Utils::strlen(ForumSettings::get('o_smtp_pass')), true) : '')
-        ])->addTemplate('admin/options.php')->display();
+        ])->addTemplate('@forum/admin/options')->display();
     }
 }

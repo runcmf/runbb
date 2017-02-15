@@ -43,8 +43,6 @@ class Lang extends BaseProxy
         if (!$path) {
             $tfile = ForumEnv::get('FORUM_CACHE_DIR') . 'locale/' . $lng . '/LC_MESSAGES/' . $file . '.po';
         } else {
-            // FIXME test external file
-            // full lang name, or add to common langs???
             $tfile = $path.'/'.$language.'/'.$file.'.po';
         }
 

@@ -48,13 +48,13 @@ class Search
                 $display = $this->model->displaySearchResults($search);
 
                 View::setPageInfo([
-                        'display' => $display,
-                    ]);
+                    'display' => $display,
+                ]);
 
                 if ($search['show_as'] == 'posts') {
-                    View::addTemplate('search/posts.php', 5)->display();
+                    View::addTemplate('@forum/search/posts', 5)->display();
                 } else {
-                    View::addTemplate('search/topics.php', 5)->display();
+                    View::addTemplate('@forum/search/topics', 5)->display();
                 }
             } else {
                 return Router::redirect(Router::pathFor('search'), __('No hits'));
@@ -67,7 +67,8 @@ class Search
                 'focus_element' => ['search', 'keywords'],
                 'is_indexed' => true,
                 'forums' => $this->model->getListForums(),
-            ])->addTemplate('search/form.php')->display();
+//            ])->addTemplate('search/form')->display();
+            ])->addTemplate('@forum/search/form')->display();
         }
     }
 
@@ -75,6 +76,6 @@ class Search
     {
         Container::get('hooks')->fire('controller.search.quicksearches');
 
-        return Router::redirect(Router::pathFor('search').'?action=show_'.$args['show']);
+        return Router::redirect(Router::pathFor('search') . '?action=show_' . $args['show']);
     }
 }

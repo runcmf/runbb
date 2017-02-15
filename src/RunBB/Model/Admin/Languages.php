@@ -71,9 +71,14 @@ class Languages
 
     public function getLangInfoByCode($code = '')
     {
-        return \ORM::forTable(ORM_TABLE_PREFIX.'languages')
-            ->where('code', $code)
-            ->findOne();
+        // db initialized?
+        if (defined('ORM_TABLE_PREFIX')) {
+            return \ORM::forTable(ORM_TABLE_PREFIX . 'languages')
+                ->where('code', $code)
+                ->findOne();
+        } else {
+            return false;
+        }
     }
 
     public function getLangCount($id)
@@ -115,7 +120,6 @@ class Languages
         } else {
             $list = \ORM::forTable(ORM_TABLE_PREFIX . 'lang_trans')
                 ->table_alias('lt')
-//                ->select_many('lt.id', 'lt.domain', 'lt.msgid', 'lt.msgstr')
                 ->select('lt.*')
                 ->select('ltwith.msgstr', 'msgstrwith')
                 ->innerJoin(ORM_TABLE_PREFIX . 'lang_trans', ['lt.msgid', '=', 'ltwith.msgid'], 'ltwith')
@@ -197,7 +201,11 @@ class Languages
     public function generateTranslationByDomain($code = 'en', $domain = '')
     {
         $lang = $this->getLangInfoByCode($code);
-        $this->generateTranslation($lang->id, $domain);
+        if ($lang) {
+            $this->generateTranslation($lang->id, $domain);
+        } else {
+            return false;
+        }
     }
 
     public function generateTranslation($id, $domain)
@@ -269,16 +277,8 @@ class Languages
                 'text' => $m['text']
             ];
         }
-//        $file = 'runbb_translation_'.$info->code.'.php';
         $file = 'runbb_translation_'.$info->code.'.json';
-
-        // Output the language data array to file. Convert to string first.
-//        $s = "<?php\n// File: $file. Automatically generated: " .
-//            date('Y-m-d h:i:s') . " by " . User::get()->username .
-//            ".\n// DIRECT EDIT NOT WELCOME. USE ADMIN LANGUAGE EDITOR INSTEAD.\n";
-//        $s .= "return " . var_export($out, true) . ";\n";
         $s = json_encode($out, JSON_PRETTY_PRINT);
-//        $s = json_encode($out);
 
         if (file_put_contents(ForumEnv::get('FORUM_CACHE_DIR') . $file, $s) === false) {
             throw new RunBBException('Can not write language file : '.$file);
@@ -365,67 +365,6 @@ class Languages
         return $info;
     }
 
-    // deprecated
-//    public function importLang()
-//    {
-//        $files = $info = [];
-//        foreach(glob(ForumEnv::get('FORUM_CACHE_DIR') . 'runbb_translation_*') as $v) {
-//            $files[] = $v;
-//        }
-//
-//        foreach ($files as $f) {
-//            $vars = require $f;
-//
-//            // first check if code exists
-//            $installed = $this->getLangInfoByCode($vars['code']);
-//            if($installed) {
-//                // clear table ??? FIXME rebuild logic
-//                $z = \ORM::for_table(ORM_TABLE_PREFIX . 'languages')->find_one($installed->id);
-//                $z->delete();
-//                // clear translations
-//                \ORM::for_table(ORM_TABLE_PREFIX . 'lang_trans')
-//                    ->where_equal('lid', $installed->id)
-//                    ->delete_many();
-//                // clear mail templates
-//                \ORM::for_table(ORM_TABLE_PREFIX . 'lang_mailtpls')
-//                    ->where_equal('lid', $installed->id)
-//                    ->delete_many();
-//            }
-//            $l = [
-//                'code' => $vars['code'],
-//                'locale' => isset($vars['locale']) ? $vars['locale'] : '',
-//                'name' => $vars['name']
-//            ];
-//            $lid = $this->addData('languages', $l);
-//
-//            // fill translations
-//            $transcount = count($vars['translations']);
-//            foreach ($vars['translations'] as $t) {
-//                // set lang id
-//                $t['lid'] = $lid;
-//                $id = $this->addData('lang_trans', $t);
-//            }
-//
-//            // fill mail templates
-//            $mailTemplates = count($vars['mailTemplates']);
-//            foreach ($vars['mailTemplates'] as $m) {
-//                $m['lid'] = $lid;
-//                $id = $this->addData('lang_mailtpls', $m);
-//            }
-//            // collect info
-//            $info[] = [
-//                'lid' => $lid,
-//                'code' => $vars['code'],
-//                'name' => $vars['name'],
-//                'locale' => isset($vars['locale']) ? $vars['locale'] : '',
-//                'transcount' => $transcount,
-//                'mailTemplates' => $mailTemplates
-//
-//            ];
-//        }
-//        return $info;
-//    }
-
     public function buildLang($data, $from)
     {
         if (!is_array($data)) {
@@ -476,29 +415,12 @@ class Languages
         return $this->database_scheme;
     }
 
-//    public function createTable($table_name, $sql)
-//    {
-//        $db = \ORM::get_db();
-//        $req = preg_replace('/%t%/', '`' . $table_name . '`', $sql);
-//        return $db->exec($req);
-//    }
-//
-//    public function addData($table_name, array $data)
-//    {
-//        $req = \ORM::for_table(ORM_TABLE_PREFIX . $table_name)
-//            ->create()
-//            ->set($data);
-//        $req->save();
-//        return $req->id();
-//    }
-//
-//    public function createTables()
-//    {
-//        foreach ($this->getDatabaseScheme() as $table => $sql) {
-//            if ($this->createTable(ORM_TABLE_PREFIX.$table, $sql) !== 0) {
-//                // Error handling
-//                throw new  RunBBException('A problem was encountered while creating table '.$table);
-//            }
-//        }
-//    }
+    public function addData($table_name, array $data)
+    {
+        $req = \ORM::for_table(ORM_TABLE_PREFIX . $table_name)
+            ->create()
+            ->set($data);
+        $req->save();
+        return $req->id();
+    }
 }

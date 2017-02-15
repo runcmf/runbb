@@ -55,15 +55,15 @@ class Userlist
         }
 
         // Generate paging links
-        $paging_links = '<span class="pages-label">'.__('Pages').' </span>'.
-            Url::paginateOld($num_pages, $p, '?username='.urlencode($username).'&amp;show_group='.
-                $show_group.'&amp;sort_by='.$sort_by.'&amp;sort_dir='.$sort_dir);
+        $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' .
+            Url::paginateOld($num_pages, $p, '?username=' . urlencode($username) . '&amp;show_group=' .
+                $show_group . '&amp;sort_by=' . $sort_by . '&amp;sort_dir=' . $sort_dir);
 
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('User list')],
             'active_page' => 'userlist',
-            'page_number'  =>  $p,
-            'paging_links'  =>  $paging_links,
+            'page_number' => $p,
+            'paging_links' => $paging_links,
             'focus_element' => $focus_element,
             'is_indexed' => true,
             'username' => $username,
@@ -73,6 +73,6 @@ class Userlist
             'show_post_count' => $show_post_count,
             'dropdown_menu' => $this->model->generateDropdownMenu($show_group),
             'userlist_data' => $this->model->printUsers($username, $start_from, $sort_by, $sort_dir, $show_group),
-        ])->addTemplate('userlist.php')->display();
+        ])->addTemplate('@forum/userlist')->display();
     }
 }

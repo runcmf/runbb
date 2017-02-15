@@ -57,6 +57,6 @@ class Index
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Index')],
                 'active_page' => 'admin',
                 'admin_console' => true
-            ])->addTemplate('admin/index.php')->display();
+            ])->addTemplate('@forum/admin/index')->display();
     }
 }
