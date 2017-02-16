@@ -437,10 +437,10 @@ class Utils
         return rmdir($dir);
     }
 
-    public static function arrayToList($data = false, $flatten = false)
+    public static function arrayToList(array $data = [], $flatten = false)
     {
         $response = '<ul>';
-        if (false !== $data) {
+        if (!empty($data)) {
             foreach ($data as $key => $val) {
                 $response .= '<li>';
                 if (!is_array($val)) {

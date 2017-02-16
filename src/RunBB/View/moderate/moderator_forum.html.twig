@@ -1,8 +1,7 @@
 {% extends '@forum/layout.html.twig' %}
 
 {% block content %}
-
-    {{ fireHook('view.moderate.moderator_forum.start') }}
+{{ fireHook('view.moderate.moderator_forum.start') }}
 
     <div class="linkst">
         <div class="inbox crumbsplus">
@@ -102,5 +101,5 @@
         </div>
     </form>
 
-    {{ fireHook('view.moderate.moderator_forum.end') }}
+{{ fireHook('view.moderate.moderator_forum.end') }}
 {% endblock content %}

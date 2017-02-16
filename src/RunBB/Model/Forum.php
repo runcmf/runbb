@@ -101,18 +101,17 @@ class Forum
 
     public function getModerators($fid)
     {
-//        $moderators = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
-//            ->select('moderators')
-//            ->where('id', $fid);
-//        $moderators = Container::get('hooks')->fireDB('model.forum.get_moderators', $moderators);
-//        $moderators = $moderators->find_one_col('moderators');
-//
-//        return $moderators;
         $moderators = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
             ->select('moderators')
             ->where('id', $fid)
             ->find_one();
-        return Container::get('hooks')->fireDB('model.forum.get_moderators', $moderators->moderators);
+
+        if ($moderators !== false) {
+            $moderators->moderators = Container::get('hooks')
+                ->fireDB('model.forum.get_moderators', $moderators->moderators);
+            return $moderators->moderators;
+        }
+        return false;
     }
 
     // Returns the text required by the query to sort the forum

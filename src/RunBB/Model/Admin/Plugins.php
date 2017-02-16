@@ -28,7 +28,8 @@ class Plugins
         static $list = [];
 
         if (empty($list) || $force) {
-            if (!Container::get('cache')->isCached('pluginsList') || $force) {
+            if ((Container::get('cache')->isCached('pluginsList') &&
+                    empty(Container::get('cache')->retrieve('pluginsList'))) || $force) {
                 $list = \ORM::forTable(ORM_TABLE_PREFIX.'plugins')->findArray();
                 Container::get('cache')->store('pluginsList', $list);
             } else {

@@ -113,7 +113,7 @@ class Forum
 
         // Make sure that only admmods allowed access this page
         $moderators = $this->model->getModerators($args['fid']);
-        $mods_array = ($moderators != '') ? unserialize($moderators) : [];
+        $mods_array = ($moderators !== false && $moderators != '') ? unserialize($moderators) : [];
 
         if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN') &&
             (User::get()->g_moderator == '0' || !array_key_exists(User::get()->username, $mods_array))

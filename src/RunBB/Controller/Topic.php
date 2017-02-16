@@ -254,7 +254,7 @@ class Topic
         // Determine the post offset (based on $_GET['p'])
         $num_pages = ceil(($cur_topic['num_replies'] + 1) / User::get()->disp_posts);
 
-        $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : intval($args['page']);
+        $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : (int)$args['page'];
 
         $start_from = User::get()->disp_posts * ($p - 1);
 
@@ -268,7 +268,7 @@ class Topic
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
                 'active_page' => 'moderate',
                 'posts' => $posts,
-            ])->addTemplate('moderate/delete_posts')->display();
+            ])->addTemplate('@forum/moderate/delete_posts')->display();
         } elseif (Input::post('split_posts_comply')) {
             return $this->model->splitPosts($args['id'], $args['fid'], $p);
         } elseif (Input::post('split_posts')) {
@@ -280,7 +280,7 @@ class Topic
                 'id' => $args['id'],
                 'posts' => $this->model->splitPosts($args['id'], $args['fid'], $p),
                 'list_forums' => $this->model->getForumListSplit($args['fid']),
-            ])->addTemplate('moderate/split_posts')->display();
+            ])->addTemplate('@forum/moderate/split_posts')->display();
         } else {
             // Show the moderate posts view
 
@@ -310,7 +310,7 @@ class Topic
                 'post_data' => $this->model->displayPostsModerate($args['id'], $start_from),
                 'button_status' => $button_status,
                 'start_from' => $start_from,
-            ])->addTemplate('moderate/posts_view')->display();
+            ])->addTemplate('@forum/moderate/posts_view')->display();
         }
     }
 

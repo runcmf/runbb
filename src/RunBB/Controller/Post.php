@@ -106,15 +106,12 @@ class Post
             }
 
             // Let's see if everything went right
-//            $errors =
-            $this->model->checkErrorsBeforePost($args['fid'], $args['tid'], $args['qid'], $pid, $page, $errors);
-//            if (!empty($errors)) {
-//                $errors = $errors[0];
-//                if ($errors[0] === 'debug') {
-////                    throw new RunBBException(__('Parser return').'<p>'.Utils::arrayToList($errors).'</p>', 200);
-//                    throw new RunBBException(__('Parser return').'<p>'.var_export($errors, true).'</p>', 200);
-//                }
-//            }
+            $errors = $this->model
+                ->checkErrorsBeforePost($args['fid'], $args['tid'], $args['qid'], $pid, $page, $errors);
+
+            if (!empty($errors)) {
+                throw new RunBBException(__('Parser return').'<p>'.Utils::arrayToList($errors).'</p>', 200);
+            }
             // Setup some variables before post
             $post = $this->model->setupVariables($errors, $is_admmod);
 

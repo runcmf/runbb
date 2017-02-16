@@ -468,7 +468,7 @@ class Init
             Route::get(
                 '/moderate/{fid:[0-9]+}/page/{page:[0-9]+}',
                 '\RunBB\Controller\Forum:moderate'
-            )->add(new CanReadBoard)->setName('moderateForum');
+            )->add(new IsAdmMod)->setName('moderateForum');
             Route::post(
                 '/moderate/{fid:[0-9]+}[/page/{page:[0-9]+}]',
                 '\RunBB\Controller\Forum:dealposts'

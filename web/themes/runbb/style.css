@@ -734,9 +734,10 @@ footer .footer-link {
 }
 /*.blockpost .box .postfoot .postfootright {*/
 .postfootright {
-    /*float: right;*/
+    float: right; /* moder */
     /*width: 80%;*/
     /*padding: 7px 15px;*/
+    padding-right: 15px;  /* moder */
     /*text-align: right*/
 }
 .postfootright ul {
@@ -1366,10 +1367,10 @@ footer .footer-link a {
 }
 @font-face {
     font-family: UbuntuCondensedRegular;
-    src: url(fonts/UbuntuCondensedRegular.eot);
-    src: url(fonts/UbuntuCondensedRegular.eot?#iefix)format("embedded-opentype"),
-    url(fonts/UbuntuCondensedRegular.woff) format("woff"),
-    url(fonts/UbuntuCondensedRegular.ttf) format("truetype");
+    src: url(/assets/fonts/UbuntuCondensedRegular.eot);
+    src: url(/assets/fonts/UbuntuCondensedRegular.eot?#iefix)format("embedded-opentype"),
+    url(/assets/fonts/UbuntuCondensedRegular.woff) format("woff"),
+    url(/assets/fonts/UbuntuCondensedRegular.ttf) format("truetype");
     font-style: normal;
     font-weight: normal;
 }

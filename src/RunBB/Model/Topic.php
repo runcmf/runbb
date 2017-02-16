@@ -843,23 +843,20 @@ class Topic
             if (@preg_match('%[^0-9,]%', $posts)) {
                 throw new  RunBBException(__('Bad request'), 400);
             }
-
             $move_to_forum = Input::post('move_to_forum') ? intval(Input::post('move_to_forum')) : 0;
             if ($move_to_forum < 1) {
                 throw new  RunBBException(__('Bad request'), 400);
             }
-
             // How many posts did we just split off?
             $num_posts_splitted = substr_count($posts, ',') + 1;
-
             // Verify that the post IDs are valid
             $posts_array = explode(',', $posts);
 
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
-                ->where_in('id', $posts_array)
+            $result = \ORM::forTable(ORM_TABLE_PREFIX.'posts')
+                ->whereIn('id', $posts_array)
                 ->where('topic_id', $tid);
             $result = Container::get('hooks')->fireDB('model.topic.split_posts_first_query', $result);
-            $result = $result->find_many();
+            $result = $result->findArray();
 
             if (count($result) != $num_posts_splitted) {
                 throw new  RunBBException(__('Bad request'), 400);
