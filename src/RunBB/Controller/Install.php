@@ -37,11 +37,12 @@ class Install
     {
         $this->c = $c;
         $this->model = new \RunBB\Model\Install();
-        $this->available_langs = [];//Lister::getLangs();
-        if (!is_dir(ForumEnv::get('WEB_ROOT') . 'themes/')) {
+        $this->available_langs = $this->getLangs();
+        if (!is_dir(ForumEnv::get('WEB_ROOT') . 'themes/runbb')) {
             $this->installStyles();
         }
         Container::set('user', null);
+
         View::setStyle('runbb');
 
         $this->dbConfig = [];
@@ -71,7 +72,7 @@ class Install
         $csrf = new \RunBB\Middleware\Csrf();
         $csrf->generateNewToken(Container::get('request'));
 
-        Lang::load('install', 'RunBB', __DIR__ . '/../lang');
+        Lang::load('install', 'RunBB', __DIR__ . '/../lang', $this->install_lang);
 
         if (Request::isPost() && empty(Input::getParsedBodyParam('choose_lang'))) {
             $missing_fields = [];
@@ -266,6 +267,11 @@ class Install
             $this->model->addData('groups', $group_data);
         }
 
+        // load parser default config
+        $parser = new \RunBB\Model\Admin\Parser();
+        $parser->resetPlugins();
+
+
         Container::get('perms')->allowGroup(3, [
             'forum.read',
             'users.view',
@@ -432,5 +438,25 @@ class Install
             die('can not create dir: ' . $dst . '. check rights');
         }
         Utils::recurseCopy($src, $dst);
+    }
+
+    /**
+     * Get available langs
+     */
+    public static function getLangs($folder = '')
+    {
+        $langs = [];
+
+        $iterator = new \DirectoryIterator(ForumEnv::get('FORUM_ROOT').'lang/');
+        foreach ($iterator as $child) {
+            if (!$child->isDot() && $child->isDir() &&
+                file_exists($child->getPathname().DIRECTORY_SEPARATOR.'install.po')) {
+                // If the lang pack is well formed, add it to the list
+                $langs[] = $child->getFileName();
+            }
+        }
+
+        natcasesort($langs);
+        return $langs;
     }
 }

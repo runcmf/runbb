@@ -120,8 +120,9 @@ $args['name'] . "-" . $args['version'] . '.zip';
 
         View::addAsset('js', 'assets/js/common.js', ['type' => 'text/javascript']);
 
+        $plist = $this->model->getList();
         $availablePlugins = Lister::getPlugins(
-            $this->model->getList()
+            $plist === null ? [] : $plist
         );
         $activePlugins = Container::get('cache')->isCached('activePlugins') ?
             Container::get('cache')->retrieve('activePlugins') : [];
@@ -247,8 +248,7 @@ $args['name'] . "-" . $args['version'] . '.zip';
 
         AdminUtils::generateAdminMenu('plugins');
 
-        $installedPlugins = $this->model->getList();
-
+        $installedPlugins = $this->model->getList() ?: [];
         $repoList = Container::get('remote')->getExtensionsInfoList();
         foreach ($repoList as $key => $extensions) {
             foreach ($extensions as $ekey => $ext) {

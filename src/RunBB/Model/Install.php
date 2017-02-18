@@ -331,12 +331,7 @@ class Install
             'g_post_flood' => 0,
             'g_search_flood' => 0,
             'g_email_flood' => 0,
-            'g_report_flood' => 0,
-            'g_parser_plugins' => 'a:13:{i:0;s:9:\"Autoemail\";i:1;s:9:\"Autoimage\";i:2;s:8:\"Autolink\";i:3;s:'.
-                '9:\"Autovideo\";i:4;s:9:\"Emoticons\";i:5;s:7:\"Escaper\";i:6;s:10:\"FancyPants\";i:7;s:'.
-                '12:\"HTMLComments\";i:8;s:12:\"HTMLElements\";i:9;s:12:\"HTMLEntities\";i:10;s:8:\"Litedown\";i:11'.
-                ';s:10:\"MediaEmbed\";i:12;s:10:\"PipeTables\";}',
-            'inherit' => 'a:1:{i:0;i:2;}'
+            'g_report_flood' => 0
         ];
         $groups['Moderators'] = [
             'g_id' => 2,
@@ -361,11 +356,7 @@ class Install
             'g_post_flood' => 0,
             'g_search_flood' => 0,
             'g_email_flood' => 0,
-            'g_report_flood' => 0,
-            'g_parser_plugins' => 'a:11:{i:0;s:9:\"Autoemail\";i:1;s:9:\"Autoimage\";i:2;s:8:\"Autolink\";i:3;s:'.
-                '9:\"Autovideo\";i:4;s:9:\"Emoticons\";i:5;s:7:\"Escaper\";i:6;s:10:\"FancyPants\";i:7;s:'.
-                '8:\"Keywords\";i:8;s:8:\"Litedown\";i:9;s:10:\"MediaEmbed\";i:10;s:10:\"PipeTables\";}',
-            'inherit' => 'a:1:{i:0;i:4;}'
+            'g_report_flood' => 0
         ];
         $groups['Guests'] = [
             'g_id' => 3,
@@ -390,9 +381,7 @@ class Install
             'g_post_flood' => 60,
             'g_search_flood' => 30,
             'g_email_flood' => 0,
-            'g_report_flood' => 0,
-            'g_parser_plugins' => 'a:4:{i:0;s:6:\"Censor\";i:1;s:9:\"Emoticons\";i:2;s:8:\"Litedown\";i:3;'.
-                's:10:\"PipeTables\";}'
+            'g_report_flood' => 0
         ];
         $groups['Members'] = [
             'g_id' => 4,
@@ -417,11 +406,7 @@ class Install
             'g_post_flood' => 60,
             'g_search_flood' => 30,
             'g_email_flood' => 60,
-            'g_report_flood' => 60,
-            'g_parser_plugins' => 'a:11:{i:0;s:9:\"Autoemail\";i:1;s:9:\"Autoimage\";i:2;s:8:\"Autolink\";i:3;s:'.
-                '9:\"Autovideo\";i:4;s:6:\"Censor\";i:5;s:9:\"Emoticons\";i:6;s:7:\"Escaper\";i:7;s:'.
-                '10:\"FancyPants\";i:8;s:8:\"Litedown\";i:9;s:10:\"MediaEmbed\";i:10;s:10:\"PipeTables\";}',
-            'inherit' => 'a:1:{i:0;i:3;}'
+            'g_report_flood' => 60
         ];
 
         return $groups;

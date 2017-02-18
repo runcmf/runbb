@@ -23,8 +23,6 @@ class Parser
     private $renderer;
     private $cacheDir;
 
-    public $pd = [];
-
     /**
      * @link https://github.com/s9e/TextFormatter
      * Parser constructor. Must be initialized after user load

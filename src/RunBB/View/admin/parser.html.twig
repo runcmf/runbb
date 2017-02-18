@@ -26,7 +26,6 @@
                     <div id="parserGrp{{ group.g_id }}" class="collapse">
                         <div class="panel-footer">
                             <input class="btn btn-primary" type="submit" name="save" value="{{ trans('Save changes') }}" />
-                            {#<input class="btn btn-primary" type="submit" name="reset" value="{{ trans('reset defaults') }}" />#}
                         </div>
                         <div class="panel panel-info text-center">Checked is enabled</div>
                         {% set groupPlugins = unSerialize(group.g_parser_plugins) %}

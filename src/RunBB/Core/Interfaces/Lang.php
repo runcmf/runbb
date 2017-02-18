@@ -34,9 +34,11 @@ class Lang extends BaseProxy
         self::$translator->register();
     }
 
-    public static function load($file, $domain = 'RunBB', $path = false)
+    public static function load($file, $domain = 'RunBB', $path = false, $language = false)
     {
-        $language = (!User::get(null)) ? 'English' : User::get()->language;
+        if (!$language) {
+            $language = (!User::get(null)) ? 'English' : User::get()->language;
+        }
         $lng = substr(strtolower($language), 0, 2);
 
         // FIXME while debug .po used
@@ -60,6 +62,9 @@ class Lang extends BaseProxy
 
     public static function getList()
     {
+        if (!defined('ORM_TABLE_PREFIX')) {
+            return [];
+        }
         return \ORM::forTable(ORM_TABLE_PREFIX.'languages')->findArray();
     }
 

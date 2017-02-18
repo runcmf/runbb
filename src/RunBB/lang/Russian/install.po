@@ -1,0 +1,291 @@
+#
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: RunBB\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: FeatherBB <admin@featherbb.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+"X-Generator: Poedit 1.8.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "Choose install language"
+msgstr "Выберите язык перевода"
+
+msgid "Choose install language info"
+msgstr "Перевод используемый для установки. Язык форума поумолчанию выберите ниже."
+
+msgid "Install language"
+msgstr "Перевод для установки"
+
+msgid "Change language"
+msgstr "Сменить перевод"
+
+msgid "Already installed"
+msgstr "It seems like RunBB is already installed. You should go <a href=\"../index.php\">here</a> instead."
+
+msgid "You are running error"
+msgstr "You are running %1$s version %2$s. RunBB %3$s requires at least %1$s %4$s to run properly. You must upgrade your %1$s installation before you can continue."
+
+msgid "My RunBB Forum"
+msgstr "Мой RunBB форум"
+
+msgid "Description"
+msgstr "В начале был форум."
+
+msgid "Username 1"
+msgstr "Usernames must be at least 2 characters long."
+
+msgid "Username 2"
+msgstr "Usernames must not be more than 25 characters long."
+
+msgid "Username 3"
+msgstr "The username guest is reserved."
+
+msgid "Username 4"
+msgstr "Usernames may not be in the form of an IP address."
+
+msgid "Username 5"
+msgstr "Usernames may not contain all the characters ', \" and [ or ] at once."
+
+msgid "Username 6"
+msgstr "Usernames may not contain any of the text formatting tags (BBCode) that the forum uses."
+
+msgid "Short password"
+msgstr "Длина паролья должна быть не меньше 6 символов."
+
+msgid "Passwords not match"
+msgstr "Пароли не одинаковы."
+
+msgid "Wrong email"
+msgstr "The administrator email address you entered is invalid."
+
+msgid "No board title"
+msgstr "Вы должны ввести заголовок форума."
+
+msgid "Error default language"
+msgstr "The default language chosen doesn't seem to exist."
+
+msgid "Error default style"
+msgstr "The default style chosen doesn't seem to exist."
+
+msgid "No DB extensions"
+msgstr "This PHP environment does not have support for any of the databases that RunBB supports. PHP needs to have support for either MySQL, PostgreSQL or SQLite in order for RunBB to be installed."
+
+msgid "Administrator username"
+msgstr "Ник администратора"
+
+msgid "Administrator email"
+msgstr "email администратора"
+
+msgid "Board title"
+msgstr "Заголовок форума"
+
+msgid "Base URL"
+msgstr "URL (без завершающего слэша). Обязательно откорректируйте."
+
+msgid "Required field"
+msgstr "это обязательное поле формы."
+
+msgid "RunBB Installation"
+msgstr "Установка RunBB"
+
+msgid "Welcome"
+msgstr "Вы собираетесь установить RunBB. Для того чтобы установить RunBB, вам необходимо заполнить форму, указанную ниже. Если у вас возникли трудности с установкой, пожалуйста, обратитесь к документации."
+
+msgid "Install"
+msgstr "Установка RunBB %s"
+
+msgid "Errors"
+msgstr "Следующие ошибки надо исправить:"
+
+msgid "Database setup"
+msgstr "Настройки БД"
+
+msgid "Info 1"
+msgstr "Настройки соединения к БД."
+
+msgid "Select database"
+msgstr "Выберите тип БД"
+
+msgid "Info 2"
+msgstr "Мы поддерживаем SQLite, MySQL и PostgreSQL."
+
+msgid "Database type"
+msgstr "Тип БД"
+
+msgid "Required"
+msgstr "(обязательно)"
+
+msgid "Database hostname"
+msgstr "Введите имя сервера БД"
+
+msgid "Info 3"
+msgstr "You should be able to get this info from your web host, if localhost does not work."
+
+msgid "Database server hostname"
+msgstr "Сервер БД"
+
+msgid "Database enter name"
+msgstr "Введите имя БД"
+
+msgid "Info 4"
+msgstr "The name of the database you want to install RunBB on."
+
+msgid "Database name"
+msgstr "Имя БД"
+
+msgid "Database enter informations"
+msgstr "Введите имя пользователя и пароль БД"
+
+msgid "Database username"
+msgstr "Имя пользователя БД"
+
+msgid "Info 5"
+msgstr "(не используется для SQLite)."
+
+msgid "Database password"
+msgstr "Пароль БД"
+
+msgid "Database enter prefix"
+msgstr "Заполните префикс таблиц БД"
+
+msgid "Info 6"
+msgstr "Если используется больше одного сайта в одной БД, установите префикс."
+
+msgid "Table prefix"
+msgstr "Префикс таблиц"
+
+msgid "Administration setup"
+msgstr "Установки администратора"
+
+msgid "Info 7"
+msgstr "Создание самого первого аккаунта Вашего форума."
+
+msgid "Info 8"
+msgstr "Имя пользователя должно быть в пределах от 2 до 25 символов. Пароль минимум 6 символов. Помните - пароль чувствителен к регистру символов."
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Confirm password"
+msgstr "Повторите пароль"
+
+msgid "Board setup"
+msgstr "Настройки форума"
+
+msgid "Info 11"
+msgstr "Настройки Вашего форума. Их можно изменить позже."
+
+msgid "General information"
+msgstr "Введите заголовок и описание."
+
+msgid "Board description"
+msgstr "Описание (поддерживается HTML)"
+
+msgid "Appearance"
+msgstr "Appearance"
+
+msgid "Info 15"
+msgstr "Make your forum yours. Choose a language and a style for your board."
+
+msgid "Default language"
+msgstr "Язык поумолчанию"
+
+msgid "Default style"
+msgstr "Default style"
+
+msgid "Start install"
+msgstr "Начать установку"
+
+msgid "DB type not valid"
+msgstr "'%s' is not a valid database type"
+
+msgid "Table prefix error"
+msgstr "The table prefix '%s' contains illegal characters or is too long. The prefix may contain the letters a to z, any numbers and the underscore character. They must however not start with a number. The maximum length is 40 characters. Please choose a different prefix"
+
+msgid "Prefix reserved"
+msgstr "The table prefix 'sqlite_' is reserved for use by the SQLite engine. Please choose a different prefix"
+
+msgid "Existing table error"
+msgstr "A table called '%susers' is already present in the database '%s'. This could mean that RunBB is already installed or that another piece of software is installed and is occupying one or more of the table names RunBB requires. If you want to install multiple copies of RunBB in the same database, you must choose a different table prefix"
+
+msgid "InnoDB off"
+msgstr "InnoDB does not seem to be enabled. Please choose a database layer that does not have InnoDB support, or enable InnoDB on your MySQL server"
+
+msgid "Administrators"
+msgstr "Администраторы"
+
+msgid "Administrator"
+msgstr "Администратор"
+
+msgid "Moderators"
+msgstr "Модераторы"
+
+msgid "Moderator"
+msgstr "Модератор"
+
+msgid "Guests"
+msgstr "Гости"
+
+msgid "Guest"
+msgstr "Гость"
+
+msgid "Members"
+msgstr "Members"
+
+msgid "Announcement"
+msgstr "Enter your announcement here."
+
+msgid "Rules"
+msgstr "Enter your rules here"
+
+msgid "Maintenance message"
+msgstr "The forums are temporarily down for maintenance. Please try again in a few minutes."
+
+msgid "Test post"
+msgstr "Тестовая тема"
+
+msgid "Message"
+msgstr "You have successfully installed RunBB, congratulations! Now log in and head over to the administration control panel to configure your forum."
+
+msgid "Test category"
+msgstr "Тестовая категория"
+
+msgid "Test forum"
+msgstr "Тестовый форум"
+
+msgid "This is just a test forum"
+msgstr "This is just a test forum"
+
+msgid "Alert cache"
+msgstr "<strong>The cache directory is currently not writable!</strong> In order for RunBB to function properly, the directory <em>%s</em> must be writable by PHP. Use chmod to set the appropriate directory permissions. If in doubt, chmod to 0777."
+
+msgid "Alert avatar"
+msgstr "<strong>The avatar directory is currently not writable!</strong> If you want users to be able to upload their own avatar images you must see to it that the directory <em>%s</em> is writable by PHP. You can later choose to save avatar images in a different directory (see Admin/Options). Use chmod to set the appropriate directory permissions. If in doubt, chmod to 0777."
+
+msgid "Alert upload"
+msgstr "<strong>File uploads appear to be disallowed on this server!</strong> If you want users to be able to upload their own avatar images you must enable the file_uploads configuration setting in PHP. Once file uploads have been enabled, avatar uploads can be enabled in Administration/Options/Features."
+
+msgid "RunBB has been installed"
+msgstr "RunBB успешно установлен. Для завершени установки следуйте инструкциям ниже."
+
+msgid "Final instructions"
+msgstr "Последние инструкции"
+
+msgid "Info 17"
+msgstr "To finalize the installation, you need to click on the button below to download a file called config.php. You then need to upload this file to the root directory of your RunBB installation."
+
+msgid "Info 18"
+msgstr "Once you have uploaded config.php, RunBB will be fully installed! At that point, you may <a href=\"../index.php\">go to the forum index</a>."
+
+msgid "Download config.php file"
+msgstr "Download config.php file"
+
+msgid "RunBB fully installed"
+msgstr "RunBB has been fully installed! You may now <a href=\"../index.php\">go to the forum index</a>."
