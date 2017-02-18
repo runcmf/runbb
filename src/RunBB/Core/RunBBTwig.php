@@ -29,7 +29,7 @@ class RunBBTwig extends \Twig_Extension
     {
         return [
             /**
-             * return fired RunBB hook with or without arguments
+             * fire RunBB hook with or without arguments
              */
             new \Twig_SimpleFunction('fireHook', function ($name) {
                 if (is_array($name)) {
@@ -58,13 +58,14 @@ class RunBBTwig extends \Twig_Extension
             }, ['is_safe' => ['html']]),
 
             /**
-             * Returns the translation of a string in a specific domain with or without arguments.
+             * Return the translation of a string in a specific domain
+             * where first argument in array must be domain name
              */
             new \Twig_SimpleFunction('transd', function ($str) {
                 if (is_array($str)) {
                     return call_user_func_array('d__', $str);
                 } else {
-                    return d__($str);
+                    return $str;
                 }
             }, ['is_safe' => ['html']]),
 
@@ -83,7 +84,7 @@ class RunBBTwig extends \Twig_Extension
             }, ['is_safe' => ['html']]),
 
             /**
-             * return Url::base() value
+             * return Url::slug() value
              */
             new \Twig_SimpleFunction('slug', function ($url) {
                 return Url::slug($url);
@@ -108,7 +109,7 @@ class RunBBTwig extends \Twig_Extension
             }, ['is_safe' => ['html']]),
 
             /**
-             * return token
+             * return token FIXME ???
              */
             new \Twig_SimpleFunction('getToken', function () {
                 return Random::hash(User::get()->id.Random::hash(Utils::getIp()));
@@ -194,6 +195,14 @@ class RunBBTwig extends \Twig_Extension
             new \Twig_SimpleFunction('getIndex', function () {
                 static $index = 0;
                 return ++$index;
+            }, ['is_safe' => ['html']]),
+
+            /**
+             * Unserializer
+             * return unserialized array
+             */
+            new \Twig_SimpleFunction('unSerialize', function ($var) {
+                return unserialize($var);
             }, ['is_safe' => ['html']]),
         ];
     }

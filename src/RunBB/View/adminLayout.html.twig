@@ -333,7 +333,7 @@
                                 <label class="control-label col-sm-5" for="languageToChange">{{ trans('Language') }}</label>
                                 <select name="languageToChange" class="form-control" onchange="RunBB.changeLanguage();">
                                 {% for lang in languagesQSelect %}
-                                    <option value="{{ lang }}"{{ userGet('language') == lang ? ' selected="selected" ' : '' }}>{{ lang }}</option>
+                                    <option value="{{ lang.name }}"{{ userGet('language') == lang.name ? ' selected="selected" ' : '' }}>{{ lang.name }}</option>
                                 {% endfor %}
                                 </select>
                             </form>

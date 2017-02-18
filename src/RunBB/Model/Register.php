@@ -162,8 +162,9 @@ class Register
             // If we previously found out that the email was banned
             if (isset($user['banned_email'])) {
                 // Load the "banned email register" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
-                    User::get()->language.'/mail_templates/banned_email_register.tpl'));
+//                $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
+//                    User::get()->language.'/mail_templates/banned_email_register.tpl'));
+                $mail_tpl = Lang::getMailTemplate('banned_email_register')->text;
                 $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_banned_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
@@ -195,8 +196,9 @@ class Register
             // If we previously found out that the email was a dupe
             if (!empty($dupe_list)) {
                 // Load the "dupe email register" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
-                    User::get()->language.'/mail_templates/dupe_email_register.tpl'));
+//                $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
+//                    User::get()->language.'/mail_templates/dupe_email_register.tpl'));
+                $mail_tpl = Lang::getMailTemplate('dupe_email_register')->text;
                 $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_dupe_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
@@ -228,8 +230,9 @@ class Register
             // Should we alert people on the admin mailing list that a new user has registered?
             if (ForumSettings::get('o_regs_report') == '1') {
                 // Load the "new user" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
-                    User::get()->language.'/mail_templates/new_user.tpl'));
+//                $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
+//                    User::get()->language.'/mail_templates/new_user.tpl'));
+                $mail_tpl = Lang::getMailTemplate('new_user')->text;
                 $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_new_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
@@ -263,8 +266,9 @@ class Register
         // Must the user verify the registration or do we log him/her in right now?
         if (ForumSettings::get('o_regs_verify') == '1') {
             // Load the "welcome" template
-            $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
-                User::get()->language.'/mail_templates/welcome.tpl'));
+//            $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
+//                User::get()->language.'/mail_templates/welcome.tpl'));
+            $mail_tpl = Lang::getMailTemplate('welcome')->text;
             $mail_tpl = Container::get('hooks')->fire('model.register.insert_user_welcome_mail_tpl', $mail_tpl);
 
             // The first row contains the subject

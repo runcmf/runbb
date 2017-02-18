@@ -48,7 +48,8 @@ class Languages
             'active_page' => 'admin',
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), 'Languages'],// TODO translate
             'admin_console' => true,
-            'langList' => $this->model->getLangList()
+//            'langList' => $this->model->getLangList()
+            'langList' => Lang::getList()
         ])->addTemplate('@forum/admin/lang/admin_lang')->display();
     }
 
@@ -103,7 +104,7 @@ class Languages
 
         AdminUtils::generateAdminMenu('languages');
 
-        $installedList = $this->model->getLangList();
+        $installedList = Lang::getList();
         $repoList = Container::get('remote')->getLangRepoList();
 
         foreach ($repoList as $key => $lang) {

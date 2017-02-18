@@ -57,4 +57,19 @@ class Lang extends BaseProxy
             //            Translations::fromMoFile($tfile)->setDomain($domain)
         );
     }
+
+    public static function getList()
+    {
+        return \ORM::forTable(ORM_TABLE_PREFIX.'languages')->findArray();
+    }
+
+    public static function getMailTemplate($file = '')
+    {
+        return \ORM::forTable(ORM_TABLE_PREFIX.'lang_mailtpls')
+            ->tableAlias('t')
+            ->innerJoin(ORM_TABLE_PREFIX.'languages', ['t.lid', '=', 'l.id'], 'l')
+            ->where('l.name', User::get()->language)
+            ->where('t.file', $file)
+            ->findOne();
+    }
 }

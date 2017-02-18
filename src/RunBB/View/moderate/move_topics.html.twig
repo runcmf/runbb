@@ -1,48 +1,43 @@
-<?php
+{% extends '@forum/layout.html.twig' %}
 
-/**
- * Copyright (C) 2015-2016 FeatherBB
- * based on code by (C) 2008-2015 FluxBB
- * and Rickard Andersson (C) 2002-2008 PunBB
- * License: http://www.gnu.org/licenses/gpl.html GPL version 2 or higher
- */
+{% block content %}
+{{ fireHook('view.moderate.move_topics.start') }}
 
-// Make sure no one attempts to run this script "directly"
-if (!isset($feather)) {
-    exit;
-}
+    <form class="panel panel-primary" method="post" action="">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+        <input type="hidden" name="topics" value="{{ topics }}" />
 
-Container::get('hooks')->fire('view.moderate.move_topics.start');
-?>
-
-<div class="blockform">
-    <h2><span><?php echo($action == 'single') ? __('Move topic') : __('Move topics') ?></span></h2>
-    <div class="box">
-        <form method="post" action="">
-            <input type="hidden" name="csrf_name" value="<?= $csrf_name; ?>"><input type="hidden" name="csrf_value" value="<?= $csrf_value; ?>">
-            <div class="inform">
-                <input type="hidden" name="topics" value="<?= $topics ?>" />
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                {{ action == 'single' ? trans('Move topic') : trans('Move topics') }}
+            </h3>
+        </div>
+        <div class="list-group">
+            <div class="list-group-item">
                 <fieldset>
-                    <legend><?= __('Move legend') ?></legend>
+                    <legend>{{ trans('Move legend') }}</legend>
                     <div class="infldset">
-                        <label><?= __('Move to') ?>
+                        <label>{{ trans('Move to') }}
                         <br /><select name="move_to_forum">
-                                <?= $list_forums ?>
+                                {{ list_forums|raw }}
                             </optgroup>
                         </select>
                         <br /></label>
                         <div class="rbox">
-                            <label><input type="checkbox" name="with_redirect" value="1"<?php if ($action == 'single') {
-                                echo ' checked="checked"';
-} ?> /><?= __('Leave redirect') ?><br /></label>
+                            <label>
+                                <input type="checkbox" name="with_redirect" value="1"{{ action == 'single' ? ' checked="checked"' : '' }} />{{ trans('Leave redirect') }}<br />
+                            </label>
                         </div>
                     </div>
                 </fieldset>
             </div>
-            <p class="buttons"><input type="submit" name="move_topics_to" value="<?= __('Move') ?>" /> <a href="javascript:history.go(-1)"><?= __('Go back') ?></a></p>
-        </form>
-    </div>
-</div>
+        </div>
+        <div class="panel-footer">
+            <input class="btn btn-primary" type="submit" name="move_topics_to" value="{{ trans('Move') }}" />
+            <a class="btn btn-primary" href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+        </div>
+    </form>
 
-<?php
-Container::get('hooks')->fire('view.moderate.move_topics.end');
+{{ fireHook('view.moderate.move_topics.end') }}
+{% endblock content %}

@@ -109,14 +109,14 @@ class Options
             }
         }
 
-        $languages = \RunBB\Core\Lister::getLangs();
-        if (!in_array($form['default_lang'], $languages)) {
-            throw new  RunBBException(__('Bad request'), 404);
+        $languages = Lang::getList();
+        if (Utils::recursiveArraySearch($form['default_lang'], $languages) === false) {
+            throw new RunBBException(__('Bad request'), 404);
         }
 
         $styles = \RunBB\Core\Lister::getStyles();
         if (!in_array($form['default_style'], $styles)) {
-            throw new  RunBBException(__('Bad request'), 404);
+            throw new RunBBException(__('Bad request'), 404);
         }
 
         if ($form['time_format'] == '') {
@@ -278,18 +278,18 @@ class Options
 
     public function getLangs()
     {
-        $langs = \RunBB\Core\Lister::getLangs();
+        $langs = Lang::getList();
         $langs = Container::get('hooks')->fire('model.admin.options.get_langs.langs', $langs);
 
         $output = '';
 
         foreach ($langs as $temp) {
-            if (ForumSettings::get('o_default_lang') == $temp) {
-                $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'" selected="selected">'.
-                    str_replace('_', ' ', $temp).'</option>'."\n";
+            if (ForumSettings::get('o_default_lang') == $temp['name']) {
+                $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp['name'].'" selected="selected">'.
+                    str_replace('_', ' ', $temp['name']).'</option>'."\n";
             } else {
-                $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp.'">'.
-                    str_replace('_', ' ', $temp).'</option>'."\n";
+                $output .= "\t\t\t\t\t\t\t\t\t\t\t".'<option value="'.$temp['name'].'">'.
+                    str_replace('_', ' ', $temp['name']).'</option>'."\n";
             }
         }
 

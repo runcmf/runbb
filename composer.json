@@ -21,6 +21,7 @@
   "require": {
     "php": ">=5.6.0",
     "slim/slim": "~3.7",
+    "twig/twig": "~1.31",
     "slim/flash": "~0.2",
     "j4mie/idiorm": "~1.5",
     "gettext/gettext": "~4.2",

@@ -98,7 +98,7 @@ class Profile
         $user = $this->model->getUserInfo($args['id']);
 
         if ($user->signature != '') {
-            $parsed_signature = Container::get('parser')->parseSignature($user->signature);
+            $parsed_signature = Container::get('parser')->parseMessage($user->signature);
         }
 
         // View or edit?
@@ -135,7 +135,7 @@ class Profile
                     'user_disp' => $user_disp,
                     'forum_time_formats' => Container::get('forum_time_formats'),
                     'forum_date_formats' => Container::get('forum_date_formats'),
-                    'languages' => \RunBB\Core\Lister::getLangs()
+                    'languages' => Lang::getList()
                 ]);
 
                 View::addTemplate('@forum/profile/section_essentials')->display();

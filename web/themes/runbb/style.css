@@ -253,6 +253,15 @@ nav ul .isactive {
 nav ul .isactive a:hover {
     color: #fff
 }
+.navbar-brand {
+    padding: 0;
+}
+.navbar-brand img {
+    margin-top: -15px;
+}
+.navbar-nav {
+    background: #222222;
+}
 
 .avatar {
     border-radius: 50% !important;
@@ -270,17 +279,17 @@ nav ul .isactive a:hover {
     vertical-align: middle
 }
 nav .navbar-right {
-    float: right
+    /*float: right*/
 }
 nav .nav-search {
-    padding-top: 10px;
+    padding-top: 8px;
 }
 nav .navbar-right input {
-    width: 100%;
-    padding: 5px 5px;
-    border-radius: 3px;
-    background-color: #fff;
-    border: none
+    /*width: 100%;*/
+    /*padding: 5px 5px;*/
+    /*border-radius: 3px;*/
+    /*background-color: #fff;*/
+    /*border: none*/
 }
 nav .navbar-right input:focus {
     outline: 0

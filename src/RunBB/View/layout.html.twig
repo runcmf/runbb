@@ -86,15 +86,17 @@
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <img src="{{ baseStatic() }}/assets/img/logo.png" align="left" width="64" height="50" alt="RunCMF" title="RunCMF"/>
-                <a class="navbar-brand" href="/">RunBB</a>
-
+                <a class="navbar-brand" href="/">
+                    <img src="{{ baseStatic() }}/assets/img/logo.png" align="left" width="64" height="61" alt="RunCMF" title="RunCMF"/>
+                </a>
+            </div>
+            <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <!-- navlinks -->
                     {% for row in navlinks %}
@@ -106,17 +108,13 @@
                     {% endfor %}
                     <!-- /navlinks -->
                 </ul>
-
-            </div>
-            <div id="navbar" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
                     {% include '@forum/userMenu.html.twig' %}
 
                     <li>
-                        <form method="get" action="{{ pathFor('search') }}" class="nav-search">
+                        <form role="search" method="get" action="{{ pathFor('search') }}" class="nav-search">
                             <input type="hidden" name="action" value="search">
-                            &nbsp;
-                            <input type="text" name="keywords" size="20" maxlength="100" placeholder="{{ trans('Search') }}">
+                            <input class="form-control" type="text" name="keywords" size="20" maxlength="100" placeholder="{{ trans('Search') }}">
                         </form>
                     </li>
                 </ul>
@@ -323,7 +321,7 @@
                                 <label class="control-label col-sm-5" for="languageToChange">{{ trans('Language') }}</label>
                                 <select name="languageToChange" class="form-control" onchange="RunBB.changeLanguage();">
                                 {% for lang in languagesQSelect %}
-                                    <option value="{{ lang }}"{{ userGet('language') == lang ? ' selected="selected" ' : '' }}>{{ lang }}</option>
+                                    <option value="{{ lang.name }}"{{ userGet('language') == lang.name ? ' selected="selected" ' : '' }}>{{ lang.name }}</option>
                                 {% endfor %}
                                 </select>
                             </form>

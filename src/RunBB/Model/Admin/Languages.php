@@ -59,10 +59,10 @@ class Languages
             KEY `lid` (`lid`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",];
 
-    public function getLangList()
-    {
-        return \ORM::forTable(ORM_TABLE_PREFIX.'languages')->findArray();
-    }
+//    public function getLangList()
+//    {
+//        return \ORM::forTable(ORM_TABLE_PREFIX.'languages')->findArray();
+//    }
 
     public function getLangInfo($id = 0)
     {

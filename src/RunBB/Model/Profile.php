@@ -9,6 +9,7 @@
 
 namespace RunBB\Model;
 
+use RunBB\Core\Interfaces\Lang;
 use RunBB\Exception\RunBBException;
 use RunBB\Core\Random;
 use RunBB\Core\Url;
@@ -217,8 +218,9 @@ class Profile
                     throw new  RunBBException(__('Banned email'), 403);
                 } elseif (ForumSettings::get('o_mailing_list') != '') {
                     // Load the "banned email change" template
-                    $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
-                        User::get()->language.'/mail_templates/banned_email_change.tpl'));
+//                    $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
+//                        User::get()->language.'/mail_templates/banned_email_change.tpl'));
+                    $mail_tpl = Lang::getMailTemplate('banned_email_change')->text;
                     $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_tpl', $mail_tpl);
 
                     // The first row contains the subject
@@ -262,8 +264,9 @@ class Profile
                     }
 
                     // Load the "dupe email change" template
-                    $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
-                        User::get()->language.'/mail_templates/dupe_email_change.tpl'));
+//                    $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
+//                        User::get()->language.'/mail_templates/dupe_email_change.tpl'));
+                    $mail_tpl = Lang::getMailTemplate('dupe_email_change')->text;
                     $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_dupe_tpl', $mail_tpl);
 
                     // The first row contains the subject
@@ -307,8 +310,9 @@ class Profile
             $user = $user->save();
 
             // Load the "activate email" template
-            $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
-                User::get()->language.'/mail_templates/activate_email.tpl'));
+//            $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
+//                User::get()->language.'/mail_templates/activate_email.tpl'));
+            $mail_tpl = Lang::getMailTemplate('activate_email')->text;
             $mail_tpl = Container::get('hooks')->fire('model.profile.change_email_mail_activate_tpl', $mail_tpl);
 
             // The first row contains the subject
@@ -869,10 +873,10 @@ class Profile
 
                 // Make sure we got a valid language string
                 if (Input::post('form_language')) {
-                    $languages = \RunBB\Core\Lister::getLangs();
+                    $languages = Lang::getList();
                     $form['language'] = Utils::trim(Input::post('form_language'));
-                    if (!in_array($form['language'], $languages)) {
-                        throw new  RunBBException(__('Bad request'), 404);
+                    if (!Utils::recursiveArraySearch($form['language'], $languages)) {
+                        throw new  RunBBException('Language not exists', 404);
                     }
                 }
 
@@ -1006,7 +1010,7 @@ class Profile
                         $errors = [];
 
                         $form['signature'] = Container::get('parser')
-                            ->preparseBBcode($form['signature'], $errors, true);
+                            ->parseForSave($form['signature'], $errors, true);
 
                         if (count($errors) > 0) {
                             throw new  RunBBException('<ul><li>'.implode('</li><li>', $errors).'</li></ul>');
@@ -1654,8 +1658,10 @@ class Profile
         }
 
         // Load the "form email" template
-        $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.User::get()->language.
-            '/mail_templates/form_email.tpl'));
+//        $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.User::get()->language.
+//            '/mail_templates/form_email.tpl'));
+        $mail_tpl = Lang::getMailTemplate('form_email')->text;
+
         $mail_tpl = Container::get('hooks')->fire('model.profile.send_email_mail_tpl', $mail_tpl);
 
         // The first row contains the subject
@@ -1671,7 +1677,8 @@ class Profile
 
         $mail_message = Container::get('hooks')->fire('model.profile.send_email_mail_message', $mail_message);
 
-        Container::get('email')->dispatchMail(
+        // TODO check result
+        $result = Container::get('email')->dispatchMail(
             $mail['recipient_email'],
             $mail_subject,
             $mail_message,
@@ -1679,9 +1686,10 @@ class Profile
             User::get()->username
         );
 
-        $update_last_mail_sent = \ORM::for_table(ORM_TABLE_PREFIX.'users')->where('id', User::get()->id)
-                                                  ->find_one()
-                                                  ->set('last_email_sent', time());
+        $update_last_mail_sent = \ORM::forTable(ORM_TABLE_PREFIX.'users')
+            ->where('id', User::get()->id)
+            ->findOne()
+            ->set('last_email_sent', time());
         $update_last_mail_sent = Container::get('hooks')->fireDB(
             'model.profile.send_email_update_last_mail_sent',
             $update_last_mail_sent
@@ -1692,7 +1700,7 @@ class Profile
         // after the email is sent) TODO
         //$redirect_url = validate_redirect(Input::post('redirect_url'), 'index.php');
 
-        return Router::redirect(Router::pathFor('home'), __('Email sent redirect'));
+        Router::redirect(Router::pathFor('home'), __('Email sent redirect'));
     }
 
     public function displayIpInfo($ip)

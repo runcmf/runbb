@@ -1276,7 +1276,7 @@ class Topic
                 //     $cur_post['signature_formatted'] = $avatar_cache[$cur_post['poster_id']];
                 // } else {
                     $cur_post['signature_formatted'] = Container::get('parser')
-                        ->parseSignature($cur_post['signature']);
+                        ->parseMessage($cur_post['signature']);
                 //     $avatar_cache[$cur_post['poster_id']] = $cur_post['signature_formatted'];
                 // }
             }

@@ -22,9 +22,12 @@ class Help
     {
         Container::get('hooks')->fire('controller.help.start');
 
+        $model = new \RunBB\Model\Admin\Parser();
+
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Help')],
             'active_page' => 'help',
+            'smiliesList' => $model->getSmilies()
         ])->addTemplate('@forum/help')->display();
     }
 }

@@ -22,7 +22,7 @@ class Maintenance
 
     public function rebuild()
     {
-        $per_page = Input::query('i_per_page') ? intval(Input::query('i_per_page')) : 0;
+        $per_page = Input::query('i_per_page') ? (int)Input::query('i_per_page') : 0;
         $per_page = Container::get('hooks')->fire('model.admin.maintenance.rebuild.per_page', $per_page);
 
         // Check per page is > 0
@@ -60,22 +60,22 @@ class Maintenance
     {
         $query_str = '';
 
-        $per_page = Input::query('i_per_page') ? intval(Input::query('i_per_page')) : 0;
+        $per_page = Input::query('i_per_page') ? (int)Input::query('i_per_page') : 0;
         $per_page = Container::get('hooks')->fire('model.admin.maintenance.get_query_str.per_page', $per_page);
-        $start_at = Input::query('i_start_at') ? intval(Input::query('i_start_at')) : 0;
+        $start_at = Input::query('i_start_at') ? (int)Input::query('i_start_at') : 0;
         $start_at = Container::get('hooks')->fire('model.admin.maintenance.get_query_str.start_at', $start_at);
 
         // Fetch posts to process this cycle
         $result['select'] = ['p.id', 'p.message', 't.subject', 't.first_post_id'];
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->table_alias('p')
-                        ->select_many($result['select'])
-                        ->inner_join(ORM_TABLE_PREFIX.'topics', ['t.id', '=', 'p.topic_id'], 't')
-                        ->where_gte('p.id', $start_at)
-                        ->order_by_asc('p.id')
+        $result = \ORM::forTable(ORM_TABLE_PREFIX.'posts')->tableAlias('p')
+                        ->selectMany($result['select'])
+                        ->innerJoin(ORM_TABLE_PREFIX.'topics', ['t.id', '=', 'p.topic_id'], 't')
+                        ->whereGte('p.id', $start_at)
+                        ->orderByAsc('p.id')
                         ->limit($per_page);
         $result = Container::get('hooks')->fireDB('model.admin.maintenance.get_query_str.query', $result);
-        $result = $result->find_many();
+        $result = $result->findArray();
 
         $end_at = 0;
         foreach ($result as $cur_item) {
@@ -97,18 +97,18 @@ class Maintenance
 
         // Check if there is more work to do
         if ($end_at > 0) {
-            $id = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
-                ->where_gt('id', $end_at)
+            $query = \ORM::forTable(ORM_TABLE_PREFIX.'posts')
+                ->whereGt('id', $end_at)
                 ->select('id')
-                ->order_by_asc('id')
-                ->find_one();
+                ->orderByAsc('id')
+                ->findOne();
 
-            if ($id) {
-                $query_str = '?action=rebuild&i_per_page='.$per_page.'&i_start_at='.intval($id);
+            if ($query->id) {
+                $query_str = '?action=rebuild&i_per_page='.$per_page.'&i_start_at='.(int)$query->id;
             }
         }
 
-        $pdo = \ORM::get_db();
+        $pdo = \ORM::getDb();
         $pdo = null;
 
         $query_str = Container::get('hooks')->fire('model.admin.maintenance.get_query_str', $query_str);

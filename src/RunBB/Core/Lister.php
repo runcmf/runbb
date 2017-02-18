@@ -82,20 +82,20 @@ class Lister
     /**
      * Get available langs
      */
-    public static function getLangs($folder = '')
-    {
-        $langs = [];
-
-        $iterator = new \DirectoryIterator(ForumEnv::get('FORUM_ROOT').'lang/');
-        foreach ($iterator as $child) {
-            if (!$child->isDot() && $child->isDir() &&
-                file_exists($child->getPathname().DIRECTORY_SEPARATOR.'common.po')) {
-                // If the lang pack is well formed, add it to the list
-                $langs[] = $child->getFileName();
-            }
-        }
-
-        natcasesort($langs);
-        return $langs;
-    }
+//    public static function getLangs($folder = '')
+//    {
+//        $langs = [];
+//
+//        $iterator = new \DirectoryIterator(ForumEnv::get('FORUM_ROOT').'lang/');
+//        foreach ($iterator as $child) {
+//            if (!$child->isDot() && $child->isDir() &&
+//                file_exists($child->getPathname().DIRECTORY_SEPARATOR.'common.po')) {
+//                // If the lang pack is well formed, add it to the list
+//                $langs[] = $child->getFileName();
+//            }
+//        }
+//
+//        natcasesort($langs);
+//        return $langs;
+//    }
 }

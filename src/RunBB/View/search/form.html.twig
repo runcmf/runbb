@@ -12,10 +12,10 @@
                     <legend>{{ trans('Search criteria legend') }}</legend>
                     <input type="hidden" name="action" value="search" />
                     <label class="conl">{{ trans('Keyword search') }}<br />
-                        <input type="text" name="keywords" size="40" maxlength="100" /><br />
+                        <input class="form-control" type="text" name="keywords" maxlength="100" /><br />
                     </label>
                     <label class="conl">{{ trans('Author search') }}<br />
-                        <input id="author" type="text" name="author" size="25" maxlength="25" /><br />
+                        <input class="form-control" id="author" type="text" name="author" maxlength="25" /><br />
                     </label>
                     <p class="clearb">{{ trans('Search info') }}</p>
                 </div>
@@ -28,7 +28,7 @@
                     </div>
                     <div class="col-xs-8 col-sm-8">
                         <label class="conl">{{ trans('Search in') }}
-                            <br /><select id="search_in" name="search_in">
+                            <br /><select class="form-control" id="search_in" name="search_in">
                                 <option value="0">{{ trans('Message and subject') }}</option>
                                 <option value="1">{{ trans('Message only') }}</option>
                                 <option value="-1">{{ trans('Topic only') }}</option>
@@ -43,7 +43,7 @@
                 <legend>{{ trans('Search results legend') }}</legend>
                 <div class="infldset">
                     <label class="conl">{{ trans('Sort by') }}
-                        <br /><select name="sort_by">
+                        <br /><select class="form-control" name="sort_by">
                             <option value="0">{{ trans('Sort by post time') }}</option>
                             <option value="1">{{ trans('Sort by author') }}</option>
                             <option value="2">{{ trans('Sort by subject') }}</option>
@@ -51,13 +51,13 @@
                         </select>
                         <br /></label>
                     <label class="conl">{{ trans('Sort order') }}
-                        <br /><select name="sort_dir">
+                        <br /><select class="form-control" name="sort_dir">
                             <option value="DESC">{{ trans('Descending') }}</option>
                             <option value="ASC">{{ trans('Ascending') }}</option>
                         </select>
                         <br /></label>
                     <label class="conl">{{ trans('Show as') }}
-                        <br /><select name="show_as">
+                        <br /><select class="form-control" name="show_as">
                             <option value="topics">{{ trans('Show as topics') }}</option>
                             <option value="posts">{{ trans('Show as posts') }}</option>
                         </select>

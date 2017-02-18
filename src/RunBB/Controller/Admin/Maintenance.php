@@ -10,6 +10,7 @@
 namespace RunBB\Controller\Admin;
 
 use RunBB\Core\AdminUtils;
+use RunBB\Core\Interfaces\Router;
 use RunBB\Core\Utils;
 
 class Maintenance
@@ -37,7 +38,7 @@ class Maintenance
 
             View::setPageInfo([
                 'page_title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Rebuilding search index')],
-                'query_str' => $this->model->getQueryStr()
+                'query_str' => Router::pathFor('adminMaintenance') . $this->model->getQueryStr()
             ])->addTemplate('@forum/admin/maintenance/rebuild')->display();
         }
 

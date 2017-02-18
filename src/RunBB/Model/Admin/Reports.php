@@ -23,7 +23,7 @@ class Reports
         $set_zap_report = Container::get('hooks')->fire('model.admin.reports.set_zap_report', $set_zap_report);
 
         // Update report to indicate it has been zapped
-        if (!$result) {
+        if ($result->zapped === null) {
             \ORM::for_table(ORM_TABLE_PREFIX.'reports')
                 ->where('id', $zap_id)
                 ->find_one()
@@ -32,18 +32,18 @@ class Reports
         }
 
         // Remove zapped reports to keep only last 10
-        $threshold = \ORM::for_table(ORM_TABLE_PREFIX.'reports')
+        $threshold = \ORM::forTable(ORM_TABLE_PREFIX.'reports')
             ->select('zapped')
-            ->where_not_null('zapped')
-            ->order_by_desc('zapped')
+            ->whereNotNull('zapped')
+            ->orderByDesc('zapped')
             ->offset(10)
             ->limit(1)
-            ->find_one();
+            ->findOne();
 
         if ($threshold) {
-            \ORM::for_table(ORM_TABLE_PREFIX.'reports')
-                ->where_lte('zapped', $threshold)
-                ->delete_many();
+            \ORM::forTable(ORM_TABLE_PREFIX.'reports')
+                ->whereLte('zapped', $threshold->zapped)
+                ->deleteMany();
         }
 
         return true;

@@ -51,17 +51,17 @@
     $(document).ready(function(){
         $(document).on('click','.signup-tab',function(e){
             e.preventDefault();
-            $('#signup-taba').tab('show');
+            $('#signup-tab').tab('show');
         });
 
         $(document).on('click','.signin-tab',function(e){
             e.preventDefault();
-            $('#signin-taba').tab('show');
+            $('#signin-tab').tab('show');
         });
 
         $(document).on('click','.forgetpass-tab',function(e){
             e.preventDefault();
-            $('#forgetpass-taba').tab('show');
+            $('#forgetpass-tab').tab('show');
         });
     });
 </script>
@@ -79,9 +79,9 @@
                     <div role="tabpanel" class="login-tab">
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs" role="tablist">
-                            <li role="presentation" class="active"><a id="signin-taba" href="#home" aria-controls="home" role="tab" data-toggle="tab">{{ trans('Login') }}</a></li>
-                            <li role="presentation"><a id="signup-taba" href="#profile" aria-controls="profile" role="tab" data-toggle="tab">{{ trans('Register') }}</a></li>
-                            <li role="presentation"><a id="forgetpass-taba" href="#forget_password" aria-controls="forget_password" role="tab" data-toggle="tab">{{ trans('Request pass') }}</a></li>
+                            <li role="presentation" class="active"><a id="signin-tab" href="#home" aria-controls="home" role="tab" data-toggle="tab">{{ trans('Login') }}</a></li>
+                            <li role="presentation"><a id="signup-tab" href="#profile" aria-controls="profile" role="tab" data-toggle="tab">{{ trans('Register') }}</a></li>
+                            <li role="presentation"><a id="forgetpass-tab" href="#forget_password" aria-controls="forget_password" role="tab" data-toggle="tab">{{ trans('Request pass') }}</a></li>
                         </ul>
 
                         <!-- Tab panes -->
@@ -108,7 +108,7 @@
                                         <span class="help-block has-error" id="password-error"></span>
                                     </div>
 
-                                    <label><input type="checkbox" name="save_pass" value="1" tabindex="3" checked="checked" />{{ trans('Remember me') }}<br /></label>
+                                    <small><input type="checkbox" name="save_pass" value="1" tabindex="3" checked="checked" /> {{ trans('Remember me') }}<br /></small>
 
                                     <div class="clearfix"></div>
                                     <div class="login-modal-footer">
@@ -137,7 +137,7 @@
                                     </div>
                                     {% if settings('o_regs_verify') == '0' %}
                                         <div class="form-group">
-                                            <span class="clearb">{{ trans('Pass info') }}</span>
+                                            <small>{{ trans('Pass info') }}</small>
                                             <div class="input-group">
                                                 <div class="input-group-addon"><i class="fa fa-lock"></i></div>
                                                 <input type="password" class="form-control" id="req_password1" name="req_password1" value="{{ inputPost('req_password1') ? inputPost('req_password1') : '' }}" placeholder="{{ trans('Password') }}">
@@ -175,18 +175,18 @@
                                     {% endif %}
 
                                     {#// Only display the language selection box if there's more than one language available#}
-                                    {% if languages|length > 1 %}
+                                    {% if languagesQSelect|length > 1 %}
                                         <div class="form-group">
-                                            <label for="sel1">{{ trans('Localisation legend') }}</label>
+                                            <small>{{ trans('Localisation legend') }}</small>
                                             <select class="form-control" id="sel1" name="language">
-                                                {% for lang in languages %}
-                                                <option value="{{ lang }}"{{ settings('o_default_lang') == lang ? ' selected="selected"' }}>{{ lang }}</option>
+                                                {% for lang in languagesQSelect %}
+                                                <option value="{{ lang.name }}"{{ settings('o_default_lang') == lang.name ? ' selected="selected"' }}>{{ lang.name }}</option>
                                                 {% endfor %}
                                             </select>
                                         </div>
                                     {% endif %}
                                     <div class="form-group">
-                                        <label for="captcha">{{ trans(['Robot question', question[index_questions]]) }}</label>
+                                        <small>{{ trans(['Robot question', question[index_questions]]) }}</small>
                                         <div class="input-group">
                                             <div class="input-group-addon"><i class="fa fa-question"></i></div>
                                             <input name="captcha" id="captcha" type="text" class="form-control" maxlength="30" placeholder="{{ trans('Robot title') }}" />

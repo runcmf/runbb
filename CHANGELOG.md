@@ -1,3 +1,11 @@
+###2017-02-18
+* get email templates from db  
+* build parser bundles depend of groups  
+
+###2017-02-17
+* fix navbar
+* build moderator templates
+
 ###2017-02-14
 * remove php templates. used only twig  
 * fix installer

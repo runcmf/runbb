@@ -72,7 +72,7 @@ class Register
             'is_indexed' => true,
             'errors' => $user['errors'],
             'index_questions' => $index_questions,
-            'languages' => \RunBB\Core\Lister::getLangs(),
+            'languages' => Lang::getList(),
             'question' => array_keys($lang_antispam_questions),
             'qencoded' => md5(array_keys($lang_antispam_questions)[$index_questions]),
         ])->addTemplate('@forum/register/form')->display();

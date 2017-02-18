@@ -117,7 +117,7 @@
                         <label>{{ trans('Language') }}
                         <br /><select name="form_language">
                         {% for lang in languages %}
-                            <option value="{{ lang }}"{{ user.language == lang ? ' selected="selected" ' : '' }}>{{ lang }}</option>
+                            <option value="{{ lang.name }}"{{ user.language == lang.name ? ' selected="selected" ' : '' }}>{{ lang.name }}</option>
                         {% endfor %}
                         </select>
                         <br /></label>

@@ -131,11 +131,7 @@ class View
      */
     public function addTemplatesDirectory($dir = '', $alias = 'forum')
     {
-//        if ($this->loader === null) {
-//            $this->loader = $this->twig->getLoader();
-//        }
         $this->loader->addPath($dir, $alias);
-
         return $this;
     }
 
@@ -148,7 +144,6 @@ class View
         $data = [];
         $data = array_merge($this->getDefaultPageInfo(), $this->data->all(), (array) $data);
         $data = Container::get('hooks')->fire('view.alter_data', $data);
-//        $data['feather'] = true;
         $data['assets'] = $this->getAssets();
 
         $templates = $this->getTemplates();
@@ -160,7 +155,7 @@ class View
         $data['flashMessages'] = Container::get('flash')->getMessages();
         $data['style'] = $style;
         $data['navlinks'] = $this->buildNavLinks($data['active_page']);
-        $data['languagesQSelect'] = \RunBB\Core\Lister::getLangs();
+        $data['languagesQSelect'] = Lang::getList();
         $data['stylesQSelect'] = \RunBB\Core\Lister::getStyles();
         $data['currentPage'] = Url::current();
 
@@ -284,7 +279,6 @@ class View
     {
         $tpl = (array) $tpl;
         foreach ($tpl as $key => $tpl_file) {
-//            $this->templates[(int) $priority][] = $this->getTemplatePathname((string) $tpl_file);
             $this->templates[(int) $priority][] = (string) $tpl_file;
         }
         return $this;
@@ -371,7 +365,8 @@ class View
                     'lang/' . User::get()->language . '/antispam.php';
                 $index_questions = rand(0, count($lang_antispam_questions) - 1);
                 $data['index_questions'] = $index_questions;
-                $data['languages'] = \RunBB\Core\Lister::getLangs();
+//                $data['languages'] = \RunBB\Core\Lister::getLangs();
+//                $data['languages'] = Lang::getList();
                 $data['question'] = array_keys($lang_antispam_questions);
                 $data['qencoded'] = md5(array_keys($lang_antispam_questions)[$index_questions]);
                 $data['logOutLink'] = Router::pathFor(
@@ -383,9 +378,9 @@ class View
 
         if (ForumEnv::get('FEATHER_SHOW_INFO')) {
             $data['exec_info'] = \RunBB\Model\Debug::getInfo();
-            if (ForumEnv::get('FEATHER_SHOW_QUERIES')) {
-                $data['queries_info'] = \RunBB\Model\Debug::getQueries();
-            }
+//            if (ForumEnv::get('FEATHER_SHOW_QUERIES')) {
+//                $data['queries_info'] = \RunBB\Model\Debug::getQueries();
+//            }
         }
 
         return $data;

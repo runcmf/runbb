@@ -213,19 +213,19 @@ class Index
 
             // Is this a redirect forum?
             if ($cur_forum->redirect_url != '') {
-                $cur_forum->forum_field = '<h4><span class="redirtext">'.__('Link to').'</span> <a href="'.
+                $cur_forum->forum_field = '<span class="redirtext">'.__('Link to').'</span> <a href="'.
                     Utils::escape($cur_forum->redirect_url).'" title="'.__('Link to').' '.
                     Utils::escape($cur_forum->redirect_url).'">'.
-                    Utils::escape($cur_forum->forum_name).'</a></h4>';
+                    Utils::escape($cur_forum->forum_name).'</a>';
                 $cur_forum->num_topics_formatted = $cur_forum->num_posts_formatted = '-';
                 $cur_forum->item_status .= ' iredirect';
                 $cur_forum->icon_type = 'icon';
             } else {
                 $forum_name = Url::slug($cur_forum->forum_name);
-                $cur_forum->forum_field = '<h4><a href="'.
+                $cur_forum->forum_field = '<a href="'.
                     Router::pathFor('Forum', ['id' => $cur_forum->fid, 'name' => $forum_name]).'">'.
                     Utils::escape($cur_forum->forum_name).'</a>'.(!empty($forum_field_new) ? ' '.
-                        $forum_field_new : '').'</h4>';
+                        $forum_field_new : '');
                 $cur_forum->num_topics_formatted = $cur_forum->num_topics;
                 $cur_forum->num_posts_formatted = $cur_forum->num_posts;
             }

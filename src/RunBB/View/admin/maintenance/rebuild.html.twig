@@ -1,13 +1,13 @@
 {% extends '@forum/adminLayout.html.twig' %}
 
-Container::get('hooks')->fire('view.admin.maintenance.rebuild.start');
+{% block content %}
+{{ fireHook('view.admin.maintenance.rebuild.start') }}
 
+<h1>{{ trans('Rebuilding index info') }}</h1>
 
-<h1><?= __('Rebuilding index info') ?></h1>
+<script type="text/javascript">window.location="{{ query_str|raw }}"</script>
 
-<script type="text/javascript">window.location="<?= Router::pathFor('adminMaintenance').$query_str ?>"</script>
+<p>{{ trans(['Javascript redirect failed', ('<a href="' ~query_str|raw ~'">' ~trans('Click here') ~'</a>')|raw]) }}</p>
 
-<p><?= sprintf(__('Javascript redirect failed'), '<a href="'.Router::pathFor('adminMaintenance').$query_str.'">'.__('Click here').'</a>')?></p>
-
-
-Container::get('hooks')->fire('view.admin.maintenance.prune.end');
+{{ fireHook('view.admin.maintenance.rebuild.end') }}
+{% endblock content %}

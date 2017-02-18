@@ -235,7 +235,7 @@ class Post
 
         // Validate BBCode syntax
         if (ForumSettings::get('p_message_bbcode') == '1') {
-            $message = Container::get('parser')->preparseBBcode($message, $errors);
+            $message = Container::get('parser')->parseForSave($message, $errors);
             $message = Container::get('hooks')->fire('model.post.check_errors_before_post_bbcode', $message);
         }
 
@@ -301,7 +301,7 @@ class Post
 
         // Validate BBCode syntax
         if (ForumSettings::get('p_message_bbcode') == '1') {
-            $message = Container::get('parser')->preparseBBcode($message, $errors);
+            $message = Container::get('parser')->parseForSave($message, $errors);
         }
 
         if (empty($errors)) {
@@ -669,8 +669,9 @@ class Post
             // We send it to the complete mailing-list in one swoop
             if (ForumSettings::get('o_mailing_list') != '') {
                 // Load the "new report" template
-                $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.User::get()->language.
-                    '/mail_templates/new_report.tpl'));
+//                $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.User::get()->language.
+//                    '/mail_templates/new_report.tpl'));
+                $mail_tpl = Lang::getMailTemplate('new_report')->text;
                 $mail_tpl = Container::get('hooks')->fire('model.post.insert_report_mail_tpl', $mail_tpl);
 
                 // The first row contains the subject
@@ -918,19 +919,23 @@ class Post
             foreach ($result as $cur_subscriber) {
                 // Is the subscription email for $cur_subscriber['language'] cached or not?
                 if (!isset($notification_emails[$cur_subscriber['language']])) {
-                    if (file_exists(ForumEnv::get('FORUM_ROOT').'lang/'.$cur_subscriber['language'].
-                        '/mail_templates/new_reply.tpl')) {
+//                    if (file_exists(ForumEnv::get('FORUM_ROOT').'lang/'.$cur_subscriber['language'].
+//                        '/mail_templates/new_reply.tpl')) {
+                        $mail_tpl = Lang::getMailTemplate('new_reply')->text;
+                    if ($mail_tpl) {
                         // Load the "new reply" template
-                        $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
-                            $cur_subscriber['language'].'/mail_templates/new_reply.tpl'));
+//                        $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
+//                            $cur_subscriber['language'].'/mail_templates/new_reply.tpl'));
                         $mail_tpl = Container::get('hooks')->fire(
                             'model.post.send_notifications_reply_mail_tpl',
                             $mail_tpl
                         );
 
                         // Load the "new reply full" template (with post included)
-                        $mail_tpl_full = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
-                            $cur_subscriber['language'].'/mail_templates/new_reply_full.tpl'));
+//                        $mail_tpl_full = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
+//                            $cur_subscriber['language'].'/mail_templates/new_reply_full.tpl'));
+                        $mail_tpl_full = Lang::getMailTemplate('new_reply_full')->text;
+
                         $mail_tpl_full = Container::get('hooks')->fire(
                             'model.post.send_notifications_reply_mail_tpl_full',
                             $mail_tpl_full
@@ -1193,19 +1198,22 @@ class Post
             foreach ($result as $cur_subscriber) {
                 // Is the subscription email for $cur_subscriber['language'] cached or not?
                 if (!isset($notification_emails[$cur_subscriber['language']])) {
-                    if (file_exists(ForumEnv::get('FORUM_ROOT').'lang/'.$cur_subscriber['language'].
-                        '/mail_templates/new_topic.tpl')) {
+                    $mail_tpl = Lang::getMailTemplate('new_topic')->text;
+//                    if (file_exists(ForumEnv::get('FORUM_ROOT').'lang/'.$cur_subscriber['language'].
+//                        '/mail_templates/new_topic.tpl')) {
+                    if ($mail_tpl) {
                         // Load the "new topic" template
-                        $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
-                            $cur_subscriber['language'].'/mail_templates/new_topic.tpl'));
+//                        $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
+//                            $cur_subscriber['language'].'/mail_templates/new_topic.tpl'));
                         $mail_tpl = Container::get('hooks')->fire(
                             'model.post.send_notifications_new_topic_mail_tpl',
                             $mail_tpl
                         );
 
                         // Load the "new topic full" template (with post included)
-                        $mail_tpl_full = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
-                            $cur_subscriber['language'].'/mail_templates/new_topic_full.tpl'));
+//                        $mail_tpl_full = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
+//                            $cur_subscriber['language'].'/mail_templates/new_topic_full.tpl'));
+                        $mail_tpl_full = Lang::getMailTemplate('new_topic_full')->text;
 
                         // The first row contains the subject (it also starts with "Subject:")
                         $first_crlf = strpos($mail_tpl, "\n");
@@ -1318,8 +1326,9 @@ class Post
         Container::get('hooks')->fire('model.post.warn_banned_user_start', $post, $new_pid);
 
         // Load the "banned email post" template
-        $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.User::get()->language.
-            '/mail_templates/banned_email_post.tpl'));
+//        $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.User::get()->language.
+//            '/mail_templates/banned_email_post.tpl'));
+        $mail_tpl = Lang::getMailTemplate('banned_email_post')->text;
         $mail_tpl = Container::get('hooks')->fire('model.post.warn_banned_user_mail_tpl', $mail_tpl);
 
         // The first row contains the subject

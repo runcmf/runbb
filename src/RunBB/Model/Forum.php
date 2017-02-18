@@ -101,10 +101,10 @@ class Forum
 
     public function getModerators($fid)
     {
-        $moderators = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+        $moderators = \ORM::forTable(ORM_TABLE_PREFIX.'forums')
             ->select('moderators')
             ->where('id', $fid)
-            ->find_one();
+            ->findOne();
 
         if ($moderators !== false) {
             $moderators->moderators = Container::get('hooks')
@@ -769,10 +769,10 @@ class Forum
         // The topic that we are merging into is the one with the smallest ID
         $merge_to_tid = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
             ->select('id')
-                            ->where_in('id', $topics)
-                            ->where('forum_id', $fid)
-                            ->order_by_asc('id')
-                            ->find_one();
+            ->whereIn('id', $topics)
+            ->where('forum_id', $fid)
+            ->orderByAsc('id')
+            ->findOne();
         $merge_to_tid = $merge_to_tid->id;
         $merge_to_tid = Container::get('hooks')->fire('model.forum.merge_topics_tid', $merge_to_tid);
 
@@ -785,24 +785,23 @@ class Forum
             $query .= ' OR (id IN('.implode(',', $topics).') AND id != '.$merge_to_tid.')';
         }
 
-        // TODO ?
-        \ORM::for_table(ORM_TABLE_PREFIX.'topics')->raw_execute($query);
+        \ORM::forTable(ORM_TABLE_PREFIX.'topics')->raw_execute($query);
 
         // Merge the posts into the topic
 //        $merge_posts = Container::get('hooks')->fireDB('model.forum.merge_topics_merge_posts', $merge_posts);
         // TODO slit for hook ???
-        \ORM::for_table(ORM_TABLE_PREFIX.'posts')
-            ->where('topic_id', $topics)
+        \ORM::forTable(ORM_TABLE_PREFIX.'posts')
+            ->whereIn('topic_id', $topics)
             ->find_one()
             ->set(['topic_id' => $merge_to_tid])
             ->save();
 
         // Update any subscriptions
-        $find_ids = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')->select('user_id')
+        $find_ids = \ORM::forTable(ORM_TABLE_PREFIX.'topic_subscriptions')->select('user_id')
                         ->distinct()
-                        ->where_in('topic_id', $topics);
+                        ->whereIn('topic_id', $topics);
         $find_ids = Container::get('hooks')->fireDB('model.forum.merge_topics_find_ids', $find_ids);
-        $find_ids = $find_ids->find_many();
+        $find_ids = $find_ids->findMany();
 
         $subscribed_users = [];
         foreach ($find_ids as $id) {
@@ -810,11 +809,11 @@ class Forum
         }
 
         // Delete the subscriptions
-        $delete_subscriptions = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
-                                    ->where_in('topic_id', $topics);
+        $delete_subscriptions = \ORM::forTable(ORM_TABLE_PREFIX.'topic_subscriptions')
+                                    ->whereIn('topic_id', $topics);
         $delete_subscriptions = Container::get('hooks')
             ->fireDB('model.forum.merge_topics_delete_subscriptions', $delete_subscriptions);
-        $delete_subscriptions = $delete_subscriptions->delete_many();
+        $delete_subscriptions = $delete_subscriptions->deleteMany();
 
         // If users subscribed to one of the topics, keep subscription for merged topic
         foreach ($subscribed_users as $cur_user_id) {
@@ -823,7 +822,7 @@ class Forum
                 'user_id'   =>  $cur_user_id,
             ];
             // Insert the subscription
-            $subscriptions = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
+            $subscriptions = \ORM::forTable(ORM_TABLE_PREFIX.'topic_subscriptions')
                                 ->create()
                                 ->set($subscriptions['insert']);
             $subscriptions = Container::get('hooks')
@@ -833,27 +832,27 @@ class Forum
 
         // Without redirection the old topics are removed
         if (Input::post('with_redirect') == 0) {
-            $delete_topics = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
-                                ->where_in('id', $topics)
-                                ->where_not_equal('id', $merge_to_tid);
+            $delete_topics = \ORM::forTable(ORM_TABLE_PREFIX.'topics')
+                                ->whereIn('id', $topics)
+                                ->whereNotEqual('id', $merge_to_tid);
             $delete_topics = Container::get('hooks')
                 ->fireDB('model.forum.merge_topics_delete_topics', $delete_topics);
-            $delete_topics = $delete_topics->delete_many();
+            $delete_topics = $delete_topics->deleteMany();
         }
 
         // Count number of replies in the topic
-        $num_replies = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->where('topic_id', $merge_to_tid)->count('id') - 1;
+        $num_replies = \ORM::forTable(ORM_TABLE_PREFIX.'posts')->where('topic_id', $merge_to_tid)->count('id') - 1;
         $num_replies = Container::get('hooks')->fire('model.forum.merge_topics_num_replies', $num_replies);
 
         // Get last_post, last_post_id and last_poster
         $last_post['select'] = ['posted', 'id', 'poster'];
 
-        $last_post = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
-                        ->select_many($last_post['select'])
+        $last_post = \ORM::forTable(ORM_TABLE_PREFIX.'posts')
+                        ->selectMany($last_post['select'])
                         ->where('topic_id', $merge_to_tid)
-                        ->order_by_desc('id');
+                        ->orderByDesc('id');
         $last_post = Container::get('hooks')->fireDB('model.forum.merge_topics_last_post', $last_post);
-        $last_post = $last_post->find_one();
+        $last_post = $last_post->findOne();
 
         // Update topic
         $update_topic['insert'] = [
@@ -863,9 +862,9 @@ class Forum
             'last_poster'  => $last_post['poster'],
         ];
 
-        $topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $topic = \ORM::forTable(ORM_TABLE_PREFIX.'topics')
                     ->where('id', $merge_to_tid)
-                    ->find_one()
+                    ->findOne()
                     ->set($update_topic['insert']);
         $topic = Container::get('hooks')->fireDB('model.forum.merge_topics_update_topic', $topic);
         $topic = $topic->save();

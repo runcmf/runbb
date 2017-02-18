@@ -18,7 +18,7 @@ class Groups
 {
     public function fetchGroups()
     {
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'groups')->orderByExpr('g_id')->find_many();
+        $result = \ORM::forTable(ORM_TABLE_PREFIX.'groups')->orderByExpr('g_id')->findMany();
         Container::get('hooks')->fireDB('model.admin.groups.fetch_groups_query', $result);
         $groups = [];
         foreach ($result as $cur_group) {
@@ -399,5 +399,14 @@ class Groups
 
         $group_info = Container::get('hooks')->fire('model.admin.groups.get_title_members.group_info', $group_info);
         return $group_info;
+    }
+
+    public function setParserPlugins($group_id, array $plugins)
+    {
+        $p = \ORM::forTable(ORM_TABLE_PREFIX.'groups')
+            ->findOne($group_id)
+            ->set('g_parser_plugins', serialize($plugins))
+            ->save();
+        return $p;
     }
 }

@@ -37,7 +37,7 @@ class Install
     {
         $this->c = $c;
         $this->model = new \RunBB\Model\Install();
-        $this->available_langs = Lister::getLangs();
+        $this->available_langs = [];//Lister::getLangs();
         if (!is_dir(ForumEnv::get('WEB_ROOT') . 'themes/')) {
             $this->installStyles();
         }
@@ -149,9 +149,9 @@ class Install
                 }
 
                 // Validate language
-                if (!in_array($data['default_lang'], Lister::getLangs())) {
-                    $this->errors[] = __('Error default language');
-                }
+//                if (!in_array($data['default_lang'], Lister::getLangs())) {
+//                    $this->errors[] = __('Error default language');
+//                }
 
                 // Check if the cache directory is writable
                 if (!is_writable(ForumEnv::get('FORUM_CACHE_DIR'))) {
