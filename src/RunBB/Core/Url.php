@@ -757,18 +757,18 @@ class Url
      */
     public static function get($link, $args = null)
     {
-        $base_url = self::base() . Router::pathFor('home');
+        $base_url = self::base();
 
         $gen_link = $link;
         if ($args == null) {
-            $gen_link = $base_url.'/'.$link;
+            $gen_link = $base_url.$link;
         } elseif (!is_array($args)) {
             $gen_link = $base_url.'/'.str_replace('$1', $args, $link);
         } else {
             for ($i = 0; isset($args[$i]); ++$i) {
                 $gen_link = str_replace('$'.($i + 1), $args[$i], $gen_link);
             }
-            $gen_link = $base_url.'/'.$gen_link;
+            $gen_link = $base_url.$gen_link;
         }
 
         return $gen_link;

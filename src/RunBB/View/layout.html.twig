@@ -206,7 +206,7 @@
                   onclick="document.getElementById('flashmsg').className = 'flashmsg';">&times;
                     </span>
         </h2>
-        <p>{{ message.0 }}</p>
+        <p>{{ message.0|raw }}</p>
     </div>
     {% endfor %}
 </div>
