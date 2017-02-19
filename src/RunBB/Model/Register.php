@@ -11,7 +11,6 @@ namespace RunBB\Model;
 
 use RunBB\Exception\RunBBException;
 use RunBB\Core\Random;
-use RunBB\Core\Url;
 use RunBB\Core\Utils;
 use RunBB\Model\Auth as AuthModel;
 
@@ -110,8 +109,8 @@ class Register
         // Make sure we got a valid language string
         if (Input::post('language')) {
             $user['language'] = preg_replace('%[\.\\\/]%', '', Input::post('language'));
-            if (!file_exists(ForumEnv::get('FORUM_ROOT').'lang/'.$user['language'].'/common.po')) {
-                throw new  RunBBException(__('Bad request'), 500);
+            if (Utils::recursiveArraySearch($user['language'], Lang::getList()) === false) {
+                throw new  RunBBException('Language you choose not exists', 500);
             }
         } else {
             $user['language'] = ForumSettings::get('o_default_lang');
