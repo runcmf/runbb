@@ -9,6 +9,7 @@
 
 namespace RunBB\Model;
 
+use RunBB\Core\Url;
 use RunBB\Exception\RunBBException;
 use RunBB\Core\Random;
 use RunBB\Core\Utils;
@@ -152,14 +153,14 @@ class Register
                     ->create()
                     ->set($user['insert']);
         $user = Container::get('hooks')->fireDB('model.register.insert_user_query', $user);
-        $user = $user->save();
+        $user->save();
 
         $new_uid = \ORM::get_db()->lastInsertId(ForumSettings::get('db_prefix').'users');
 
         // If the mailing list isn't empty, we may need to send out some alerts
         if (ForumSettings::get('o_mailing_list') != '') {
             // If we previously found out that the email was banned
-            if (isset($user['banned_email'])) {
+            if (isset($user->banned_email)) {
                 // Load the "banned email register" template
 //                $mail_tpl = trim(file_get_contents(ForumEnv::get('FORUM_ROOT').'lang/'.
 //                    User::get()->language.'/mail_templates/banned_email_register.tpl'));
@@ -173,11 +174,11 @@ class Register
                     ->fire('model.register.insert_user_banned_mail_subject', $mail_subject);
 
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
-                $mail_message = str_replace('<username>', $user['username'], $mail_message);
-                $mail_message = str_replace('<email>', $user['email1'], $mail_message);
+                $mail_message = str_replace('<username>', $user->username, $mail_message);
+                $mail_message = str_replace('<email>', $user->email1, $mail_message);
                 $mail_message = str_replace(
                     '<profile_url>',
-                    Router::pathFor('userProfile', ['id' => $new_uid]),
+                    Url::get(Router::pathFor('userProfile', ['id' => $new_uid])),
                     $mail_message
                 );
                 $mail_message = str_replace(
@@ -207,11 +208,11 @@ class Register
                     ->fire('model.register.insert_user_dupe_mail_subject', $mail_subject);
 
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
-                $mail_message = str_replace('<username>', $user['username'], $mail_message);
+                $mail_message = str_replace('<username>', $user->username, $mail_message);
                 $mail_message = str_replace('<dupe_list>', implode(', ', $dupe_list), $mail_message);
                 $mail_message = str_replace(
                     '<profile_url>',
-                    Router::pathFor('userProfile', ['id' => $new_uid]),
+                    Url::get(Router::pathFor('userProfile', ['id' => $new_uid])),
                     $mail_message
                 );
                 $mail_message = str_replace(
@@ -241,16 +242,16 @@ class Register
                     ->fire('model.register.insert_user_new_mail_subject', $mail_subject);
 
                 $mail_message = trim(substr($mail_tpl, $first_crlf));
-                $mail_message = str_replace('<username>', $user['username'], $mail_message);
-                $mail_message = str_replace('<base_url>', Router::pathFor('home'), $mail_message);
+                $mail_message = str_replace('<username>', $user->username, $mail_message);
+                $mail_message = str_replace('<base_url>', Url::get(Router::pathFor('home')), $mail_message);
                 $mail_message = str_replace(
                     '<profile_url>',
-                    Router::pathFor('userProfile', ['id' => $new_uid]),
+                    Url::get(Router::pathFor('userProfile', ['id' => $new_uid])),
                     $mail_message
                 );
                 $mail_message = str_replace(
                     '<admin_url>',
-                    Router::pathFor('profileSection', ['id' => $new_uid, 'section' => 'admin']),
+                    Url::get(Router::pathFor('profileSection', ['id' => $new_uid, 'section' => 'admin'])),
                     $mail_message
                 );
                 $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
@@ -278,15 +279,15 @@ class Register
 
             $mail_message = trim(substr($mail_tpl, $first_crlf));
             $mail_subject = str_replace('<board_title>', ForumSettings::get('o_board_title'), $mail_subject);
-            $mail_message = str_replace('<base_url>', Router::pathFor('home'), $mail_message);
-            $mail_message = str_replace('<username>', $user['username'], $mail_message);
-            $mail_message = str_replace('<password>', $user['password1'], $mail_message);
-            $mail_message = str_replace('<login_url>', Router::pathFor('login'), $mail_message);
+            $mail_message = str_replace('<base_url>', Url::get(Router::pathFor('home')), $mail_message);
+            $mail_message = str_replace('<username>', $user->username, $mail_message);
+            $mail_message = str_replace('<password>', $user->password1, $mail_message);
+            $mail_message = str_replace('<login_url>', Url::get(Router::pathFor('login')), $mail_message);
             $mail_message = str_replace('<board_mailer>', ForumSettings::get('o_board_title'), $mail_message);
             $mail_message = Container::get('hooks')
                 ->fire('model.register.insert_user_welcome_mail_message', $mail_message);
 
-            Container::get('email')->dispatchMail($user['email1'], $mail_subject, $mail_message);
+            Container::get('email')->dispatchMail($user->email1, $mail_subject, $mail_message);
 
             return Router::redirect(Router::pathFor('home'), __('Reg email').' <a href="mailto:'.
                 Utils::escape(ForumSettings::get('o_admin_email')).'">'.
@@ -295,7 +296,7 @@ class Register
 
         $user_object = new \stdClass();
         $user_object->id = $new_uid;
-        $user_object->username = $user['username'];
+        $user_object->username = $user->username;
         $expire = time() + ForumSettings::get('o_timeout_visit');
         $jwt = AuthModel::generateJwt($user_object, $expire);
         AuthModel::setCookie('Bearer '.$jwt, $expire);

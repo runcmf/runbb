@@ -54,7 +54,7 @@
                                                 href="{{ pathFor('userProfile', {'id': user.id}) }}">{{ user.username }}</a>
                                     </td>
                                     <td class="tc2"><a href="mailto:{{ user.email }}">{{ user.email }}</a></td>
-                                    <td class="tc3">{{ user.user_title }}</td>
+                                    <td class="tc3">{{ user.user_title|raw }}</td>
                                     <td class="tc4">{{ formatNumber(user.num_posts) }}</td>
                                     <td class="tc5">{{ user.admin_note != '' ? user.admin_note|raw : '&#160;'|raw }}</td>
                                     <td class="tcr">

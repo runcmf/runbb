@@ -3,29 +3,40 @@
 {% block content %}
     {{ fireHook('view.admin.users.delete_users.start') }}
 
-    <div class="blockform">
-        <h2><span>{{ trans('Delete users') }}</span></h2>
-        <div class="box">
-            <form name="confirm_del_users" method="post" action="{{ pathFor('adminUsers') }}">
-                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-                <input type="hidden" name="users" value="{{ user_ids|join(',') }}
-                <div class="inform">
+    <form class="panel panel-primary" name="confirm_del_users" method="post" action="{{ pathFor('adminUsers') }}">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+        <input type="hidden" name="users" value="{{ user_ids|join(',') }}">
+
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Delete users') }}</h3>
+        </div>
+
+
+        <div id="vf" class="list-group-item">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12">
+
                     <fieldset>
                         <legend>{{ trans('Confirm delete legend') }}</legend>
                         <div class="infldset">
                             <p>{{ trans('Confirm delete info') }}</p>
                             <div class="rbox">
-                                <label><input type="checkbox" name="delete_posts" value="1" checked="checked" />{{ trans('Delete posts') }}<br /></label>
+                                <input type="checkbox" name="delete_posts" value="1" checked="checked" />
+                                {{ trans('Delete posts') }}
                             </div>
-                            <p class="warntext"><strong>{{ trans('Delete warning') }}</strong></p>
+                            <p class="warntext">{{ trans('Delete warning') }}</p>
                         </div>
                     </fieldset>
+
                 </div>
-                <p class="buttons"><input type="submit" name="delete_users_comply" value="{{ trans('Delete') }}" />
-                    <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a></p>
-            </form>
+            </div>
         </div>
-    </div>
+
+        <div class="panel-footer">
+            <input class="btn btn-primary" type="submit" name="delete_users_comply" value="{{ trans('Delete') }}" />
+            <a class="btn btn-primary" href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+        </div>
+    </form>
     {{ fireHook('view.admin.users.delete_users.end') }}
 {% endblock content %}

@@ -1096,7 +1096,7 @@ class Topic
             // If the poster is a registered user
             if ($cur_post['poster_id'] > 1) {
                 if (User::get()->g_view_users == '1') {
-                    $cur_post['username_formatted'] = '<a href="'.Url::base().'/user/'.$cur_post['poster_id'].'/">'.
+                    $cur_post['username_formatted'] = '<a href="'.Url::get('user/'.$cur_post['poster_id']).'/">'.
                         Utils::escape($cur_post['username']).'</a>';
                 } else {
                     $cur_post['username_formatted'] = Utils::escape($cur_post['username']);

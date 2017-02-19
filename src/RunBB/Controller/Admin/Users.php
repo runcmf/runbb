@@ -46,9 +46,12 @@ class Users
 
 
         // Delete multiple users
-        if (Input::post('delete_users') || Input::post('delete_users_comply')) {
+        if (Input::post('delete_users')) {
             if (User::get()->g_id > ForumEnv::get('FEATHER_ADMIN')) {
-                throw new  RunBBException(__('No permission'), 403);
+                throw new RunBBException(__('No permission'), 403);
+            }
+            if (Input::post('delete_users_comply')) {
+                return $this->model->deleteUsers();
             }
 
             AdminUtils::generateAdminMenu('users');
