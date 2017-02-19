@@ -786,9 +786,16 @@ class Profile
                         $result2 = $result2->find_one();
 
                         if ($result2->id == $cur_post['id']) {
-                            Delete::topic($cur_post['topic_id']);
+                            \ORM::forTable(ORM_TABLE_PREFIX.'topics')
+                                ->where('id', $cur_post['topic_id'])
+                                ->findOne()
+                                ->delete();
                         } else {
-                            Delete::post($cur_post['id'], $cur_post['topic_id']);
+                           \ORM::forTable(ORM_TABLE_PREFIX.'posts')
+                               ->where('id', $cur_post['id'])
+                               ->where('topic_id', $cur_post['topic_id'])
+                               ->findOne()
+                               ->delete();
                         }
 
                         Forum::update($cur_post['forum_id']);
