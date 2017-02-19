@@ -55,7 +55,7 @@ class Compose
     {
         $output = [
             'composer' => file_exists(ForumEnv::get('APP_ROOT') . 'composer.phar'),
-            'composer_extracted' => file_exists(ForumEnv::get('APP_ROOT') . 'extracted'),
+            'composer_extracted' => file_exists(ForumEnv::get('APP_ROOT') . 'extracted/vendor'),
             'installer' => file_exists(ForumEnv::get('APP_ROOT') . 'installer.php'),
             'csrf_name' => Container::get('template')->get('csrf_name'),
             'csrf_value' => Container::get('template')->get('csrf_value'),
@@ -89,8 +89,11 @@ class Compose
         echo 'Starting installation...' . PHP_EOL;
         flush();
 
+        global $argv;
         $argv = [
             '--install-dir=' . ForumEnv::get('APP_ROOT'),
+            '--force',
+//            '--prefer-source'
 //            '--filename=' . $installerFile
         ];
         include $installerFile;
@@ -101,10 +104,11 @@ class Compose
     {
         if (file_exists(ForumEnv::get('APP_ROOT') . 'composer.phar')) {
             echo 'Extracting composer.phar ...' . PHP_EOL;
-            flush();
+
             $composer = new \Phar(ForumEnv::get('APP_ROOT') . 'composer.phar');
             $composer->extractTo(ForumEnv::get('APP_ROOT') . 'extracted');
             echo 'Extraction complete.' . PHP_EOL;
+            flush();
         } else {
             echo 'composer.phar does not exist';
         }

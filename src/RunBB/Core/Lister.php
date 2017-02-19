@@ -9,8 +9,6 @@
 
 namespace RunBB\Core;
 
-use RunBB\Core\Interfaces\Container;
-
 class Lister
 {
     /**

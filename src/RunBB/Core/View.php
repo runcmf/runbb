@@ -9,7 +9,6 @@
 
 namespace RunBB\Core;
 
-use RunBB\Core\Interfaces\Container;
 use RunBB\Core\Interfaces\Lang;
 use RunBB\Exception\RunBBException;
 
