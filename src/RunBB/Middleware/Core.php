@@ -59,7 +59,7 @@ class Core
         $this->forum_env['SLIM_SETTINGS'] = $c['settings']['runbb'];
 
         // Populate forum_env
-        $this->forum_env = array_merge(self::loadDefaultForumEnv(), $this->forum_env);
+        $this->forum_env = array_merge($this->loadDefaultForumEnv(), $this->forum_env);
 
         // Load debugger helper
         require $this->forum_env['FORUM_ROOT'] . 'Helpers/shortcuts.php';
@@ -76,12 +76,12 @@ class Core
         setlocale(LC_CTYPE, 'C');
     }
 
-    public static function loadDefaultForumEnv()
+    public function loadDefaultForumEnv()
     {
         return [
             'FORUM_ROOT' => '',
             'FORUM_CONFIG_FILE' => 'config.php',
-            'FORUM_CACHE_DIR' => ForumEnv::get('APP_ROOT') . 'var/cache/',
+            'FORUM_CACHE_DIR' => $this->forum_env['APP_ROOT'] . 'var/cache/',
             'FORUM_VERSION' => '1.0.1',
             'FORUM_NAME' => 'RunBB',
             'FORUM_DB_REVISION' => 21,

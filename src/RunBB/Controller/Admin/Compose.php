@@ -123,6 +123,10 @@ class Compose
             ini_set('memory_limit', '256M');
         }
         putenv('COMPOSER_HOME=' . ForumEnv::get('APP_ROOT') . 'extracted');
+        // discard any local made changes
+        if ($_POST['command'] === 'update') {
+            putenv('COMPOSER_DISCARD_CHANGES=true');
+        }
 
         if (file_exists(ForumEnv::get('APP_ROOT') . 'extracted')) {
             require_once(ForumEnv::get('APP_ROOT') . 'extracted/vendor/autoload.php');
@@ -130,8 +134,11 @@ class Compose
             // -v Increased verbosity of messages
             // -vv Informative non essential messages
             // -vvv Debug messages
+            // --no-interaction (-n): Do not ask any interactive question.
+            // --working-dir (-d): If specified, use the given directory as working directory.
+            // --profile: Display timing and memory usage information
             $input = new \Symfony\Component\Console\Input\StringInput(
-                $_POST['command'].' -vvv -d '.ForumEnv::get('APP_ROOT')
+                $_POST['command'].' --profile -n -vvv -d '.ForumEnv::get('APP_ROOT')
             );
             $output = new \Symfony\Component\Console\Output\StreamOutput(fopen('php://output', 'w'));
             $conApp = new \Composer\Console\Application();
