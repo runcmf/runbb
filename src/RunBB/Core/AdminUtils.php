@@ -14,6 +14,28 @@ use RecursiveIteratorIterator;
 
 class AdminUtils
 {
+    public static function genAdminMenu($page = '')
+    {
+        $menu = Menu::create('admin_sidebar');
+        $dash = $menu->createItem('index', [
+            'label' => 'Dashboard',
+            'icon'  => 'dashboard fa-lg',
+            'url'   => Router::pathFor('adminIndex')
+        ]);
+        $menu->addItem('dashboard', $dash);
+
+        \RunBB\Init::registerAdminMenu($menu);
+
+        $pluginsItems = [];
+        $pluginsItems = Container::get('hooks')->fire('admin.plugin.menu', $pluginsItems);
+        if (!empty($pluginsItems)) {
+tdie($pluginsItems);
+            //$menu->addItem('pluginsItems', $pluginsItems);
+        }
+
+        Menu::get('admin_sidebar')->setActiveMenu($page);
+    }
+
     public static function generateAdminMenu($page = '')
     {
         $is_admin = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) ? true : false;

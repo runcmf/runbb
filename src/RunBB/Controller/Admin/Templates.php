@@ -34,7 +34,8 @@ class Templates
     {
         Container::get('hooks')->fire('controller.admin.templates.display');
 
-        AdminUtils::generateAdminMenu('templates');
+        AdminUtils::genAdminMenu('templates');
+//        AdminUtils::generateAdminMenu('templates');
 
         return View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), 'Templates'],// TODO translate

@@ -1,28 +1,29 @@
 {% extends '@forum/adminLayout.html.twig' %}
 
 {% block content %}
-    {{ fireHook('view.admin.groups.confirm_delete.start') }}
-
-    <div class="blockform">
-        <h2><span>{{ trans('Group delete head') }}</span></h2>
-        <div class="box">
-            <form method="post" action="{{ pathFor('deleteGroup', {'id': id}) }}">
-                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-                <div class="inform">
-                <input type="hidden" name="group_to_delete" value="{{ pathFor('deleteGroup', {'id': id}) }}" />
-                    <fieldset>
-                        <legend>{{ trans('Confirm delete subhead') }}</legend>
-                        <div class="infldset">
-                            <p>{{ trans(['Confirm delete info', group_title]) }}</p>
-                            <p class="warntext">{{ trans('Confirm delete warn') }}</p>
-                        </div>
-                    </fieldset>
-                </div>
-                <p class="buttons"><input type="submit" name="del_group_comply" value="{{ trans('Delete') }}" tabindex="1" />
-                    <a href="javascript:history.go(-1)" tabindex="2">{{ trans('Go back') }}</a></p>
-            </form>
+{{ fireHook('view.admin.groups.confirm_delete.start') }}
+    <form class="panel panel-primary" method="post" action="{{ pathFor('deleteGroup', {'id': id}) }}">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+        <input type="hidden" name="group_to_delete" value="{{ pathFor('deleteGroup', {'id': id}) }}" />
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Group delete head') }}</h3>
         </div>
-    </div>
-    {{ fireHook('view.admin.groups.confirm_delete.end') }}
+        <div class="list-group">
+            <div class="list-group-item">
+                <legend>{{ trans('Confirm delete subhead') }}</legend>
+            </div>
+            <div class="list-group-item">
+                <div class="alert alert-danger">
+                    <p>{{ trans(['Confirm delete info', group_title]) }}</p>
+                    <p class="warntext">{{ trans('Confirm delete warn') }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <input class="btn btn-danger" type="submit" name="del_group_comply" value="{{ trans('Delete') }}" tabindex="1" />
+            <a class="btn btn-primary" href="javascript:history.go(-1)" tabindex="2">{{ trans('Go back') }}</a>
+        </div>
+    </form>
+{{ fireHook('view.admin.groups.confirm_delete.end') }}
 {% endblock content %}

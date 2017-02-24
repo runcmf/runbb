@@ -2,109 +2,87 @@
 
 {% block content %}
 {{ fireHook('view.admin.groups.admin_groups.start') }}
-                <div class="blockform">
-                    <h2><span>{{ trans('Add groups head') }}</span></h2>
-                    <div class="box">
-                        <div class="inform">
-                            <fieldset>
-                                <form id="groups" method="post" action="{{ pathFor('addGroup') }}">
-                                    <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                                    <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-                                    <legend>{{ trans('Add group subhead') }}</legend>
-                                    <div class="infldset">
-                                        <table class="aligntop">
-                                            <tr>
-                                                <th scope="row">{{ trans('New group label') }}
-                                                    <div><input type="submit" name="add_group" value="{{ trans('Add') }}"
-                                                                tabindex="2"/></div>
-                                                </th>
-                                                <td>
-                                                    <select id="base_group" name="base_group" tabindex="1">
-
-                                                        {% for cur_group in groups %}
-                                                            {% if cur_group.g_id != getEnv('FEATHER_ADMIN') and cur_group.g_id != getEnv('FEATHER_GUEST') %}
-
-                                                                <option value="{{ cur_group.g_id }}"{{ cur_group.g_id == settings('o_default_user_group') ? ' selected="selected"' : '' }}>{{ cur_group.g_title }}</option>
-
-                                                            {% endif %}
-                                                        {% endfor %}
-
-                                                    </select>
-                                                    <span>{{ trans('New group help') }}</span>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </form>
-                            </fieldset>
-                        </div>
-                        <div class="inform">
-                            <fieldset>
-                                <form id="groups" method="post" action="{{ pathFor('adminGroups') }}">
-                                    <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                                    <input type="hidden" name="csrf_value" value="{{ csrf_value }}>">
-                                    <legend>{{ trans('Default group subhead') }}</legend>
-                                    <div class="infldset">
-                                        <table class="aligntop">
-                                            <tr>
-                                                <th scope="row">{{ trans('Default group label') }}
-                                                    <div><input type="submit" name="set_default_group" value="{{ trans('Save') }}"
-                                                                tabindex="4"/></div>
-                                                </th>
-                                                <td>
-                                                    <select id="default_group" name="default_group" tabindex="3">
-
-
-                                                        {% for cur_group in groups %}
-                                                            {% if cur_group.g_id > getEnv('FEATHER_GUEST') and cur_group.g_moderator == 0 %}
-
-                                                                <option value="{{ cur_group.g_id }}"{{ cur_group.g_id == settings('o_default_user_group') ? ' selected="selected"' : '' }}>{{ cur_group.g_title }}</option>
-
-                                                            {% endif %}
-                                                        {% endfor %}
-
-
-                                                    </select>
-                                                    <span>{{ trans('Default group help') }}</span>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </form>
-                            </fieldset>
-                        </div>
+    <form class="panel panel-primary" id="groups" method="post" action="{{ pathFor('addGroup') }}">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Add group subhead') }}</h3>
+        </div>
+        <div class="list-group">
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-2">
+                        {{ trans('New group label') }}
+                        <br /><input class="btn btn-primary" type="submit" name="add_group" value="{{ trans('Add') }}" tabindex="2"/>
                     </div>
-
-                    <h2 class="block2"><span>{{ trans('Existing groups head') }}</span></h2>
-                    <div class="box">
-                        <div class="fakeform">
-                            <div class="inform">
-                                <fieldset>
-                                    <legend>{{ trans('Edit groups subhead') }}</legend>
-                                    <div class="infldset">
-                                        <p>{{ trans('Edit groups info') }}</p>
-                                        <table>
-
-
-                                            {% for cur_group in groups %}
-                                                <tr>
-                                                    <th scope="row"><a href="{{ pathFor('editGroup', {'id': cur_group.g_id}) }}"
-                                                                       tabindex="1">
-                                                            {{ trans('Edit link') }}</a>
-                                                        {{ cur_group.g_id > getEnv('FEATHER_MEMBER') ? (' | <a href="' ~pathFor('deleteGroup', {'id': cur_group.g_id}) ~'" tabindex="' ~loop.index ~'">' ~trans('Delete link') ~'</a>')|raw : '' }}
-                                                    </th>
-                                                    <td>{{ cur_group.g_title }}</td>
-                                                </tr>
-
-                                            {% endfor %}
-
-
-                                        </table>
-                                    </div>
-                                </fieldset>
-                            </div>
-                        </div>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="base_group" name="base_group" tabindex="1">
+                            {% for cur_group in groups %}
+                                {% if cur_group.g_id != getEnv('FEATHER_ADMIN') and cur_group.g_id != getEnv('FEATHER_GUEST') %}
+                                    <option value="{{ cur_group.g_id }}"{{ cur_group.g_id == settings('o_default_user_group') ? ' selected="selected"' : '' }}>{{ cur_group.g_title }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        <small>{{ trans('New group help') }}</small>
                     </div>
                 </div>
+            </div>
+        </div>
+    </form>
+
+    <form class="panel panel-primary" id="groups" method="post" action="{{ pathFor('adminGroups') }}">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}>">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Default group subhead') }}</h3>
+        </div>
+        <div class="list-group">
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-2">
+                        {{ trans('Default group label') }}
+                        <br /><input class="btn btn-primary" type="submit" name="set_default_group" value="{{ trans('Save') }}" tabindex="4"/>
+                    </div>
+                    <div class="col-sm-10">
+                        <select class="form-control" id="default_group" name="default_group" tabindex="3">
+                            {% for cur_group in groups %}
+                                {% if cur_group.g_id > getEnv('FEATHER_GUEST') and cur_group.g_moderator == 0 %}
+                                    <option value="{{ cur_group.g_id }}"{{ cur_group.g_id == settings('o_default_user_group') ? ' selected="selected"' : '' }}>{{ cur_group.g_title }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        <small>{{ trans('Default group help') }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Existing groups head') }}</h3>
+        </div>
+        <div class="list-group">
+            <div class="list-group-item">
+                <legend>{{ trans('Edit groups subhead') }}</legend>
+            </div>
+            <div class="list-group-item list-group-item-info">
+                {{ trans('Edit groups info') }}
+            </div>
+            {% for cur_group in groups %}
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <a class="btn btn-warning btn-sm" href="{{ pathFor('editGroup', {'id': cur_group.g_id}) }}" tabindex="1">{{ trans('Edit link') }}</a>
+                        {{ cur_group.g_id > getEnv('FEATHER_MEMBER') ? ('<a class="btn btn-danger btn-sm" href="' ~pathFor('deleteGroup', {'id': cur_group.g_id}) ~'" tabindex="' ~loop.index ~'">' ~trans('Delete link') ~'</a>')|raw : '' }}
+                    </div>
+                    <div class="col-sm-9">
+                        {{ cur_group.g_title }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
     {{ fireHook('view.admin.groups.admin_groups.end') }}
 {% endblock content %}

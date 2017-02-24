@@ -16,7 +16,6 @@ use RunBB\Core\Parser;
 use RunBB\Core\Interfaces\Container;
 use RunBB\Core\Interfaces\Lang;
 use RunBB\Core\Plugin;
-//use RunBB\Core\Remote;
 use RunBB\Core\Url;
 use RunBB\Core\Utils;
 use RunBB\Core\View;
@@ -261,8 +260,7 @@ class Core
         if (!empty($config)) {
             $this->forum_settings = array_merge(self::loadDefaultForumSettings(), $config);
         } else {
-            $this->c['response']->withStatus(500); // Send forbidden header
-//            return $this->c['response']->getBody()->write('Wrong config file format');
+            $res->withStatus(500); // Send forbidden header
             $res->getBody()->write('Wrong config file format');
             return $next($req, $res);
         }
@@ -278,6 +276,10 @@ class Core
         // Finalize forum_settings array
         $this->forum_settings = array_merge(Container::get('cache')->retrieve('config'), $this->forum_settings);
         Container::set('forum_settings', $this->forum_settings);
+
+        Container::set('menu', function ($c) {
+            return new \RunBB\Helpers\Menu\MenuManager($c);
+        });
 
         // Define time formats and add them to the container
         Container::set('forum_time_formats', array_unique([

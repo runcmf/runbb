@@ -1,28 +1,28 @@
 {% extends '@forum/adminLayout.html.twig' %}
 
 {% block content %}
-    {{ fireHook('view.admin.forums.delete.start') }}
-
-    <div class="blockform">
-        <h2><span>{{ trans('Confirm delete head') }}</span></h2>
-        <div class="box">
-            <form method="post" action="{{ pathFor('deleteForum', {'id': cur_forum.id}) }}">
-                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-                <div class="inform">
-                    <fieldset>
-                        <legend>{{ trans('Confirm delete subhead') }}</legend>
-                        <div class="infldset">
-                            <p>{{ trans(['Confirm delete info', cur_forum.forum_name]) }}</p>
-                            <p class="warntext">{{ trans('Confirm delete warn') }}</p>
-                        </div>
-                    </fieldset>
-                </div>
-                <p class="buttons"><input type="submit" name="del_forum_comply" value="{{ trans('Delete') }}" />
-                    <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a></p>
-            </form>
+{{ fireHook('view.admin.forums.delete.start') }}
+    <form class="panel panel-primary" method="post" action="{{ pathFor('deleteForum', {'id': cur_forum.id}) }}">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Confirm delete head') }}</h3>
         </div>
-    </div>
-
-    {{ fireHook('view.admin.forums.admin_forums.end') }}
+        <div class="list-group">
+            <div class="list-group-item">
+                <legend>{{ trans('Confirm delete subhead') }}</legend>
+            </div>
+            <div class="list-group-item">
+                <div class="alert alert-danger">
+                    <p>{{ trans(['Confirm delete info', cur_forum.forum_name]) }}</p>
+                    <p class="warntext">{{ trans('Confirm delete warn') }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <input class="btn btn-primary" type="submit" name="del_forum_comply" value="{{ trans('Delete') }}" />
+            <a class="btn btn-primary" href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+        </div>
+    </form>
+{{ fireHook('view.admin.forums.admin_forums.end') }}
 {% endblock content %}

@@ -19,6 +19,7 @@
 namespace RunBB;
 
 use RunBB\Core\Interfaces\SlimStatic;
+use RunBB\Core\Url;
 use RunBB\Core\View;
 use RunBB\Middleware\Logged as IsLogged;
 use RunBB\Middleware\ReadBoard as CanReadBoard;
@@ -69,59 +70,123 @@ class Init
         return $v->fetch('@forum/menuUser.html.twig');
     }
 
-    public static function registerAdminMenu($menu, $url)
+    public static function registerAdminMenu(& $menu)
     {
-        $forumMenu = $menu->createItem('forum', [
-            'label' => 'Forum',
-            'icon' => 'comments',
+        $forumMenu = $menu->createItem('forum-admin', [
+            'label' => __('Admin menu'),
+            'icon' => 'comments fa-lg',
             'url' => '#'
         ]);
         $forumMenu->setAttribute('class', 'nav nav-second-level');
 
-        $dashboardMenu = $menu->createItem('forum-dashboard', [
-            'label' => 'Dashboard',
-            'icon' => 'dashboard',
-            'url' => $url . '/admin/forum'
+        // move to adminUtils
+//        $indexMenu = $menu->createItem('index', [
+//            'label' => 'Index',
+//            'icon' => 'dashboard',
+//            'url' => Router::pathFor('adminIndex')
+//        ]);
+//        $forumMenu->addChildren('indexMenu', $indexMenu);
+
+        // form  moderators
+        $usersMenu = $menu->createItem('users', [
+            'label' => __('Users'),
+            'icon'  => 'user fa-lg',// will be "fa fa-user fa-lg"
+            'url'   => Router::pathFor('adminUsers')
         ]);
+        $forumMenu->addChildren('usersMenu', $usersMenu);
 
-//        $configMenu = $menu->createItem('forum-config', [
-//            'label' => 'Configuration',
-//            'icon'  => 'cog',
-//            'url'   => $url.'/admin/forum/config'
-//        ]);
-//
-//        $forumsMenu = $menu->createItem('forum-forums', [
-//            'label' => 'Forums & Posts',
-//            'icon'  => 'comments-o',
-//            'url'   => $url.'/admin/forum/forum'
-//        ]);
-//
-//        $usersMenu = $menu->createItem('forum-users', [
-//            'label' => 'Users & Groups',
-//            'icon'  => 'group',
-//            'url'   => $url.'/admin/forum/users'
-//        ]);
-//
-//        $styleMenu = $menu->createItem('forum-style', [
-//            'label' => 'Templates',
-//            'icon'  => 'puzzle-piece',
-//            'url'   => $url.'/admin/forum/style'
-//        ]);
-//
-//        $toolsMenu = $menu->createItem('forum-tools', [
-//            'label' => 'Maintenance',
-//            'icon'  => 'wrench',
-//            'url'   => $url.'/admin/forum/tools'
-//        ]);
+        $bansMenu = $menu->createItem('bans', [
+            'label' => ('Bans'),
+            'icon'  => 'ban fa-lg',
+            'url'   => Router::pathFor('adminBans')
+        ]);
+        $forumMenu->addChildren('bansMenu', $bansMenu);
 
-        $forumMenu->addChildren('forum-dashboard', $dashboardMenu);
-//        $forumMenu->addChildren('forum-config', $configMenu);
-//        $forumMenu->addChildren('forum-forums', $forumsMenu);
-//        $forumMenu->addChildren('forum-users', $usersMenu);
-//        $forumMenu->addChildren('forum-style', $styleMenu);
-//        $forumMenu->addChildren('forum-tools', $toolsMenu);
+        $reportsMenu = $menu->createItem('reports', [
+            'label' => ('Reports'),
+            'icon'  => 'bullhorn fa-lg',
+            'url'   => Router::pathFor('adminReports')
+        ]);
+        $forumMenu->addChildren('reportsMenu', $reportsMenu);
 
-        $menu->addItem('forum', $forumMenu);
+        $optionsMenu = $menu->createItem('options', [
+            'label' => __('Options'),
+            'icon'  => 'wrench fa-lg',
+            'url'   => Router::pathFor('adminOptions')
+        ]);
+        $forumMenu->addChildren('optionsMenu', $optionsMenu);
+
+        $permMenu = $menu->createItem('permissions', [
+            'label' => __('Permissions'),
+            'icon'  => 'unlock-alt fa-lg',
+            'url'   => Router::pathFor('adminPermissions')
+        ]);
+        $forumMenu->addChildren('permMenu', $permMenu);
+
+        $catMenu = $menu->createItem('categories', [
+            'label' => __('Categories'),
+            'icon'  => 'commenting fa-lg',
+            'url'   => Router::pathFor('adminCategories')
+        ]);
+        $forumMenu->addChildren('catMenu', $catMenu);
+
+        $forumsMenu = $menu->createItem('forums', [
+            'label' => __('Forums'),
+            'icon'  => 'comments fa-lg',
+            'url'   => Router::pathFor('adminForums')
+        ]);
+        $forumMenu->addChildren('forumsMenu', $forumsMenu);
+
+        $groupsMenu = $menu->createItem('groups', [
+            'label' => __('User groups'),
+            'icon'  => 'users fa-lg',
+            'url'   => Router::pathFor('adminGroups')
+        ]);
+        $forumMenu->addChildren('groupsMenu', $groupsMenu);
+
+        $templatesMenu = $menu->createItem('templates', [
+            'label' => 'Templates',
+            'icon'  => 'eye fa-lg',//cubes
+            'url'   => Router::pathFor('adminTemplates')
+        ]);
+        $forumMenu->addChildren('templatesMenu', $templatesMenu);
+
+        $langMenu = $menu->createItem('languages', [
+            'label' => 'Languages',
+            'icon'  => 'language fa-lg',
+            'url'   => Router::pathFor('adminLanguages')
+        ]);
+        $forumMenu->addChildren('langMenu', $langMenu);
+
+        $plugMenu = $menu->createItem('plugins', [
+            'label' => __('Plugins'),
+            'icon'  => 'plug fa-lg',
+            'url'   => Router::pathFor('adminPlugins')
+        ]);
+        $forumMenu->addChildren('plugMenu', $plugMenu);
+
+        $censorMenu = $menu->createItem('censoring', [
+            'label' => __('Censoring'),
+            'icon'  => 'filter fa-lg',
+            'url'   => Router::pathFor('adminCensoring')
+        ]);
+        $forumMenu->addChildren('censorMenu', $censorMenu);
+
+        $parserMenu = $menu->createItem('parser', [
+            'label' => __('Parser'),
+            'icon'  => 'pencil-square-o fa-lg',
+            'url'   => Router::pathFor('adminParser')
+        ]);
+        $forumMenu->addChildren('parserMenu', $parserMenu);
+
+        $maintenanceMenu = $menu->createItem('maintenance', [
+            'label' => __('Maintenance'),
+            'icon'  => 'bed fa-lg',
+            'url'   => Router::pathFor('adminMaintenance')
+        ]);
+        $forumMenu->addChildren('maintenanceMenu', $maintenanceMenu);
+
+        $menu->addItem('forum-admin', $forumMenu);
     }
 
     private function registerMiddlewares()

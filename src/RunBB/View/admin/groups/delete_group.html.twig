@@ -1,32 +1,33 @@
 {% extends '@forum/adminLayout.html.twig' %}
 
 {% block content %}
-    {{ fireHook('view.admin.groups.delete_group.start') }}
-
-    <div class="blockform">
-        <h2><span>{{ trans('Delete group head') }}</span></h2>
-        <div class="box">
-            <form id="groups" method="post" action="{{ pathFor('deleteGroup', {'id': id}) }}">
-                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-                <div class="inform">
-                    <fieldset>
-                        <legend>{{ trans('Move users subhead') }}</legend>
-                        <div class="infldset">
-                            <p>{{ trans(['Move users info', group_info.title, formatNumber(group_info.members)]) }}</p>
-                            <label>{{ trans('Move users label') }}
-                            <select name="move_to_group">
-                                {{ group_list_delete|raw }}
-                            </select>
-                            <br />
-                            </label>
-                        </div>
-                    </fieldset>
-                </div>
-                <p class="buttons"><input type="submit" name="del_group" value="{{ trans('Delete group') }}" />
-                    <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a></p>
-            </form>
+{{ fireHook('view.admin.groups.delete_group.start') }}
+    <form class="panel panel-primary" id="groups" method="post" action="{{ pathFor('deleteGroup', {'id': id}) }}">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Delete group head') }}</h3>
         </div>
-    </div>
-    {{ fireHook('view.admin.groups.delete_group.end') }}
+        <div class="list-group">
+            <div class="list-group-item">
+                <legend>{{ trans('Move users subhead') }}</legend>
+            </div>
+            <div class="list-group-item">
+                <div class="alert alert-danger">
+                    <p>{{ trans(['Move users info', group_info.title, formatNumber(group_info.members)]) }}</p>
+                    <label>{{ trans('Move users label') }}
+                        <select class="form-control" name="move_to_group">
+                            {{ group_list_delete|raw }}
+                        </select>
+                        <br />
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <input class="btn btn-danger" type="submit" name="del_group" value="{{ trans('Delete group') }}" />
+            <a class="btn btn-primary" href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+        </div>
+    </form>
+{{ fireHook('view.admin.groups.delete_group.end') }}
 {% endblock content %}

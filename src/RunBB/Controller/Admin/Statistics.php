@@ -26,6 +26,7 @@ class Statistics
     {
         Container::get('hooks')->fire('controller.admin.statistics.display');
 
+        AdminUtils::genAdminMenu('index');
         AdminUtils::generateAdminMenu('index');
 
         $total = $this->model->getTotalSize();

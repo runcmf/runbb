@@ -204,6 +204,14 @@ class RunBBTwig extends \Twig_Extension
             new \Twig_SimpleFunction('unSerialize', function ($var) {
                 return unserialize($var);
             }, ['is_safe' => ['html']]),
+
+            /**
+             * Menu Builde
+             * return rendered menu
+             */
+            new \Twig_SimpleFunction('renderMenu', function ($name, $tag = 'ul', $option) {
+                return Menu::render($name, $tag, $option);
+            }, ['is_safe' => ['html']]),
         ];
     }
 }

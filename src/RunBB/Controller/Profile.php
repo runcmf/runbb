@@ -11,9 +11,7 @@ namespace RunBB\Controller;
 
 use RunBB\Core\Interfaces\Input;
 use RunBB\Exception\RunBBException;
-use RunBB\Core\Url;
 use RunBB\Core\Utils;
-use RunBB\Model\Delete;
 
 class Profile
 {

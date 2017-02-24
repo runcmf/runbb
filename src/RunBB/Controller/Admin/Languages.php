@@ -42,7 +42,8 @@ class Languages
 
         Container::get('hooks')->fire('controller.admin.languages.display');
 
-        AdminUtils::generateAdminMenu('languages');
+        AdminUtils::genAdminMenu('languages');
+//        AdminUtils::generateAdminMenu('languages');
 
         return View::setPageInfo([
             'active_page' => 'admin',
@@ -86,7 +87,7 @@ class Languages
     {
         Container::get('hooks')->fire('controller.admin.languages.showLangFiles');
 
-        AdminUtils::generateAdminMenu('languages');
+        AdminUtils::genAdminMenu('languages');
 
         $id = Input::query('lng');
         return View::setPageInfo([
@@ -102,7 +103,7 @@ class Languages
     {
         Container::get('hooks')->fire('controller.admin.languages.showRepo');
 
-        AdminUtils::generateAdminMenu('languages');
+        AdminUtils::genAdminMenu('languages');
 
         $installedList = Lang::getList();
         $repoList = Container::get('remote')->getLangRepoList();
@@ -126,7 +127,7 @@ class Languages
     {
         Container::get('hooks')->fire('controller.admin.languages.editLang');
 
-        AdminUtils::generateAdminMenu('languages');
+        AdminUtils::genAdminMenu('languages');
 
         $lngId = Input::query('lng') ? Input::query('lng') : Input::post('lng');
         $grp = Input::query('grp') ? Input::query('grp') : Input::post('grp');
@@ -167,7 +168,7 @@ class Languages
         $id = Input::query('lng');
         $name = Input::query('name');
 
-        AdminUtils::generateAdminMenu('languages');
+        AdminUtils::genAdminMenu('languages');
 
         $tpls = $this->model->getMailTemplatesById($id);
         return View::setPageInfo([
@@ -264,7 +265,7 @@ class Languages
         } else { // If the user hasn't confirmed
             $lid = Input::query('lng');
 
-            AdminUtils::generateAdminMenu('languages');
+            AdminUtils::genAdminMenu('languages');
 
             $info = $this->model->getLangInfo($lid);
 

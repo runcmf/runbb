@@ -36,7 +36,8 @@ class Censoring
             return $this->model->removeWord();
         }
 
-        AdminUtils::generateAdminMenu('censoring');
+        AdminUtils::genAdminMenu('censoring');
+//        AdminUtils::generateAdminMenu('censoring');
 
         return View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Censoring')],

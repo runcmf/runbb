@@ -129,7 +129,8 @@ $args['name'] . "-" . $args['version'] . '.zip';
 
         $officialPlugins = [];//Lister::getOfficialPlugins();
 
-        AdminUtils::generateAdminMenu('plugins');
+        AdminUtils::genAdminMenu('plugins');
+//        AdminUtils::generateAdminMenu('plugins');
 
         View::setPageInfo([
             'admin_console' => true,
@@ -227,7 +228,8 @@ $args['name'] . "-" . $args['version'] . '.zip';
             if (class_exists($plug)) {
                 $plugin = new $plug;
                 if (method_exists($plugin, 'info')) {
-                    AdminUtils::generateAdminMenu($args['name']);
+                    AdminUtils::genAdminMenu($args['name']);
+//                    AdminUtils::generateAdminMenu($args['name']);
                     return $plugin->info($req, $res, $args);
                 } else {
                     throw new  RunBBException('Not found `info` method in class: '.$plug, 400);
@@ -246,7 +248,8 @@ $args['name'] . "-" . $args['version'] . '.zip';
 
         View::addAsset('js', 'assets/js/common.js', ['type' => 'text/javascript']);
 
-        AdminUtils::generateAdminMenu('plugins');
+        AdminUtils::genAdminMenu('plugins');
+//        AdminUtils::generateAdminMenu('plugins');
 
         $installedPlugins = $this->model->getList() ?: [];
         $repoList = Container::get('remote')->getExtensionsInfoList();

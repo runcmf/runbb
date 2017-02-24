@@ -2,109 +2,99 @@
 
 {% block content %}
 {{ fireHook('view.admin.forums.admin_forums.start') }}
-                <div class="blockform">
-                    <h2><span>{{ trans('Add forum head') }}</span></h2>
-                    <div class="box">
-                        <form method="post" action="{{ pathFor('addForum') }}">
-                            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-
+    <form class="panel panel-primary" method="post" action="{{ pathFor('addForum') }}">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Add forum head') }}</h3>
+        </div>
+        <div class="list-group">
+            <div class="list-group-item">
+                <legend>{{ trans('Create new subhead') }}</legend>
+            </div>
             {% if cat_list is not empty %}
-
-                            <div class="inform">
-                                <fieldset>
-                                    <legend>{{ trans('Create new subhead') }}</legend>
-                                    <div class="infldset">
-                                        <table class="aligntop">
-                                            <tr>
-                                                <th scope="row">{{ trans('Add forum label') }}
-                                                    <div><input type="submit" value="{{ trans('Add forum') }}" tabindex="2" /></div>
-                                                </th>
-                                                <td>
-                                                    <select name="cat" tabindex="1">
-
-                                                        {% for cat in cat_list %}
-                                                            <option value="{{ cat.id }}">{{ cat.cat_name }}</option>
-                                                        {% endfor %}
-
-                                                    </select>
-                                                    <span>{{ trans('Add forum help') }}</span>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </fieldset>
-                            </div>
-
-            {% else %}
-
-                            <div class="inform">
-                                <fieldset>
-                                    <legend>{{ trans('None') }}</legend>
-                                    <div class="infldset">
-                                        <p>{{ trans('No categories exist') }}</p>
-                                    </div>
-                                </fieldset>
-                            </div>
-
-            {% endif %}
-
-
-                        </form>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-2">
+                        {{ trans('Add forum label') }}
+                        <input class="btn btn-primary" type="submit" value="{{ trans('Add forum') }}" tabindex="2" />
                     </div>
-
-            {% if forum_data is not empty %}
-
-                    <h2 class="block2"><span>{{ trans('Manage forums head') }}</span></h2>
-                    <div class="box">
-                        <form id="edforum" method="post" action="{{ pathFor('adminForums') }}">
-                            <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                            <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-                            <p class="submittop"><input type="submit" name="update_positions" value="{{ trans('Update positions') }}" tabindex="3" /></p>
-
-                        {% for cat_id, cat_data in forum_data %}
-
-                            <div class="inform">
-                                <fieldset>
-                                    <legend>{{ trans('Category subhead') }} {{ cat_data.cat_name }}</legend>
-                                    <div class="infldset">
-                                        <table>
-                                        <thead>
-                                            <tr>
-                                                <th class="tcl">{{ trans('Action') }}</th>
-                                                <th class="tc2">{{ trans('Position label') }}</th>
-                                                <th class="tcr">{{ trans('Forum label') }}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-
-                                    {% for forum in cat_data.cat_forums %}
-                                                <tr>
-                                                    <td class="tcl"><a href="{{ pathFor('editForum', {'id': forum.forum_id}) }}" tabindex="<?= $cur_index++ ?>">
-                                                    {{ trans('Edit link') }}</a> |
-                                                    <a href="{{ pathFor('deleteForum', {'id': forum.forum_id}) }}" tabindex="<?= $cur_index++ ?>">{{ trans('Delete link') }}</a>
-                                                    </td>
-                                                    <td class="tc2">
-                                                        <input type="text" name="position[{{ forum.forum_id }}]" size="3" maxlength="3" value="{{ forum.position }}" tabindex="<?= $cur_index++ ?>" />
-                                                    </td>
-                                                    <td class="tcr"><strong>{{ forum.forum_name }}</strong></td>
-                                                </tr>
-                                    {% endfor %}
-
-                                        </tbody>
-                                        </table>
-                                    </div>
-                                </fieldset>
-                            </div>
-
-                        {% endfor %}
-
-                            <p class="submitend">
-                                <input type="submit" name="update_positions" value="{{ trans('Update positions') }}" tabindex="<?= $cur_index++ ?>" />
-                            </p>
-                        </form>
+                    <div class="col-sm-10">
+                        <select class="form-control" name="cat" tabindex="1">
+                            {% for cat in cat_list %}
+                                <option value="{{ cat.id }}">{{ cat.cat_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <small>{{ trans('Add forum help') }}</small>
                     </div>
                 </div>
+            </div>
+            {% else %}
+            <div class="list-group-item">
+                <div class="list-group-item">
+                    <legend>{{ trans('None') }}</legend>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        {{ trans('No categories exist') }}
+                    </div>
+                </div>
+            </div>
             {% endif %}
-    {{ fireHook('view.admin.forums.admin_forums.end') }}
+        </div>
+    </form>
+
+    {% if forum_data is not empty %}
+    <form class="panel panel-primary" id="edforum" method="post" action="{{ pathFor('adminForums') }}">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Manage forums head') }}</h3>
+        </div>
+        <div class="panel-footer">
+            <input class="btn btn-primary" type="submit" name="update_positions" value="{{ trans('Update positions') }}" tabindex="3" />
+        </div>
+        <div class="list-group">
+        {% for cat_id, cat_data in forum_data %}
+            <div class="list-group-item">
+                <legend>{{ trans('Category subhead') }} {{ cat_data.cat_name }}</legend>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-2">
+                        {{ trans('Action') }}
+                    </div>
+                    <div class="col-sm-1">
+                        {{ trans('Position label') }}
+                    </div>
+                    <div class="col-sm-9">
+                        {{ trans('Forum label') }}
+                    </div>
+                </div>
+            </div>
+            {% for forum in cat_data.cat_forums %}
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <a class="btn btn-warning btn-sm" href="{{ pathFor('editForum', {'id': forum.forum_id}) }}" tabindex="{{ getIndex() }}">{{ trans('Edit link') }}</a>
+                            <a class="btn btn-danger btn-sm" href="{{ pathFor('deleteForum', {'id': forum.forum_id}) }}" tabindex="{{ getIndex() }}">{{ trans('Delete link') }}</a>
+                        </div>
+                        <div class="col-sm-1">
+                            <input class="form-control" type="text" name="position[{{ forum.forum_id }}]" maxlength="3" value="{{ forum.position }}" tabindex="{{ getIndex() }}" />
+                        </div>
+                        <div class="col-sm-9">
+                            {{ forum.forum_name }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        </div>
+        <div class="panel-footer">
+            <input class="btn btn-primary" type="submit" name="update_positions" value="{{ trans('Update positions') }}" tabindex="{{ getIndex() }}" />
+        </div>
+    </form>
+    {% endif %}
+
+{{ fireHook('view.admin.forums.admin_forums.end') }}
 {% endblock content %}

@@ -31,11 +31,11 @@ th {
 #posterror {
     text-shadow: 0 1px 0 rgba(255, 255, 255, .5)
 }
-html {
-    font-family: sans-serif;
-    -ms-text-size-adjust: 100%;
-    -webkit-text-size-adjust: 100%
-}
+/*html {*/
+    /*font-family: sans-serif;*/
+    /*-ms-text-size-adjust: 100%;*/
+    /*-webkit-text-size-adjust: 100%*/
+/*}*/
 article,
 aside,
 details,
@@ -209,13 +209,13 @@ table {
 * {
     box-sizing: border-box
 }
-body {
-    font-size: 14px;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    line-height: 1.25;
-    color: #333;
-    background-color: #f9f9f9;
-}
+/*body {*/
+    /*font-size: 14px;*/
+    /*font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;*/
+    /*line-height: 1.25;*/
+    /*color: #333;*/
+    /*background-color: #f9f9f9;*/
+/*}*/
 header {
     padding-top: 60px
 }
@@ -233,36 +233,77 @@ a:hover {
     text-decoration: underline;
     color: #2a6496
 }
-nav {
-    box-shadow: 0 0 3px #353538;
-    height: 50px;
-}
-nav ul li a {
-    display: block;
-    color: #e1e1e1;
-    font-size: 1.2em;
-    text-decoration: none
-}
-nav ul li a:hover {
-    color: rgba(255, 255, 255, .9);
-    text-decoration: none
-}
-nav ul .isactive {
-    background-color: rgba(255, 255, 255, .3)
-}
-nav ul .isactive a:hover {
-    color: #fff
-}
+/*nav {*/
+    /*box-shadow: 0 0 3px #353538;*/
+    /*height: 50px;*/
+/*}*/
+/*nav ul li a {*/
+    /*display: block;*/
+    /*color: #e1e1e1;*/
+    /*font-size: 1.2em;*/
+    /*text-decoration: none*/
+/*}*/
+/*nav ul li a:hover {*/
+    /*color: rgba(255, 255, 255, .9);*/
+    /*text-decoration: none*/
+/*}*/
+/*nav ul .isactive {*/
+    /*background-color: rgba(255, 255, 255, .3)*/
+/*}*/
+/*nav ul .isactive a:hover {*/
+    /*color: #fff*/
+/*}*/
 .navbar-brand {
     padding: 0;
 }
 .navbar-brand img {
-    margin-top: -15px;
+    margin-top: -15px !important;
 }
 .navbar-nav {
     background: #222222;
 }
 
+
+/* sidebar active */
+/*.menu_active > a {*/
+    /*color: #ffffff;*/
+    /*background: #33455A;*/
+/*}*/
+/*.nav > li.menu_active > a:focus, .nav > li.menu_active > a:hover {*/
+    /*color: #ffffff;*/
+    /*background: #33455A;*/
+/*}*/
+/* sidebar arrow */
+.pointer {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+}
+.pointer .arrow,
+.pointer .arrow_border {
+    border-color: transparent #fff transparent transparent;
+    border-width: 11px;
+    border-style: solid;
+    font-size: 0;
+    left: 50%;
+    line-height: 0;
+    margin: 0 auto;
+    position: absolute;
+    top: 0;
+    width: 0;
+    z-index: 1002;
+    left: 0;
+    margin-left: 45%;
+}
+.pointer .arrow_border {
+    border-color: transparent #e7e7e7 transparent transparent;
+    border-width: 11px;
+    margin-left: -1px;
+    border-style: solid;
+    z-index: 1001;
+    top: 0px;
+}
+/* /sidebar arrow */
 .avatar {
     border-radius: 50% !important;
     width: 100px;

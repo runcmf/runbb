@@ -128,7 +128,8 @@ class Forums
                 );
             }
         } else {
-            AdminUtils::generateAdminMenu('forums');
+            AdminUtils::genAdminMenu('forums');
+//            AdminUtils::generateAdminMenu('forums');
 
             View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')],
@@ -158,8 +159,8 @@ class Forums
 
             return Router::redirect(Router::pathFor('adminForums'), __('Forum deleted redirect'));
         } else { // If the user hasn't confirmed
-
-            AdminUtils::generateAdminMenu('forums');
+            AdminUtils::genAdminMenu('forums');
+//            AdminUtils::generateAdminMenu('forums');
 
             View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Forums')],
@@ -193,7 +194,8 @@ class Forums
             $this->editPositions($req, $res, $args);
         }
 
-        AdminUtils::generateAdminMenu('forums');
+        AdminUtils::genAdminMenu('forums');
+//        AdminUtils::generateAdminMenu('forums');
 
         $categories_model = new \RunBB\Model\Admin\Categories();
         View::setPageInfo([

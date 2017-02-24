@@ -11,7 +11,6 @@ namespace RunBB\Controller\Admin;
 
 use RunBB\Core\AdminUtils;
 use RunBB\Exception\RunBBException;
-use RunBB\Core\Url;
 use RunBB\Core\Utils;
 
 class Index
@@ -50,9 +49,9 @@ class Index
                 );
             }
         }
-
-        AdminUtils::generateAdminMenu('index');
-
+        AdminUtils::genAdminMenu('index');
+//        AdminUtils::generateAdminMenu('index');
+//
         return View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Index')],
                 'active_page' => 'admin',

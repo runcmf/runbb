@@ -2,172 +2,235 @@
 
 {% block content %}
 {{ fireHook('view.admin.users.admin_users.start') }}
-
-                <div class="blockform">
-                    <h2><span>{{ trans('User search head') }}</span></h2>
-                    <div class="box">
-                        <form id="find_user" method="get" action="{{ pathFor('adminUsers') }}">
-                            <p class="submittop">
-                                <input type="submit" name="find_user" value="{{ trans('Submit search') }}" tabindex="1" />
-                            </p>
-                            <div class="inform">
-                                <fieldset>
-                                    <legend>{{ trans('User search subhead') }}</legend>
-                                    <div class="infldset">
-                                        <p>{{ trans('User search info') }}</p>
-                                        <table class="aligntop">
-                                            <tr>
-                                                <th scope="row">{{ trans('Username label') }}</th>
-                                                <td><input type="text" name="form[username]" size="25" maxlength="25" tabindex="2" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('E-mail address label') }}</th>
-                                                <td><input type="text" name="form[email]" size="30" maxlength="80" tabindex="3" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Title label') }}</th>
-                                                <td><input type="text" name="form[title]" size="30" maxlength="50" tabindex="4" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Real name label') }}</th>
-                                                <td><input type="text" name="form[realname]" size="30" maxlength="40" tabindex="5" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Website label') }}</th>
-                                                <td><input type="text" name="form[url]" size="35" maxlength="100" tabindex="6" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Jabber label') }}</th>
-                                                <td><input type="text" name="form[jabber]" size="30" maxlength="75" tabindex="7" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('ICQ label') }}</th>
-                                                <td><input type="text" name="form[icq]" size="12" maxlength="12" tabindex="8" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('MSN label') }}</th>
-                                                <td><input type="text" name="form[msn]" size="30" maxlength="50" tabindex="9" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('AOL label') }}</th>
-                                                <td><input type="text" name="form[aim]" size="20" maxlength="20" tabindex="10" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Yahoo label') }}</th>
-                                                <td><input type="text" name="form[yahoo]" size="20" maxlength="20" tabindex="11" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Location label') }}</th>
-                                                <td><input type="text" name="form[location]" size="30" maxlength="30" tabindex="12" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Signature label') }}</th>
-                                                <td><input type="text" name="form[signature]" size="35" maxlength="512" tabindex="13" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Admin note label') }}</th>
-                                                <td><input type="text" name="form[admin_note]" size="30" maxlength="30" tabindex="14" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Posts more than label') }}</th>
-                                                <td><input type="text" name="posts_greater" size="5" maxlength="8" tabindex="15" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Posts less than label') }}</th>
-                                                <td><input type="text" name="posts_less" size="5" maxlength="8" tabindex="16" /></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Last post after label') }}</th>
-                                                <td><input type="text" name="last_post_after" size="24" maxlength="19" tabindex="17" />
-                                                <span>{{ trans('Date help') }}</span></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Last post before label') }}</th>
-                                                <td><input type="text" name="last_post_before" size="24" maxlength="19" tabindex="18" />
-                                                <span>{{ trans('Date help') }}</span></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Last visit after label') }}</th>
-                                                <td><input type="text" name="last_visit_after" size="24" maxlength="19" tabindex="17" />
-                                                <span>{{ trans('Date help') }}</span></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Last visit before label') }}</th>
-                                                <td><input type="text" name="last_visit_before" size="24" maxlength="19" tabindex="18" />
-                                                <span>{{ trans('Date help') }}</span></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Registered after label') }}</th>
-                                                <td><input type="text" name="registered_after" size="24" maxlength="19" tabindex="19" />
-                                                <span>{{ trans('Date help') }}</span></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Registered before label') }}</th>
-                                                <td><input type="text" name="registered_before" size="24" maxlength="19" tabindex="20" />
-                                                <span>{{ trans('Date help') }}</span></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('Order by label') }}</th>
-                                                <td>
-                                                    <select name="order_by" tabindex="21">
-                                                        <option value="username" selected="selected">{{ trans('Order by username') }}</option>
-                                                        <option value="email">{{ trans('Order by e-mail') }}</option>
-                                                        <option value="num_posts">{{ trans('Order by posts') }}</option>
-                                                        <option value="last_post">{{ trans('Order by last post') }}</option>
-                                                        <option value="last_visit">{{ trans('Order by last visit') }}</option>
-                                                        <option value="registered">{{ trans('Order by registered') }}</option>
-                                                    </select>&#160;&#160;&#160;<select name="direction" tabindex="22">
-                                                        <option value="ASC" selected="selected">{{ trans('Ascending') }}</option>
-                                                        <option value="DESC">{{ trans('Descending') }}</option>
-                                                    </select>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">{{ trans('User group label') }}</th>
-                                                <td>
-                                                    <select name="user_group" tabindex="23">
-                                                        <option value="-1" selected="selected">{{ trans('All groups') }}</option>
-                                                        <option value="0">{{ trans('Unverified users') }}</option>
-                                                        {{ group_list|raw }}
-                                                    </select>
-                                                </td>
-                                            </tr>
-                                            {{ fireHook('view.admin.users.admin_users.form') }}
-                                        </table>
-                                    </div>
-                                </fieldset>
-                            </div>
-                            <p class="submitend">
-                                <input type="submit" name="find_user" value="{{ trans('Submit search') }}" tabindex="25" />
-                            </p>
-                        </form>
-                    </div>
-
-                    <h2 class="block2"><span>{{ trans('IP search head') }}</span></h2>
-                    <div class="box">
-                        <form method="get" action="{{ pathFor('usersIpShow') }}">
-                            <div class="inform">
-                                <fieldset>
-                                    <legend>{{ trans('IP search subhead') }}</legend>
-                                    <div class="infldset">
-                                        <table class="aligntop">
-                                            <tr>
-                                                <th scope="row">{{ trans('IP address label') }}
-                                                    <div>
-                                                        <input type="submit" value="{{ trans('Find IP address') }}" tabindex="26" />
-                                                    </div>
-                                                </th>
-                                                <td>
-                                                    <input type="text" name="ip" size="18" maxlength="15" tabindex="24" />
-                                                    <span>{{ trans('IP address help') }}</span>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </fieldset>
-                            </div>
-                        </form>
+    <form class="panel panel-primary" id="find_user" method="get" action="{{ pathFor('adminUsers') }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('User search head') }}</h3>
+        </div>
+        <div class="panel-footer">
+            <input class="btn btn-primary" type="submit" name="find_user" value="{{ trans('Submit search') }}" tabindex="1" />
+        </div>
+        <div class="list-group">
+            <div class="list-group-item">
+                <legend>{{ trans('User search subhead') }}</legend>
+                <p>{{ trans('User search info') }}</p>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Username label') }}" type="text" name="form[username]" maxlength="25" tabindex="2" />
                     </div>
                 </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('E-mail address label') }}" type="text" name="form[email]" maxlength="80" tabindex="3" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Title label') }}" type="text" name="form[title]" maxlength="50" tabindex="4" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Real name label') }}" type="text" name="form[realname]" maxlength="40" tabindex="5" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Website label') }}" type="text" name="form[url]" maxlength="100" tabindex="6" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Jabber label') }}" type="text" name="form[jabber]" maxlength="75" tabindex="7" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('ICQ label') }}" type="text" name="form[icq]" maxlength="12" tabindex="8" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('MSN label') }}" type="text" name="form[msn]" maxlength="50" tabindex="9" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('AOL label') }}" type="text" name="form[aim]" maxlength="20" tabindex="10" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Yahoo label') }}" type="text" name="form[yahoo]" maxlength="20" tabindex="11" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Location label') }}" type="text" name="form[location]" maxlength="30" tabindex="12" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Signature label') }}" type="text" name="form[signature]" maxlength="512" tabindex="13" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Admin note label') }}" type="text" name="form[admin_note]" maxlength="30" tabindex="14" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Posts more than label') }}" type="text" name="posts_greater" maxlength="8" tabindex="15" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Posts less than label') }}" type="number" pattern="[0-9]" name="posts_less" maxlength="8" tabindex="16" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Last post after label') }} {{ trans('Date help') }}" type="text" name="last_post_after" maxlength="19" tabindex="17" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Last post before label') }} {{ trans('Date help') }}" type="text" name="last_post_before" maxlength="19" tabindex="18" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Last visit after label') }} {{ trans('Date help') }}" type="text" name="last_visit_after" maxlength="19" tabindex="19" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Last visit before label') }} {{ trans('Date help') }}" type="text" name="last_visit_before" maxlength="19" tabindex="20" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Registered after label') }} {{ trans('Date help') }}" type="text" name="registered_after" maxlength="19" tabindex="21" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input class="form-control" placeholder="{{ trans('Registered before label') }} {{ trans('Date help') }}" type="text" name="registered_before" maxlength="19" tabindex="22" />
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-2">
+                        {{ trans('User group label') }}
+                    </div>
+                    <div class="col-sm-10">
+                        <select class="form-control" name="user_group" tabindex="23">
+                            <option value="-1" selected="selected">{{ trans('All groups') }}</option>
+                            <option value="0">{{ trans('Unverified users') }}</option>
+                            {{ group_list|raw }}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-2">
+                        {{ trans('Order by label') }}
+                    </div>
+                    <div class="col-sm-10 form-inline">
+                        <select class="form-control" name="order_by" tabindex="21">
+                            <option value="username" selected="selected">{{ trans('Order by username') }}</option>
+                            <option value="email">{{ trans('Order by e-mail') }}</option>
+                            <option value="num_posts">{{ trans('Order by posts') }}</option>
+                            <option value="last_post">{{ trans('Order by last post') }}</option>
+                            <option value="last_visit">{{ trans('Order by last visit') }}</option>
+                            <option value="registered">{{ trans('Order by registered') }}</option>
+                        </select>
+                        &#160;&#160;&#160;
+                        <select class="form-control" name="direction" tabindex="22">
+                            <option value="ASC" selected="selected">{{ trans('Ascending') }}</option>
+                            <option value="DESC">{{ trans('Descending') }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <input class="btn btn-primary" type="submit" name="find_user" value="{{ trans('Submit search') }}" tabindex="25" />
+            </div>
+        </div>
+    </form>
+    {{ fireHook('view.admin.users.admin_users.form') }}
+
+
+    <form class="panel panel-primary" id="find_user" method="get" action="{{ pathFor('usersIpShow') }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('IP search head') }}</h3>
+        </div>
+        <div class="list-group">
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <legend>{{ trans('IP search subhead') }}</legend>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-2">
+                        {{ trans('IP address label') }}
+                    </div>
+                    <div class="col-sm-10">
+                        <input class="form-control" placeholder="{{ trans('IP address help') }}" type="text" name="ip" maxlength="15" tabindex="24" />
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <input class="btn btn-primary" type="submit" value="{{ trans('Find IP address') }}" tabindex="26" />
+            </div>
+        </div>
+    </form>
     {{ fireHook('view.admin.users.admin_users.end') }}
 {% endblock content %}
