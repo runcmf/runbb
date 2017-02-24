@@ -40,23 +40,23 @@
         </div>
     </div>
 
-    {% if plugins is not empty %}
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <h3 class="panel-title">{{ trans('Plugins menu') }}</h3>
-        </div>
-        <div class="list-group">
-            {% for plugin in plugins %}
-            <div class="list-group-item{{ page == plugin.url ? ' list-group-item-info' : '' }}">
-                <div class="row">
-                    <div class="col-sm-7">
-                        <a href="{{ pathFor('infoPlugin', {'name': plugin.url}) }}">{{ plugin.name }}</a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
+    {#{% if plugins is not empty %}#}
+    {#<div class="panel panel-primary">#}
+        {#<div class="panel-heading">#}
+            {#<h3 class="panel-title">{{ trans('Plugins menu') }}</h3>#}
+        {#</div>#}
+        {#<div class="list-group">#}
+            {#{% for plugin in plugins %}#}
+            {#<div class="list-group-item{{ page == plugin.url ? ' list-group-item-info' : '' }}">#}
+                {#<div class="row">#}
+                    {#<div class="col-sm-7">#}
+                        {#<a href="{{ pathFor('infoPlugin', {'name': plugin.url}) }}">{{ plugin.name }}</a>#}
+                    {#</div>#}
+                {#</div>#}
+            {#</div>#}
+            {#{% endfor %}#}
+        {#</div>#}
+    {#</div>#}
+    {#{% endif %}#}
 
 {{ fireHook('view.admin.menu.end') }}

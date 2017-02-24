@@ -33,7 +33,6 @@ class Users
                 throw new  RunBBException(__('No permission'), 403);
             }
 
-            AdminUtils::genAdminMenu('users');
             AdminUtils::generateAdminMenu('users');//FIXME live for moderators
 
             return View::setPageInfo([
@@ -56,7 +55,6 @@ class Users
                 throw new RunBBException(__('No permission'), 403);
             }
 
-            AdminUtils::genAdminMenu('users');
             AdminUtils::generateAdminMenu('users');
 
             return View::setPageInfo([
@@ -75,7 +73,6 @@ class Users
                 throw new  RunBBException(__('No permission'), 403);
             }
 
-            AdminUtils::genAdminMenu('users');
             AdminUtils::generateAdminMenu('users');
 
             return View::setPageInfo([
@@ -133,7 +130,6 @@ class Users
                 ),
             ])->addTemplate('@forum/admin/users/find_users')->display();
         } else {
-            AdminUtils::genAdminMenu('users');
             AdminUtils::generateAdminMenu('users');
 
             return View::setPageInfo([

@@ -54,7 +54,7 @@
                             {% endif %}
 
                             {% if post.user_contacts|length %}
-                                <dd class="usercontacts">{{ post.user_contacts|join(' | ')|raw }}</dd>
+                                <dd class="usercontacts">{{ post.user_contacts|join('&nbsp;&nbsp;')|raw }}</dd>
                             {% endif %}
                         </dl>
                     </div>

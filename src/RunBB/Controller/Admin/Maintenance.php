@@ -46,8 +46,7 @@ class Maintenance
             $prune_from = Utils::trim(Input::post('prune_from'));
             $prune_sticky = intval(Input::post('prune_sticky'));
 
-            AdminUtils::genAdminMenu('maintenance');
-//            AdminUtils::generateAdminMenu('maintenance');
+            AdminUtils::generateAdminMenu('maintenance');
 
             if (Input::post('prune_comply')) {
                 $this->model->pruneComply($prune_from, $prune_sticky);
@@ -63,8 +62,7 @@ class Maintenance
             ])->addTemplate('@forum/admin/maintenance/prune')->display();
         }
 
-        AdminUtils::genAdminMenu('maintenance');
-//        AdminUtils::generateAdminMenu('maintenance');
+        AdminUtils::generateAdminMenu('maintenance');
 
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Maintenance')],

@@ -89,8 +89,7 @@ class Categories
     {
         Container::get('hooks')->fire('controller.admin.categories.display');
 
-        AdminUtils::genAdminMenu('categories');
-//        AdminUtils::generateAdminMenu('categories');
+        AdminUtils::generateAdminMenu('categories');
 
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Categories')],

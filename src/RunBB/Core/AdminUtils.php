@@ -14,7 +14,7 @@ use RecursiveIteratorIterator;
 
 class AdminUtils
 {
-    public static function genAdminMenu($page = '')
+    public static function generateAdminMenu($page = '')
     {
         $menu = Menu::create('admin_sidebar');
         $dash = $menu->createItem('index', [
@@ -26,40 +26,35 @@ class AdminUtils
 
         \RunBB\Init::registerAdminMenu($menu);
 
-        $pluginsItems = [];
-        $pluginsItems = Container::get('hooks')->fire('admin.plugin.menu', $pluginsItems);
-        if (!empty($pluginsItems)) {
-tdie($pluginsItems);
-            //$menu->addItem('pluginsItems', $pluginsItems);
-        }
+        Container::get('hooks')->fire('admin.plugin.menu', $menu);
 
         Menu::get('admin_sidebar')->setActiveMenu($page);
     }
 
-    public static function generateAdminMenu($page = '')
+    public static function generateModMenu($page = '')
     {
         $is_admin = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) ? true : false;
 
         // See if there are any plugins that want to display in the menu
-        $plugins = self::adminPluginsMenu($is_admin);
+//        $plugins = self::adminPluginsMenu($is_admin);
 
         \View::setPageInfo([
             'page'    =>    $page,
             'is_admin'    =>    $is_admin,
-            'plugins'    =>    $plugins,
+            'plugins'    =>    '',//$plugins,
             ], 1);//->addTemplate('admin/menu');
     }
 
     /**
      * Add plugin options to menu if needed
      */
-    public static function adminPluginsMenu($isAdmin = false)
-    {
-        $menuItems = [];
-        $menuItems = Container::get('hooks')->fire('admin.plugin.menu', $menuItems);
-
-        return $menuItems;
-    }
+//    public static function adminPluginsMenu($isAdmin = false)
+//    {
+//        $menuItems = [];
+//        $menuItems = Container::get('hooks')->fire('admin.plugin.menu', $menuItems);
+//
+//        return $menuItems;
+//    }
 
     /**
      * Generate breadcrumbs from an array of name and URLs

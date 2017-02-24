@@ -30,8 +30,7 @@ class Permissions
             return $this->model->updatePermissions();
         }
 
-        AdminUtils::genAdminMenu('permissions');
-//        AdminUtils::generateAdminMenu('permissions');
+        AdminUtils::generateAdminMenu('permissions');
 
         return View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Permissions')],

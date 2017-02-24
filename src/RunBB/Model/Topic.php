@@ -1150,11 +1150,15 @@ class Topic
                     if ((($cur_post['email_setting'] == '0' && !User::get()->is_guest) || User::get()->is_admmod) &&
                         User::get()->g_send_email == '1') {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.
-                            Utils::escape($cur_post['email']).'">'.__('Email').'</a></span>';
+//                            Utils::escape($cur_post['email']).'">'.__('Email').'</a></span>';
+                            Utils::escape($cur_post['email']).'">'.
+                            '<i class="fa fa-at fa-lg" aria-hidden="true"></i></a></span>';
                     } elseif ($cur_post['email_setting'] == '1' && !User::get()->is_guest &&
                         User::get()->g_send_email == '1') {
                         $cur_post['user_contacts'][] = '<span class="email"><a href="'.
-                            Router::pathFor('email', ['id' => $cur_post['poster_id']]).'">'.__('Email').'</a></span>';
+//                            Router::pathFor('email', ['id' => $cur_post['poster_id']]).'">'.__('Email').'</a></span>';
+                            Router::pathFor('email', ['id' => $cur_post['poster_id']]).'" title="'.__('Email').'">'.
+                            '<i class="fa fa-at fa-lg" aria-hidden="true"></i></a></span>';
                     }
 
                     if ($cur_post['url'] != '') {
@@ -1163,7 +1167,8 @@ class Topic
                         }
 
                         $cur_post['user_contacts'][] = '<span class="website"><a href="'.
-                            Utils::escape($cur_post['url']).'" rel="nofollow">'.__('Website').'</a></span>';
+                            Utils::escape($cur_post['url']).'" title="'.__('Website').'" rel="nofollow">'.
+                            '<i class="fa fa-server fa-lg" aria-hidden="true"></i></a></span>';
                     }
                 }
 
@@ -1206,7 +1211,8 @@ class Topic
                 if (ForumSettings::get('o_show_user_info') == '1' && $cur_post['poster_email'] != '' &&
                     !User::get()->is_guest && User::get()->g_send_email == '1') {
                     $cur_post['user_contacts'][] = '<span class="email"><a href="mailto:'.
-                        Utils::escape($cur_post['poster_email']).'">'.__('Email').'</a></span>';
+                        Utils::escape($cur_post['poster_email']).'" title="'.__('Email').'">'.
+                        '<i class="fa fa-at fa-lg" aria-hidden="true"></i></a></span>';
                 }
             }
 

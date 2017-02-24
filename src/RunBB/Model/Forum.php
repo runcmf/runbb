@@ -270,7 +270,8 @@ class Forum
                 ++$topic_count;
                 $status_text = [];
                 $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
-                $cur_topic['icon_type'] = 'icon';
+                $cur_topic['icon_type'] = $cur_topic->sticky === '1' ? 'icon icon-sticky' :
+                    ($cur_topic->closed === '1' ? 'icon icon-closed' : 'icon');
                 $url_subject = Url::slug($cur_topic['subject']);
 
                 if (is_null($cur_topic['moved_to'])) {
@@ -421,7 +422,8 @@ class Forum
                 ++$topic_count;
                 $status_text = [];
                 $cur_topic['item_status'] = ($topic_count % 2 == 0) ? 'roweven' : 'rowodd';
-                $cur_topic['icon_type'] = 'icon';
+                $cur_topic['icon_type'] = $cur_topic->sticky === '1' ? 'icon icon-sticky' :
+                    ($cur_topic->closed === '1' ? 'icon icon-closed' : 'icon');
                 $url_topic = Url::slug($cur_topic['subject']);
 
                 if (is_null($cur_topic['moved_to'])) {

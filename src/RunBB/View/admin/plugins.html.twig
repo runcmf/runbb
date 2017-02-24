@@ -34,10 +34,10 @@
                         <strong>{{ plugin.title }}</strong> <small>{{ plugin.version }}</small>
                         <div class="plugin-actions">
                             {% if plugin.name in activePlugins %}
-                                <a href="{{ pathFor('deactivatePlugin', {'name': plugin.name}) }}">{{ trans('Deactivate') }}</a>
+                                <a class="btn btn-warning btn-xs" href="{{ pathFor('deactivatePlugin', {'name': plugin.name}) }}">{{ trans('Deactivate') }}</a>
                             {% else %}
-                                <a href="{{ pathFor('activatePlugin', {'name': plugin.name}) }}">{{ trans('Activate') }}</a> <br>
-                                <a href="{{ pathFor('uninstallPlugin', {'name': plugin.name}) }}">{{ trans('Uninstall') }}</a>
+                                <a class="btn btn-success btn-xs" href="{{ pathFor('activatePlugin', {'name': plugin.name}) }}">{{ trans('Activate') }}</a>
+                                <a class="btn btn-danger btn-xs" href="{{ pathFor('uninstallPlugin', {'name': plugin.name}) }}">{{ trans('Uninstall') }}</a>
                             {% endif %}
                         </div>
                     </div>

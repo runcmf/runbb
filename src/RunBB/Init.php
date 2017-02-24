@@ -79,15 +79,6 @@ class Init
         ]);
         $forumMenu->setAttribute('class', 'nav nav-second-level');
 
-        // move to adminUtils
-//        $indexMenu = $menu->createItem('index', [
-//            'label' => 'Index',
-//            'icon' => 'dashboard',
-//            'url' => Router::pathFor('adminIndex')
-//        ]);
-//        $forumMenu->addChildren('indexMenu', $indexMenu);
-
-        // form  moderators
         $usersMenu = $menu->createItem('users', [
             'label' => __('Users'),
             'icon'  => 'user fa-lg',// will be "fa fa-user fa-lg"
@@ -96,14 +87,14 @@ class Init
         $forumMenu->addChildren('usersMenu', $usersMenu);
 
         $bansMenu = $menu->createItem('bans', [
-            'label' => ('Bans'),
+            'label' => __('Bans'),
             'icon'  => 'ban fa-lg',
             'url'   => Router::pathFor('adminBans')
         ]);
         $forumMenu->addChildren('bansMenu', $bansMenu);
 
         $reportsMenu = $menu->createItem('reports', [
-            'label' => ('Reports'),
+            'label' => __('Reports'),
             'icon'  => 'bullhorn fa-lg',
             'url'   => Router::pathFor('adminReports')
         ]);
@@ -200,7 +191,9 @@ class Init
                     'message' => $e->getMessage(),
                     'back' => true,
                 ];
-                if (isset(User::get()->is_admmod) && User::get()->is_admmod === true) {
+                if (isset(User::get()->is_admmod) &&
+                    (User::get()->is_admmod === true || User::get()->isModerator === true)
+                ) {
                     // show last 5 trace lines
                     if (count($e->getTrace()) > 1) {
                         $trace = $e->getTrace();
@@ -497,7 +490,7 @@ class Init
                     '\RunBB\Controller\Admin\Languages:langInfo'
                 )->setName('adminLanguages.info');
             });
-        })->add(new IsAdmMod);
+        })->add(new IsAdmin);//IsAdmMod);
     }
 
     private function registerUserRoute()

@@ -33,7 +33,6 @@ class Reports
             return Router::redirect(Router::pathFor('adminReports'), __('Report zapped redirect'));
         }
 
-        AdminUtils::genAdminMenu('bans');
         AdminUtils::generateAdminMenu('reports');
 
         return View::setPageInfo([

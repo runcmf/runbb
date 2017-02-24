@@ -137,7 +137,7 @@
 
                     {% if userGet('is_guest') != false %}
                         <ul class="conl">
-                            {% if userGet('is_admmod') %}
+                            {% if userGet('is_admmod') or userGet('isModerator') %}
                                 {% if settings('o_report_method')  == '0' or settings('o_report_method') == '2' %}
                                     {% if has_reports %}
                                         <li class="reportlink"><span><strong><a href="{{ pathFor('adminReports') }}">{{ trans('New reports') }}</a></strong></span></li>
@@ -241,7 +241,7 @@
         <div id="forumHelper" class="collapse">
             <div class="list-group-item">
 
-                {% if (active_page == 'Forum' or active_page == 'Topic') and userGet('is_admmod') %}
+                {% if (active_page == 'Forum' or active_page == 'Topic') and (userGet('is_admmod') or userGet('isModerator')) %}
                 <div id="modcontrols" class="inbox">
                     {% if active_page == 'Forum' %}
                     <dl>

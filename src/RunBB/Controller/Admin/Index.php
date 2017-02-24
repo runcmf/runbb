@@ -49,9 +49,8 @@ class Index
                 );
             }
         }
-        AdminUtils::genAdminMenu('index');
-//        AdminUtils::generateAdminMenu('index');
-//
+        AdminUtils::generateAdminMenu('index');
+
         return View::setPageInfo([
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Index')],
                 'active_page' => 'admin',

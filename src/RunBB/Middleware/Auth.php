@@ -259,7 +259,8 @@ class Auth
                 Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
 
             $user->is_guest = false;
-            $user->is_admmod = $user->g_id == ForumEnv::get('FEATHER_ADMIN') || $user->g_moderator == '1';
+            $user->is_admmod = $user->g_id == ForumEnv::get('FEATHER_ADMIN');
+            $user->isModerator = $user->g_id == ForumEnv::get('FEATHER_MOD');
 
             if (!$user->disp_topics) {
                 $user->disp_topics = ForumSettings::get('o_disp_topics_default');
@@ -294,6 +295,7 @@ class Auth
             $user->style = ForumSettings::get('o_default_style');
             $user->is_guest = true;
             $user->is_admmod = false;
+            $user->isModerator = false;
 
             // Update online list
             if (!$user->logged) {
@@ -342,7 +344,11 @@ class Auth
         Lang::load('common');
 
         // TODO remove to plugin
-        if (class_exists('\Tracy\Debugger') && \Tracy\Debugger::isEnabled() && $user->is_admmod == false) {
+        if (class_exists('\Tracy\Debugger') &&
+            \Tracy\Debugger::isEnabled() &&
+            $user->is_admmod === false &&
+            $user->isModerator === false
+        ) {
             \Tracy\Debugger::$showBar = false;
         }
 

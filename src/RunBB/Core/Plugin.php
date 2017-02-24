@@ -55,13 +55,11 @@ class Plugin
         }
     }
 
-    public function getAdminMenu($items)
+    public function getAdminMenu(\RunBB\Helpers\Menu\MenuCollection $menu)
     {
         if (method_exists($this, 'adminMenu')) {
-            $items[] = $this::adminMenu();
+            $this::adminMenu($menu);
         }
-
-        return $items;
     }
 
     public function getName($items)

@@ -44,8 +44,7 @@ class Parser
             $this->model->resetPlugins();
         }
 
-        AdminUtils::genAdminMenu('parser');
-//        AdminUtils::generateAdminMenu('parser');
+        AdminUtils::generateAdminMenu('parser');
 
         return View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Parser')],

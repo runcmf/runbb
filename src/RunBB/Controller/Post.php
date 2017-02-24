@@ -55,7 +55,7 @@ class Post
 
         // If $_POST['username'] is filled, we are facing a bot
         if (Input::post('username')) {
-            throw new  RunBBException(__('Bad request'), 400);
+            throw new RunBBException(__('Bad request'), 400);
         }
 
         // Fetch some info about the topic and/or the forum
@@ -65,7 +65,7 @@ class Post
 
         // Is someone trying to post into a redirect forum?
         if ($cur_posting['redirect_url'] != '') {
-            throw new  RunBBException(__('Bad request'), 400);
+            throw new RunBBException(__('Bad request'), 400);
         }
 
         // Sort out who the moderators are and if we are currently a moderator (or an admin)
@@ -82,7 +82,7 @@ class Post
                 (isset($cur_posting['closed']) && $cur_posting['closed'] == '1')) &&
             !$is_admmod
         ) {
-            throw new  RunBBException(__('No permission'), 403);
+            throw new RunBBException(__('No permission'), 403);
         }
 
         // Start with a clean slate

@@ -37,13 +37,13 @@ class Profile
 
         if (Input::post('update_group_membership')) {
             if (User::get()->g_id > ForumEnv::get('FEATHER_ADMIN')) {
-                throw new  RunBBException(__('No permission'), 403);
+                throw new RunBBException(__('No permission'), 403);
             }
 
             return $this->model->updateGroupMembership($args['id']);
         } elseif (Input::post('update_forums')) {
             if (User::get()->g_id > ForumEnv::get('FEATHER_ADMIN')) {
-                throw new  RunBBException(__('No permission'), 403);
+                throw new RunBBException(__('No permission'), 403);
             }
 
             return $this->model->updateModForums($args['id']);
@@ -52,22 +52,21 @@ class Profile
                 (User::get()->g_moderator != '1' ||
                     User::get()->g_mod_ban_users == '0')
             ) {
-                throw new  RunBBException(__('No permission'), 403);
+                throw new RunBBException(__('No permission'), 403);
             }
 
             return $this->model->banUser($args['id']);
         } elseif (Input::post('delete_user') || Input::post('delete_user_comply')) {
             if (User::get()->g_id > ForumEnv::get('FEATHER_ADMIN')) {
-                throw new  RunBBException(__('No permission'), 403);
+                throw new RunBBException(__('No permission'), 403);
             }
 
             if (Input::post('delete_user_comply')) {
                 return $this->model->deleteUser($args['id']);
             } else {
                 return View::setPageInfo([
-                    'title' => [Utils::escape(
-                        ForumSettings::get('o_board_title')
-                    ),
+                    'title' => [
+                        Utils::escape(ForumSettings::get('o_board_title')),
                         __('Profile'),
                         __('Confirm delete user')
                     ],
@@ -229,8 +228,8 @@ class Profile
 
                 View::addTemplate('@forum/profile/section_privacy')->display();
             } elseif ($args['section'] == 'admin') {
-                if (!User::get()->is_admmod || (User::get()->g_moderator == '1' &&
-                        User::get()->g_mod_ban_users == '0')
+                if ((!User::get()->is_admmod && !User::get()->isModerator) ||
+                    (User::get()->g_moderator == '1' && User::get()->g_mod_ban_users == '0')
                 ) {
                     throw new  RunBBException(__('Bad request'), 404);
                 }
