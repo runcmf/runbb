@@ -240,7 +240,7 @@ class Index
                 $cur_forum->last_post_formatted = '<a href="'.
                     Router::pathFor('viewPost', ['pid' => $cur_forum->last_post_id]).'#p'.
                     $cur_forum->last_post_id.'">'.
-                    Container::get('utils')->timeFormat($cur_forum->last_post).'</a> <span class="byuser">'.
+                    Container::get('utils')->timeFormat($cur_forum->last_post).'</a><br /><span class="byuser">'.
                     __('by').' '.Utils::escape($cur_forum->last_poster).'</span>';
             } elseif ($cur_forum->redirect_url != '') {
                 $cur_forum->last_post_formatted = '- - -';

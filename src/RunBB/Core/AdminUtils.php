@@ -31,19 +31,19 @@ class AdminUtils
         Menu::get('admin_sidebar')->setActiveMenu($page);
     }
 
-    public static function generateModMenu($page = '')
-    {
-        $is_admin = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) ? true : false;
-
-        // See if there are any plugins that want to display in the menu
-//        $plugins = self::adminPluginsMenu($is_admin);
-
-        \View::setPageInfo([
-            'page'    =>    $page,
-            'is_admin'    =>    $is_admin,
-            'plugins'    =>    '',//$plugins,
-            ], 1);//->addTemplate('admin/menu');
-    }
+//    public static function generateModMenu($page = '')
+//    {
+//        $is_admin = (User::get()->g_id == ForumEnv::get('FEATHER_ADMIN')) ? true : false;
+//
+//        // See if there are any plugins that want to display in the menu
+////        $plugins = self::adminPluginsMenu($is_admin);
+//
+//        \View::setPageInfo([
+//            'page'    =>    $page,
+//            'is_admin'    =>    $is_admin,
+//            'plugins'    =>    '',//$plugins,
+//            ], 1);//->addTemplate('admin/menu');
+//    }
 
     /**
      * Add plugin options to menu if needed

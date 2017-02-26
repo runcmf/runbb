@@ -264,8 +264,8 @@ class Cache
 
     /**
      * Save cache file
-     * @param $dataArray
-     * @return number of bytes that were written to the file, or FALSE on failure.
+     * @param array $data
+     * @return mixed number of bytes that were written to the file, or FALSE on failure.
      */
     private function saveCache(array $data)
     {

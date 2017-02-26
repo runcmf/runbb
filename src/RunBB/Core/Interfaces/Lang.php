@@ -65,7 +65,13 @@ class Lang extends BaseProxy
         if (!defined('ORM_TABLE_PREFIX')) {
             return [];
         }
-        return \ORM::forTable(ORM_TABLE_PREFIX.'languages')->findArray();
+        try {
+            return \ORM::forTable(ORM_TABLE_PREFIX . 'languages')->findArray();
+        } catch (\Exception $e) {
+            // config exists, db not exists ?
+            // will be generated \RunBBException 'Unknown database' ?
+            return [];
+        }
     }
 
     public static function getMailTemplate($file = '')

@@ -29,10 +29,13 @@
                 <div class="row">
                     <div class="col-xs-7 col-sm-7">
                         <div class="media">
-                            <div class="media-left media-middle {{ forum.icon_type }}">
+                            <div class="media-left media-middle img-responsive {{ forum.icon_type }}">
                             </div>
                             <div class="media-body">
-                                {{ forum.forum_field|raw }} {{ forum.moderators_formatted|raw }}
+                                {#<h4 class="media-heading">#}
+                                    {{ forum.forum_field|raw }}
+                                {#</h4>#}
+                                {{ forum.moderators_formatted|raw }}
                             </div>
                         </div>
                     </div>
@@ -72,38 +75,44 @@
     </div>
     {% endif %}
 
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <i class="fa fa-toggle-on fa-lg toggler pull-right" aria-hidden="true"
+                   role="button" data-toggle="collapse" href="#brdstats"
+                   aria-expanded="false" aria-controls="brdstats"></i>
+                <i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>
+            </h3>
+        </div>
+        <div id="brdstats" class="collapse">
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-lg-6 pull-right">
+                        <div><strong>{{ trans('Board stats') }}</strong></div>
+                        <div>{{ trans(['No of users', "<strong>#{ stats.total_users }</strong>"]) }}</div>
+                        <div>{{ trans(['No of topics', "<strong>#{ stats.total_topics }</strong>"]) }}</div>
+                        <div>{{ trans(['No of posts', "<strong>#{ stats.total_posts }</strong>"]) }}</div>
+                    </div>
+                    <div class="col-lg-6 pull-left">
+                        <div><strong>{{ trans('User info') }}</strong></div>
+                        <div>{{ trans(['Newest user', stats.newest_user ]) }}</div>
+                        {% if settings('o_users_online') == 1 %}
+                        <div>{{ trans(['Users online', "<strong>#{ online.num_users }</strong>"]) }}</div>
+                        <div>{{ trans(['Guests online', "<strong>#{ online.num_guests }</strong>"]) }}</div>
+                        {% endif %}
+                    </div>
 
-
-    <div id="brdstats" class="block">
-        <h2><span>{{ trans('Board info') }}</span></h2>
-        <div class="box">
-            <div class="inbox">
-                <dl class="conr">
-                    <dt><strong>{{ trans('Board stats') }}</strong></dt>
-                    <dd><span>{{ trans(['No of users', "<strong>#{ stats.total_users }</strong>"]) }}</span></dd>
-                    <dd><span>{{ trans(['No of topics', "<strong>#{ stats.total_topics }</strong>"]) }}</span></dd>
-                    <dd><span>{{ trans(['No of posts', "<strong>#{ stats.total_posts }</strong>"]) }}</span></dd>
-                </dl>
-                <dl class="conl">
-                    <dt><strong>{{ trans('User info') }}</strong></dt>
-                    <dd><span>{{ trans(['Newest user', "#{ stats.newest_user }"]) }}</span></dd>
-                    {% if settings('o_users_online') == 1 %}
-                    <dd><span>{{ trans(['Users online', "<strong>#{ online.num_users }</strong>"]) }}</span></dd>
-                    <dd><span>{{ trans(['Guests online', "<strong>#{ online.num_guests }</strong>"]) }}</span></dd>
-                    {% endif %}
-                </dl>
-
-                {% if settings('o_users_online') == 1 %}
-                    {% if online.num_users > 0 %}
+                    {% if settings('o_users_online') == 1 and online.num_users > 0 %}
+                    <div class="col-lg-12 pull-left">
                         <dl id="onlinelist" class="clearb">
-                            <dt><strong>{{ trans('Online') }} </strong></dt>
+                            <dt>{{ trans('Online') }} </dt>
                             {{ online.users|join(',</dd> ')|raw }}</dd>
                         </dl>
+                    </div>
                     {% endif %}
-                {% endif %}
 
-                {{ fireHook('view.index.brdstats') }}
-
+                    {{ fireHook('view.index.brdstats') }}
+                </div>
             </div>
         </div>
     </div>

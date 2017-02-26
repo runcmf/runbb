@@ -247,12 +247,15 @@ a:hover {
     /*color: rgba(255, 255, 255, .9);*/
     /*text-decoration: none*/
 /*}*/
-/*nav ul .isactive {*/
-    /*background-color: rgba(255, 255, 255, .3)*/
-/*}*/
-/*nav ul .isactive a:hover {*/
-    /*color: #fff*/
-/*}*/
+nav ul .isactive {
+    background-color: rgba(255, 255, 255, .3)
+}
+nav ul .isactive a:hover {
+    color: #fff
+}
+.isactive {
+    background-color: azure;
+}
 .navbar-brand {
     padding: 0;
 }
@@ -472,7 +475,7 @@ section {
     background-image: url(img/old.png);
     height: 32px;
     width: 32px;
-    margin-right: 5px;
+    margin-right: 10px;
     float: left;
 }
 .row .icon .nosize {
@@ -514,8 +517,9 @@ section {
     text-decoration: underline;
     color: #2a6496
 }
-.blocktable .box table tbody tr .tcl .tclcon .forumdesc, .modlist {
-    font-size: 12px
+/*.blocktable .box table tbody tr .tcl .tclcon*/ .forumdesc, .modlist {
+    font-size: 14px;
+    font-style: italic;
 }
 .blocktable .box table tbody tr .tcr {
     width: 20%;

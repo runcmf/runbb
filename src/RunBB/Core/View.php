@@ -346,7 +346,7 @@ class View
             'tid' => null,
         ];
 
-        if (User::get() !== null) {
+        if (User::get() !== null && User::get() !== false) {
             if (User::get()->is_admmod) {
                 $data['has_reports'] = \RunBB\Model\Admin\Reports::hasReports();
             }
@@ -373,13 +373,10 @@ class View
                     ['token' => Random::hash(User::get()->id.Random::hash(Utils::getIp()))]
                 );
             }
-        }
 
-        if (ForumEnv::get('FEATHER_SHOW_INFO')) {
-            $data['exec_info'] = \RunBB\Model\Debug::getInfo();
-//            if (ForumEnv::get('FEATHER_SHOW_QUERIES')) {
-//                $data['queries_info'] = \RunBB\Model\Debug::getQueries();
-//            }
+            if (ForumEnv::get('FEATHER_SHOW_INFO')) {
+                $data['exec_info'] = \RunBB\Model\Debug::getInfo();
+            }
         }
 
         return $data;
@@ -411,7 +408,7 @@ class View
     {
         $navlinks = [];
         // user not initialized, possible we in install
-        if (User::get() === null) {
+        if (User::get() === null || User::get() === false) {
             return $navlinks;
         }
 

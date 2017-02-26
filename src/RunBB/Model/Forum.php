@@ -91,7 +91,7 @@ class Forum
         $cur_forum = $cur_forum->find_one();
 
         if (!$cur_forum) {
-            throw new  RunBBException(__('Bad request'), '404');
+            throw new RunBBException(__('Bad request'), '404');
         }
 
         $cur_forum = Container::get('hooks')->fire('model.forum.get_info_forum', $cur_forum);

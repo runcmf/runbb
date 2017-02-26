@@ -11,7 +11,6 @@ namespace RunBB\Controller;
 
 use RunBB\Exception\RunBBException;
 use RunBB\Core\Track;
-use RunBB\Core\Url;
 use RunBB\Core\Utils;
 use RunBB\Model\Auth;
 

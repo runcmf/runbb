@@ -14,7 +14,8 @@ was slowly falling into abandon. I proceeded to rebuild and remove all the usele
 * Add: [Twig](https://github.com/twigphp/Twig) template engine instead php.
 * Add: ability to work with translations/email templates online. (install/export/add new)
 * Add: install translations by click  
-* Add: install extensions (plugins) by click 
+* Add: install extensions (plugins) by click   
+* Add: bootstrap SB Admin 2
 
 
 

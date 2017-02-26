@@ -5,13 +5,13 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     {% if is_indexed %}
     <meta name="robots" content="noindex, follow">
     {% endif %}
 
     <title>{{ pageTitle }}</title>
-    <link rel="shortcut icon" href="{{ baseStatic() }}/img/favicon.png" />
+    <link rel="shortcut icon" href="{{ baseStatic() }}/assets/img/favicon.png" />
     <!-- Theme -->
     <link rel="stylesheet" type="text/css" href="{{ baseStatic() }}/themes/{{ style }}/style.css">
 
@@ -272,14 +272,15 @@
                 </div>
                 {% endif %}
 
-                <div class="form-inline row">
+                <div class="row">
 
-                    <div class="form-inline col-sm-9">
-                        {% if settings('o_quickjump') == '1' and quickjump is not empty %}
+                    <div class="col-sm-9 form-inline">
                         <div class="form-group col-sm-4">
-                            <form class="form-horizontal" id="qjump" method="get" action="">
-                            <label class="control-label col-sm-5" for="id">{{ trans('Jump to') }}</label>
-                            {#<div class="col-sm-7">#}
+                        {% if settings('o_quickjump') == '1' and quickjump is not empty %}
+                            <form class="form-horizontal" role="form" id="qjump" method="get" action="">
+                                <label class="control-label col-sm-2" for="id" title="{{ trans('Jump to') }}">
+                                    <i class="fa fa-fast-forward" aria-hidden="true"></i>
+                                </label>
                                 <select name="id" class="form-control" onchange="window.location=(this.options[this.selectedIndex].value)">
                         {% for cat_id, cat_data in quickjump[ userGet('g_id') ] %}
                                     <optgroup label="{{ cat_data.cat_name }}">
@@ -289,13 +290,30 @@
                                     </optgroup>
                         {% endfor %}
                                 </select>
-                            {#</div>#}
                             </form>
-                        </div>
                         {% endif %}
+                        </div>
 
-                        {% if stylesQSelect|length > 1 %}
                         <div class="form-group col-sm-4">
+                        {% if languagesQSelect|length > 1 %}
+                            <form method="post" class="form-horizontal" action="{{ pathFor('profileAction', {'id': 1, 'action': 'change_lang'}) }}" id="lang_select">
+                                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                                <input type="hidden" name="currentPage" value="{{ currentPage }}">
+                                <label class="control-label col-sm-5" for="languageToChange" title="{{ trans('Language') }}">
+                                    <i class="fa fa-language" aria-hidden="true"></i>
+                                </label>
+                                <select name="languageToChange" class="form-control" onchange="RunBB.changeLanguage();">
+                                {% for lang in languagesQSelect %}
+                                    <option value="{{ lang.name }}"{{ userGet('language') == lang.name ? ' selected="selected" ' : '' }}>{{ lang.name }}</option>
+                                {% endfor %}
+                                </select>
+                            </form>
+                        {% endif %}
+                        </div>
+
+                        <div class="form-group col-sm-4">
+                        {% if stylesQSelect|length > 1 %}
                             <form method="post" class="form-horizontal" action="{{ pathFor('profileAction', {'id': 1, 'action': 'change_style'}) }}" id="theme_select">
                                 <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
                                 <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
@@ -309,25 +327,8 @@
                                     {% endfor %}
                                 </select>
                             </form>
-                        </div>
                         {% endif %}
-
-                        {% if languagesQSelect|length > 1 %}
-                        <div class="form-group col-sm-4">
-                            <form method="post" class="form-horizontal" action="{{ pathFor('profileAction', {'id': 1, 'action': 'change_lang'}) }}" id="lang_select">
-                                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-                                <input type="hidden" name="currentPage" value="{{ currentPage }}">
-                                <label class="control-label col-sm-5" for="languageToChange">{{ trans('Language') }}</label>
-                                <select name="languageToChange" class="form-control" onchange="RunBB.changeLanguage();">
-                                {% for lang in languagesQSelect %}
-                                    <option value="{{ lang.name }}"{{ userGet('language') == lang.name ? ' selected="selected" ' : '' }}>{{ lang.name }}</option>
-                                {% endfor %}
-                                </select>
-                            </form>
                         </div>
-                        {% endif %}
-
                     </div>
                     <div class="form-inline col-sm-3 pull-right">
 
