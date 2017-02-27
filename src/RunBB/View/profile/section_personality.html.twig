@@ -10,13 +10,17 @@
 
         <div class="col-sm-9">
 
-            <div class="blockform">
-                <h2><span>{{ user.username }} - {{ trans('Section personality') }}</span></h2>
-                <div class="box">
-                    <form id="profile4" method="post" action="{{ pathFor('profileSection', {'id': id, 'section': 'personality'}) }}">
-                        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-                        <div><input type="hidden" name="form_sent" value="1" /></div>
+            <form class="panel panel-primary" id="profile4" method="post" action="{{ pathFor('profileSection', {'id': id, 'section': 'personality'}) }}">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <input type="hidden" name="form_sent" value="1" />
+
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{ user.username }} - {{ trans('Section personality') }}</h3>
+                </div>
+
+                <div class="list-group-item">
+
                 {% if settings('o_avatars') == '1' %}
                         <div class="inform">
                             <fieldset id="profileavatar">
@@ -42,7 +46,7 @@
                                     <div class="txtarea">
                                         {{ trans(['Sig max size', formatNumber(settings('p_sig_length')), settings('p_sig_lines') ]) }}
                                         <br />
-                                        <textarea id="req_message" name="signature" rows="10" cols="65">{{ user.signature }}</textarea><br />
+                                        <textarea class="form-control" id="req_message" name="signature" rows="10">{{ user.signature }}</textarea><br />
                                     </div>
                                     <ul class="bblinks list-inline">
                                         <li><span><a href="{{ pathFor('help') }}#bbcode" onclick="window.open(this.href); return false;">{{ trans('BBCode') }}</a> {{ settings('p_sig_bbcode') == '1' ? trans('on') : trans('off') }}</span></li>
@@ -55,10 +59,13 @@
                             </fieldset>
                         </div>
                 {% endif %}
-                        <p class="buttons"><input type="submit" name="update" value="{{ trans('Submit') }}" /> {{ trans('Instructions') }}</p>
-                    </form>
+
                 </div>
-            </div>
+                <div class="panel-footer">
+                    <input class="btn btn-primary" type="submit" name="update" value="{{ trans('Submit') }}" />
+                    <small>{{ trans('Instructions') }}</small>
+                </div>
+            </form>
 
         </div>
     </div>

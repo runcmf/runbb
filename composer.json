@@ -46,6 +46,7 @@
     }
   },
   "scripts": {
+    "post-package-update": "RunBB\\Helpers\\Update::postUpdate",
     "test": [
       "@phpunit",
       "@phpcs"

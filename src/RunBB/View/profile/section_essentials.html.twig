@@ -10,16 +10,16 @@
 
         <div class="col-sm-9">
 
-            <div class="panel panel-primary">
+            <form class="panel panel-primary" id="profile1" method="post" action="{{ pathFor('profileSection', {'id': id, 'section': 'essentials'}) }}" onsubmit="return process_form(this)">
+                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+                <input type="hidden" name="form_sent" value="1" />
+
                 <div class="panel-heading">
                     <h3 class="panel-title">{{ user.username }} - {{ trans('Section essentials') }}</h3>
                 </div>
 
                 <div class="list-group-item">
-                    <form id="profile1" method="post" action="{{ pathFor('profileSection', {'id': id, 'section': 'essentials'}) }}" onsubmit="return process_form(this)">
-                        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
-                        <input type="hidden" name="form_sent" value="1" />
 
                         <div class="inform">
                             <fieldset>
@@ -152,13 +152,13 @@
                                 </div>
                             </fieldset>
                         </div>
-                        <p class="buttons">
-                            <input type="submit" name="update" value="{{ trans('Submit') }}" />
-                            {{ trans('Instructions') }}
-                        </p>
-                    </form>
+
                 </div>
-            </div>
+                <div class="panel-footer">
+                    <input class="btn btn-primary" type="submit" name="update" value="{{ trans('Submit') }}" />
+                    <small>{{ trans('Instructions') }}</small>
+                </div>
+            </form>
 
         </div>
     </div>

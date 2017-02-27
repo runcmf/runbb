@@ -140,8 +140,8 @@ class Profile
                 $title_field = '';
                 if (User::get()->g_set_title == '1') {
                     $title_field = '<label>' . __('Title') . ' <em>(' .
-                        __('Leave blank') . ')</em><br /><input type="text" name="title" value="' .
-                        Utils::escape($user->title) . '" size="30" maxlength="50" /><br /></label>' . "\n";
+                        __('Leave blank') . ')</em><br /><input class="form-control" type="text" name="title" value="'.
+                        Utils::escape($user->title) . '"maxlength="50" /><br /></label>' . "\n";
                 }
 
                 View::setPageInfo([
