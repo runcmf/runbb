@@ -26,7 +26,7 @@
     "gettext/gettext": "~4.2",
     "s9e/text-formatter": "~0.9",
     "firebase/php-jwt": "~4.0",
-    "runcmf/runbb-ext-renderer": "dev-master"
+    "runcmf/runbb-ext-renderer": "~0.1"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "~2.5",
