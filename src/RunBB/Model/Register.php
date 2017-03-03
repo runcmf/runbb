@@ -20,20 +20,20 @@ class Register
     public function checkForErrors()
     {
         $user = [];
-        $user['errors'] = '';
+        $user['errors'] = [];
 
         $user = Container::get('hooks')->fire('model.register.check_for_errors_start', $user);
 
         // Check that someone from this IP didn't register a user within the last hour (DoS prevention)
-        $already_registered = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+        $already_registered = \ORM::forTable(ORM_TABLE_PREFIX.'users')
                                   ->where('registration_ip', Utils::getIp())
-                                  ->where_gt('registered', time() - 3600);
+                                  ->whereGt('registered', time() - 3600);
         $already_registered = Container::get('hooks')
             ->fireDB('model.register.check_for_errors_ip_query', $already_registered);
-        $already_registered = $already_registered->find_one();
+        $already_registered = $already_registered->findOne();
 
         if ($already_registered) {
-            throw new  RunBBException(__('Registration flood'), 429);
+            throw new RunBBException(__('Registration flood'), 429);
         }
 
 
@@ -91,11 +91,11 @@ class Register
         // Check if someone else already has registered with that email address
         $dupe_list = [];
 
-        $dupe_mail = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+        $dupe_mail = \ORM::forTable(ORM_TABLE_PREFIX.'users')
                         ->select('username')
                         ->where('email', $user['email1']);
         $dupe_mail = Container::get('hooks')->fireDB('model.register.check_for_errors_dupe', $dupe_mail);
-        $dupe_mail = $dupe_mail->find_many();
+        $dupe_mail = $dupe_mail->findMany();
 
         if ($dupe_mail) {
             if (ForumSettings::get('p_allow_dupe_email') == '0') {
@@ -149,13 +149,13 @@ class Register
             'last_visit'      => $now,
         ];
 
-        $user = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+        $user = \ORM::forTable(ORM_TABLE_PREFIX.'users')
                     ->create()
                     ->set($user['insert']);
         $user = Container::get('hooks')->fireDB('model.register.insert_user_query', $user);
         $user->save();
 
-        $new_uid = \ORM::get_db()->lastInsertId(ForumSettings::get('db_prefix').'users');
+        $new_uid = \ORM::getDb()->lastInsertId(ForumSettings::get('db_prefix').'users');
 
         // If the mailing list isn't empty, we may need to send out some alerts
         if (ForumSettings::get('o_mailing_list') != '') {

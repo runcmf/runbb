@@ -215,9 +215,9 @@ class Init
                 if (method_exists($e, 'hasBacklink')) {
                     $error['back'] = $e->hasBacklink();
                 }
-                if (!Container::get('template')->loader->exists('@forum/error.html.twig')) {
+//                if (!Container::get('template')->loader->exists('@forum/error.html.twig')) {
                     Container::get('template')->setStyle('runbb');
-                }
+//                }
                 return Container::get('template')->setPageInfo([
                     'title' => [\RunBB\Core\Utils::escape(ForumSettings::get('o_board_title')), 'Error'],
                     'msg' => html_entity_decode($error['message']),

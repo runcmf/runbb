@@ -12,9 +12,7 @@ namespace RunBB\Controller\Admin;
 use RunBB\Core\AdminUtils;
 use RunBB\Exception\RunBBException;
 use RunBB\Core\Lister;
-use RunBB\Core\Url;
 use RunBB\Core\Utils;
-use ZipArchive;
 
 class Plugins
 {

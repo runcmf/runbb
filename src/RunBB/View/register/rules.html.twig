@@ -1,28 +1,28 @@
 {% extends '@forum/layout.html.twig' %}
 
 {% block content %}
+{{ fireHook('view.register.rules.start') }}
 
-    {{ fireHook('view.register.rules.start') }}
+    <form class="panel panel-primary" method="get" action="{{ pathFor('register') }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Forum rules') }}</h3>
+        </div>
 
-<div id="rules" class="blockform">
-    <div class="hd"><h2><span>{{ trans('Forum rules') }}</span></h2></div>
-    <div class="box">
-        <form method="get" action="{{ pathFor('register') }}">
-            <div class="inform">
+        <div class="list-group-item">
+            {#<div class="inform">#}
                 <fieldset>
                     <legend>{{ trans('Rules legend') }}</legend>
                     <div class="infldset">
                         <div class="usercontent">{{ settings('o_rules_message') }}</div>
                     </div>
                 </fieldset>
-            </div>
-            <p class="buttons">
-                <input type="submit" name="agree" value="{{ trans('Agree') }}" />
-                <input type="submit" name="cancel" value="{{ trans('Cancel') }}" />
-            </p>
-        </form>
-    </div>
-</div>
+            {#</div>#}
+        </div>
+        <div class="form-control">
+            <input class="btn btn-primary" type="submit" name="agree" value="{{ trans('Agree') }}" />
+            <input class="btn btn-primary" type="submit" name="cancel" value="{{ trans('Cancel') }}" />
+        </div>
+    </form>
 
-    {{ fireHook('view.register.rules.end') }}
+{{ fireHook('view.register.rules.end') }}
 {% endblock content %}

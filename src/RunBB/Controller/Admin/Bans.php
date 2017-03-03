@@ -33,6 +33,8 @@ class Bans
     {
         Container::get('hooks')->fire('controller.admin.bans.display');
 
+        AdminUtils::generateAdminMenu('bans');
+
         // Display bans
         if (Input::query('find_ban')) {
             $ban_info = $this->model->findBan();
@@ -57,8 +59,6 @@ class Bans
                 'ban_data' => $ban_data['data'],
             ])->addTemplate('@forum/admin/bans/search_ban')->display();
         } else {
-            AdminUtils::generateAdminMenu('bans');
-
             View::setPageInfo([
                 'active_page' => 'admin',
                 'admin_console' => true,

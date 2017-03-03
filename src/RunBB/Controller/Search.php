@@ -67,7 +67,6 @@ class Search
                 'focus_element' => ['search', 'keywords'],
                 'is_indexed' => true,
                 'forums' => $this->model->getListForums(),
-//            ])->addTemplate('search/form')->display();
             ])->addTemplate('@forum/search/form')->display();
         }
     }

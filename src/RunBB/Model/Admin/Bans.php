@@ -162,13 +162,13 @@ class Bans
 
         // Make sure we're not banning an admin or moderator
         if (!empty($ban_user)) {
-            $group_id = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+            $group_id = \ORM::forTable(ORM_TABLE_PREFIX.'users')
                 ->select('group_id')
                 ->where('username', $ban_user)
-                ->where_gt('id', 1)
-                ->find_one();
+                ->whereGt('id', 1)
+                ->findOne();
 
-            if ($group_id->group_id) {
+            if ($group_id !== false && $group_id->group_id) {
                 if ($group_id->group_id == ForumEnv::get('FEATHER_ADMIN')) {
                     throw new  RunBBException(sprintf(__('User is admin message'), Utils::escape($ban_user)), 403);
                 }
@@ -244,13 +244,13 @@ class Bans
                 throw new  RunBBException(__('Invalid date message').' '.__('Invalid date reasons'), 400);
             }
         } else {
-            $ban_expire = 'NULL';
+            $ban_expire = NULL;
         }
 
-        $ban_user = ($ban_user != '') ? $ban_user : 'NULL';
-        $ban_ip = ($ban_ip != '') ? $ban_ip : 'NULL';
-        $ban_email = ($ban_email != '') ? $ban_email : 'NULL';
-        $ban_message = ($ban_message != '') ? $ban_message : 'NULL';
+        $ban_user = ($ban_user != '') ? $ban_user : NULL;
+        $ban_ip = ($ban_ip != '') ? $ban_ip : NULL;
+        $ban_email = ($ban_email != '') ? $ban_email : NULL;
+        $ban_message = ($ban_message != '') ? $ban_message : NULL;
 
         $insert_update_ban = [
             'username'  =>  $ban_user,
@@ -265,7 +265,7 @@ class Bans
         if (Input::post('mode') == 'add') {
             $insert_update_ban['ban_creator'] = User::get()->id;
 
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'bans')
+            $result = \ORM::forTable(ORM_TABLE_PREFIX.'bans')
                 ->create()
                 ->set($insert_update_ban)
                 ->save();

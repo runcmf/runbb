@@ -1,8 +1,8 @@
-{% extends '@forum/layout.html.twig' %}
+{#{% extends '@forum/layout.html.twig' %}#}
 
-{% block content %}
+{#{% block content %}#}
 
-    {{ fireHook('view.breadcrumbs.start') }}
+{{ fireHook('view.breadcrumbs.start') }}
 
 {% if crumbs is not empty %}
 
@@ -19,7 +19,7 @@
     {% endfor %}
 
 
-    {% if rightCrumb is not empty and rightCrumb is not empty %}
+    {% rightCrumb is not empty %}
                         <li class="right"><span><a href="{{ rightCrumb.link }}">{{ rightCrumb.text }}</a></span></li>
     {% endif %}
                     </ul>
@@ -30,5 +30,5 @@
 
 {% endif %}
 
-    {{ fireHook('view.breadcrumbs.end') }}
-{% endblock content %}
+{{ fireHook('view.breadcrumbs.end') }}
+{#{% endblock content %}#}

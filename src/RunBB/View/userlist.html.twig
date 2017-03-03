@@ -14,17 +14,17 @@
                 <div class="infldset">
                     {% if userGet('g_search_users') == '1' %}
                     <label class="conl">{{ trans('Username') }}<br />
-                        <input type="text" name="username" value="{{ username }}" size="25" maxlength="25" /><br />
+                        <input class="form-control" type="text" name="username" value="{{ username }}" maxlength="25" /><br />
                     </label>
                     {% endif %}
                     <label class="conl">{{ trans('User group') }}<br />
-                        <select name="show_group">
+                        <select class="form-control" name="show_group">
                             <option value="-1"{{ show_group == -1 ? ' selected="selected"' : '' }}>{{ trans('All users') }}</option>
                         {{ dropdown_menu|raw }}
                     </select>
                     <br /></label>
                     <label class="conl">{{ trans('Sort by') }}
-                    <br /><select name="sort_by">
+                    <br /><select class="form-control" name="sort_by">
                         <option value="username"{{ sort_by == 'username' ? ' selected="selected"' : '' }}>{{ trans('Username') }}</option>
                         <option value="registered"{{ sort_by == 'registered' ? ' selected="selected"' : ''}}>{{ trans('Registered') }}</option>
                         {% if show_post_count %}
@@ -33,7 +33,7 @@
                         </select>
                     <br /></label>
                     <label class="conl">{{ trans('Sort order') }}
-                    <br /><select name="sort_dir">
+                    <br /><select class="form-control" name="sort_dir">
                         <option value="ASC"{{ sort_dir == 'ASC' ? ' selected="selected"' : '' }}>{{ trans('Ascending') }}</option>
                         <option value="DESC"{{ sort_dir == 'DESC' ? ' selected="selected"' : '' }}>{{ trans('Descending') }}</option>
                     </select>

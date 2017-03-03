@@ -45,6 +45,7 @@ $ composer require runcmf/runbb:dev-master
             'web_root' => DIR . 'public/',
             'root_dir' => DIR,
             'debug' => true, // false, true (page generate time, mem usage and peak)
+            'renderer' => 'twig', // twig, php (main renderer)
         ]
 ```
 
@@ -75,6 +76,7 @@ return [
             'web_root' => DIR . 'public/',
             'root_dir' => DIR,
             'debug' => true, // false, true (page generate time, mem usage and peak)
+            'renderer' => 'twig', // twig, php (main renderer)
         ]
     ],
 ];

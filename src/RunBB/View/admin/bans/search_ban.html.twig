@@ -1,8 +1,7 @@
-{% extends '@forum/layout.html.twig' %}
+{% extends '@forum/adminLayout.html.twig' %}
 
 {% block content %}
-
-    {{ fireHook('view.admin.bans.search.start') }}
+{{ fireHook('view.admin.bans.search.start') }}
 
     <div class="linkst">
         <div class="inbox crumbsplus">
@@ -19,52 +18,56 @@
     </div>
 
 
-    <div id="bans1" class="blocktable">
-        <h2><span>{{ trans('Results head') }}</span></h2>
-        <div class="box">
-            <div class="inbox">
-                <table>
-                    <thead>
-                    <tr>
-                        <th class="tcl" scope="col">{{ trans('Results username head') }}</th>
-                        <th class="tc2" scope="col">{{ trans('Results e-mail head') }}</th>
-                        <th class="tc3" scope="col">{{ trans('Results IP address head') }}</th>
-                        <th class="tc4" scope="col">{{ trans('Results expire head') }}</th>
-                        <th class="tc5" scope="col">{{ trans('Results message head') }}</th>
-                        <th class="tc6" scope="col">{{ trans('Results banned by head') }}</th>
-                        <th class="tcr" scope="col">{{ trans('Results actions head') }}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+    <div id="bans1" class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Results head') }}</h3>
+        </div>
 
-
-                    {% for cur_ban in ban_data %}
-
-                        <tr>
-                            <td class="tcl">{{ cur_ban.username != '' ? cur_ban.username : '&#160;' }}</td>
-                            <td class="tc2">{{ cur_ban.email != '' ? cur_ban.email : '&#160;' }}</td>
-                            <td class="tc3">{{ cur_ban.ip != '' ? cur_ban.ip : '&#160;' }}</td>
-                            <td class="tc4">{{ formatTime(cur_ban.expire, true) }}</td>
-                            <td class="tc5">{{ cur_ban.message != '' ? cur_ban.message : '&#160;' }}</td>
-                            <td class="tc6">{{ cur_ban.ban_creator_username != ''
-                                ? ('<a href="' ~pathFor('userProfile', {'id': cur_ban.ban_creator}) ~'">' ~cur_ban.ban_creator_username ~'</a>')|raw
-                                : trans('Unknown') }}</td>
-                            <td class="tcr"><a
-                                        href="{{ pathFor('editBan', {'id': cur_ban.id}) }}">{{ trans('Edit') }}</a> |
-                                <a href="{{ pathFor('deleteBan', {'id': cur_ban.id}) }}">{{ trans('Remove') }}</a></td>
-                        </tr>
-
-                    {% endfor %}
-
-                    {% if ban_data is empty %}
-                        <tr>
-                            <td class="tcl" colspan="7">{{ trans('No match') }}</td>
-                        </tr>
-                    {% endif %}
-
-                    </tbody>
-                </table>
+        <div class="list-group">
+            <div class="list-group-item list-group-item-info">
+                <div class="row">
+                    <div class="col-sm-2">
+                        {{ trans('Results username head') }}
+                    </div>
+                    <div class="col-sm-5">
+                        {{ trans('Info') }}
+                    </div>
+                    <div class="col-sm-2 text-nowrap">
+                        {{ trans('Results banned by head') }}
+                    </div>
+                    <div class="col-sm-3">
+                        {{ trans('Results actions head') }}
+                    </div>
+                </div>
             </div>
+            {% for cur_ban in ban_data %}
+            <div class="list-group-item">
+                <div class="row">
+                    <div class="col-sm-2">
+                        {{ cur_ban.username != '' ? cur_ban.username : '' }}
+                    </div>
+                    <div class="col-sm-5">
+                        {{ trans('Results e-mail head') }}: <strong>{{ cur_ban.email != '' ? cur_ban.email : '' }}</strong><br />
+                        {{ trans('Results IP address head') }}: <strong>{{ cur_ban.ip != '' ? cur_ban.ip : '' }}</strong><br />
+                        {{ trans('Results expire head') }}: <strong>{{ formatTime(cur_ban.expire, true) }}</strong><br />
+                        {{ trans('Results message head') }}: <strong>{{ cur_ban.message != '' ? cur_ban.message : '' }}</strong>
+                    </div>
+                    <div class="col-sm-2 text-nowrap">
+                        {{ cur_ban.ban_creator_username != ''
+                        ? ('<a href="' ~pathFor('userProfile', {'id': cur_ban.ban_creator}) ~'">' ~cur_ban.ban_creator_username ~'</a>')|raw
+                        : trans('Unknown') }}
+                    </div>
+                    <div class="col-sm-3">
+                        <a class="btn btn-primary btn-sm" href="{{ pathFor('editBan', {'id': cur_ban.id}) }}">{{ trans('Edit') }}</a>
+                        <a class="btn btn-success btn-sm" href="{{ pathFor('deleteBan', {'id': cur_ban.id}) }}">{{ trans('Remove') }}</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="row">
+                <div class="col-sm-12 text-center"><h4>{{ trans('No match') }}</h4></div>
+            </div>
+            {% endfor %}
         </div>
     </div>
 
@@ -83,5 +86,5 @@
     </div>
 
 
-    {{ fireHook('view.admin.bans.search.end') }}
+{{ fireHook('view.admin.bans.search.end') }}
 {% endblock content %}

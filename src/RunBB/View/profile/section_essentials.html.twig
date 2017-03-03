@@ -145,9 +145,8 @@
                                     <p>{{ trans('Last visit info') }} {{ formatTime(user.last_visit) }}</p>
                                     {{ user_disp.posts_field|raw }}
                                 {% if userGet('is_admmod') %}
-                                    <label>{{ trans('Admin note') }}<br />
-                                    <input class="form-control" id="admin_note" type="text" name="admin_note" value="{{ user.admin_note }}" size="30" maxlength="30" /><br />
-                                    </label>
+                                    {{ trans('Admin note') }}<br />
+                                    <input class="form-control" id="admin_note" type="text" name="admin_note" value="{{ user.admin_note }}" maxlength="30" /><br />
                                 {% endif %}
                                 </div>
                             </fieldset>
@@ -163,5 +162,5 @@
         </div>
     </div>
 
-    {{ fireHook('view.profile.section_essentials.end') }}
+{{ fireHook('view.profile.section_essentials.end') }}
 {% endblock content %}

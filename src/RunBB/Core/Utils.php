@@ -265,10 +265,10 @@ class Utils
      */
     public static function generateBreadcrumbs(array $crumbs = [], array $rightCrumb = [])
     {
-        \View::setPageInfo([
+        View::setPageInfo([
             'rightCrumb' => $rightCrumb,
             'crumbs' => $crumbs,
-        ], 1)->addTemplate('breadcrumbs');
+        ]);//->addTemplate('breadcrumbs');
     }
 
     /**

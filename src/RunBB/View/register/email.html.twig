@@ -1,35 +1,37 @@
 {% extends '@forum/layout.html.twig' %}
 
 {% block content %}
+{{ fireHook('view.register.email.start') }}
 
-    {{ fireHook('view.register.email.start') }}
+    <form id="email" method="post" action="misc.php?email={{ recipient_id }}" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+        <input type="hidden" name="form_sent" value="1" />
+        <input type="hidden" name="redirect_url" value="{{ redirect_url }}" />
 
-    <div id="emailform" class="blockform">
-        <h2><span>{{ trans('Send email to') }} {{ recipient }}</span></h2>
-        <div class="box">
-            <form id="email" method="post" action="misc.php?email={{ recipient_id }}" onsubmit="this.submit.disabled=true;if(process_form(this)){return true;}else{this.submit.disabled=false;return false;}">
-                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Send email to') }} {{ recipient }}</h3>
+        </div>
+
+        <div class="list-group-item">
                 <div class="inform">
                     <fieldset>
                         <legend>{{ trans('Write email') }}</legend>
                         <div class="infldset txtarea">
-                            <input type="hidden" name="form_sent" value="1" />
-                            <input type="hidden" name="redirect_url" value="{{ redirect_url }}" />
-                            <label class="required"><strong>{{ trans('Email subject') }} <span>{{ trans('Required') }}</span></strong><br />
-                            <input class="longinput" type="text" name="req_subject" size="75" maxlength="70" tabindex="1" /><br /></label>
-                            <label class="required"><strong>{{ trans('Email message') }} <span>{{ trans('Required') }}</span></strong><br />
-                            <textarea name="req_message" rows="10" cols="75" tabindex="2"></textarea><br /></label>
+                            <label class="required">{{ trans('Email subject') }} <span>{{ trans('Required') }}</span><br />
+                            <input class="form-control longinput" type="text" name="req_subject" maxlength="70" tabindex="1" /></label><br />
+                            <label class="required">{{ trans('Email message') }} <span>{{ trans('Required') }}</span><br />
+                            <textarea class="form-control" name="req_message" rows="10" tabindex="2"></textarea></label><br />
                             <p>{{ trans('Email disclosure note') }}</p>
                         </div>
                     </fieldset>
                 </div>
-                <p class="buttons"><input type="submit" name="submit" value="{{ trans('Submit') }}" tabindex="3" accesskey="s" />
-                    <a href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
-                </p>
-            </form>
         </div>
-    </div>
+        <div class="panel-footer">
+            <input class="btn btn-primary" type="submit" name="submit" value="{{ trans('Submit') }}" tabindex="3" accesskey="s" />
+            <a class="btn btn-primary" href="javascript:history.go(-1)">{{ trans('Go back') }}</a>
+        </div>
+    </form>
 
-    {{ fireHook('view.register.email.end') }}
+{{ fireHook('view.register.email.end') }}
 {% endblock content %}

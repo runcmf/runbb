@@ -17,8 +17,6 @@
 
 namespace RunBB\Controller\Admin;
 
-use RunBB\Core\Interfaces\Container;
-
 class Compose
 {
     private $c;

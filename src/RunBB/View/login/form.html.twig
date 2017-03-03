@@ -4,21 +4,26 @@
 
     {{ fireHook('view.login.form.start') }}
 
-    <div class="blockform">
-        <h2><span>{{ trans('Login') }}</span></h2>
-        <div class="box">
-            <form id="login" method="post" action="{{ pathFor('login') }}" onsubmit="return process_form(this)">
-                <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
-                <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+    <form class="panel panel-primary" id="login" method="post" action="{{ pathFor('login') }}" onsubmit="return process_form(this)">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+        <input type="hidden" name="form_sent" value="1" />
+
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ trans('Login') }}</h3>
+        </div>
+
+        <div class="list-group-item">
+
                 <div class="inform">
                     <fieldset>
                         <legend>{{ trans('Login legend') }}</legend>
                         <div class="infldset">
-                            <input type="hidden" name="form_sent" value="1" />
+
                             <label class="conl required"><strong>{{ trans('Username') }} <span>{{ trans('Required') }}</span></strong><br />
-                                <input type="text" name="req_username" size="25" maxlength="25" tabindex="1" /><br /></label>
+                                <input class="form-control" type="text" name="req_username" size="25" maxlength="25" tabindex="1" /></label><br />
                             <label class="conl required"><strong>{{ trans('Password') }} <span>{{ trans('Required') }}</span></strong><br />
-                                <input type="password" name="req_password" size="25" tabindex="2" /><br /></label>
+                                <input class="form-control" type="password" name="req_password" size="25" tabindex="2" /></label><br />
 
                             <div class="rbox clearb">
                                 <label><input type="checkbox" name="save_pass" value="1" tabindex="3" checked="checked" />{{ trans('Remember me') }}<br /></label>
@@ -26,16 +31,17 @@
 
                             <p class="clearb">{{ trans('Login info') }}</p>
                             <p class="actions">
-                                <span><a href="{{ pathFor('register') }}" tabindex="5">{{ trans('Not registered') }}</a></span>
-                                <span><a href="{{ pathFor('resetPassword') }}" tabindex="6">{{ trans('Forgotten pass') }}</a></span>
+                                <span><a class="btn btn-primary btn-sm" href="{{ pathFor('register') }}" tabindex="5">{{ trans('Not registered') }}</a></span>
+                                <span><a class="btn btn-primary btn-sm" href="{{ pathFor('resetPassword') }}" tabindex="6">{{ trans('Forgotten pass') }}</a></span>
                             </p>
                         </div>
                     </fieldset>
                 </div>
-                <p class="buttons"><input type="submit" name="login" value="{{ trans('Login') }}" tabindex="4" /></p>
-            </form>
         </div>
-    </div>
+        <div class="panel-footer">
+            <input class="btn btn-primary" type="submit" name="login" value="{{ trans('Login') }}" tabindex="4" />
+        </div>
+    </form>
 
     {{ fireHook('view.login.form.end') }}
 {% endblock content %}

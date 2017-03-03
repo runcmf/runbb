@@ -6,16 +6,18 @@
 ## About
 
 RunBB is a fork of [FeatherBB](https://github.com/featherbb/featherbb) which, at the time of the fork (2017-01-09), 
-was slowly falling into abandon. I proceeded to rebuild and remove all the useless (to me) cruft:
-* Removed: [db-layer](https://github.com/featherbb/db-layer) and use [Idiorm](https://github.com/j4mie/idiorm) from package instead  
-* Removed: Core\gettext and use [gettext](https://github.com/oscarotero/Gettext) from package instead  
-* Rebuild: plugins system. Plugins load by composer packages. Old system temporary exist but deprecated.
+was slowly falling into abandon. Main objective build easy configurable library instead hardcoded project. I proceeded to rebuild and remove all the useless (to me) cruft:
+* Remove: [db-layer](https://github.com/featherbb/db-layer) and use [Idiorm](https://github.com/j4mie/idiorm) from package instead  
+* Remove: Core\gettext and use [gettext](https://github.com/oscarotero/Gettext) from package instead  
+* Remove: Core\View and separate to [runbb-ext-renderer](https://github.com/runcmf/runbb-ext-renderer) extension
+* Rebuild: plugins system. Plugins load by composer packages.
 * Add: Markdown instead of BBCodes. Now use [s9e/text-formatter](https://github.com/s9e/TextFormatter) with [SimpleMDE](https://github.com/NextStepWebs/simplemde-markdown-editor) as plugin [runbb-ext-simplemde](https://github.com/runcmf/runbb-ext-simplemde) and [markItUp!](http://markitup.jaysalvat.com/home/) with [elFinder](https://github.com/Studio-42/elFinder) as plugin [runbb-ext-markitup](https://github.com/runcmf/runbb-ext-markitup) 
 * Add: [Twig](https://github.com/twigphp/Twig) template engine instead php.
 * Add: ability to work with translations/email templates online. (install/export/add new)
 * Add: install translations by click  
 * Add: install extensions (plugins) by click   
-* Add: bootstrap SB Admin 2
+* Add: bootstrap SB Admin 2  
+* Replace: Helpers\Set to Slim\Collection  
 
 
 

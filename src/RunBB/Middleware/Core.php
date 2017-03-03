@@ -18,7 +18,7 @@ use RunBB\Core\Interfaces\Lang;
 use RunBB\Core\Plugin;
 use RunBB\Core\Url;
 use RunBB\Core\Utils;
-use RunBB\Core\View;
+use BBRenderer\Renderer;
 
 class Core
 {
@@ -56,6 +56,7 @@ class Core
         $this->forum_env['APP_ROOT'] = $data['root_dir'];//ForumEnv::get('APP_ROOT')
         $this->forum_env['WEB_PLUGINS'] = 'ext';
         $this->forum_env['SLIM_SETTINGS'] = $c['settings']['runbb'];
+        $this->forum_env['RENDERER'] = $data['renderer'];
 
         // Populate forum_env
         $this->forum_env = array_merge($this->loadDefaultForumEnv(), $this->forum_env);
@@ -212,7 +213,8 @@ class Core
         });
         // Load view
         Container::set('template', function ($container) {
-            return new View();
+            $r = new Renderer($this->forum_env['RENDERER']);
+            return $r->get();
         });
         // Load url class
         Container::set('url', function ($container) {
@@ -235,8 +237,7 @@ class Core
         });
         // Set cookies
         Container::set('cookie', function ($container) {
-            $request = $container->get('request');
-            return new \Slim\Http\Cookies($request->getCookieParams());
+            return new \Slim\Http\Cookies($container->get('request')->getCookieParams());
         });
         Container::set('flash', function ($c) {
             return new \Slim\Flash\Messages;
