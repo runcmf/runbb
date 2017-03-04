@@ -41,6 +41,6 @@ class Reports
             'admin_console' => true,
             'report_data' => $this->model->getReports(),
             'report_zapped_data' => $this->model->getZappedReports(),
-        ])->addTemplate('@forum/admin/reports')->display();
+        ])->display('@forum/admin/reports');
     }
 }

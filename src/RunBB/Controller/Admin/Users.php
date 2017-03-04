@@ -41,7 +41,7 @@ class Users
                 'active_page' => 'moderate',
                 'admin_console' => true,
                 'move' => $this->model->moveUsers(),
-            ])->addTemplate('@forum/admin/users/move_users')->display();
+            ])->display('@forum/admin/users/move_users');
         }
 
 
@@ -63,7 +63,7 @@ class Users
                 'active_page' => 'moderate',
                 'admin_console' => true,
                 'user_ids' => $this->model->deleteUsers(),
-            ])->addTemplate('@forum/admin/users/delete_users')->display();
+            ])->display('@forum/admin/users/delete_users');
         }
 
         // Ban multiple users
@@ -81,7 +81,7 @@ class Users
                 'focus_element' => ['bans2', 'ban_message'],
                 'admin_console' => true,
                 'user_ids' => $this->model->banUsers(),
-            ])->addTemplate('@forum/admin/users/ban_users')->display();
+            ])->display('@forum/admin/users/ban_users');
         }
 
         // Display bans
@@ -128,7 +128,7 @@ class Users
                     $search['direction'],
                     $start_from
                 ),
-            ])->addTemplate('@forum/admin/users/find_users')->display();
+            ])->display('@forum/admin/users/find_users');
         } else {
             AdminUtils::generateAdminMenu('users');
 
@@ -138,7 +138,7 @@ class Users
                 'admin_console' => true,
                 'focus_element' => ['find_user', 'form[username]'],
                 'group_list' => $this->model->getGroupList(),
-            ])->addTemplate('@forum/admin/users/admin_users')->display();
+            ])->display('@forum/admin/users/admin_users');
         }
     }
 
@@ -167,7 +167,7 @@ class Users
                 Url::paginateOld($num_pages, $p, '?ip_stats=' . $args['id']),
             'start_from' => $start_from,
             'ip_data' => $this->model->getIpStats($args['id'], $start_from),
-        ])->addTemplate('@forum/admin/users/search_ip')->display();
+        ])->display('@forum/admin/users/search_ip');
     }
 
     // Show IP statistics for a certain user IP
@@ -212,6 +212,6 @@ class Users
             'page' => $p,
             'start_from' => $start_from,
             'info' => $this->model->getInfoPoster($search_ip, $start_from),
-        ])->addTemplate('@forum/admin/users/show_users')->display();
+        ])->display('@forum/admin/users/show_users');
     }
 }

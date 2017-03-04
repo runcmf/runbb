@@ -73,7 +73,7 @@ class Profile
                     'active_page' => 'profile',
                     'username' => $this->model->getUsername($args['id']),
                     'id' => $args['id'],
-                ])->addTemplate('@forum/profile/delete_user')->display();
+                ])->display('@forum/profile/delete_user');
             }
         } elseif (Input::post('form_sent')) {
             // Fetch the user group of the user we are editing
@@ -385,7 +385,7 @@ class Profile
             'focus_element' => ['email', 'req_subject'],
             'id' => $args['id'],
             'mail' => $mail
-        ])->addTemplate('@forum/misc/email')->display();
+        ])->display('@forum/misc/email');
     }
 
     public function gethostip($req, $res, $args)

@@ -75,7 +75,7 @@ class Register
             'languages' => Lang::getList(),
             'question' => array_keys($lang_antispam_questions),
             'qencoded' => md5(array_keys($lang_antispam_questions)[$index_questions]),
-        ])->addTemplate('@forum/register/form')->display();
+        ])->display('@forum/register/form');
     }
 
     public function cancel($req, $res, $args)
@@ -106,6 +106,6 @@ class Register
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Register'), __('Forum rules')],
             'active_page' => 'register',
-        ])->addTemplate('@forum/register/rules')->display();
+        ])->display('@forum/register/rules');
     }
 }

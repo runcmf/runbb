@@ -57,6 +57,6 @@ class Index
             'active_page' => 'admin',
             'admin_console' => true,
             'lastUsers' => $model->getLastUsers()
-        ])->addTemplate('@forum/admin/index')->display();
+        ])->display('@forum/admin/index');
     }
 }

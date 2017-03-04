@@ -36,6 +36,6 @@ class Permissions
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Permissions')],
             'active_page' => 'admin',
             'admin_console' => true,
-        ])->addTemplate('@forum/admin/permissions')->display();
+        ])->display('@forum/admin/permissions');
     }
 }

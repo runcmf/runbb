@@ -141,7 +141,7 @@ class Topic
             'lang_antispam_questions' => $lang_antispam_questions,
             'url_forum' => $url_forum,
             'url_topic' => $url_topic,
-        ])->addTemplate('@forum/topic')->display();
+        ])->display('@forum/topic');
 
         // Increment "num_views" for topic
         $this->model->incrementViews($args['id']);
@@ -231,7 +231,7 @@ class Topic
             'action' => 'single',
             'topics' => $args['id'],
             'list_forums' => $this->model->getForumListMove($args['fid']),
-        ])->addTemplate('@forum/moderate/move_topics')->display();
+        ])->display('@forum/moderate/move_topics');
     }
 
     public function moderate($req, $res, $args)
@@ -268,7 +268,7 @@ class Topic
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Moderate')],
                 'active_page' => 'moderate',
                 'posts' => $posts,
-            ])->addTemplate('@forum/moderate/delete_posts')->display();
+            ])->display('@forum/moderate/delete_posts');
         } elseif (Input::post('split_posts_comply')) {
             return $this->model->splitPosts($args['id'], $args['fid'], $p);
         } elseif (Input::post('split_posts')) {
@@ -280,7 +280,7 @@ class Topic
                 'id' => $args['id'],
                 'posts' => $this->model->splitPosts($args['id'], $args['fid'], $p),
                 'list_forums' => $this->model->getForumListSplit($args['fid']),
-            ])->addTemplate('@forum/moderate/split_posts')->display();
+            ])->display('@forum/moderate/split_posts');
         } else {
             // Show the moderate posts view
 
@@ -310,7 +310,7 @@ class Topic
                 'post_data' => $this->model->displayPostsModerate($args['id'], $start_from),
                 'button_status' => $button_status,
                 'start_from' => $start_from,
-            ])->addTemplate('@forum/moderate/posts_view')->display();
+            ])->display('@forum/moderate/posts_view');
         }
     }
 

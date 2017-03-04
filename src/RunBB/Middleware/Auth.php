@@ -245,7 +245,7 @@ class Auth
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Maintenance')],
             'msg'    =>    $message,
             'backlink'    =>   false,
-        ])->addTemplate('@forum/maintenance')->display();
+        ])->display('@forum/maintenance');
     }
 
     public function __invoke($req, $res, $next)

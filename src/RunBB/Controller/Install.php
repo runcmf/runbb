@@ -180,7 +180,7 @@ class Install
                     'supported_dbs' => $this->supported_dbs,
                     'data' => $data,
                     'errors' => $this->errors,
-                ])->addTemplate('@forum/install')->display(false);
+                ])->display('@forum/install', false);
             } else {
                 $data['default_style'] = $this->default_style;
                 $data['avatars'] = in_array(strtolower(@ini_get('file_uploads')), ['on', 'true', '1']) ? 1 : 0;
@@ -200,7 +200,7 @@ class Install
                 'dbConfig' => $this->dbConfig,
                 'data' => $data,
                 'alerts' => [],
-            ])->addTemplate('@forum/install')->display(false);
+            ])->display('@forum/install', false);
         }
     }
 

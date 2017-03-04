@@ -74,7 +74,7 @@ class Auth
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Login')],
                 'required_fields' => ['req_username' => __('Username'), 'req_password' => __('Password')],
                 'focus_element' => ['login', 'req_username'],
-            ])->addTemplate('@forum/login/form')->display();
+            ])->display('@forum/login/form');
         }
     }
 
@@ -184,6 +184,6 @@ class Auth
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Request pass')],
             'required_fields' => ['req_email' => __('Email')],
             'focus_element' => ['request_pass', 'req_email'],
-        ])->addTemplate('@forum/login/password_forgotten')->display();
+        ])->display('@forum/login/password_forgotten');
     }
 }

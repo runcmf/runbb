@@ -57,14 +57,14 @@ class Bans
                 'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' .
                     Url::paginateOld($num_pages, $p, '?find_ban=&amp;' . implode('&amp;', $ban_info['query_str'])),
                 'ban_data' => $ban_data['data'],
-            ])->addTemplate('@forum/admin/bans/search_ban')->display();
+            ])->display('@forum/admin/bans/search_ban');
         } else {
             View::setPageInfo([
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'focus_element' => ['bans', 'new_ban_user'],
                 'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')],
-            ])->addTemplate('@forum/admin/bans/admin_bans')->display();
+            ])->display('@forum/admin/bans/admin_bans');
         }
     }
 
@@ -84,7 +84,7 @@ class Bans
             'focus_element' => ['bans2', 'ban_user'],
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')],
             'ban' => $this->model->addBanInfo($req, $res, $args),
-        ])->addTemplate('@forum/admin/bans/add_ban')->display();
+        ])->display('@forum/admin/bans/add_ban');
     }
 
     public function delete($req, $res, $args)
@@ -111,6 +111,6 @@ class Bans
             'focus_element' => ['bans2', 'ban_user'],
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Bans')],
             'ban' => $this->model->editBanInfo($args['id']),
-        ])->addTemplate('@forum/admin/bans/add_ban')->display();
+        ])->display('@forum/admin/bans/add_ban');
     }
 }

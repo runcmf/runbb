@@ -268,7 +268,7 @@ class Utils
         View::setPageInfo([
             'rightCrumb' => $rightCrumb,
             'crumbs' => $crumbs,
-        ]);//->addTemplate('breadcrumbs');
+        ]);//FIXME ->addTemplate('breadcrumbs');
     }
 
     /**

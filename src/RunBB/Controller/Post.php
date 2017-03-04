@@ -241,7 +241,7 @@ class Post
             'url_topic' => $url_topic,
             'quote' => $quote,
             'errors' => $errors,
-        ])->addTemplate('@forum/post')->display();
+        ])->display('@forum/post');
     }
 
     public function delete($req, $res, $args)
@@ -292,7 +292,7 @@ class Post
             'cur_post' => $cur_post,
             'id' => $args['id'],
             'is_topic_post' => $is_topic_post
-        ])->addTemplate('@forum/delete')->display();
+        ])->display('@forum/delete');
     }
 
     public function editpost($req, $res, $args)
@@ -373,7 +373,7 @@ class Post
             'checkboxes' => $this->model->getEditCheckboxes($can_edit_subject, $is_admmod, $cur_post, 1),
             'can_edit_subject' => $can_edit_subject,
             'post' => $post,
-        ])->addTemplate('@forum/edit')->display();
+        ])->display('@forum/edit');
     }
 
     public function report($req, $res, $args)
@@ -398,7 +398,7 @@ class Post
             'focus_element' => ['report', 'req_reason'],
             'id' => $args['id'],
             'cur_post' => $cur_post
-        ])->addTemplate('@forum/misc/report')->display();
+        ])->display('@forum/misc/report');
     }
 
     public function gethost($req, $res, $args)

@@ -41,7 +41,7 @@ class Statistics
             'php_accelerator' => $this->model->getPhpAccelerator(),
             'php_os' => PHP_OS,
             'phpversion' => phpversion()
-        ])->addTemplate('@forum/admin/statistics')->display();
+        ])->display('@forum/admin/statistics');
     }
 
 

@@ -96,6 +96,6 @@ class Categories
             'active_page' => 'admin',
             'admin_console' => true,
             'cat_list' => $this->model->getCatList(),
-        ])->addTemplate('@forum/admin/categories')->display();
+        ])->display('@forum/admin/categories');
     }
 }

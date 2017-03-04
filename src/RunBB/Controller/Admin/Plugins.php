@@ -53,7 +53,7 @@ class Plugins
             'category' => $category,
             'pluginInfo' => base64_encode(json_encode($plug)),
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')],
-        ])->addTemplate('@forum/misc/modal')->display(false);
+        ])->display('@forum/misc/modal', false);
 /*
         $zipFile = ForumEnv::get('FORUM_ROOT') . 'plugins' . DIRECTORY_SEPARATOR .
 $args['name'] . "-" . $args['version'] . '.zip';
@@ -136,7 +136,7 @@ $args['name'] . "-" . $args['version'] . '.zip';
             'activePlugins' => $activePlugins,
             'officialPlugins' => $officialPlugins,
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')],
-        ])->addTemplate('@forum/admin/plugins')->display();
+        ])->display('@forum/admin/plugins');
     }
 
     /**
@@ -263,6 +263,6 @@ $args['name'] . "-" . $args['version'] . '.zip';
             'active_page' => 'admin',
             'repoList' => $repoList,
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Extension')],
-        ])->addTemplate('@forum/admin/pluginsRepo')->display();
+        ])->display('@forum/admin/pluginsRepo');
     }
 }

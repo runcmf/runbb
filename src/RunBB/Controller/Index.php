@@ -35,7 +35,7 @@ class Index
             'online' => $this->model->fetchUsersOnline(),
             'forum_actions' => $this->model->getForumActions(),
             'cur_cat' => 0
-        ])->addTemplate('@forum/index')->display();
+        ])->display('@forum/index');
     }
 
     public function rules()
@@ -51,7 +51,7 @@ class Index
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Forum rules')],
             'active_page' => 'rules'
-        ])->addTemplate('@forum/misc/rules')->display();
+        ])->display('@forum/misc/rules');
     }
 
     public function markread()

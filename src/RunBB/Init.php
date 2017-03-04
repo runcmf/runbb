@@ -222,7 +222,7 @@ class Init
                     'title' => [\RunBB\Core\Utils::escape(ForumSettings::get('o_board_title')), 'Error'],
                     'msg' => html_entity_decode($error['message']),
                     'backlink' => $error['back'],
-                ])->addTemplate('@forum/error')->display();
+                ])->display('@forum/error');
             };
         };
         $c['phpErrorHandler'] = function ($c) {
@@ -234,8 +234,8 @@ class Init
                     'title' => [\RunBB\Core\Utils::escape(ForumSettings::get('o_board_title')), __('Error')],
                     'msg' => 'Method must be one of: ' . implode(', ', $methods),
                     'backlink' => true,
-                ])->addTemplate('@forum/error')
-                    ->display()
+                ])
+                    ->display('@forum/error')
                     ->withHeader('Allow', implode(', ', $methods))
                     ->withStatus(405);
             };

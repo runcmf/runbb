@@ -52,6 +52,6 @@ class Parser
             'admin_console' => true,
             'parserPluginsList' => $this->model->getPluginsList(),
             'groups' => $groups->fetchGroups()
-        ])->addTemplate('@forum/admin/parser')->display();
+        ])->display('@forum/admin/parser');
     }
 }

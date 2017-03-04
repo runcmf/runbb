@@ -104,7 +104,7 @@ class Forum
             'start_from' => $start_from,
             'url_forum' => $url_forum,
             'forum_actions' => $forum_actions,
-        ])->addTemplate('@forum/forum')->display();
+        ])->display('@forum/forum');
     }
 
     public function moderate($req, $res, $args)
@@ -152,7 +152,7 @@ class Forum
                 Url::paginate($num_pages, $p, 'forum/moderate/' . $args['fid'] . '/#'),
             'topic_data' => $this->model->displayTopicsModerate($args['fid'], $sort_by, $start_from),
             'start_from' => $start_from,
-        ])->addTemplate('@forum/moderate/moderator_forum')->display();
+        ])->display('@forum/moderate/moderator_forum');
     }
 
     public function markread($req, $res, $args)
@@ -223,7 +223,7 @@ class Forum
                 'id' => $args['fid'],
                 'topics' => implode(',', array_map('intval', array_keys($topics))),
                 'list_forums' => $topicModel->getForumListMove($args['fid']),
-            ])->addTemplate('@forum/moderate/move_topics')->display();
+            ])->display('@forum/moderate/move_topics');
         } // Merge two or more topics
         elseif (Input::post('merge_topics') || Input::post('merge_topics_comply')) {
             if (Input::post('merge_topics_comply')) {
@@ -244,7 +244,7 @@ class Forum
                 'active_page' => 'moderate',
                 'id' => $args['fid'],
                 'topics' => $topics,
-            ])->addTemplate('@forum/moderate/merge_topics')->display();
+            ])->display('@forum/moderate/merge_topics');
         } // Delete one or more topics
         elseif (Input::post('delete_topics') || Input::post('delete_topics_comply')) {
             $topics = Input::post('topics') ? Input::post('topics') : [];
@@ -265,7 +265,7 @@ class Forum
                 'active_page' => 'moderate',
                 'id' => $args['fid'],
                 'topics' => $topics,
-            ])->addTemplate('@forum/moderate/delete_topics')->display();
+            ])->display('@forum/moderate/delete_topics');
         } // Open or close one or more topics
         elseif (Input::post('open') || Input::post('close')) {
             $action = (Input::post('open')) ? 0 : 1;

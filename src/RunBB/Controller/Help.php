@@ -28,6 +28,6 @@ class Help
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Help')],
             'active_page' => 'help',
             'smiliesList' => $model->getSmilies()
-        ])->addTemplate('@forum/help')->display();
+        ])->display('@forum/help');
     }
 }

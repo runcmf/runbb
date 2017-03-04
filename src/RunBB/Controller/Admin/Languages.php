@@ -50,7 +50,7 @@ class Languages
             'admin_console' => true,
 //            'langList' => $this->model->getLangList()
             'langList' => Lang::getList()
-        ])->addTemplate('@forum/admin/lang/admin_lang')->display();
+        ])->display('@forum/admin/lang/admin_lang');
     }
 
     public function langInfo()
@@ -60,7 +60,7 @@ class Languages
         // show modal
         return View::setPageInfo([
             'info' => $this->model->getLangInfo($id)
-        ])->addTemplate('@forum/admin/lang/langInfo')->display(false);
+        ])->display('@forum/admin/lang/langInfo', false);
     }
 
     public function saveLangInfo($id)
@@ -95,7 +95,7 @@ class Languages
             'admin_console' => true,
             'langinfo' => $this->model->getLangInfo($id),
             'domainList' => $this->model->getDomainList($id)
-        ])->addTemplate('@forum/admin/lang/domainList')->display();
+        ])->display('@forum/admin/lang/domainList');
     }
 
     public function showRepo()
@@ -119,7 +119,7 @@ class Languages
                 __('Admin'), 'Languages Repository'],// TODO translate
             'admin_console' => true,
             'langList' => $repoList
-        ])->addTemplate('@forum/admin/lang/repoList')->display();
+        ])->display('@forum/admin/lang/repoList');
     }
 
     public function editLang()
@@ -150,7 +150,7 @@ class Languages
             'grp' => $grp,
             'langinfo' => $this->model->getLangInfo($lngId),
             'translateList' => $this->model->getTranslationsByDomain((int)$lngId, $grp)
-        ])->addTemplate('@forum/admin/lang/editLang')->display();
+        ])->display('@forum/admin/lang/editLang');
     }
 
     public function showMailTemplates()
@@ -177,7 +177,7 @@ class Languages
             'lng' => $id,
             'name' => $name,
             'templates' => $tpls
-        ])->addTemplate('@forum/admin/lang/mailTplList')->display();
+        ])->display('@forum/admin/lang/mailTplList');
     }
 
     public function exportLanguage()
@@ -275,7 +275,7 @@ class Languages
                 'admin_console' => true,
                 'lid' => $lid,
                 'language' => $info->name
-            ])->addTemplate('@forum/admin/lang/deleteLang')->display();
+            ])->display('@forum/admin/lang/deleteLang');
         }
     }
 

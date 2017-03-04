@@ -138,7 +138,7 @@ class Forums
                 'cur_index' => 7,
                 'cur_forum' => $this->model->getForumInfo($args['id']),
                 'forum_data' => $this->model->getForums(),
-            ])->addTemplate('@forum/admin/forums/permissions')->display();
+            ])->display('@forum/admin/forums/permissions');
         }
     }
 
@@ -165,7 +165,7 @@ class Forums
                 'active_page' => 'admin',
                 'admin_console' => true,
                 'cur_forum' => $cur_forum
-            ])->addTemplate('@forum/admin/forums/delete_forum')->display();
+            ])->display('@forum/admin/forums/delete_forum');
         }
     }
 
@@ -201,6 +201,6 @@ class Forums
             'cat_list' => $categories_model->getCatList(),
             'forum_data' => $this->model->getForums(),
             'cur_index' => 4,
-        ])->addTemplate('@forum/admin/forums/admin_forums')->display();
+        ])->display('@forum/admin/forums/admin_forums');
     }
 }
