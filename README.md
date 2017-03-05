@@ -10,7 +10,7 @@ was slowly falling into abandon. Main objective build easy configurable library 
 * Remove: [db-layer](https://github.com/featherbb/db-layer) and use [Idiorm](https://github.com/j4mie/idiorm) from package instead  
 * Remove: Core\gettext and use [gettext](https://github.com/oscarotero/Gettext) from package instead  
 * Remove: Core\View and separate to [runbb-ext-renderer](https://github.com/runcmf/runbb-ext-renderer) extension. Now [Twig](https://github.com/twigphp/Twig), [Fenom](https://github.com/fenom-template/fenom) and PHP renderers. **Note:** only error and index pages for PHP and Fenom  
-* Rebuild: plugins system. Plugins load by composer packages.
+* Rebuild: plugins system. Plugins load by separated composer packages.
 * Add: Markdown instead of BBCodes. Now use [s9e/text-formatter](https://github.com/s9e/TextFormatter) with [SimpleMDE](https://github.com/NextStepWebs/simplemde-markdown-editor) as plugin [runbb-ext-simplemde](https://github.com/runcmf/runbb-ext-simplemde) and [markItUp!](http://markitup.jaysalvat.com/home/) with [elFinder](https://github.com/Studio-42/elFinder) as plugin [runbb-ext-markitup](https://github.com/runcmf/runbb-ext-markitup) 
 * Add: ability to work with translations/email templates online. (install/export/add new)
 * Add: install translations by click  

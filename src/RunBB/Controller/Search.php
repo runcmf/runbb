@@ -52,9 +52,9 @@ class Search
                 ]);
 
                 if ($search['show_as'] == 'posts') {
-                    View::addTemplate('@forum/search/posts', 5)->display();
+                    View::display('@forum/search/posts');
                 } else {
-                    View::addTemplate('@forum/search/topics', 5)->display();
+                    View::display('@forum/search/topics');
                 }
             } else {
                 return Router::redirect(Router::pathFor('search'), __('No hits'));

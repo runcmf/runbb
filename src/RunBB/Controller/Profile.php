@@ -116,7 +116,7 @@ class Profile
                 'id' => $args['id']
             ]);
 
-            View::addTemplate('@forum/profile/view_profile')->display();
+            View::display('@forum/profile/view_profile');
         } else {
             if (!isset($args['section']) || $args['section'] == 'essentials') {
                 $user_disp = $this->model->editEssentials($args['id'], $user);
@@ -135,7 +135,7 @@ class Profile
                     'languages' => Lang::getList()
                 ]);
 
-                View::addTemplate('@forum/profile/section_essentials')->display();
+                View::display('@forum/profile/section_essentials');
             } elseif ($args['section'] == 'personal') {
                 $title_field = '';
                 if (User::get()->g_set_title == '1') {
@@ -154,7 +154,7 @@ class Profile
                     'title_field' => $title_field,
                 ]);
 
-                View::addTemplate('@forum/profile/section_personal')->display();
+                View::display('@forum/profile/section_personal');
             } elseif ($args['section'] == 'messaging') {
                 View::setPageInfo([
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'),
@@ -165,7 +165,7 @@ class Profile
                     'id' => $args['id']
                 ]);
 
-                View::addTemplate('@forum/profile/section_messaging')->display();
+                View::display('@forum/profile/section_messaging');
             } elseif ($args['section'] == 'personality') {
                 if (ForumSettings::get('o_avatars') == '0' && ForumSettings::get('o_signatures') == '0') {
                     throw new  RunBBException(__('Bad request'), 404);
@@ -203,7 +203,7 @@ class Profile
                     'id' => $args['id'],
                 ]);
 
-                View::addTemplate('@forum/profile/section_personality')->display();
+                View::display('@forum/profile/section_personality');
             } elseif ($args['section'] == 'display') {
                 View::setPageInfo([
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'),
@@ -215,7 +215,7 @@ class Profile
                     'styles' => \RunBB\Core\Lister::getStyles()
                 ]);
 
-                View::addTemplate('@forum/profile/section_display')->display();
+                View::display('@forum/profile/section_display');
             } elseif ($args['section'] == 'privacy') {
                 View::setPageInfo([
                     'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Profile'),
@@ -226,7 +226,7 @@ class Profile
                     'id' => $args['id']
                 ]);
 
-                View::addTemplate('@forum/profile/section_privacy')->display();
+                View::display('@forum/profile/section_privacy');
             } elseif ($args['section'] == 'admin') {
                 if ((!User::get()->is_admmod && !User::get()->isModerator) ||
                     (User::get()->g_moderator == '1' && User::get()->g_mod_ban_users == '0')
@@ -245,7 +245,7 @@ class Profile
                     'id' => $args['id']
                 ]);
 
-                return View::addTemplate('@forum/profile/section_admin')->display();
+                return View::display('@forum/profile/section_admin');
             } else {
                 throw new  RunBBException(__('Bad request'), 404);
             }
@@ -286,7 +286,7 @@ class Profile
                     'req_old_password' : 'req_new_password1')],
             ]);
 
-            View::addTemplate('@forum/profile/change_pass')->display();
+            View::display('@forum/profile/change_pass');
         } elseif ($args['action'] == 'change_email') {
             if (Request::isPost()) {
                 return $this->model->changeEmail($args['id']);
@@ -300,7 +300,7 @@ class Profile
                 'id' => $args['id'],
             ]);
 
-            View::addTemplate('@forum/profile/change_mail')->display();
+            View::display('@forum/profile/change_mail');
         } elseif ($args['action'] == 'upload_avatar' || $args['action'] == 'upload_avatar2') {
             if (ForumSettings::get('o_avatars') == '0') {
                 throw new  RunBBException(__('Avatars disabled'), 400);
@@ -323,7 +323,7 @@ class Profile
                 'avatarFormattedSize' => Utils::fileSize(ForumSettings::get('o_avatars_size'))
             ]);
 
-            View::addTemplate('@forum/profile/upload_avatar')->display();
+            View::display('@forum/profile/upload_avatar');
         } elseif ($args['action'] == 'delete_avatar') {
             if (User::get()->id != $args['id'] && !User::get()->is_admmod) {
                 throw new  RunBBException(__('No permission'), 403);
