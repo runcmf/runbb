@@ -34,5 +34,20 @@ interface ViewInterface
      * Rendering
      *******************************************************************************/
 
-    public function display($nested = true);
+    /**
+     * Will return rendered template
+     *
+     * @param string $template
+     * @param bool $nested
+     * @return mixed
+     */
+    public function render($template = '', $nested = true);
+
+    /**
+     * Will display rendered template
+     * @param string $template
+     * @param bool $nested
+     * @return mixed
+     */
+    public function display($template = '', $nested = true);
 }

@@ -15,4 +15,9 @@ class User extends \RunBB\Core\Statical\BaseProxy
             return AuthModel::loadUser($id);
         }
     }
+
+    public static function getVar($var = null)
+    {
+        return Container::get('user')->$var;
+    }
 }
