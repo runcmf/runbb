@@ -221,6 +221,18 @@ class Install
             KEY `topics_last_post_idx` (`last_post`),
             KEY `topics_first_post_id_idx` (`first_post_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
+        'logs' => "CREATE TABLE IF NOT EXISTS %t% (
+            `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+            `channel` varchar(255) NOT NULL,
+            `level` int(11) unsigned NOT NULL,
+            `level_name` varchar(10) NOT NULL DEFAULT '',
+            `message` text NOT NULL DEFAULT '',
+            `time` int(11) unsigned NOT NULL,
+            `context` text NOT NULL DEFAULT '',
+            `extra` text NOT NULL DEFAULT '',
+            PRIMARY KEY (`id`),
+            KEY `level` (`level`)
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",
         'users' => "CREATE TABLE IF NOT EXISTS %t% (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `group_id` int(10) unsigned NOT NULL DEFAULT '3',

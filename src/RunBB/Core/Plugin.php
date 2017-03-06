@@ -127,19 +127,20 @@ class Plugin
         static $plugins = false;
 
         // "Complex" plugins which need to register namespace via bootstrap.php
-        if (file_exists($file = ForumEnv::get('FORUM_ROOT') . 'plugins/' . $plugin . '/bootstrap.php')) {
-            $className = require $file;
-
-            $class = new $className($this->c);
-            return $class;
-        }
+//        if (file_exists($file = ForumEnv::get('FORUM_ROOT') . 'plugins/' . $plugin . '/bootstrap.php')) {
+//            $className = require $file;
+//
+//            $class = new $className($this->c);
+//            return $class;
+//        }
         // Simple plugins, only a featherbb.json and the main class
-        if (file_exists($file = $this->checkSimple($plugin))) {
-            require $file;
-            $className = '\\RunBB\\Plugins\\' . $this->getNamespace($plugin);
-            $class = new $className($this->c);
-            return $class;
-        }
+//        if (file_exists($file = $this->checkSimple($plugin))) {
+//            require $file;
+//            $className = '\\RunBB\\Plugins\\' . $this->getNamespace($plugin);
+//            $class = new $className($this->c);
+//            return $class;
+//        }
+
         // check new system
         if (!$plugins) {// TODO rebuild with model
             $plugins = \ORM::for_table(ORM_TABLE_PREFIX . 'plugins')->findArray();

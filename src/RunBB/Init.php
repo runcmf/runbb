@@ -20,7 +20,6 @@ namespace RunBB;
 
 use RunBB\Core\Interfaces\SlimStatic;
 use RunBB\Core\Url;
-use RunBB\Core\View;
 use RunBB\Middleware\Logged as IsLogged;
 use RunBB\Middleware\ReadBoard as CanReadBoard;
 use RunBB\Middleware\Admin as IsAdmin;
@@ -170,6 +169,13 @@ class Init
         ]);
         $forumMenu->addChildren('parserMenu', $parserMenu);
 
+        $logsMenu = $menu->createItem('logs', [
+            'label' => 'Logs',//FIXME translate
+            'icon'  => 'binoculars fa-lg',
+            'url'   => Router::pathFor('adminLogs')
+        ]);
+        $forumMenu->addChildren('parserMenu', $logsMenu);
+
         $maintenanceMenu = $menu->createItem('maintenance', [
             'label' => __('Maintenance'),
             'icon'  => 'bed fa-lg',
@@ -191,25 +197,29 @@ class Init
                     'message' => $e->getMessage(),
                     'back' => true,
                 ];
+
+                // show last 5 trace lines
+                $msg = '';
+                if (count($e->getTrace()) > 1) {
+                    $trace = $e->getTrace();
+                    $msg = 'backtrace:<br/>';
+                    for ($i = 0; $i < 5; $i++) {
+                        if (isset($trace[$i]['file'])) {
+                            $msg .= '<p>' . $i . ': file: &nbsp; &nbsp; &nbsp;' . $trace[$i]['file'] .
+//                                str_replace(ForumEnv::get('APP_ROOT'), '', $trace[$i]['file']) .
+                                ' [' . $trace[$i]['line'] . ']</p>';
+                        } else {
+                            $msg .= '<p>' . $i . ': ' .
+                                'class: &nbsp;' . $trace[$i]['class'] . ' [' . $trace[$i]['function'] . ']</p>';
+                        }
+                    }
+                    Log::error($error['message'] . '<br /><br />' . $msg, ['context' => 'errorHandler']);
+                }
+
                 if (isset(User::get()->is_admmod) &&
                     (User::get()->is_admmod === true || User::get()->isModerator === true)
                 ) {
-                    // show last 5 trace lines
-                    if (count($e->getTrace()) > 1) {
-                        $trace = $e->getTrace();
-                        $msg = 'backtrace:<br/>';
-                        for ($i = 0; $i < 5; $i++) {
-                            if (isset($trace[$i]['file'])) {
-                                $msg .= '<p>' . $i . ': file: &nbsp; &nbsp; &nbsp;' .
-                                    str_replace(ForumEnv::get('APP_ROOT'), '', $trace[$i]['file']) .
-                                    ' [' . $trace[$i]['line'] . ']</p>';
-                            } else {
-                                $msg .= '<p>' . $i . ': ' .
-                                    'class: &nbsp;' . $trace[$i]['class'] . ' [' . $trace[$i]['function'] . ']</p>';
-                            }
-                        }
-                        $error['message'] = $error['message'] . '<br /><br />' . $msg;
-                    }
+                    $error['message'] = $error['message'] . '<br /><br />' . $msg;
                 }
 
                 if (method_exists($e, 'hasBacklink')) {
@@ -412,6 +422,13 @@ class Init
                 '/parser',
                 '\RunBB\Controller\Admin\Parser:display'
             )->add(new IsAdmin)->setName('adminParser');
+
+            // Admin logs
+            Route::map(
+                ['GET', 'POST'],
+                '/logs',
+                '\RunBB\Controller\Admin\Logs:display'
+            )->add(new IsAdmin)->setName('adminLogs');
 
             // Admin users
             Route::group('/users', function () {

@@ -24,6 +24,7 @@ class AdminMod
     {
         // Middleware to check if user is allowed to moderate, if he's not redirect to error page.
         if (!User::get()->is_admmod && !User::get()->isModerator) {
+            Log::alert('Try inter to ModCP', ['user' => User::getVar('username')]);
             throw new  RunBBException(__('No permission'), 403);
         }
         return $next($request, $response);

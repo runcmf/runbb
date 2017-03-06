@@ -1,0 +1,55 @@
+{% extends '@forum/adminLayout.html.twig' %}
+
+{% block content %}
+    <form class="panel panel-primary" method="post" action="{{ pathFor('adminLogs') }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
+        <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
+        <input type="hidden" name="form_sent" value="1" />
+
+        <div class="panel-heading">
+            <h3 class="panel-title">RunBB Logs</h3>
+        </div>
+
+        <div class="list-group">
+            <div class="list-group-item list-group-item-info">
+                <div class="row">
+                    <div class="col-xs-11 col-sm-11">Id / Time / Message / Info</div>
+                    <div class="col-xs-1 col-sm-1">chk</div>
+                </div>
+            </div>
+            {% for log in logs %}
+                <div class="list-group-item {{ log.level <= 200 ? 'list-group-item-info' : 'list-group-item-danger'}}">
+                    <div class="row">
+                        <div class="col-xs-11 col-sm-11">
+                            <p><strong>{{ log.id }}</strong> {{ formatTime(log.time) }} &nbsp; &nbsp;
+                            {% set context = jsonDecode(log.context) %}
+                                <span class="text-info">
+                            {% for var, val in context %}
+                                <strong>{{ var }}:</strong> {{ val }}
+                            {% endfor %}
+                                </span>
+                            </p>
+                            <p>{{ log.message|raw }}</p>
+                            {% set extra = jsonDecode(log.extra) %}
+                            {#<a class="btn btn-info btn-sm" href="#extra{{ log.id }}" data-toggle="collapse">extra</a>#}
+                            {#<div id="extra{{ log.id }}" class="collapse">#}
+                            {% for var, val in extra %}
+                                <div class="text-info">
+                                    <strong>{{ var }}:</strong> {{ val }}
+                                </div>
+                            {% endfor %}
+                            {#</div>#}
+                        </div>
+                        <div class="col-xs-1 col-sm-1">
+                            <input name="logIds[{{ log.id }}]" type="checkbox" value="1">
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="panel-footer">
+            <input class="btn btn-primary" type="submit" name="save" value="{{ trans('Save changes') }}" />
+        </div>
+    </form>
+{% endblock content %}

@@ -63,7 +63,8 @@ class SlimStatic
             'Response' => 'response',
             'View' => 'template',
             'Menu' => 'menu',
-            'Url' => 'url'
+            'Url' => 'url',
+            'Log' => 'log'
         ];
 
         $container = $slim->getContainer();

@@ -23,6 +23,7 @@ class Admin
     {
         // Redirect user to home page if not admin
         if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN')) {
+            Log::alert('Try inter to ACP', ['user' => User::getVar('username')]);
             return Router::redirect(Router::pathFor('home'), __('No permission'));
         }
 

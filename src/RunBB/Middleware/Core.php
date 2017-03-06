@@ -12,6 +12,7 @@ namespace RunBB\Middleware;
 
 use RunBB\Core\Email;
 use RunBB\Core\Hooks;
+use RunBB\Core\Interfaces\Log;
 use RunBB\Core\Parser;
 use RunBB\Core\Interfaces\Container;
 use RunBB\Core\Interfaces\Lang;
@@ -269,6 +270,27 @@ class Core
         // Init DB and configure Slim
         self::initDb($this->forum_settings, ForumEnv::get('FEATHER_SHOW_INFO'));
         Config::set('displayErrorDetails', ForumEnv::get('FEATHER_DEBUG'));
+
+        /**
+         * Init Logger after DB initialized
+         * Log::info('My logger is now ready', ['user' => User::getVar('username')]);
+         *
+         * log($level, $message, array $context = array())
+         * debug($message, array $context = array())
+         * info($message, array $context = array())
+         * notice($message, array $context = array())
+         * warning($message, array $context = array()) Alias `warn`
+         * error($message, array $context = array()) Alias `err`
+         * critical($message, array $context = array()) Alias `crit`
+         * alert($message, array $context = array())
+         * emergency($message, array $context = array()) Alias `emerg`
+         */
+        Container::set('log', function () {
+            $logger = new \Monolog\Logger('RunBB');
+            $handler = new \RunBB\Model\BBLogger();
+            $logger->pushHandler($handler->initLogger());
+            return $logger;
+        });
 
         if (!Container::get('cache')->isCached('config')) {
             Container::get('cache')->store('config', \RunBB\Model\Cache::getConfig());

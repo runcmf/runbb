@@ -118,7 +118,7 @@ $args['name'] . "-" . $args['version'] . '.zip';
 
         View::addAsset('js', 'assets/js/common.js', ['type' => 'text/javascript']);
 
-        $plist = $this->model->getList();
+        $plist = $this->model->getList(true);
         $availablePlugins = Lister::getPlugins(
             $plist === null ? [] : $plist
         );
@@ -217,7 +217,7 @@ $args['name'] . "-" . $args['version'] . '.zip';
                 str_replace(['-', '_'], ' ', $args['name'])
                 //            )
             );
-        $plugins = $this->model->getList();
+        $plugins = $this->model->getList(true);
         $plugKey = Utils::recursiveArraySearch($formattedPluginName, $plugins);
         if ($plugKey !== false) {
             $p = explode('\\', $plugins[$plugKey]['class']);

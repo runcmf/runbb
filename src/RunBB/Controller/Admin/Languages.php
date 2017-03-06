@@ -18,9 +18,6 @@
 namespace RunBB\Controller\Admin;
 
 use RunBB\Core\AdminUtils;
-use RunBB\Core\Interfaces\ForumEnv;
-use RunBB\Core\Interfaces\Input;
-use RunBB\Exception\RunBBException;
 use RunBB\Core\Utils;
 
 class Languages
