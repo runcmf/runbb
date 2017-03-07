@@ -503,4 +503,9 @@ class Utils
         }
         return false;
     }
+
+    public static function camel($str)
+    {
+        return lcfirst(str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $str))));
+    }
 }

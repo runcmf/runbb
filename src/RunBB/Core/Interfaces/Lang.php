@@ -37,7 +37,7 @@ class Lang extends BaseProxy
     public static function load($file, $domain = 'RunBB', $path = false, $language = false)
     {
         if (!$language) {
-            $language = (!User::get(null)) ? 'English' : User::get()->language;
+            $language = (!User::get(null) || !User::get()->language) ? 'English' : User::get()->language;
         }
         $lng = substr(strtolower($language), 0, 2);
 
