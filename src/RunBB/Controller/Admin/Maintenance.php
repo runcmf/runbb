@@ -33,6 +33,8 @@ class Maintenance
             $action = Input::query('action');
         }
 
+        AdminUtils::generateAdminMenu('maintenance');
+
         if ($action == 'rebuild') {
             $this->model->rebuild();
 
@@ -45,8 +47,6 @@ class Maintenance
         if ($action == 'prune') {
             $prune_from = Utils::trim(Input::post('prune_from'));
             $prune_sticky = intval(Input::post('prune_sticky'));
-
-            AdminUtils::generateAdminMenu('maintenance');
 
             if (Input::post('prune_comply')) {
                 $this->model->pruneComply($prune_from, $prune_sticky);
@@ -61,8 +61,6 @@ class Maintenance
                 'prune' => $this->model->getInfoPrune($prune_sticky, $prune_from),
             ])->display('@forum/admin/maintenance/prune');
         }
-
-        AdminUtils::generateAdminMenu('maintenance');
 
         View::setPageInfo([
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), __('Maintenance')],

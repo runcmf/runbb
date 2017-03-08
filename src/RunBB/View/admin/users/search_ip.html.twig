@@ -43,7 +43,7 @@
                             <td class="tc2">{{ formatTime(ip.last_used) }}</td>
                             <td class="tc3">{{ ip.used_times }}</td>
                             <td class="tcr"><a
-                                        href="{{ pathFor('usersIpShow', {}, {'ip': ip.poster_ip}) }}">{{ trans('Results find more link') }}</a>
+                                        href="{{ pathFor('usersIpShow', {'ip': ip.poster_ip}) }}">{{ trans('Results find more link') }}</a>
                             </td>
                         </tr>
 

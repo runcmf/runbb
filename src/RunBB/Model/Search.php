@@ -909,8 +909,9 @@ class Search
 
             if ($search['show_as'] == 'posts') {
                 ++$post_count;
-                $cur_search['icon_type'] = $cur_search['sticky'] === '1' ? 'icon icon-sticky' :
-                    ($cur_search['closed'] === '1' ? 'icon icon-closed' : 'icon');
+                $cur_search['icon_type'] =
+                    (isset($cur_search['sticky']) && $cur_search['sticky'] === '1') ? 'icon icon-sticky' :
+                    ((isset($cur_search['closed']) && $cur_search['closed'] === '1') ? 'icon icon-closed' : 'icon');
 
                 if (!User::get()->is_guest && $cur_search['last_post'] > User::get()->last_visit
                     && (!isset($tracked_topics['topics'][$cur_search['tid']])

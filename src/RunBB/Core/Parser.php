@@ -89,6 +89,10 @@ class Parser
      */
     public function parseMessage($text, $hide_smilies = 0)
     {
+        if (ForumSettings::get('o_censoring') == '1') {
+            $text = Utils::censor($text);
+        }
+
         // FIXME check text length
         if ($hide_smilies) {
             $this->parser->disablePlugin('Emoticons');
@@ -98,7 +102,7 @@ class Parser
             User::get()['show_img'] !== '1' ||
             User::get()['show_img_sig'] !== '1'
         ) {
-            $this->parser->disablePlugin('Autoimage');// enable after parsing?
+            $this->parser->disablePlugin('Autoimage');
             $this->parser->disablePlugin('Autovideo');
         }
 

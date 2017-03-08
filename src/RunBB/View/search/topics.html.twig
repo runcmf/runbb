@@ -28,12 +28,12 @@
         <div id="vf" class="panel panel-primary">
             <div class="panel-heading">
                 <div class="row">
-                    <div class="col-xs-7 col-sm-7">
-                        <h3 class="panel-title">{{ trans('Search results') }}: {{ trans('Topic') }}</h3>
+                    <div class="col-xs-8 col-sm-8">
+                        <h3 class="panel-title">{{ trans('Search results') }}:</h3>
                     </div>
-                    <div class="hidden-xs col-sm-1 text-center text-nowrap">
-                        <span class="hidden-xs hidden-sm">{{ trans('Forum') }}</span>
-                    </div>
+                    {#<div class="hidden-xs col-sm-1 text-center text-nowrap">#}
+                        {#<span class="hidden-xs hidden-sm">{{ trans('Forum') }}</span>#}
+                    {#</div>#}
                     <div class="hidden-xs col-sm-1 text-center text-nowrap">
                         <span class="hidden-xs hidden-sm">{{ trans('Replies') }}</span>
                     </div>
@@ -51,18 +51,19 @@
                 {% for search in display.cur_search %}
                 <div class="list-group-item {{ search.item_status }}">
                     <div class="row">
-                        <div class="col-xs-7 col-sm-7">
+                        <div class="col-xs-8 col-sm-8">
                             <div class="media">
                                 <div class="media-left media-top {{ search.icon_type }}">
                                 </div>
                                 <div class="media-body">
-                                    {{ search.subject|raw }}
+                                    <strong>{{ trans('Topic') }}:</strong> {{ search.subject|raw }}<br />
+                                    <strong>{{ trans('Forum') }}:</strong> {{ search.forum|raw }}
                                 </div>
                             </div>
                         </div>
-                        <div class="hidden-xs col-sm-1 text-center text-nowrap">
-                            {{ search.forum|raw }}
-                        </div>
+                        {#<div class="hidden-xs col-sm-1 text-center text-nowrap">#}
+                            {#{{ search.forum|raw }}#}
+                        {#</div>#}
                         <div class="hidden-xs col-sm-1 text-center text-nowrap">
                             {{ formatNumber(search.num_replies) }}
                         </div>

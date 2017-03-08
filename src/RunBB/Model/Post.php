@@ -1661,15 +1661,12 @@ class Post
         $ip = Container::get('hooks')->fireDB('model.post.display_ip_address_post_query', $ip);
 
         if (!$ip) {
-            throw new  RunBBException(__('Bad request'), 404);
+            throw new RunBBException(__('Bad request'), 404);
         }
 
         $ip = Container::get('hooks')->fire('model.post.display_ip_address_post', $ip);
 
-        throw new  RunBBException(sprintf(__('Host info 1'), $ip).'<br />'.sprintf(
-            __('Host info 2'),
-            @gethostbyaddr($ip)
-        ).'<br /><br /><a href="'.Router::pathFor('usersIpShow', ['ip' => $ip]).'">'.
-            __('Show more users').'</a>');
+        throw new RunBBException(__('Host info 1', $ip).'<br />'. __('Host info 2', @gethostbyaddr($ip)
+            ).'<br /><br /><a href="'.Router::pathFor('usersIpShow', ['ip' => $ip]).'">'.__('Show more users').'</a>');
     }
 }

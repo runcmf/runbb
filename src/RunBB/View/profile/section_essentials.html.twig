@@ -139,7 +139,7 @@
                             <fieldset>
                                 <legend>{{ trans('User activity') }}</legend>
                                 <div class="infldset">
-                                    {% set regIp = (userGet('is_admmod') ? ' (<a href="' ~"#{ pathFor('usersIpShow', {}, {'ip': user.registration_ip}) }" ~'">' ~"#{ user.registration_ip }" ~'</a>)' : '' ) %}
+                                    {% set regIp = (userGet('is_admmod') ? ' (<a href="' ~pathFor('usersIpShow', {'ip': user.registration_ip}) ~'">' ~user.registration_ip ~'</a>)' : '' ) %}
                                     <p>{{ trans(['Registered info', formatTime(user.registered, true) ~ regIp ]) }}</p>
                                     <p>{{ trans(['Last post info', formatTime(user.last_post)]) }}</p>
                                     <p>{{ trans('Last visit info') }} {{ formatTime(user.last_visit) }}</p>

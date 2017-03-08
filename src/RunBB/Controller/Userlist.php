@@ -43,9 +43,10 @@ class Userlist
         $num_users = $this->model->fetchUserCount($username, $show_group);
 
         // Determine the user offset (based on $page)
-        $num_pages = ceil($num_users / 50);
+        $numPages = (int)ceil($num_users / 50);
 
-        $p = (!Input::query('p') || $page <= 1 || $page > $num_pages) ? 1 : intval($page);
+        $p = Input::query('p', 1);
+        $p = ($p <= 1 || $p > $numPages) ? 1 : $p;
         $start_from = 50 * ($p - 1);
 
         if (User::get()->g_search_users == '1') {
@@ -56,7 +57,7 @@ class Userlist
 
         // Generate paging links
         $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' .
-            Url::paginateOld($num_pages, $p, '?username=' . urlencode($username) . '&amp;show_group=' .
+            Url::paginateOld($numPages, $p, '?username=' . urlencode($username) . '&amp;show_group=' .
                 $show_group . '&amp;sort_by=' . $sort_by . '&amp;sort_dir=' . $sort_dir);
 
         View::setPageInfo([

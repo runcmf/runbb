@@ -437,7 +437,9 @@ class Init
                     '/ip-stats/id/{id:[0-9]+}',
                     '\RunBB\Controller\Admin\Users:ipstats'
                 )->setName('usersIpStats');
-                Route::get('/show-users', '\RunBB\Controller\Admin\Users:showusers')->setName('usersIpShow');
+                Route::get(
+                    '/show-users[/ip/{ip:\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}}]',
+                    '\RunBB\Controller\Admin\Users:showusers')->setName('usersIpShow');
             });
 
             // Admin templates

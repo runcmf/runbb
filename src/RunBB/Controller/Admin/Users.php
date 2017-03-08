@@ -175,7 +175,7 @@ class Users
     {
         Container::get('hooks')->fire('controller.admin.users.showusers');
 
-        $search_ip = Input::query('ip');
+        $search_ip = $args['ip'];
 
         if (!@preg_match('%^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$%', $search_ip) &&
             !@preg_match('%^((([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4})|(([0-9A-Fa-f]{1,4}:){6}:'.
