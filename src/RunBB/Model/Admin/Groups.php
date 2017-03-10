@@ -18,7 +18,7 @@ class Groups
 {
     public function fetchGroups()
     {
-        $result = \ORM::forTable(ORM_TABLE_PREFIX.'groups')->orderByExpr('g_id')->findMany();
+        $result = DB::forTable('groups')->orderByExpr('g_id')->findMany();
         Container::get('hooks')->fireDB('model.admin.groups.fetch_groups_query', $result);
         $groups = [];
         foreach ($result as $cur_group) {
@@ -85,7 +85,7 @@ class Groups
         $group_id = Container::get('hooks')->fire('model.admin.groups.get_group_list_delete_start', $group_id);
 
         $select_get_group_list_delete = ['g_id', 'g_title'];
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'groups')->select_many($select_get_group_list_delete)
+        $result = DB::forTable('groups')->select_many($select_get_group_list_delete)
                         ->where_not_equal('g_id', ForumEnv::get('FEATHER_GUEST'))
                         ->where_not_equal('g_id', $group_id)
                         ->orderByExpr('g_title');
@@ -205,12 +205,12 @@ class Groups
 
         if (Input::post('mode') == 'add') {
             // Creating a new group
-            $title_exists = \ORM::for_table(ORM_TABLE_PREFIX.'groups')->where('g_title', $title)->find_one();
+            $title_exists = DB::forTable('groups')->where('g_title', $title)->find_one();
             if ($title_exists) {
                 throw new  RunBBException(sprintf(__('Title already exists message'), Utils::escape($title)), 400);
             }
 
-            $add = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+            $add = DB::forTable('groups')
                         ->create();
             $add->set($insert_update_group)->save();
             $new_group_id = Container::get('hooks')
@@ -221,7 +221,7 @@ class Groups
 
             // Now lets copy the forum specific permissions from the group which this group is based on
             $select_forum_perms = ['forum_id', 'read_forum', 'post_replies', 'post_topics'];
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'forum_perms')->select_many($select_forum_perms)
+            $result = DB::forTable('forum_perms')->select_many($select_forum_perms)
                             ->where('group_id', Input::post('base_group'));
             $result = Container::get('hooks')
                 ->fireDB('model.admin.groups.add_edit_group.select_forum_perms_query', $result);
@@ -236,28 +236,28 @@ class Groups
                     'post_topics'    =>  $cur_forum_perm['post_topics'],
                 ];
 
-                \ORM::for_table(ORM_TABLE_PREFIX.'forum_perms')
+                DB::forTable('forum_perms')
                         ->create()
                         ->set($insert_perms)
                         ->save();
             }
         } else {
             // We are editing an existing group
-            $title_exists = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+            $title_exists = DB::forTable('groups')
                 ->where('g_title', $title)
                 ->where_not_equal('g_id', Input::post('group_id'))
                 ->find_one();
             if ($title_exists) {
                 throw new  RunBBException(sprintf(__('Title already exists message'), Utils::escape($title)), 400);
             }
-            \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+            DB::forTable('groups')
                     ->find_one(Input::post('group_id'))
                     ->set($insert_update_group)
                     ->save();
 
             // Promote all users who would be promoted to this group on their next post
             if ($promote_next_group) {
-                \ORM::for_table(ORM_TABLE_PREFIX.'users')->where('group_id', Input::post('group_id'))
+                DB::forTable('users')->where('group_id', Input::post('group_id'))
                     ->where_gte('num_posts', $promote_min_posts)
                     ->find_result_set()
                     ->set(['group_id' => $promote_next_group])
@@ -293,7 +293,7 @@ class Groups
             throw new  RunBBException(__('Bad request'), 404);
         }
 
-        \ORM::for_table(ORM_TABLE_PREFIX.'config')
+        DB::forTable('config')
             ->where('conf_name', 'o_default_user_group')
             ->find_result_set()
             ->set(['conf_value' => $group_id])
@@ -309,10 +309,10 @@ class Groups
     {
         $group_id = Container::get('hooks')->fire('model.admin.groups.check_members_start', $group_id);
 
-        $is_member = \ORM::for_table(ORM_TABLE_PREFIX.'groups')->table_alias('g')
+        $is_member = DB::forTable('groups')->table_alias('g')
             ->select('g.g_title')
             ->select_expr('COUNT(u.id)', 'members')
-            ->inner_join(ORM_TABLE_PREFIX.'users', ['g.g_id', '=', 'u.group_id'], 'u')
+            ->inner_join(DB::prefix().'users', ['g.g_id', '=', 'u.group_id'], 'u')
             ->where('g.g_id', $group_id)
             ->group_by('g.g_id')
             ->group_by('g_title');
@@ -334,7 +334,7 @@ class Groups
             $move_to_group = intval(Input::post('move_to_group'));
             $move_to_group = Container::get('hooks')
                 ->fire('model.admin.groups.delete_group.move_to_group', $move_to_group);
-            \ORM::for_table(ORM_TABLE_PREFIX.'users')
+            DB::forTable('users')
                 ->where('group_id', $group_id)
 //                ->find_one()
                 ->find_result_set()
@@ -343,15 +343,15 @@ class Groups
         }
 
         // Delete the group and any forum specific permissions
-        \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+        DB::forTable('groups')
             ->where('g_id', $group_id)
             ->delete_many();
-        \ORM::for_table(ORM_TABLE_PREFIX.'forum_perms')
+        DB::forTable('forum_perms')
             ->where('group_id', $group_id)
             ->delete_many();
 
         // Don't let users be promoted to this group
-        \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+        DB::forTable('groups')
             ->where('g_promote_next_group', $group_id)
 //            ->find_one()
             ->find_result_set()
@@ -365,7 +365,7 @@ class Groups
     {
         $group_id = Container::get('hooks')->fireDB('model.admin.groups.get_group_title.group_id', $group_id);
 
-        $group_title = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+        $group_title = DB::forTable('groups')
             ->select('g_title')
             ->where('g_id', $group_id)
             ->find_one();
@@ -384,10 +384,10 @@ class Groups
     {
         $group_id = Container::get('hooks')->fire('model.admin.groups.get_title_members.group_id', $group_id);
 
-        $group = \ORM::for_table(ORM_TABLE_PREFIX.'groups')->table_alias('g')
+        $group = DB::forTable('groups')->table_alias('g')
                     ->select('g.g_title')
                     ->select_expr('COUNT(u.id)', 'members')
-                    ->inner_join(ORM_TABLE_PREFIX.'users', ['g.g_id', '=', 'u.group_id'], 'u')
+                    ->inner_join(DB::prefix().'users', ['g.g_id', '=', 'u.group_id'], 'u')
                     ->where('g.g_id', $group_id)
                     ->group_by('g.g_id')
                     ->group_by('g_title');
@@ -403,7 +403,7 @@ class Groups
 
     public function setParserPlugins($group_id, array $plugins)
     {
-        $p = \ORM::forTable(ORM_TABLE_PREFIX.'groups')
+        $p = DB::forTable('groups')
             ->findOne($group_id)
             ->set('g_parser_plugins', serialize($plugins))
             ->save();

@@ -101,7 +101,7 @@ class Search
         if (isset($search_id)) {
             $ident = (User::get()->is_guest) ? Utils::getIp() : User::get()->username;
 
-            $search_data = \ORM::for_table(ORM_TABLE_PREFIX.'search_cache')
+            $search_data = DB::forTable('search_cache')
                 ->select('search_data')
                 ->where('id', $search_id)
                 ->where('ident', $ident);
@@ -146,19 +146,19 @@ class Search
 
                 if (!User::get()->is_guest) {
                     $where = [
-                        'table' => ORM_TABLE_PREFIX.'users',
+                        'table' => 'users',
                         'id' => 'id',
                         'val' => User::get()->id
                     ];
                 } else {
                     $where = [
-                        'table' => ORM_TABLE_PREFIX.'online',
+                        'table' => 'online',
                         'id' => 'ident',
                         'val' => Utils::getIp()
                     ];
                 }
                 $where = Container::get('hooks')->fireDB('model.search.get_search_results_update_last_search', $where);
-                \ORM::for_table($where['table'])
+                DB::forTable($where['table'])
                     ->where($where['id'], $where['val'])
                     ->find_one()
                     ->set(['last_search' => time()])
@@ -234,12 +234,12 @@ class Search
                                         : 't.subject LIKE %:where_cond%')
                                         : 'p.message LIKE %:where_cond% OR t.subject LIKE %:where_cond%');
 
-                                    $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->raw_query(
+                                    $result = DB::forTable('posts')->raw_query(
                                         'SELECT p.id AS post_id, p.topic_id, '.$sort_by_sql.' AS sort_by 
-                                        FROM '.ForumSettings::get('db_prefix').'posts AS p 
-                                        INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t 
+                                        FROM '.DB::prefix().'posts AS p 
+                                        INNER JOIN '.DB::prefix().'topics AS t 
                                             ON t.id=p.topic_id 
-                                        LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp 
+                                        LEFT JOIN '.DB::prefix().'forum_perms AS fp 
                                             ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') 
                                         WHERE ('.$where_cond_cjk.') 
                                             AND (fp.read_forum IS NULL OR fp.read_forum=1)'.
@@ -247,16 +247,16 @@ class Search
                                         [':where_cond' => $where_cond]
                                     );
                                 } else {
-                                    $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->raw_query(
+                                    $result = DB::forTable('posts')->raw_query(
                                         'SELECT m.post_id, p.topic_id, '.$sort_by_sql.' AS sort_by 
-                                        FROM '.ForumSettings::get('db_prefix').'search_words AS w 
-                                        INNER JOIN '.ForumSettings::get('db_prefix').'search_matches AS m 
+                                        FROM '.DB::prefix().'search_words AS w 
+                                        INNER JOIN '.DB::prefix().'search_matches AS m 
                                             ON m.word_id = w.id 
-                                        INNER JOIN '.ForumSettings::get('db_prefix').'posts AS p 
+                                        INNER JOIN '.DB::prefix().'posts AS p 
                                             ON p.id=m.post_id 
-                                        INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t 
+                                        INNER JOIN '.DB::prefix().'topics AS t 
                                             ON t.id=p.topic_id 
-                                        LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp 
+                                        LEFT JOIN '.DB::prefix().'forum_perms AS fp 
                                             ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') 
                                         WHERE w.word LIKE :where_cond'.$search_in_cond.' 
                                             AND (fp.read_forum IS NULL OR fp.read_forum=1)'.
@@ -297,8 +297,6 @@ class Search
                                 }
 
                                 ++$word_count;
-                                $pdo = \ORM::get_db();
-                                $pdo = null;
 
                                 break;
                         }
@@ -329,7 +327,7 @@ class Search
 
                 // If it's a search for author name (and that author name isn't Guest)
                 if ($author && $author != 'guest' && $author != utf8_strtolower(__('Guest'))) {
-                    $username_exists = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+                    $username_exists = DB::forTable('users')
                                         ->select('id')
                                         ->where_like('username', $author);
                     $username_exists = Container::get('hooks')->fireDB(
@@ -344,12 +342,12 @@ class Search
                             $user_ids[] = $row['id'];
                         }
 
-                        $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->raw_query(
+                        $result = DB::forTable('posts')->raw_query(
                             'SELECT p.id AS post_id, p.topic_id 
-                            FROM '.ForumSettings::get('db_prefix').'posts AS p 
-                            INNER JOIN '.ForumSettings::get('db_prefix').'topics AS t 
+                            FROM '.DB::prefix().'posts AS p 
+                            INNER JOIN '.DB::prefix().'topics AS t 
                             ON t.id=p.topic_id 
-                            LEFT JOIN '.ForumSettings::get('db_prefix').'forum_perms AS fp 
+                            LEFT JOIN '.DB::prefix().'forum_perms AS fp 
                             ON (fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.') 
                             WHERE (fp.read_forum IS NULL OR fp.read_forum=1) 
                             AND p.poster_id IN('.implode(',', $user_ids).')'.$forum_sql.' 
@@ -364,9 +362,6 @@ class Search
                         foreach ($result as $temp) {
                             $author_results[$temp['post_id']] = $temp['topic_id'];
                         }
-
-                        $pdo = \ORM::get_db();
-                        $pdo = null;
                     }
                 }
 
@@ -440,14 +435,14 @@ class Search
                         throw new  RunBBException(__('No permission'), 403);
                     }
 
-                    $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+                    $result = DB::forTable('topics')
                                 ->table_alias('t')
                                 ->select('t.id')
 //                                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
 //                                ->left_outer_join('forum_perms', array('fp.group_id', '=',
 // User::get()->g_id), null, true)
                         ->left_outer_join(
-                            ORM_TABLE_PREFIX.'forum_perms',
+                            DB::prefix().'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
                             'fp'
                         )
@@ -471,14 +466,14 @@ class Search
                     }
                 } // If it's a search for recent posts (in a certain time interval)
                 elseif ($action == 'show_recent') {
-                    $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+                    $result = DB::forTable('topics')
                                 ->table_alias('t')
                                 ->select('t.id')
 //                                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
 //                                ->left_outer_join('forum_perms', array('fp.group_id', '=',
 // User::get()->g_id), null, true)
                         ->left_outer_join(
-                            ORM_TABLE_PREFIX.'forum_perms',
+                            DB::prefix().'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
                             'fp'
                         )
@@ -501,15 +496,15 @@ class Search
                     }
                 } // If it's a search for topics in which the user has posted
                 elseif ($action == 'show_replies') {
-                    $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+                    $result = DB::forTable('topics')
                                 ->table_alias('t')
                                 ->select('t.id')
-                                ->inner_join(ORM_TABLE_PREFIX.'posts', ['t.id', '=', 'p.topic_id'], 'p')
+                                ->inner_join(DB::prefix().'posts', ['t.id', '=', 'p.topic_id'], 'p')
 //                                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
 //                                ->left_outer_join('forum_perms', array('fp.group_id', '=',
 // User::get()->g_id), null, true)
                         ->left_outer_join(
-                            ORM_TABLE_PREFIX.'forum_perms',
+                            DB::prefix().'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
                             'fp'
                         )
@@ -533,15 +528,15 @@ class Search
                 elseif ($action == 'show_user_posts') {
                     $show_as = 'posts';
 
-                    $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+                    $result = DB::forTable('posts')
                                 ->table_alias('p')
                                 ->select('p.id')
-                                ->inner_join(ORM_TABLE_PREFIX.'topics', ['p.topic_id', '=', 't.id'], 't')
+                                ->inner_join(DB::prefix().'topics', ['p.topic_id', '=', 't.id'], 't')
 //                                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
 //                                ->left_outer_join('forum_perms', array('fp.group_id', '=',
 // User::get()->g_id), null, true)
                         ->left_outer_join(
-                            ORM_TABLE_PREFIX.'forum_perms',
+                            DB::prefix().'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
                             'fp'
                         )
@@ -562,16 +557,16 @@ class Search
                     $search_type[2] = $user_id;
                 } // If it's a search for topics by a specific user ID
                 elseif ($action == 'show_user_topics') {
-                    $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+                    $result = DB::forTable('topics')
                                 ->table_alias('t')
                                 ->select('t.id')
-                                ->inner_join(ORM_TABLE_PREFIX.'posts', ['t.first_post_id', '=', 'p.id'], 'p')
-//                                ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+                                ->inner_join(DB::prefix().'posts', ['t.first_post_id', '=', 'p.id'], 'p')
+//                                ->left_outer_join(DB::prefix().'forum_perms',
 // array('fp.forum_id', '=', 't.forum_id'), 'fp')
 //                                ->left_outer_join('forum_perms', array('fp.group_id', '=',
 // User::get()->g_id), null, true)
                         ->left_outer_join(
-                            ORM_TABLE_PREFIX.'forum_perms',
+                            DB::prefix().'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
                             'fp'
                         )
@@ -596,13 +591,13 @@ class Search
                         throw new  RunBBException(__('Bad request'), 404);
                     }
 
-                    $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+                    $result = DB::forTable('topics')
                                 ->table_alias('t')
                                 ->select('t.id')
 //                                ->inner_join('topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
 //                                ->inner_join('topic_subscriptions', array('s.user_id', '=', $user_id), null, true)
                         ->inner_join(
-                            ORM_TABLE_PREFIX.'topic_subscriptions',
+                            DB::prefix().'topic_subscriptions',
                             '(t.id=s.topic_id AND s.user_id='.$user_id.')',
                             's'
                         )
@@ -610,7 +605,7 @@ class Search
 //                                ->left_outer_join('forum_perms', array('fp.group_id', '=',
 // User::get()->g_id), null, true)
                         ->left_outer_join(
-                            ORM_TABLE_PREFIX.'forum_perms',
+                            DB::prefix().'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
                             'fp'
                         )
@@ -630,14 +625,14 @@ class Search
                     $search_type[2] = $user_id;
                 } // If it's a search for unanswered posts
                 else {
-                    $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+                    $result = DB::forTable('topics')
                                 ->table_alias('t')
                                 ->select('t.id')
 //                                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
 //                                ->left_outer_join('forum_perms', array('fp.group_id', '=',
 // User::get()->g_id), null, true)
                         ->left_outer_join(
-                            ORM_TABLE_PREFIX.'forum_perms',
+                            DB::prefix().'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id='.User::get()->g_id.')',
                             'fp'
                         )
@@ -660,9 +655,6 @@ class Search
                 foreach ($result as $row) {
                     $search_ids[] = $row['id'];
                 }
-
-                $pdo = \ORM::get_db();
-                $pdo = null;
             } else {
                 throw new  RunBBException(__('Bad request'), 404);
             }
@@ -670,7 +662,7 @@ class Search
 
             // Prune "old" search results
             $old_searches = [];
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'online')
+            $result = DB::forTable('online')
                         ->select('ident');
             $result = Container::get('hooks')->fireDB('model.search.get_search_results_prune_search', $result);
             $result = $result->find_many();
@@ -680,7 +672,7 @@ class Search
                     $old_searches[] = $row['ident'];
                 }
 
-                $delete_cache = \ORM::for_table(ORM_TABLE_PREFIX.'search_cache')
+                $delete_cache = DB::forTable('search_cache')
                                     ->where_not_in('ident', $old_searches);
                 $delete_cache = Container::get('hooks')->fireDB(
                     'model.search.get_search_results_delete_cache',
@@ -708,7 +700,7 @@ class Search
                 'search_data'  =>  $temp,
             ];
 
-            $cache = \ORM::for_table(ORM_TABLE_PREFIX.'search_cache')
+            $cache = DB::forTable('search_cache')
                         ->create()
                         ->set($cache['insert']);
             $cache = Container::get('hooks')->fireDB('model.search.get_search_results_update_cache', $cache);
@@ -767,11 +759,11 @@ class Search
                     't.first_post_id', 't.last_post', 't.last_post_id', 't.last_poster', 't.num_replies',
                     't.forum_id', 'f.forum_name'];
 
-                $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+                $result = DB::forTable('posts')
                                 ->table_alias('p')
                                 ->select_many($result['select'])
-                                ->inner_join(ORM_TABLE_PREFIX.'topics', ['t.id', '=', 'p.topic_id'], 't')
-                                ->inner_join(ORM_TABLE_PREFIX.'forums', ['f.id', '=', 't.forum_id'], 'f')
+                                ->inner_join(DB::prefix().'topics', ['t.id', '=', 'p.topic_id'], 't')
+                                ->inner_join(DB::prefix().'forums', ['f.id', '=', 't.forum_id'], 'f')
                                 ->where_in('p.id', $search_ids)
                                 ->order_by_expr($sort_by_sql.' '.$sort_dir);
                 $result = Container::get('hooks')->fireDB(
@@ -782,10 +774,10 @@ class Search
                 $result['select'] = ['tid' => 't.id', 't.poster', 't.subject', 't.last_post', 't.last_post_id',
                     't.last_poster', 't.num_replies', 't.closed', 't.sticky', 't.forum_id', 'f.forum_name'];
 
-                $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+                $result = DB::forTable('topics')
                                 ->table_alias('t')
                                 ->select_many($result['select'])
-                                ->inner_join(ORM_TABLE_PREFIX.'forums', ['f.id', '=', 't.forum_id'], 'f')
+                                ->inner_join(DB::prefix().'forums', ['f.id', '=', 't.forum_id'], 'f')
                                 ->where_in('t.id', $search_ids)
                                 ->order_by_expr($sort_by_sql.' '.$sort_dir);
                 $result = Container::get('hooks')->fireDB(
@@ -819,7 +811,7 @@ class Search
                 } elseif ($search_type[1] == 'show_subscriptions') {
                     // Fetch username of subscriber
                     $subscriber_id = $search_type[2];
-                    $subscriber_name = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+                    $subscriber_name = DB::forTable('users')
                         ->select('username')
                         ->where('id', $subscriber_id);
                     $subscriber_name = Container::get('hooks')->fireDB(
@@ -1038,14 +1030,14 @@ class Search
 //        );
         $result['order_by'] = 'c.disp_position, c.id, f.disp_position';
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'categories')
+        $result = DB::forTable('categories')
                     ->table_alias('c')
                     ->select_many($result['select'])
-                    ->inner_join(ORM_TABLE_PREFIX.'forums', ['c.id', '=', 'f.cat_id'], 'f')
+                    ->inner_join(DB::prefix().'forums', ['c.id', '=', 'f.cat_id'], 'f')
 //                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
             ->left_outer_join(
-                ORM_TABLE_PREFIX.'forum_perms',
+                DB::prefix().'forum_perms',
                 '(fp.forum_id=f.id AND fp.group_id='.User::get()->g_id.')',
                 'fp'
             )

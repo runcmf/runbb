@@ -1,7 +1,3 @@
-{#{% extends '@forum/layout.html.twig' %}#}
-
-{#{% block content %}#}
-
 {{ fireHook('view.breadcrumbs.start') }}
 
 {% if crumbs is not empty %}
@@ -13,13 +9,13 @@
 
     {% for link, text in crumbs %}
                         <li><span>»&#160;</span>
-                            {{ link is not integer  ? '<a href="{{ link }}">' : '<strong>' }}
+                            {{ link is not same as(integer)  ? ('<a href="' ~link ~'">')|raw : '<strong>' }}
                             {{ text }}
-                            {{ link is not integer ? '</a>' : '</strong>' }}</li>
+                            {{ link is not same as(integer) ? '</a>' : '</strong>' }}</li>
     {% endfor %}
 
 
-    {% rightCrumb is not empty %}
+    {% if rightCrumb is not empty %}
                         <li class="right"><span><a href="{{ rightCrumb.link }}">{{ rightCrumb.text }}</a></span></li>
     {% endif %}
                     </ul>
@@ -31,4 +27,3 @@
 {% endif %}
 
 {{ fireHook('view.breadcrumbs.end') }}
-{#{% endblock content %}#}

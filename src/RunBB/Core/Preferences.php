@@ -32,17 +32,17 @@ class Preferences
             if ((int) $pref_name > 0) {
                 throw new RunBBException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
+            $result = DB::forTable('preferences')
                         ->where('preference_name', $pref_name)
                         ->where('user', $uid)
                         ->find_one();
             if ($result) {
-                \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
+                DB::forTable('preferences')
                     ->find_one($result->id())
                     ->set(['preference_value' => $pref_value])
                     ->save();
             } else {
-                \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
+                DB::forTable('preferences')
                     ->create()
                     ->set([
                         'preference_name' => $pref_name,
@@ -66,17 +66,17 @@ class Preferences
             if ((int) $pref_name > 0) {
                 throw new RunBBException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
+            $result = DB::forTable('preferences')
                         ->where('preference_name', (string) $pref_name)
                         ->where('group', $gid)
                         ->find_one();
             if ($result) {
-                \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
+                DB::forTable('preferences')
                     ->find_one($result->id())
                     ->set(['preference_value' => (string) $pref_value])
                     ->save();
             } else {
-                \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
+                DB::forTable('preferences')
                     ->create()
                     ->set([
                         'preference_name' => (string) $pref_name,
@@ -96,17 +96,17 @@ class Preferences
             if ((int) $pref_name > 0) {
                 throw new RunBBException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
+            $result = DB::forTable('preferences')
                         ->where('preference_name', (string) $pref_name)
                         ->where('default', 1)
                         ->find_one();
             if ($result) {
-                \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
+                DB::forTable('preferences')
                     ->find_one($result->id())
                     ->set(['preference_value' => (string) $pref_value])
                     ->save();
             } else {
-                \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
+                DB::forTable('preferences')
                     ->create()
                     ->set([
                         'preference_name' => (string) $pref_name,
@@ -132,7 +132,7 @@ class Preferences
             if ((int) $pref_name > 0) {
                 throw new RunBBException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
+            $result = DB::forTable('preferences')
                         ->where('preference_name', $pref_name)
                         ->where('user', $uid)
                         ->find_one();
@@ -160,7 +160,7 @@ class Preferences
             if ((int) $pref_name > 0) {
                 throw new RunBBException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
+            $result = DB::forTable('preferences')
                         ->where('preference_name', $pref_name)
                         ->where('group', $gid)
                         ->find_one();
@@ -181,7 +181,7 @@ class Preferences
             if ((int) $pref_name > 0) {
                 throw new RunBBException('Internal error : preference name cannot be an integer', 500);
             }
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
+            $result = DB::forTable('preferences')
                         ->where('preference_name', (string) $pref_name)
                         ->where('default', 1)
                         ->find_one();
@@ -217,7 +217,7 @@ class Preferences
     {
         list($uid, $gid) = $this->getInfosFromUser($user);
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'preferences')
+        $result = DB::forTable('preferences')
                     ->table_alias('p')
                     ->where_any_is([
                         ['p.user' => $uid],
@@ -241,7 +241,7 @@ class Preferences
             $uid = $user->id;
             $gid = $user->group_id;
         } elseif ((int) $user > 0) {
-            $data = \ORM::for_table(ORM_TABLE_PREFIX.'users')->find_one($user);
+            $data = DB::forTable('users')->find_one($user);
             if (!$data) {
                 throw new RunBBException('Internal error : Unknown user ID', 500);
             }

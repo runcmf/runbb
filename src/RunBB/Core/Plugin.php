@@ -33,7 +33,10 @@ class Plugin
     public function setActivePlugins()
     {
         $activePlugins = [];
-        $results = \ORM::for_table(ORM_TABLE_PREFIX . 'plugins')->select('name')->where('active', 1)->find_array();
+        $results = DB::forTable('plugins')
+            ->select('name')
+            ->where('active', 1)
+            ->findArray();
         foreach ($results as $plugin) {
             $activePlugins[] = $plugin['name'];
         }
@@ -143,7 +146,7 @@ class Plugin
 
         // check new system
         if (!$plugins) {// TODO rebuild with model
-            $plugins = \ORM::for_table(ORM_TABLE_PREFIX . 'plugins')->findArray();
+            $plugins = DB::forTable('plugins')->findArray();
         }
         $key = Utils::recursiveArraySearch($plugin, $plugins);
         if ($key !== false) {

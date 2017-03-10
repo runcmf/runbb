@@ -223,7 +223,7 @@ class Options
                 } else {
                     $set = ['conf_value' => 'NULL'];
                 }
-                \ORM::for_table(ORM_TABLE_PREFIX.'config')
+                DB::forTable('config')
                     ->where('conf_name', 'o_'.$key)
                     ->find_one()
                     ->set($set)

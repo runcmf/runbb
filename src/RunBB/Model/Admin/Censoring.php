@@ -31,7 +31,7 @@ class Censoring
         $set_search_word = Container::get('hooks')
             ->fire('model.admin.censoring.add_censoring_word_data', $set_search_word);
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'censoring')
+        $result = DB::forTable('censoring')
             ->create()
             ->set($set_search_word)
             ->save();
@@ -60,7 +60,7 @@ class Censoring
         $set_search_word = Container::get('hooks')
             ->fire('model.admin.censoring.update_censoring_word_start', $set_search_word);
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'censoring')
+        $result = DB::forTable('censoring')
             ->find_one($id)
             ->set($set_search_word)
             ->save();
@@ -77,7 +77,7 @@ class Censoring
         $id = intval(key(Input::post('remove')));
         $id = Container::get('hooks')->fire('model.admin.censoring.remove_censoring_word_start', $id);
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'censoring')->find_one($id);
+        $result = DB::forTable('censoring')->find_one($id);
         $result = Container::get('hooks')->fireDB('model.admin.censoring.remove_censoring_word', $result);
         $result = $result->delete();
 
@@ -90,7 +90,7 @@ class Censoring
 
     public function getWords()
     {
-        $word_data = \ORM::for_table(ORM_TABLE_PREFIX.'censoring')
+        $word_data = DB::forTable('censoring')
                         ->order_by_asc('id');
         $word_data = Container::get('hooks')
             ->fireDB('model.admin.censoring.update_censoring_word_query', $word_data);

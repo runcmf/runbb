@@ -63,16 +63,16 @@ class Index
             ['fp.read_forum' => 'IS NULL'],
             ['fp.read_forum' => '1']
         ];
-        $query = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+        $query = DB::forTable('forums')
             ->table_alias('f')
             ->select_many($query['select'])
             ->left_outer_join(
-                ORM_TABLE_PREFIX.'forum_perms',
+                DB::prefix().'forum_perms',
                 '(`fp`.`forum_id`=`f`.`id` AND `fp`.`group_id`='.User::get()->g_id.')',
                 'fp'
             )
-//            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-//            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.group_id', '=',
+//            ->left_outer_join(DB::prefix().'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+//            ->left_outer_join(DB::prefix().'forum_perms', array('fp.group_id', '=',
 // User::get()->g_id), null, true)
 //            ->where_any_is($query['where'])
             ->where_raw('(fp.read_forum IS NULL OR fp.read_forum = 1)')
@@ -98,7 +98,7 @@ class Index
             } else {
                 $query['select'] = ['forum_id', 'id', 'last_post'];
 
-                $query = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+                $query = DB::forTable('topics')
                     ->select_many($query['select'])
                     ->where_in('forum_id', array_keys($forums))
                     ->where_gt('last_post', User::get()->last_visit)
@@ -155,17 +155,17 @@ class Index
 //        );
 //        $query['order_by'] = array('c.disp_position', 'c.id', 'f.disp_position');
 
-        $query = \ORM::for_table(ORM_TABLE_PREFIX.'categories')
+        $query = DB::forTable('categories')
             ->table_alias('c')
             ->select_many($query['select'])
-            ->inner_join(ORM_TABLE_PREFIX.'forums', ['c.id', '=', 'f.cat_id'], 'f')
+            ->inner_join(DB::prefix().'forums', ['c.id', '=', 'f.cat_id'], 'f')
             ->left_outer_join(
-                ORM_TABLE_PREFIX.'forum_perms',
+                DB::prefix().'forum_perms',
                 '(`fp`.`forum_id`=`f`.`id` AND `fp`.`group_id`='. User::get()->g_id.')',
                 'fp'
             )
-//            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-//            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.group_id', '=',
+//            ->left_outer_join(DB::prefix().'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
+//            ->left_outer_join(DB::prefix().'forum_perms', array('fp.group_id', '=',
 // User::get()->g_id), null, true)
 //            ->where_any_is($query['where'])
             ->where_raw('(`fp`.`read_forum` IS NULL OR `fp`.`read_forum`=1)')
@@ -289,7 +289,7 @@ class Index
 
         $stats = Container::get('cache')->retrieve('users_info');
 
-        $query = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+        $query = DB::forTable('forums')
             ->select_expr('SUM(num_topics)', 'total_topics')
             ->select_expr('SUM(num_posts)', 'total_posts');
 
@@ -327,7 +327,7 @@ class Index
         $query['where'] = ['idle' => '0'];
 //        $query['order_by'] = array('ident');
 
-        $query = \ORM::for_table(ORM_TABLE_PREFIX.'online')
+        $query = DB::forTable('online')
             ->select_many($query['select'])
             ->where($query['where'])
             ->orderByExpr('ident');

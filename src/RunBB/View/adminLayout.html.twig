@@ -172,9 +172,10 @@
                             {% if settings('o_quickjump') == '1' and quickjump is not empty %}
                             <div class="form-group col-sm-4">
                                 <form class="form-horizontal" id="qjump" method="get" action="">
-                                <label class="control-label col-sm-5" for="id">{{ trans('Jump to') }}</label>
-                                {#<div class="col-sm-7">#}
-                                    <select name="id" class="form-control" onchange="window.location=(this.options[this.selectedIndex].value)">
+                                    <label class="control-label col-sm-2" for="id" title="{{ trans('Jump to') }}">
+                                        <i class="fa fa-fast-forward" aria-hidden="true"></i>
+                                    </label>
+                                    <select name="id" style="width: 75%;" class="form-control" onchange="window.location=(this.options[this.selectedIndex].value)">
                             {% for cat_id, cat_data in quickjump[ userGet('g_id') ] %}
                                         <optgroup label="{{ cat_data.cat_name }}">
                                 {% for forum in cat_data.cat_forums %}
@@ -183,7 +184,6 @@
                                         </optgroup>
                             {% endfor %}
                                     </select>
-                                {#</div>#}
                                 </form>
                             </div>
                             {% endif %}
@@ -212,7 +212,9 @@
                                     <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
                                     <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
                                     <input type="hidden" name="currentPage" value="{{ currentPage }}">
-                                    <label class="control-label col-sm-5" for="languageToChange">{{ trans('Language') }}</label>
+                                    <label class="control-label col-sm-5" for="languageToChange" title="{{ trans('Language') }}">
+                                        <i class="fa fa-language" aria-hidden="true"></i>
+                                    </label>
                                     <select name="languageToChange" class="form-control" onchange="RunBB.changeLanguage();">
                                     {% for lang in languagesQSelect %}
                                         <option value="{{ lang.name }}"{{ userGet('language') == lang.name ? ' selected="selected" ' : '' }}>{{ lang.name }}</option>
@@ -240,9 +242,9 @@
                             {% endif %}
 
     {{ fireHook('view.footer.feed.links') }}
-
+                            <br />
                             <small id="poweredby">
-                                {{ trans(['Powered by', '<a href="https://github.com/runcmf/runbb">RunBB</a> ' ~"#{ settings('o_show_version') == '1' ? settings('o_cur_version') : '' }"]) }}
+                                {{ trans(['Powered by', '<a href="https://github.com/runcmf/runbb">RunBB</a> ' ~(settings('o_show_version') == '1' ? settings('o_cur_version') : '')]) }}
                                 <br />
                                 Based on <a href="https://github.com/featherbb/featherbb">FeatherBB</a>
                             </small>

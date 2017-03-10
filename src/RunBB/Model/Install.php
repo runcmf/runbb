@@ -290,7 +290,7 @@ class Install
 
     public function addData($table_name, array $data)
     {
-        return (bool)\ORM::for_table(ORM_TABLE_PREFIX . $table_name)
+        return (bool)DB::forTable($table_name)
             ->create()
             ->set($data)
             ->save();

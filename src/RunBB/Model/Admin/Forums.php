@@ -23,17 +23,17 @@ class Forums
 
         $set_add_forum = Container::get('hooks')->fire('model.admin.forums.add_forum', $set_add_forum);
 
-        $forum = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+        $forum = DB::forTable('forums')
                     ->create()
                     ->set($set_add_forum);
         $forum->save();
 
-        return $forum->id();
+        return $forum->id;
     }
 
     public function updateForum($forum_id, array $forum_data)
     {
-        $update_forum = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+        $update_forum = DB::forTable('forums')
                     ->find_one($forum_id)
                     ->set($forum_data);
         $update_forum = Container::get('hooks')->fireDB('model.admin.forums.update_forum_query', $update_forum);
@@ -51,25 +51,25 @@ class Forums
         $this->maintenance->prune($forum_id, 1, -1);
 
         // Delete the forum
-        $delete_forum = \ORM::for_table(ORM_TABLE_PREFIX.'forums')->find_one($forum_id);
+        $delete_forum = DB::forTable('forums')->find_one($forum_id);
         $delete_forum = Container::get('hooks')->fireDB('model.admin.forums.delete_forum_query', $delete_forum);
         $delete_forum->delete();
 
         // Delete forum specific group permissions and subscriptions
-        $delete_forum_perms = \ORM::for_table(ORM_TABLE_PREFIX.'forum_perms')->where('forum_id', $forum_id);
+        $delete_forum_perms = DB::forTable('forum_perms')->where('forum_id', $forum_id);
         $delete_forum_perms = Container::get('hooks')
             ->fireDB('model.admin.forums.delete_forum_perms_query', $delete_forum_perms);
         $delete_forum_perms->delete_many();
 
-        $delete_forum_subs = \ORM::for_table(ORM_TABLE_PREFIX.'forum_subscriptions')->where('forum_id', $forum_id);
+        $delete_forum_subs = DB::forTable('forum_subscriptions')->where('forum_id', $forum_id);
         $delete_forum_subs = Container::get('hooks')
             ->fireDB('model.admin.forums.delete_forum_subs_query', $delete_forum_subs);
         $delete_forum_subs->delete_many();
 
         // Delete orphaned redirect topics
-        $orphans = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $orphans = DB::forTable('topics')
                     ->table_alias('t1')
-                    ->left_outer_join(ORM_TABLE_PREFIX.'topics', ['t1.moved_to', '=', 't2.id'], 't2')
+                    ->left_outer_join(DB::prefix().'topics', ['t1.moved_to', '=', 't2.id'], 't2')
                     ->where_null('t2.id')
                     ->where_not_null('t1.moved_to');
         $orphans = Container::get('hooks')
@@ -85,7 +85,7 @@ class Forums
 
     public function getForumInfo($forum_id)
     {
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+        $result = DB::forTable('forums')
                     ->where('id', $forum_id);
         $result = Container::get('hooks')->fireDB('model.admin.forums.get_forum_infos', $result);
         $result = $result->find_one();
@@ -107,10 +107,10 @@ class Forums
             'forum_position' => 'f.disp_position'
         ];
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'categories')
+        $result = DB::forTable('categories')
             ->table_alias('c')
             ->select_many($select_get_forums)
-            ->inner_join(ORM_TABLE_PREFIX.'forums', ['c.id', '=', 'f.cat_id'], 'f')
+            ->inner_join(DB::prefix().'forums', ['c.id', '=', 'f.cat_id'], 'f')
             ->order_by_asc('c.disp_position')
             ->order_by_asc('f.disp_position');
 
@@ -136,7 +136,7 @@ class Forums
     {
         Container::get('hooks')->fire('model.admin.forums.update_positions_start', $forum_id, $position);
 
-        return \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+        return DB::forTable('forums')
                 ->find_one($forum_id)
                 ->set('disp_position', $position)
                 ->save();
@@ -162,11 +162,11 @@ class Forums
             'fp.post_topics'
         ];
 
-        $permissions = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+        $permissions = DB::forTable('groups')
                         ->table_alias('g')
                         ->select_many($select_permissions)
                         ->left_outer_join(
-                            ORM_TABLE_PREFIX.'forum_perms',
+                            DB::prefix().'forum_perms',
                             'g.g_id=fp.group_id AND fp.forum_id='.$forum_id,
                             'fp'
                         ) // Workaround
@@ -202,7 +202,7 @@ class Forums
     {
         $select_get_default_group_permissions = ['g_id', 'g_read_board', 'g_post_replies', 'g_post_topics'];
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+        $result = DB::forTable('groups')
                     ->select_many($select_get_default_group_permissions);
 
         if (!$fetch_admin) {
@@ -221,13 +221,13 @@ class Forums
         $permissions_data = Container::get('hooks')
             ->fire('model.admin.forums.update_permissions_start', $permissions_data);
 
-        $permissions = \ORM::for_table(ORM_TABLE_PREFIX.'forum_perms')
+        $permissions = DB::forTable('forum_perms')
                             ->where('forum_id', $permissions_data['forum_id'])
                             ->where('group_id', $permissions_data['group_id'])
                             ->delete_many();
 
         if ($permissions) {
-            return \ORM::for_table(ORM_TABLE_PREFIX.'forum_perms')
+            return DB::forTable('forum_perms')
                     ->create()
                     ->set($permissions_data)
                     ->save();
@@ -236,7 +236,7 @@ class Forums
 
     public function deletePermissions($forum_id, $group_id = null)
     {
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'forum_perms')
+        $result = DB::forTable('forum_perms')
                     ->where('forum_id', $forum_id);
 
         if ($group_id) {

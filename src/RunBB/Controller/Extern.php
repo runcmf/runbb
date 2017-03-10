@@ -160,12 +160,12 @@ class Extern
 //            array('fp.read_forum' => '1')
 //        );
 
-                $cur_topic = \ORM::for_table(ORM_TABLE_PREFIX . 'topics')->table_alias('t')
+                $cur_topic = DB::forTable('topics')->table_alias('t')
                     ->select_many($select_show_recent_topics)
 //                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
 //                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                     ->left_outer_join(
-                        ORM_TABLE_PREFIX . 'forum_perms',
+                        DB::prefix() . 'forum_perms',
                         '(fp.forum_id=t.forum_id AND fp.group_id=' . User::get()->g_id . ')',
                         'fp'
                     )
@@ -206,10 +206,10 @@ class Extern
                     'u.email'
                 ];
 
-                $result = \ORM::for_table(ORM_TABLE_PREFIX . 'posts')
+                $result = DB::forTable('posts')
                     ->table_alias('p')
                     ->select_many($select_print_posts)
-                    ->inner_join(ORM_TABLE_PREFIX . 'users', ['u.id', '=', 'p.poster_id'], 'u')
+                    ->inner_join(DB::prefix() . 'users', ['u.id', '=', 'p.poster_id'], 'u')
                     ->where('p.topic_id', $tid)
                     ->order_by_desc('p.posted')
                     ->limit($show)
@@ -252,8 +252,7 @@ class Extern
                 $order_posted = isset($_GET['order']) && strtolower($_GET['order']) == 'posted';
                 $forum_name = '';
 
-                $result = \ORM::for_table(ORM_TABLE_PREFIX . 'topics')
-                    ->table_alias('t');
+                $result = DB::forTable('topics')->table_alias('t');
 
                 // Were any forum IDs supplied?
                 if (isset($_GET['fid']) && is_scalar($_GET['fid']) && $_GET['fid'] != '') {
@@ -271,11 +270,11 @@ class Extern
 //                    array('fp.read_forum' => '1')
 //                );
 
-                        $cur_topic = \ORM::for_table(ORM_TABLE_PREFIX . 'forums')->table_alias('f')
+                        $cur_topic = DB::forTable('forums')->table_alias('f')
 //                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                             ->left_outer_join(
-                                ORM_TABLE_PREFIX . 'forum_perms',
+                                DB::prefix() . 'forum_perms',
                                 '(fp.forum_id=f.id AND fp.group_id=' . User::get()->g_id . ')',
                                 'fp'
                             )
@@ -347,13 +346,13 @@ class Extern
 //            );
 
                     $result = $result->select_many($select_print_posts)
-                        ->inner_join(ORM_TABLE_PREFIX . 'posts', ['p.id', '=',
+                        ->inner_join(DB::prefix() . 'posts', ['p.id', '=',
                             ($order_posted ? 't.first_post_id' : 't.last_post_id')], 'p')
-                        ->inner_join(ORM_TABLE_PREFIX . 'users', ['u.id', '=', 'p.poster_id'], 'u')
+                        ->inner_join(DB::prefix() . 'users', ['u.id', '=', 'p.poster_id'], 'u')
 //                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
 //                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                         ->left_outer_join(
-                            ORM_TABLE_PREFIX . 'forum_perms',
+                            DB::prefix() . 'forum_perms',
                             '(fp.forum_id=t.forum_id AND fp.group_id=' . User::get()->g_id . ')',
                             'fp'
                         )
@@ -445,7 +444,7 @@ class Extern
             $where_fetch_users_online = ['idle' => '0'];
             $order_by_fetch_users_online = 'ident';
 
-            $result = \ORM::for_table(ORM_TABLE_PREFIX . 'online')
+            $result = DB::forTable('online')
                 ->select_many($select_fetch_users_online)
                 ->where($where_fetch_users_online)
                 ->order_by_expr($order_by_fetch_users_online)
@@ -486,7 +485,7 @@ class Extern
 
             $stats = Container::get('cache')->retrieve('users_info');
 
-            $stats_query = \ORM::for_table(ORM_TABLE_PREFIX . 'forums')
+            $stats_query = DB::forTable('forums')
                 ->select_expr('SUM(num_topics)', 'total_topics')
                 ->select_expr('SUM(num_posts)', 'total_posts')
                 ->find_one();
@@ -559,11 +558,11 @@ class Extern
 //        $select_set_default_user = ['u.*', 'g.*', 'o.logged', 'o.last_post', 'o.last_search'];
 //        $where_set_default_user = ['u.id' => '1'];
 //
-//        $result = \ORM::for_table(ORM_TABLE_PREFIX . 'users')
+//        $result = DB::forTable('users')
 //            ->table_alias('u')
 //            ->select_many($select_set_default_user)
-//            ->inner_join(ORM_TABLE_PREFIX . 'groups', ['u.group_id', '=', 'g.g_id'], 'g')
-//            ->left_outer_join(ORM_TABLE_PREFIX . 'online', ['o.ident', '=', $remote_addr], 'o', true)
+//            ->inner_join(DB::prefix() . 'groups', ['u.group_id', '=', 'g.g_id'], 'g')
+//            ->left_outer_join(DB::prefix() . 'online', ['o.ident', '=', $remote_addr], 'o', true)
 //            ->where($where_set_default_user)
 //            ->find_result_set();
 //
@@ -586,23 +585,23 @@ class Extern
 //                case 'mysqli_innodb':
 //                case 'sqlite':
 //                case 'sqlite3':
-//                    \ORM::for_table(ORM_TABLE_PREFIX . 'online')->raw_execute('REPLACE INTO ' .
-//                        ForumSettings::get('db_prefix') . 'online (user_id, ident, logged)
+//                    DB::forTable('online')->raw_execute('REPLACE INTO ' .
+//                        DB::prefix() . 'online (user_id, ident, logged)
 //  VALUES(1, :ident, :logged)',
 //                        [':ident' => $remote_addr, ':logged' => User::get()->logged]);
 //                    break;
 //
 //                default:
-//                    \ORM::for_table(ORM_TABLE_PREFIX . 'online')->raw_execute('INSERT INTO ' .
-//                        ForumSettings::get('db_prefix') .
+//                    DB::forTable('online')->raw_execute('INSERT INTO ' .
+//                        DB::prefix() .
 //                        'online (user_id, ident, logged) SELECT 1, :ident, :logged
 // WHERE NOT EXISTS (SELECT 1 FROM ' .
-//                        ForumSettings::get('db_prefix') . 'online WHERE ident=:ident)',
+//                        DB::prefix() . 'online WHERE ident=:ident)',
 //                        [':ident' => $remote_addr, ':logged' => User::get()->logged]);
 //                    break;
 //            }
 //        } else {
-//            \ORM::for_table(ORM_TABLE_PREFIX . 'online')->where('ident', $remote_addr)
+//            DB::forTable('online')->where('ident', $remote_addr)
 ////            ->find_one()
 //                ->find_result_set()
 //                ->set(['logged' => time()])
@@ -631,11 +630,11 @@ class Extern
         // Check if there's a user matching $user and $password
         $select_check_cookie = ['u.*', 'g.*', 'o.logged', 'o.idle'];
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX . 'users')
+        $result = DB::forTable('users')
             ->table_alias('u')
             ->select_many($select_check_cookie)
-            ->inner_join(ORM_TABLE_PREFIX . 'groups', ['u.group_id', '=', 'g.g_id'], 'g')
-            ->left_outer_join(ORM_TABLE_PREFIX . 'online', ['o.user_id', '=', 'u.id'], 'o');
+            ->inner_join(DB::prefix() . 'groups', ['u.group_id', '=', 'g.g_id'], 'g')
+            ->left_outer_join(DB::prefix() . 'online', ['o.user_id', '=', 'u.id'], 'o');
 
         if (is_int($user)) {
             $result = $result->where('u.id', intval($user));

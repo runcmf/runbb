@@ -16,7 +16,7 @@ class Debug
 {
     public static function getQueries()
     {
-        $log = Core::getQueryLog();
+        $log = DB::getQueryLog();
         if (empty($log)) {
             return null;
         }
@@ -29,7 +29,7 @@ class Debug
     public static function getInfo()
     {
         $data = ['exec_time' => (Utils::getMicrotime() - Container::get('start'))];
-//        $data['nb_queries'] = (!empty(Core::getQueryLog())) ? count(Core::getQueryLog()[0]) : 'N/A';
+//        $data['nb_queries'] = (!empty(DB::getQueryLog())) ? count(DB::getQueryLog()[0]) : 'N/A';
         $data['mem_usage'] = (function_exists('memory_get_usage')) ? Utils::fileSize(memory_get_usage()) : 'N/A';
         $data['mem_peak_usage'] = (function_exists('memory_get_peak_usage')) ?
             Utils::fileSize(memory_get_peak_usage()) : 'N/A';

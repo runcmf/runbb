@@ -62,7 +62,7 @@ class Forum
 
         // Generate paging links
         $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' .
-            Url::paginate($num_pages, $p, 'forum/' . $args['fid'] . '/' . $url_forum . '/#');
+            Url::paginate($num_pages, $p, $args['fid'] . '/' . $url_forum . '/#');
 
         $forum_actions = $this->model->getForumActions(
             $args['fid'],

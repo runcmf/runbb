@@ -30,7 +30,7 @@ class Bans
             }
 
             $select_add_ban_info = ['group_id', 'username', 'email'];
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')->select_many($select_add_ban_info)
+            $result = DB::forTable('users')->select_many($select_add_ban_info)
                         ->where('id', $ban['user_id']);
 
             $result = Container::get('hooks')->fireDB('model.admin.bans.add_ban_info_query', $result);
@@ -50,7 +50,7 @@ class Bans
 
             if ($ban['ban_user'] != '') {
                 $select_add_ban_info = ['id', 'group_id', 'username', 'email'];
-                $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')->select_many($select_add_ban_info)
+                $result = DB::forTable('users')->select_many($select_add_ban_info)
                     ->where('username', $ban['ban_user'])
                     ->where_gt('id', 1);
 
@@ -74,7 +74,7 @@ class Bans
                 throw new  RunBBException(sprintf(__('User is admin message'), Utils::escape($ban['ban_user'])), 403);
             }
 
-            $is_moderator_group = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+            $is_moderator_group = DB::forTable('groups')
                 ->select('g_moderator')
                 ->where('g_id', $group_id)
                 ->find_one();
@@ -86,14 +86,14 @@ class Bans
 
         // If we have a $ban['user_id'], we can try to find the last known IP of that user
         if (isset($ban['user_id'])) {
-            $ban_ip = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+            $ban_ip = DB::forTable('posts')
                 ->select('poster_ip')
                 ->where('poster_id', $ban['user_id'])
                 ->order_by_desc('posted')
                 ->find_one();
 
             if (!$ban_ip->poster_ip) {
-                $ban_ip = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+                $ban_ip = DB::forTable('users')
                     ->select('registration_ip')
                     ->where('id', $ban['user_id'])
                     ->find_one();
@@ -117,7 +117,7 @@ class Bans
         $ban['id'] = $id;
 
         $select_edit_ban_info = ['username', 'ip', 'email', 'message', 'expire'];
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'bans')->select_many($select_edit_ban_info)
+        $result = DB::forTable('bans')->select_many($select_edit_ban_info)
             ->where('id', $ban['id']);
 
         $result = Container::get('hooks')->fireDB('model.admin.bans.edit_ban_info_query', $result);
@@ -162,7 +162,7 @@ class Bans
 
         // Make sure we're not banning an admin or moderator
         if (!empty($ban_user)) {
-            $group_id = \ORM::forTable(ORM_TABLE_PREFIX.'users')
+            $group_id = DB::forTable('users')
                 ->select('group_id')
                 ->where('username', $ban_user)
                 ->whereGt('id', 1)
@@ -173,7 +173,7 @@ class Bans
                     throw new  RunBBException(sprintf(__('User is admin message'), Utils::escape($ban_user)), 403);
                 }
 
-                $is_moderator_group = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+                $is_moderator_group = DB::forTable('groups')
                     ->select('g_moderator')
                     ->where('g_id', $group_id->group_id)
                     ->find_one();
@@ -265,12 +265,12 @@ class Bans
         if (Input::post('mode') == 'add') {
             $insert_update_ban['ban_creator'] = User::get()->id;
 
-            $result = \ORM::forTable(ORM_TABLE_PREFIX.'bans')
+            $result = DB::forTable('bans')
                 ->create()
                 ->set($insert_update_ban)
                 ->save();
         } else {
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'bans')
+            $result = DB::forTable('bans')
                 ->where('id', Input::post('ban_id'))
                 ->find_one()
                 ->set($insert_update_ban)
@@ -287,7 +287,7 @@ class Bans
     {
         $ban_id = Container::get('hooks')->fire('model.admin.bans.remove_ban', $ban_id);
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'bans')->where('id', $ban_id)
+        $result = DB::forTable('bans')->where('id', $ban_id)
                     ->find_one();
         $result = Container::get('hooks')->fireDB('model.admin.bans.remove_ban_query', $result);
         $result = $result->delete();
@@ -318,7 +318,7 @@ class Bans
         $ban_info['query_str'][] = 'direction='.$ban_info['direction'];
 
         // Build the query
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'bans')->table_alias('b')
+        $result = DB::forTable('bans')->table_alias('b')
                         ->where_gt('b.id', 0);
 
         // Try to convert date/time to timestamps
@@ -378,7 +378,7 @@ class Bans
             ];
 
             $result = $result->select_many($select_bans)
-                             ->left_outer_join(ORM_TABLE_PREFIX.'users', ['b.ban_creator', '=', 'u.id'], 'u')
+                             ->left_outer_join(DB::prefix().'users', ['b.ban_creator', '=', 'u.id'], 'u')
                              ->orderByExpr($ban_info['order_by'].' '.$ban_info['direction'])
                              ->offset($start_from)
                              ->limit(50)

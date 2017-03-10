@@ -13,7 +13,7 @@ class Cache
 {
     public static function getConfig()
     {
-        $result = \ORM::forTable(ORM_TABLE_PREFIX . 'config')
+        $result = DB::forTable('config')
             ->findArray();
         $config = [];
         foreach ($result as $item) {
@@ -24,13 +24,13 @@ class Cache
 
     public static function getBans()
     {
-        return \ORM::forTable(ORM_TABLE_PREFIX . 'bans')
+        return DB::forTable('bans')
             ->findArray();
     }
 
     public static function getCensoring($select_censoring = 'search_for')
     {
-        $result = \ORM::forTable(ORM_TABLE_PREFIX . 'censoring')
+        $result = DB::forTable('censoring')
             ->selectMany($select_censoring)
             ->findArray();
         $output = [];
@@ -49,11 +49,11 @@ class Cache
     {
         $stats = [];
         $select_get_users_info = ['id', 'username'];
-        $stats['total_users'] = \ORM::forTable(ORM_TABLE_PREFIX . 'users')
+        $stats['total_users'] = DB::forTable('users')
             ->whereNotEqual('group_id', ForumEnv::get('FEATHER_UNVERIFIED'))
             ->whereNotEqual('id', 1)
             ->count();
-        $stats['last_user'] = \ORM::forTable(ORM_TABLE_PREFIX . 'users')
+        $stats['last_user'] = DB::forTable('users')
             ->selectMany($select_get_users_info)
             ->whereNotEqual('group_id', ForumEnv::get('FEATHER_UNVERIFIED'))
             ->orderByDesc('registered')
@@ -64,7 +64,7 @@ class Cache
 
     public static function getAdminIds()
     {
-        return \ORM::forTable(ORM_TABLE_PREFIX . 'users')
+        return DB::forTable('users')
             ->select('id')
             ->where('group_id', ForumEnv::get('FEATHER_ADMIN'))
             ->findArray();
@@ -73,7 +73,7 @@ class Cache
     public static function getQuickjump()
     {
         $select_quickjump = ['g_id', 'g_read_board'];
-        $read_perms = \ORM::forTable(ORM_TABLE_PREFIX . 'groups')
+        $read_perms = DB::forTable('groups')
             ->selectMany($select_quickjump)
             ->where('g_read_board', 1)
             ->findArray();
@@ -81,25 +81,17 @@ class Cache
         $output = [];
         foreach ($read_perms as $item) {
             $select_quickjump = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.redirect_url'];
-//            $where_quickjump = array(
-//                array('fp.read_forum' => 'IS NULL'),
-//                array('fp.read_forum' => '1')
-//            );
             $order_by_quickjump = 'c.disp_position, c.id, f.disp_position';
 
-            $result = \ORM::forTable(ORM_TABLE_PREFIX . 'categories')
+            $result = DB::forTable('categories')
                 ->tableAlias('c')
                 ->selectMany($select_quickjump)
-                ->innerJoin(ORM_TABLE_PREFIX . 'forums', ['c.id', '=', 'f.cat_id'], 'f')
-//                        ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
-//                        ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
-// array('fp.group_id', '=', $item['g_id']), null, true)
+                ->innerJoin(DB::prefix() . 'forums', ['c.id', '=', 'f.cat_id'], 'f')
                 ->leftOuterJoin(
-                    ORM_TABLE_PREFIX . 'forum_perms',
+                    DB::prefix() . 'forum_perms',
                     '(fp.forum_id=f.id AND fp.group_id=' . (int)$item['g_id'] . ')',
                     'fp'
                 )
-//                        ->where_any_is($where_quickjump)
                 ->whereRaw('(fp.read_forum IS NULL OR fp.read_forum=1)')
                 ->whereNull('f.redirect_url')
                 ->orderByExpr($order_by_quickjump)

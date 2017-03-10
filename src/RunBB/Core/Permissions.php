@@ -23,7 +23,7 @@ class Permissions
         if ($gid > 0) {
             if (!isset($this->parents[$gid])) {
                 $this->parents[$gid] = [];
-                $group = \ORM::for_table(ORM_TABLE_PREFIX.'groups')->find_one($gid);
+                $group = DB::forTable('groups')->find_one($gid);
 
                 if (!$group) {
                     throw new RunBBException('Internal error : Unknown group ID', 500);
@@ -54,7 +54,7 @@ class Permissions
             $this->parents[$gid][] = $new_parent;
         }
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+        $result = DB::forTable('groups')
                     ->find_one($gid)
                     ->set('inherit', serialize($this->parents[$gid]))
                     ->save();
@@ -74,7 +74,7 @@ class Permissions
 
         if (($key = array_search($parent, $this->parents[$gid])) !== false) {
             unset($this->parents[$gid][$key]);
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+            $result = DB::forTable('groups')
                         ->find_one($gid)
                         ->set('inherit', serialize($this->parents[$gid]))
                         ->save();
@@ -101,7 +101,7 @@ class Permissions
         }
 
         if (!isset($this->permissions[$gid][$uid][$permission])) {
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'permissions')
+            $result = DB::forTable('permissions')
                         ->where('permission_name', $permission)
                         ->where('user', $uid)
                         ->where('deny', 1)
@@ -110,7 +110,7 @@ class Permissions
             if ($result) {
                 $result->delete();
             }
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'permissions')
+            $result = DB::forTable('permissions')
                         ->create()
                         ->set([
                             'permission_name' => $permission,
@@ -144,7 +144,7 @@ class Permissions
         }
 
         if (!isset($this->permissions[$gid][$uid][$permission])) {
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'permissions')
+            $result = DB::forTable('permissions')
                         ->where('permission_name', $permission)
                         ->where('user', $uid)
                         ->where('allow', 1)
@@ -155,7 +155,7 @@ class Permissions
                 $this->buildRegex($uid, $gid);
             }
 
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'permissions')
+            $result = DB::forTable('permissions')
                         ->create()
                         ->set([
                             'permission_name' => $permission,
@@ -178,13 +178,13 @@ class Permissions
         }
 
         if ($gid > 0) {
-            $group = \ORM::for_table(ORM_TABLE_PREFIX.'groups')->find_one($gid);
+            $group = DB::forTable('groups')->find_one($gid);
             if (!$group) {
                 throw new RunBBException('Internal error : Unknown user ID', 500);
             }
         }
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'permissions')
+        $result = DB::forTable('permissions')
                     ->where('permission_name', $permission)
                     ->where('group', $gid)
                     ->where('deny', 1)
@@ -192,7 +192,7 @@ class Permissions
         if ($result) {
             $result->delete();
         }
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'permissions')
+        $result = DB::forTable('permissions')
                     ->create()
                     ->set([
                         'permission_name' => $permission,
@@ -216,13 +216,13 @@ class Permissions
         }
 
         if ($gid > 0) {
-            $group = \ORM::for_table(ORM_TABLE_PREFIX.'groups')->find_one($gid);
+            $group = DB::forTable('groups')->find_one($gid);
             if (!$group) {
                 throw new RunBBException('Internal error : Unknown user ID', 500);
             }
         }
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'permissions')
+        $result = DB::forTable('permissions')
                     ->where('permission_name', $permission)
                     ->where('group', $gid)
                     ->where('allow', 1)
@@ -231,7 +231,7 @@ class Permissions
             $result->delete();
             $this->permissions[$gid] = null; // Harsh, but still the fastest way to do
         }
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'permissions')
+        $result = DB::forTable('permissions')
                     ->create()
                     ->set([
                         'permission_name' => $permission,
@@ -281,10 +281,10 @@ class Permissions
             }
         }
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'permissions')
+        $result = DB::forTable('permissions')
             ->table_alias('p')
             ->select_many('p.permission_name', 'p.allow', 'p.deny')
-            ->inner_join(ORM_TABLE_PREFIX.'users', ['u.id', '=', $uid], 'u', true)
+            ->inner_join(DB::prefix().'users', ['u.id', '=', $uid], 'u', true)
             ->where_any_is($where)
             ->order_by_desc('p.group') // Read groups first to allow user override
             ->find_array();
@@ -312,7 +312,7 @@ class Permissions
             $uid = $user->id;
             $gid = $user->group_id;
         } elseif ((int) $user > 0) {
-            $data = \ORM::for_table(ORM_TABLE_PREFIX.'users')->find_one((int) $user);
+            $data = DB::forTable('users')->find_one((int) $user);
             if (!$data) {
                 throw new RunBBException('Internal error : Unknown user ID', 500);
             }

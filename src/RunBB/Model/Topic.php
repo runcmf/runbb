@@ -28,17 +28,17 @@ class Topic
             ['moved_to' => $topic_id]
         ];
 
-        \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        DB::forTable('topics')
             ->where_any_is($where_delete_topic)
             ->delete_many();
 
         // Delete posts in topic
-        \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+        DB::forTable('posts')
             ->where('topic_id', $topic_id)
             ->delete_many();
 
         // Delete any subscriptions for this topic
-        \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
+        DB::forTable('topic_subscriptions')
             ->where('topic_id', $topic_id)
             ->delete_many();
     }
@@ -55,7 +55,7 @@ class Topic
 
         $result['select'] = ['topic_id', 'posted'];
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+        $result = DB::forTable('posts')
                       ->select_many($result['select'])
                       ->where('id', $post_id);
         $result = Container::get('hooks')->fireDB('model.topic.redirect_to_post_query', $result);
@@ -69,7 +69,7 @@ class Topic
         $posted = $result['posted'];
 
         // Determine on which page the post is located (depending on $forum_user['disp_posts'])
-        $num_posts = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+        $num_posts = DB::forTable('posts')
                         ->where('topic_id', $post['topic_id'])
                         ->where_lt('posted', $posted)
                         ->count('id');
@@ -101,7 +101,7 @@ class Topic
                 $last_viewed = isset($tracked_topics['topics'][$topic_id]) ?
                     $tracked_topics['topics'][$topic_id] : User::get()->last_visit;
 
-                $first_new_post_id = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+                $first_new_post_id = DB::forTable('posts')
                                         ->where('topic_id', $topic_id)
                                         ->where_gt('posted', $last_viewed)
                                         ->min('id');
@@ -122,7 +122,7 @@ class Topic
 
         // If action=last, we redirect to the last post
         if ($action == 'last') {
-            $last_post_id = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+            $last_post_id = DB::forTable('posts')
                                 ->where('topic_id', $topic_id)
                                 ->max('id');
 
@@ -157,21 +157,21 @@ class Topic
                 'fp.post_replies', 'is_subscribed' => 's.user_id'
             ];
 
-            $cur_topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+            $cur_topic = DB::forTable('topics')
                 ->table_alias('t')
                 ->select_many($select_get_info_topic)
-                ->inner_join(ORM_TABLE_PREFIX.'forums', ['f.id', '=', 't.forum_id'], 'f')
+                ->inner_join(DB::prefix().'forums', ['f.id', '=', 't.forum_id'], 'f')
 //                ->left_outer_join('topic_subscriptions', array('t.id', '=', 's.topic_id'), 's')
 //                ->left_outer_join('topic_subscriptions', array('s.user_id', '=', User::get()->id), null, true)
                 ->left_outer_join(
-                    ORM_TABLE_PREFIX.'topic_subscriptions',
+                    DB::prefix().'topic_subscriptions',
                     '(t.id=s.topic_id AND s.user_id= '.User::get()->id.')',
                     's'
                 )
 //                ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                 ->left_outer_join(
-                    ORM_TABLE_PREFIX.'forum_perms',
+                    DB::prefix().'forum_perms',
                     '(fp.forum_id=f.id AND fp.group_id='.User::get()->g_id.')',
                     'fp'
                 )
@@ -183,16 +183,16 @@ class Topic
             $select_get_info_topic = ['t.subject', 't.closed', 't.num_replies', 't.sticky', 't.first_post_id',
                 'forum_id' => 'f.id', 'f.forum_name', 'f.moderators', 'fp.post_replies'];
 
-            $cur_topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+            $cur_topic = DB::forTable('topics')
                 ->table_alias('t')
                 ->select_many($select_get_info_topic)
                 ->select_expr(0, 'is_subscribed')
-                ->inner_join(ORM_TABLE_PREFIX.'forums', ['f.id', '=', 't.forum_id'], 'f')
+                ->inner_join(DB::prefix().'forums', ['f.id', '=', 't.forum_id'], 'f')
 //                            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                            ->left_outer_join('forum_perms', array('fp.group_id', '=',
 // User::get()->g_id), null, true)
                 ->left_outer_join(
-                    ORM_TABLE_PREFIX.'forum_perms',
+                    DB::prefix().'forum_perms',
                     '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
                     'fp'
                 )
@@ -299,12 +299,12 @@ class Topic
 //            array('fp.read_forum' => '1')
 //        );
 
-        $authorized = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $authorized = DB::forTable('topics')
                         ->table_alias('t')
 //                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', 't.forum_id'), 'fp')
 //                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
             ->left_outer_join(
-                ORM_TABLE_PREFIX.'forum_perms',
+                DB::prefix().'forum_perms',
                 '(fp.forum_id = t.forum_id AND fp.group_id = '.User::get()->g_id.')',
                 'fp'
             )
@@ -319,7 +319,7 @@ class Topic
             throw new  RunBBException(__('Bad request'), 404);
         }
 
-        $is_subscribed = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
+        $is_subscribed = DB::forTable('topic_subscriptions')
                         ->where('user_id', User::get()->id)
                         ->where('topic_id', $topic_id);
         $is_subscribed = Container::get('hooks')
@@ -336,7 +336,7 @@ class Topic
         ];
 
         // Insert the subscription
-        $subscription = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
+        $subscription = DB::forTable('topic_subscriptions')
                                     ->create()
                                     ->set($subscription['insert']);
         $subscription = Container::get('hooks')->fireDB('model.topic.subscribe_topic_query', $subscription);
@@ -358,7 +358,7 @@ class Topic
             throw new  RunBBException(__('No permission'), 403);
         }
 
-        $is_subscribed = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
+        $is_subscribed = DB::forTable('topic_subscriptions')
                             ->where('user_id', User::get()->id)
                             ->where('topic_id', $topic_id);
         $is_subscribed = Container::get('hooks')
@@ -370,7 +370,7 @@ class Topic
         }
 
         // Delete the subscription
-        $delete = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
+        $delete = DB::forTable('topic_subscriptions')
                     ->where('user_id', User::get()->id)
                     ->where('topic_id', $topic_id);
         $delete = Container::get('hooks')->fireDB('model.topic.unsubscribe_topic_query', $delete);
@@ -414,7 +414,7 @@ class Topic
      */
     public function setSticky($id, $value)
     {
-        $sticky = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $sticky = DB::forTable('topics')
                             ->find_one($id)
                             ->set('sticky', $value);
         $sticky = Container::get('hooks')->fireDB('model.topic.stick_topic', $sticky);
@@ -430,7 +430,7 @@ class Topic
      */
     public function setClosed($id, $value)
     {
-        $closed = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $closed = DB::forTable('topics')
                             ->find_one($id)
                             ->set('closed', $value);
         $closed = Container::get('hooks')->fireDB('model.topic.stick_topic', $closed);
@@ -453,14 +453,14 @@ class Topic
 //        );
         $result['order_by'] = 'c.disp_position, c.id, f.disp_position';
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'categories')
+        $result = DB::forTable('categories')
                     ->table_alias('c')
                     ->select_many($result['select'])
-                    ->inner_join(ORM_TABLE_PREFIX.'forums', ['c.id', '=', 'f.cat_id'], 'f')
+                    ->inner_join(DB::prefix().'forums', ['c.id', '=', 'f.cat_id'], 'f')
 //                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
             ->left_outer_join(
-                ORM_TABLE_PREFIX.'forum_perms',
+                DB::prefix().'forum_perms',
                 '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
                 'fp'
             )
@@ -492,14 +492,14 @@ class Topic
 //        );
         $order_by_get_forum_list_move = 'c.disp_position, c.id, f.disp_position';
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'categories')
+        $result = DB::forTable('categories')
                     ->table_alias('c')
                     ->select_many($select_get_forum_list_move)
-                    ->inner_join(ORM_TABLE_PREFIX.'forums', ['c.id', '=', 'f.cat_id'], 'f')
+                    ->inner_join(DB::prefix().'forums', ['c.id', '=', 'f.cat_id'], 'f')
 //                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
             ->left_outer_join(
-                ORM_TABLE_PREFIX.'forum_perms',
+                DB::prefix().'forum_perms',
                 '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
                 'fp'
             )
@@ -550,14 +550,14 @@ class Topic
 //        );
         $order_by_get_forum_list_split = 'c.disp_position, c.id, f.disp_position';
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'categories')
+        $result = DB::forTable('categories')
                     ->table_alias('c')
                     ->select_many($result['select'])
-                    ->inner_join(ORM_TABLE_PREFIX.'forums', ['c.id', '=', 'f.cat_id'], 'f')
+                    ->inner_join(DB::prefix().'forums', ['c.id', '=', 'f.cat_id'], 'f')
 //                    ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //                    ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
             ->left_outer_join(
-                ORM_TABLE_PREFIX.'forum_perms',
+                DB::prefix().'forum_perms',
                 '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
                 'fp'
             )
@@ -610,7 +610,7 @@ class Topic
         }
 
         // Verify that the topic IDs are valid
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $result = DB::forTable('topics')
                     ->where_in('id', $topics)
                     ->where('forum_id', $fid);
         $result = Container::get('hooks')->fireDB('model.topic.move_to_topic_valid', $result);
@@ -626,12 +626,12 @@ class Topic
 //            array('fp.post_topics' => '1')
 //        );
 
-        $authorized = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+        $authorized = DB::forTable('forums')
                         ->table_alias('f')
 //                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', $new_fid), 'fp', true)
 //                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
             ->left_outer_join(
-                ORM_TABLE_PREFIX.'forum_perms',
+                DB::prefix().'forum_perms',
                 '(fp.forum_id = '.$new_fid.' AND fp.group_id = '.User::get()->g_id.')',
                 'fp',
                 true
@@ -648,14 +648,14 @@ class Topic
 
         // Delete any redirect topics if there are any (only if we moved/copied the topic back to
         // where it was once moved from)
-        $delete_redirect = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $delete_redirect = DB::forTable('topics')
                                 ->where('forum_id', $new_fid)
                                 ->where_in('moved_to', $topics);
         $delete_redirect = Container::get('hooks')->fireDB('model.topic.move_to_delete_redirect', $delete_redirect);
         $delete_redirect->delete_many();
 
         // Move the topic(s)
-        $move_topics = \ORM::for_table(ORM_TABLE_PREFIX.'topics')->where_in('id', $topics)
+        $move_topics = DB::forTable('topics')->where_in('id', $topics)
                         ->find_result_set()
                         ->set('forum_id', $new_fid);
         $move_topics = Container::get('hooks')->fireDB('model.topic.move_to_query', $move_topics);
@@ -667,7 +667,7 @@ class Topic
                 // Fetch info for the redirect topic
                 $moved_to['select'] = ['poster', 'subject', 'posted', 'last_post'];
 
-                $moved_to = \ORM::for_table(ORM_TABLE_PREFIX.'topics')->select_many($moved_to['select'])
+                $moved_to = DB::forTable('topics')->select_many($moved_to['select'])
                                 ->where('id', $cur_topic);
                 $moved_to = Container::get('hooks')->fireDB('model.topic.move_to_fetch_redirect', $moved_to);
                 $moved_to = $moved_to->find_one();
@@ -683,7 +683,7 @@ class Topic
                 ];
 
                 // Insert the report
-                $move_to = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+                $move_to = DB::forTable('topics')
                                     ->create()
                                     ->set($insert_move_to);
                 $move_to = Container::get('hooks')->fireDB('model.topic.move_to_redirect', $move_to);
@@ -718,7 +718,7 @@ class Topic
             // Verify that the post IDs are valid
             $posts_array = explode(',', $posts);
 
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+            $result = DB::forTable('posts')
                 ->where_in('id', $posts_array)
                 ->where('topic_id', $tid);
 
@@ -734,7 +734,7 @@ class Topic
             }
 
             // Delete the posts
-            $delete_posts = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+            $delete_posts = DB::forTable('posts')
                                 ->where_in('id', $posts_array);
             $delete_posts = Container::get('hooks')->fireDB('model.topic.delete_posts_query', $delete_posts);
             $delete_posts = $delete_posts->delete_many();
@@ -745,7 +745,7 @@ class Topic
             // Get last_post, last_post_id, and last_poster for the topic after deletion
             $last_post['select'] = ['id', 'poster', 'posted'];
 
-            $last_post = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+            $last_post = DB::forTable('posts')
                 ->select_many($last_post['select'])
                 ->where('topic_id', $tid);
             $last_post = Container::get('hooks')->fireDB('model.topic.delete_posts_last_post_query', $last_post);
@@ -761,7 +761,7 @@ class Topic
                 'last_poster'  => $last_post['poster'],
             ];
 
-            $update_topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')->where('id', $tid)
+            $update_topic = DB::forTable('topics')->where('id', $tid)
                 ->find_one()
                 ->set($update_topic['insert'])
                 ->set_expr('num_replies', 'num_replies-'.$num_posts_deleted);
@@ -798,14 +798,14 @@ class Topic
             ['fp.read_forum' => '1']
         ];
 
-        $cur_topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $cur_topic = DB::forTable('topics')
             ->table_alias('t')
             ->select_many($cur_topic['select'])
-            ->inner_join(ORM_TABLE_PREFIX.'forums', ['f.id', '=', 't.forum_id'], 'f')
+            ->inner_join(DB::prefix().'forums', ['f.id', '=', 't.forum_id'], 'f')
 //            ->left_outer_join('forum_perms', array('fp.forum_id', '=', 'f.id'), 'fp')
 //            ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
             ->left_outer_join(
-                ORM_TABLE_PREFIX.'forum_perms',
+                DB::prefix().'forum_perms',
                 '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
                 'fp'
             )
@@ -852,7 +852,7 @@ class Topic
             // Verify that the post IDs are valid
             $posts_array = explode(',', $posts);
 
-            $result = \ORM::forTable(ORM_TABLE_PREFIX.'posts')
+            $result = DB::forTable('posts')
                 ->whereIn('id', $posts_array)
                 ->where('topic_id', $tid);
             $result = Container::get('hooks')->fireDB('model.topic.split_posts_first_query', $result);
@@ -870,12 +870,12 @@ class Topic
                 ['fp.post_topics' => '1']
             ];
 
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+            $result = DB::forTable('forums')
                         ->table_alias('f')
 //                        ->left_outer_join('forum_perms', array('fp.forum_id', '=', $move_to_forum), 'fp', true)
 //                        ->left_outer_join('forum_perms', array('fp.group_id', '=', User::get()->g_id), null, true)
                 ->left_outer_join(
-                    ORM_TABLE_PREFIX.'forum_perms',
+                    DB::prefix().'forum_perms',
                     '(fp.forum_id = '.$move_to_forum.' AND fp.group_id = '.User::get()->g_id.')',
                     'fp',
                     true
@@ -902,7 +902,7 @@ class Topic
             // Get data from the new first post
             $select_first_post = ['id', 'poster', 'posted'];
 
-            $first_post_data = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+            $first_post_data = DB::forTable('posts')
                 ->select_many($select_first_post)
                 ->where_in('id', $posts_array)
                 ->order_by_asc('id')
@@ -917,33 +917,33 @@ class Topic
                 'forum_id'  => $move_to_forum,
             ];
 
-            $topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+            $topic = DB::forTable('topics')
                 ->create()
                 ->set($topic['insert']);
             $topic = Container::get('hooks')->fireDB('model.topic.split_posts_topic_query', $topic);
             $topic->save();
 
-            $new_tid = \ORM::get_db()->lastInsertId(ForumSettings::get('db_prefix').'topics');
+            $new_tid = $topic->id;
 
             // Move the posts to the new topic
-            $move_posts = \ORM::for_table(ORM_TABLE_PREFIX.'posts')->where_in('id', $posts_array)
+            $move_posts = DB::forTable('posts')->where_in('id', $posts_array)
                 ->find_result_set()
                 ->set('topic_id', $new_tid);
             $move_posts = Container::get('hooks')->fireDB('model.topic.split_posts_move_query', $move_posts);
             $move_posts->save();
 
             // Apply every subscription to both topics
-            \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')->raw_query(
+            DB::forTable('topic_subscriptions')->raw_query(
                 'INSERT INTO '.
-                ForumSettings::get('db_prefix').'topic_subscriptions (user_id, topic_id) SELECT user_id, '.
-                $new_tid.' FROM '.ForumSettings::get('db_prefix').'topic_subscriptions WHERE topic_id=:tid',
+                DB::prefix().'topic_subscriptions (user_id, topic_id) SELECT user_id, '.
+                $new_tid.' FROM '.DB::prefix().'topic_subscriptions WHERE topic_id=:tid',
                 ['tid' => $tid]
             );
 
             // Get last_post, last_post_id, and last_poster from the topic and update it
             $last_old_post_data['select'] = ['id', 'poster', 'posted'];
 
-            $last_old_post_data = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+            $last_old_post_data = DB::forTable('posts')
                 ->select_many($last_old_post_data['select'])
                 ->where('topic_id', $tid)
                 ->order_by_desc('id');
@@ -958,7 +958,7 @@ class Topic
                 'last_poster'  => $last_old_post_data['poster'],
             ];
 
-            $update_old_topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+            $update_old_topic = DB::forTable('topics')
                                 ->where('id', $tid)
                                 ->find_one()
                                 ->set($update_old_topic['insert'])
@@ -970,7 +970,7 @@ class Topic
             // Get last_post, last_post_id, and last_poster from the new topic and update it
             $last_new_post_data['select'] = ['id', 'poster', 'posted'];
 
-            $last_new_post_data = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+            $last_new_post_data = DB::forTable('posts')
                                     ->select_many($last_new_post_data['select'])
                                     ->where('topic_id', $new_tid)
                                     ->order_by_desc('id');
@@ -985,7 +985,7 @@ class Topic
                 'last_poster'  => $last_new_post_data['poster'],
             ];
 
-            $update_new_topic = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+            $update_new_topic = DB::forTable('topics')
                 ->where('id', $new_tid)
                 ->find_one()
                 ->set($update_new_topic['insert'])
@@ -1024,7 +1024,7 @@ class Topic
 
         // Retrieve a list of post IDs, LIMIT is (really) expensive so we only fetch the
         // IDs here then later fetch the remaining data
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+        $result = DB::forTable('posts')
                     ->select('id')
                     ->where('topic_id', $topic_id)
                     ->order_by_expr('id')
@@ -1069,13 +1069,13 @@ class Topic
             'is_online' => 'o.user_id'
         ];
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+        $result = DB::forTable('posts')
                     ->table_alias('p')
                     ->select_many($result['select'])
-                    ->inner_join(ORM_TABLE_PREFIX.'users', ['u.id', '=', 'p.poster_id'], 'u')
-                    ->inner_join(ORM_TABLE_PREFIX.'groups', ['g.g_id', '=', 'u.group_id'], 'g')
+                    ->inner_join(DB::prefix().'users', ['u.id', '=', 'p.poster_id'], 'u')
+                    ->inner_join(DB::prefix().'groups', ['g.g_id', '=', 'u.group_id'], 'g')
                     ->raw_join(
-                        'LEFT OUTER JOIN '.ForumSettings::get('db_prefix').'online',
+                        'LEFT OUTER JOIN '.DB::prefix().'online',
                         "o.user_id!=1 AND o.idle=0 AND o.user_id=u.id",
                         'o'
                     )
@@ -1311,7 +1311,7 @@ class Topic
 
         // Retrieve a list of post IDs, LIMIT is (really) expensive so we only fetch the
         // IDs here then later fetch the remaining data
-        $find_ids = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+        $find_ids = DB::forTable('posts')
             ->select('id')
             ->where('topic_id', $tid)
             ->order_by_expr('id')
@@ -1341,11 +1341,11 @@ class Topic
             'p.edited_by'
         ];
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+        $result = DB::forTable('posts')
                     ->table_alias('p')
                     ->select_many($result['select'])
-                    ->inner_join(ORM_TABLE_PREFIX.'users', ['u.id', '=', 'p.poster_id'], 'u')
-                    ->inner_join(ORM_TABLE_PREFIX.'groups', ['g.g_id', '=', 'u.group_id'], 'g')
+                    ->inner_join(DB::prefix().'users', ['u.id', '=', 'p.poster_id'], 'u')
+                    ->inner_join(DB::prefix().'groups', ['g.g_id', '=', 'u.group_id'], 'g')
                     ->where_in('p.id', $post_ids)
                     ->order_by_expr('p.id');
         $result = Container::get('hooks')->fireDB('model.topic.display_posts_view_query', $result);
@@ -1400,7 +1400,7 @@ class Topic
     public function incrementViews($id)
     {
         if (ForumSettings::get('o_topic_views') == '1') {
-            $query = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+            $query = DB::forTable('topics')
                         ->where('id', $id)
                         ->find_one()
                         ->set_expr('num_views', 'num_views+1');

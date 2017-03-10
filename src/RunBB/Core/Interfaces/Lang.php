@@ -62,11 +62,8 @@ class Lang extends BaseProxy
 
     public static function getList()
     {
-        if (!defined('ORM_TABLE_PREFIX')) {
-            return [];
-        }
         try {
-            return \ORM::forTable(ORM_TABLE_PREFIX . 'languages')->findArray();
+            return DB::forTable('languages')->findArray();
         } catch (\Exception $e) {
             // config exists, db not exists ?
             // will be generated \RunBBException 'Unknown database' ?
@@ -76,9 +73,9 @@ class Lang extends BaseProxy
 
     public static function getMailTemplate($file = '')
     {
-        return \ORM::forTable(ORM_TABLE_PREFIX.'lang_mailtpls')
+        return DB::forTable('lang_mailtpls')
             ->tableAlias('t')
-            ->innerJoin(ORM_TABLE_PREFIX.'languages', ['t.lid', '=', 'l.id'], 'l')
+            ->innerJoin(DB::prefix() . 'languages', ['t.lid', '=', 'l.id'], 'l')
             ->where('l.name', User::get()->language)
             ->where('t.file', $file)
             ->findOne();

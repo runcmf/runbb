@@ -30,7 +30,7 @@ class Plugins
         if (empty($list) || $force) {
             if ((Container::get('cache')->isCached('pluginsList') &&
                     empty(Container::get('cache')->retrieve('pluginsList'))) || $force) {
-                $list = \ORM::forTable(ORM_TABLE_PREFIX.'plugins')->findArray();
+                $list = DB::forTable('plugins')->findArray();
                 Container::get('cache')->store('pluginsList', $list);
             } else {
                 $list = Container::get('cache')->retrieve('pluginsList');
@@ -43,13 +43,13 @@ class Plugins
     public function addInfo(array $arr = [])
     {
         // check if already exists
-        $key = \ORM::forTable(ORM_TABLE_PREFIX.'plugins')
+        $key = DB::forTable('plugins')
             ->where('name', $arr['key'])
             ->findArray();
         if ($key !== null && !empty($key)) {
             return $key->id;
         } else {
-            $result = \ORM::forTable(ORM_TABLE_PREFIX . 'plugins')
+            $result = DB::forTable('plugins')
                 ->create()
                 ->set([
                     'name' => $arr['key'],
@@ -70,9 +70,9 @@ class Plugins
         // Check if plugin is not yet activated...
         if (!in_array($name, $activePlugins)) {
             // Find or create plugin in DB...
-            $plugin = \ORM::for_table(ORM_TABLE_PREFIX.'plugins')->where('name', $name)->find_one();
+            $plugin = DB::forTable('plugins')->where('name', $name)->find_one();
             if (!$plugin) {
-                $plugin = \ORM::for_table(ORM_TABLE_PREFIX.'plugins')->create()->set('name', $name);
+                $plugin = DB::forTable('plugins')->create()->set('name', $name);
             }
             $plugin->set('active', 1);
 
@@ -103,9 +103,9 @@ class Plugins
 
         // Check if plugin is actually activated
         if (($k = array_search($name, $activePlugins)) !== false) {
-            $plugin = \ORM::for_table(ORM_TABLE_PREFIX.'plugins')->where('name', $name)->find_one();
+            $plugin = DB::forTable('plugins')->where('name', $name)->find_one();
             if (!$plugin) {
-                $plugin = \ORM::for_table(ORM_TABLE_PREFIX.'plugins')->create()->set('name', $name);
+                $plugin = DB::forTable('plugins')->create()->set('name', $name);
             }
             $plugin->set('active', 0);
 
@@ -132,7 +132,7 @@ class Plugins
 
         // Check if plugin is disabled, for security
         if (!in_array($name, $activePlugins)) {
-            $plugin = \ORM::for_table(ORM_TABLE_PREFIX.'plugins')->where('name', $name)->find_one();
+            $plugin = DB::forTable('plugins')->where('name', $name)->find_one();
 
             if ($plugin) {
                 $plugin->delete();

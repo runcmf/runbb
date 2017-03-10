@@ -281,7 +281,7 @@
                                 <label class="control-label col-sm-2" for="id" title="{{ trans('Jump to') }}">
                                     <i class="fa fa-fast-forward" aria-hidden="true"></i>
                                 </label>
-                                <select name="id" class="form-control" onchange="window.location=(this.options[this.selectedIndex].value)">
+                                <select name="id" style="width: 80%;" class="form-control" onchange="window.location=(this.options[this.selectedIndex].value)">
                         {% for cat_id, cat_data in quickjump[ userGet('g_id') ] %}
                                     <optgroup label="{{ cat_data.cat_name }}">
                             {% for forum in cat_data.cat_forums %}
@@ -349,7 +349,7 @@
 {{ fireHook('view.footer.feed.links') }}
                         <br />
                         <small id="poweredby">
-                            {{ trans(['Powered by', '<a href="https://github.com/runcmf/runbb">RunBB</a> ' ~"#{ settings('o_show_version') == '1' ? settings('o_cur_version') : '' }"]) }}
+                            {{ trans(['Powered by', '<a href="https://github.com/runcmf/runbb">RunBB</a> ' ~(settings('o_show_version') == '1' ? settings('o_cur_version') : '')]) }}
                             <br />
                             Based on <a href="https://github.com/featherbb/featherbb">FeatherBB</a>
                         </small>

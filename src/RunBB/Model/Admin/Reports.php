@@ -15,7 +15,7 @@ class Reports
     {
         $zap_id = Container::get('hooks')->fire('model.admin.reports.zap_report.zap_id', $zap_id);
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'reports')->where('id', $zap_id);
+        $result = DB::forTable('reports')->where('id', $zap_id);
         $result = Container::get('hooks')->fireDB('model.admin.reports.zap_report.query', $result);
         $result = $result->select('zapped')->find_one();
 
@@ -24,7 +24,7 @@ class Reports
 
         // Update report to indicate it has been zapped
         if ($result->zapped === null) {
-            \ORM::for_table(ORM_TABLE_PREFIX.'reports')
+            DB::forTable('reports')
                 ->where('id', $zap_id)
                 ->find_one()
                 ->set($set_zap_report)
@@ -32,7 +32,7 @@ class Reports
         }
 
         // Remove zapped reports to keep only last 10
-        $threshold = \ORM::forTable(ORM_TABLE_PREFIX.'reports')
+        $threshold = DB::forTable('reports')
             ->select('zapped')
             ->whereNotNull('zapped')
             ->orderByDesc('zapped')
@@ -41,7 +41,7 @@ class Reports
             ->findOne();
 
         if ($threshold) {
-            \ORM::forTable(ORM_TABLE_PREFIX.'reports')
+            DB::forTable('reports')
                 ->whereLte('zapped', $threshold->zapped)
                 ->deleteMany();
         }
@@ -53,7 +53,7 @@ class Reports
     {
         Container::get('hooks')->fire('get_reports_start');
 
-        $result_header = \ORM::for_table(ORM_TABLE_PREFIX.'reports')->where_null('zapped');
+        $result_header = DB::forTable('reports')->where_null('zapped');
         $result_header = Container::get('hooks')->fireDB('get_reports_query', $result_header);
 
         return (bool) $result_header->find_one();
@@ -74,13 +74,13 @@ class Reports
             'f.forum_name',
             'reporter' => 'u.username'
         ];
-        $reports = \ORM::for_table(ORM_TABLE_PREFIX.'reports')
+        $reports = DB::forTable('reports')
             ->table_alias('r')
             ->select_many($select_reports)
-            ->left_outer_join(ORM_TABLE_PREFIX.'posts', ['r.post_id', '=', 'p.id'], 'p')
-            ->left_outer_join(ORM_TABLE_PREFIX.'topics', ['r.topic_id', '=', 't.id'], 't')
-            ->left_outer_join(ORM_TABLE_PREFIX.'forums', ['r.forum_id', '=', 'f.id'], 'f')
-            ->left_outer_join(ORM_TABLE_PREFIX.'users', ['r.reported_by', '=', 'u.id'], 'u')
+            ->left_outer_join(DB::prefix().'posts', ['r.post_id', '=', 'p.id'], 'p')
+            ->left_outer_join(DB::prefix().'topics', ['r.topic_id', '=', 't.id'], 't')
+            ->left_outer_join(DB::prefix().'forums', ['r.forum_id', '=', 'f.id'], 'f')
+            ->left_outer_join(DB::prefix().'users', ['r.reported_by', '=', 'u.id'], 'u')
             ->where_null('r.zapped')
             ->order_by_desc('created');
         $reports = Container::get('hooks')->fireDB('model.admin.reports.get_reports.query', $reports);
@@ -107,14 +107,14 @@ class Reports
             'reporter' => 'u.username',
             'zapped_by' => 'u2.username'
         ];
-        $zapped_reports = \ORM::for_table(ORM_TABLE_PREFIX.'reports')
+        $zapped_reports = DB::forTable('reports')
             ->table_alias('r')
             ->select_many($select_zapped_reports)
-            ->left_outer_join(ORM_TABLE_PREFIX.'posts', ['r.post_id', '=', 'p.id'], 'p')
-            ->left_outer_join(ORM_TABLE_PREFIX.'topics', ['r.topic_id', '=', 't.id'], 't')
-            ->left_outer_join(ORM_TABLE_PREFIX.'forums', ['r.forum_id', '=', 'f.id'], 'f')
-            ->left_outer_join(ORM_TABLE_PREFIX.'users', ['r.reported_by', '=', 'u.id'], 'u')
-            ->left_outer_join(ORM_TABLE_PREFIX.'users', ['r.zapped_by', '=', 'u2.id'], 'u2')
+            ->left_outer_join(DB::prefix().'posts', ['r.post_id', '=', 'p.id'], 'p')
+            ->left_outer_join(DB::prefix().'topics', ['r.topic_id', '=', 't.id'], 't')
+            ->left_outer_join(DB::prefix().'forums', ['r.forum_id', '=', 'f.id'], 'f')
+            ->left_outer_join(DB::prefix().'users', ['r.reported_by', '=', 'u.id'], 'u')
+            ->left_outer_join(DB::prefix().'users', ['r.zapped_by', '=', 'u2.id'], 'u2')
             ->where_not_null('r.zapped')
             ->order_by_desc('zapped')
             ->limit(10);

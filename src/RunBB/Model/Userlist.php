@@ -17,7 +17,7 @@ class Userlist
     public function fetchUserCount($username, $show_group)
     {
         // Fetch user count
-        $num_users = \ORM::forTable(ORM_TABLE_PREFIX . 'users')
+        $num_users = DB::forTable('users')
             ->tableAlias('u')
             ->whereGt('u.id', 1)
             ->whereNotEqual('u.group_id', ForumEnv::get('FEATHER_UNVERIFIED'));
@@ -45,7 +45,7 @@ class Userlist
 
         $result['select'] = ['g_id', 'g_title'];
 
-        $result = \ORM::forTable(ORM_TABLE_PREFIX . 'groups')
+        $result = DB::forTable('groups')
             ->selectMany($result['select'])
             ->whereNotEqual('g_id', ForumEnv::get('FEATHER_GUEST'))
             ->orderByExpr('g_id');
@@ -77,7 +77,7 @@ class Userlist
 
         // Retrieve a list of user IDs, LIMIT is (really) expensive so we only fetch the
         // IDs here then later fetch the remaining data
-        $result = \ORM::forTable(ORM_TABLE_PREFIX . 'users')
+        $result = DB::forTable('users')
             ->select('u.id')
             ->tableAlias('u')
             ->whereGt('u.id', 1)
@@ -108,10 +108,10 @@ class Userlist
             $result['select'] = ['u.id', 'u.username', 'u.title', 'u.num_posts', 'u.registered',
                 'g.g_id', 'g.g_user_title'];
 
-            $result = \ORM::forTable(ORM_TABLE_PREFIX . 'users')
+            $result = DB::forTable('users')
                 ->tableAlias('u')
                 ->selectMany($result['select'])
-                ->leftOuterJoin(ORM_TABLE_PREFIX . 'groups', ['g.g_id', '=', 'u.group_id'], 'g')
+                ->leftOuterJoin(DB::prefix() . 'groups', ['g.g_id', '=', 'u.group_id'], 'g')
                 ->whereIn('u.id', $user_ids)
                 ->orderByExpr($sort_by . ' ' . $sort_dir)
                 ->orderByAsc('u.id');
@@ -130,7 +130,7 @@ class Userlist
 
     public function getLastUsers($limit = 10, $start = 0)
     {
-        $list = \ORM::forTable(ORM_TABLE_PREFIX . 'users')
+        $list = DB::forTable('users')
             ->selectMany([
                 'id',
                 'group_id',

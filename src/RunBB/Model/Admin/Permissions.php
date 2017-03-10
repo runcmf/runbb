@@ -28,7 +28,7 @@ class Permissions
             // Only update values that have changed
             if (array_key_exists('p_'.$key, Container::get('forum_settings')) &&
                 ForumSettings::get('p_'.$key) != $input) {
-                \ORM::for_table(ORM_TABLE_PREFIX.'config')
+                DB::forTable('config')
                     ->where('conf_name', 'p_'.$key)
                     ->find_one()
                     ->set(['conf_value' => $input])

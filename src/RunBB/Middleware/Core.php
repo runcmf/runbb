@@ -31,7 +31,6 @@ class Core
         'Pragma' => 'no-cache',
         'Content-type' => 'text/html',
         'X-Frame-Options' => 'deny'];
-    protected static $queryLog = [];
 
     public function __construct(\Slim\Container $c)
     {
@@ -118,45 +117,6 @@ class Core
             'jwt_token' => 'changeme', // MUST BE CHANGED !!!
             'jwt_algorithm' => 'HS512'
         ];
-    }
-
-    public static function initDb(array $config, $log_queries = false)
-    {
-        $config['db_prefix'] = (!empty($config['db_prefix'])) ? $config['db_prefix'] : '';
-        switch ($config['db_type']) {
-            case 'mysql':
-                if (!extension_loaded('pdo_mysql')) {
-                    throw new \RunBB\Exception\RunBBException('Driver pdo_mysql not installed.', 500);
-                }
-                \ORM::configure('mysql:host=' . $config['db_host'] . ';dbname=' . $config['db_name']);
-                \ORM::configure('driver_options', [\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
-                break;
-            case 'sqlite':
-            case 'sqlite3':
-                if (!extension_loaded('pdo_sqlite')) {
-                    throw new \RunBB\Exception\RunBBException('Driver pdo_mysql not installed.', 500);
-                }
-                \ORM::configure('sqlite:./' . $config['db_name']);
-                break;
-            case 'pgsql':
-                if (!extension_loaded('pdo_pgsql')) {
-                    throw new \RunBB\Exception\RunBBException('Driver pdo_mysql not installed.', 500);
-                }
-                \ORM::configure('pgsql:host=' . $config['db_host'] . 'dbname=' . $config['db_name']);
-                break;
-        }
-        \ORM::configure('username', $config['db_user']);
-        \ORM::configure('password', $config['db_pass']);
-        \ORM::configure('id_column_overrides', [
-            $config['db_prefix'] . 'groups' => 'g_id',
-        ]);
-
-        defined('ORM_TABLE_PREFIX') || define('ORM_TABLE_PREFIX', $config['db_prefix']);
-    }
-
-    public static function getQueryLog()
-    {
-        return self::$queryLog;
     }
 
     private function loadPlugins()
@@ -268,7 +228,7 @@ class Core
         }
 
         // Init DB and configure Slim
-        self::initDb($this->forum_settings, ForumEnv::get('FEATHER_SHOW_INFO'));
+        DB::init($this->forum_settings);
         Config::set('displayErrorDetails', ForumEnv::get('FEATHER_DEBUG'));
 
         /**

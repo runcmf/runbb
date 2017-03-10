@@ -59,45 +59,40 @@ class Languages
             KEY `lid` (`lid`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;",];
 
-//    public function getLangList()
-//    {
-//        return \ORM::forTable(ORM_TABLE_PREFIX.'languages')->findArray();
-//    }
-
     public function getLangInfo($id = 0)
     {
-        return \ORM::forTable(ORM_TABLE_PREFIX.'languages')->findOne((int)$id);
+        return DB::forTable('languages')->findOne((int)$id);
     }
 
     public function getLangInfoByCode($code = '')
     {
         // db initialized?
-        if (defined('ORM_TABLE_PREFIX')) {
-            return \ORM::forTable(ORM_TABLE_PREFIX . 'languages')
+//        if (defined('ORM_TABLE_PREFIX')) {
+            return DB::forTable('languages')
                 ->where('code', $code)
                 ->findOne();
-        } else {
-            return false;
-        }
+//        } else {
+//            return false;
+//        }
     }
 
     public function getLangCount($id)
     {
-        return \ORM::forTable(ORM_TABLE_PREFIX.'lang_trans')
+        return DB::forTable('lang_trans')
             ->where('lid', (int)$id)
             ->count();
     }
 
     public function getMailTemplatesCount($id)
     {
-        return \ORM::forTable(ORM_TABLE_PREFIX.'lang_mailtpls')
+        return DB::forTable('lang_mailtpls')
             ->where('lid', (int)$id)
             ->count();
     }
 
     public function getDomainList($id)
     {
-        $list = \ORM::forTable(ORM_TABLE_PREFIX.'lang_trans')
+        $list = DB::forTable('lang_trans')
             ->select_many('lid', 'domain')
             ->where('lid', (int)$id)
             ->groupBy('domain')
@@ -111,18 +106,18 @@ class Languages
     {
         // now only with English compare, rebuild for any
         if ($id === 1) {
-            $list = \ORM::forTable(ORM_TABLE_PREFIX . 'lang_trans')
+            $list = DB::forTable('lang_trans')
                 ->where([
                     'lid' => (int)$id,
                     'domain' => (string)$domain
                 ])
                 ->findArray();
         } else {
-            $list = \ORM::forTable(ORM_TABLE_PREFIX . 'lang_trans')
+            $list = DB::forTable('lang_trans')
                 ->table_alias('lt')
                 ->select('lt.*')
                 ->select('ltwith.msgstr', 'msgstrwith')
-                ->innerJoin(ORM_TABLE_PREFIX . 'lang_trans', ['lt.msgid', '=', 'ltwith.msgid'], 'ltwith')
+                ->innerJoin(DB::prefix() . 'lang_trans', ['lt.msgid', '=', 'ltwith.msgid'], 'ltwith')
                 ->where([
                     'lt.lid' => (int)$id,
                     'lt.domain' => (string)$domain,
@@ -136,7 +131,7 @@ class Languages
 
     public function getTranslationsById($id)
     {
-        $list = \ORM::forTable(ORM_TABLE_PREFIX . 'lang_trans')
+        $list = DB::forTable('lang_trans')
             ->where('lid', (int)$id)
             ->order_by_asc('domain')
             ->findArray();
@@ -145,7 +140,7 @@ class Languages
 
     public function getMailTemplatesById($id)
     {
-        $list = \ORM::forTable(ORM_TABLE_PREFIX . 'lang_mailtpls')
+        $list = DB::forTable('lang_mailtpls')
             ->where('lid', (int)$id)
             ->findArray();
         return $list;
@@ -156,7 +151,7 @@ class Languages
         if (empty($data)) {
             throw new RunBBException('Data empty. Can not update language info');
         }
-        $rec = \ORM::forTable(ORM_TABLE_PREFIX.'languages')
+        $rec = DB::forTable('languages')
             ->findOne($data['id'])
             ->set($data);
         if (!$rec->save()) {
@@ -172,7 +167,7 @@ class Languages
             throw new RunBBException('Data empty. Can not update language translations');
         }
         foreach ($arr as $key => $var) {
-            $rec = \ORM::forTable(ORM_TABLE_PREFIX . 'lang_trans')
+            $rec = DB::forTable('lang_trans')
                 ->findOne($key)
                 ->set('msgstr', $var);
             if (!$rec->save()) {
@@ -188,7 +183,7 @@ class Languages
             throw new RunBBException('Data empty. Can not update language mail templates');
         }
         foreach ($arr as $key => $var) {
-            $rec = \ORM::forTable(ORM_TABLE_PREFIX . 'lang_mailtpls')
+            $rec = DB::forTable('lang_mailtpls')
                 ->findOne($key)
                 ->set('text', $var);
             if (!$rec->save()) {
@@ -314,14 +309,14 @@ class Languages
         $installed = $this->getLangInfoByCode($data->code);
         if ($installed) {
             // clear table ??? FIXME rebuild logic
-            $z = \ORM::for_table(ORM_TABLE_PREFIX . 'languages')->find_one($installed->id);
+            $z = DB::forTable('languages')->find_one($installed->id);
             $z->delete();
             // clear translations
-            \ORM::for_table(ORM_TABLE_PREFIX . 'lang_trans')
+            DB::forTable('lang_trans')
                 ->where_equal('lid', $installed->id)
                 ->delete_many();
             // clear mail templates
-            \ORM::for_table(ORM_TABLE_PREFIX . 'lang_mailtpls')
+            DB::forTable('lang_mailtpls')
                 ->where_equal('lid', $installed->id)
                 ->delete_many();
         }
@@ -396,16 +391,16 @@ class Languages
     public function deleteLanguage($id)
     {
         // delete lang info
-        $z = \ORM::for_table(ORM_TABLE_PREFIX . 'languages')->find_one($id);
+        $z = DB::forTable('languages')->find_one($id);
         $z->delete();
         // delete translations
-        \ORM::for_table(ORM_TABLE_PREFIX . 'lang_trans')
-            ->where_equal('lid', $id)
-            ->delete_many();
+        DB::forTable('lang_trans')
+            ->whereEqual('lid', $id)
+            ->deleteMany();
         // delete mail templates
-        \ORM::for_table(ORM_TABLE_PREFIX . 'lang_mailtpls')
-            ->where_equal('lid', $id)
-            ->delete_many();
+        DB::forTable('lang_mailtpls')
+            ->whereEqual('lid', $id)
+            ->deleteMany();
 
         return true;
     }
@@ -417,10 +412,10 @@ class Languages
 
     public function addData($table_name, array $data)
     {
-        $req = \ORM::for_table(ORM_TABLE_PREFIX . $table_name)
+        $req = DB::forTable($table_name)
             ->create()
             ->set($data);
         $req->save();
-        return $req->id();
+        return $req->id;
     }
 }

@@ -20,6 +20,7 @@ namespace RunBB;
 
 use RunBB\Core\Interfaces\SlimStatic;
 use RunBB\Core\Url;
+use RunBB\Core\Utils;
 use RunBB\Middleware\Logged as IsLogged;
 use RunBB\Middleware\ReadBoard as CanReadBoard;
 use RunBB\Middleware\Admin as IsAdmin;
@@ -198,19 +199,19 @@ class Init
                     'back' => true,
                 ];
 
-                // show last 5 trace lines
+                // show last 15 trace lines
                 $msg = '';
                 if (count($e->getTrace()) > 1) {
                     $trace = $e->getTrace();
                     $msg = 'backtrace:<br/>';
-                    for ($i = 0; $i < 5; $i++) {
+                    for ($i = 0; $i < 15; $i++) {
                         if (isset($trace[$i]['file'])) {
-                            $msg .= '<p>' . $i . ': file: &nbsp; &nbsp; &nbsp;' . $trace[$i]['file'] .
+                            $msg .= $i . ': file: &nbsp; &nbsp; &nbsp;' . $trace[$i]['file'] .
 //                                str_replace(ForumEnv::get('APP_ROOT'), '', $trace[$i]['file']) .
-                                ' [' . $trace[$i]['line'] . ']</p>';
+                                ' [' . $trace[$i]['line'] . ']<br />';
                         } else {
-                            $msg .= '<p>' . $i . ': ' .
-                                'class: &nbsp;' . $trace[$i]['class'] . ' [' . $trace[$i]['function'] . ']</p>';
+                            $msg .= $i . ': ' .
+                                'class: &nbsp;' . $trace[$i]['class'] . ' [' . $trace[$i]['function'] . ']<br />';
                         }
                     }
                     Log::error($error['message'] . '<br /><br />' . $msg, ['context' => 'errorHandler']);

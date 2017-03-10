@@ -32,7 +32,7 @@ class Profile
                 return Router::redirect(Router::pathFor('home'));
             }
 
-            $cur_user = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+            $cur_user = DB::forTable('users')
                 ->where('id', $id);
             $cur_user = Container::get('hooks')->fireDB('model.profile.change_pass_user_query', $cur_user);
             $cur_user = $cur_user->find_one();
@@ -42,7 +42,7 @@ class Profile
                     Utils::escape(ForumSettings::get('o_admin_email')).'">'.
                     Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400);
             } else {
-                $query = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+                $query = DB::forTable('users')
                     ->where('id', $id)
                     ->find_one()
                     ->set('password', $cur_user['activate_string'])
@@ -64,10 +64,10 @@ class Profile
             } elseif (User::get()->g_moderator == '1') {
                 // A moderator trying to change a user's password?
 
-                $user = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+                $user = DB::forTable('users')
                     ->table_alias('u')
                     ->select_many(['u.group_id', 'g.g_moderator'])
-                    ->inner_join(ORM_TABLE_PREFIX.'groups', ['g.g_id', '=', 'u.group_id'], 'g')
+                    ->inner_join(DB::prefix().'groups', ['g.g_id', '=', 'u.group_id'], 'g')
                     ->where('u.id', $id);
                 $user = Container::get('hooks')->fireDB('model.profile.change_pass_user_query', $user);
                 $user = $user->find_one();
@@ -95,7 +95,7 @@ class Profile
                 throw new  RunBBException(__('Pass too short'), 400);
             }
 
-            $cur_user = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+            $cur_user = DB::forTable('users')
                 ->where('id', $id);
             $cur_user = Container::get('hooks')->fireDB('model.profile.change_pass_find_user', $cur_user);
             $cur_user = $cur_user->find_one();
@@ -116,7 +116,7 @@ class Profile
 
             $new_password_hash = Random::hash($new_password1);
 
-            $update_password = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+            $update_password = DB::forTable('users')
                 ->where('id', $id)
                 ->find_one()
                 ->set('password', $new_password_hash);
@@ -151,10 +151,10 @@ class Profile
                 // A moderator trying to change a user's email?
                 $user['select'] = ['u.group_id', 'g.g_moderator'];
 
-                $user = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+                $user = DB::forTable('users')
                     ->table_alias('u')
                     ->select_many($user['select'])
-                    ->inner_join(ORM_TABLE_PREFIX.'groups', ['g.g_id', '=', 'u.group_id'], 'g')
+                    ->inner_join(DB::prefix().'groups', ['g.g_id', '=', 'u.group_id'], 'g')
                     ->where('u.id', $id);
                 $user = Container::get('hooks')->fireDB('model.profile.change_email_not_id_query', $user);
                 $user = $user->find_one();
@@ -176,7 +176,7 @@ class Profile
             $key = Input::query('key');
             $key = Container::get('hooks')->fire('model.profile.change_email_key', $key);
 
-            $new_email_key = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+            $new_email_key = DB::forTable('users')
                 ->select('activate_key')
                 ->where('id', $id);
             $new_email_key = Container::get('hooks')->fireDB('model.profile.change_email_key_query', $new_email_key);
@@ -187,7 +187,7 @@ class Profile
                     Utils::escape(ForumSettings::get('o_admin_email')).'">'.
                     Utils::escape(ForumSettings::get('o_admin_email')).'</a>.', 400);
             } else {
-                $update_mail = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+                $update_mail = DB::forTable('users')
                     ->where('id', $id)
                     ->find_one()
                     ->set_expr('email', 'activate_string')
@@ -249,7 +249,7 @@ class Profile
             // Check if someone else already has registered with that email address
             $result['select'] = ['id', 'username'];
 
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+            $result = DB::forTable('users')
                 ->select_many($result['select'])
                 ->where('email', $new_email);
             $result = Container::get('hooks')->fireDB('model.profile.change_email_check_mail', $result);
@@ -302,7 +302,7 @@ class Profile
                 'activate_string' => $new_email,
                 'activate_key'  => $new_email_key,
             ];
-            $user = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+            $user = DB::forTable('users')
                 ->where('id', tid)
                 ->find_one()
                 ->set($user['update']);
@@ -480,14 +480,14 @@ class Profile
 
         $new_group_id = intval(Input::post('group_id'));
 
-        $old_group_id = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+        $old_group_id = DB::forTable('users')
             ->select('group_id')
             ->where('id', $id);
         $old_group_id = Container::get('hooks')
             ->fireDB('model.profile.update_group_membership_old_group', $old_group_id);
         $old_group_id = $old_group_id->find_one();
 
-        $update_group = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+        $update_group = DB::forTable('users')
             ->where('id', $id)
             ->find_one()
             ->set('group_id', $new_group_id);
@@ -507,7 +507,7 @@ class Profile
             Container::get('cache')->store('admin_ids', Cache::getAdminIds());
         }
 
-        $new_group_mod = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+        $new_group_mod = DB::forTable('groups')
             ->select('g_moderator')
             ->where('g_id', $new_group_id);
         $new_group_mod = Container::get('hooks')
@@ -527,7 +527,7 @@ class Profile
                     $username = array_search($id, $cur_moderators);
                     unset($cur_moderators[$username]);
 
-                    $update_forums = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+                    $update_forums = DB::forTable('forums')
                         ->where('id', $cur_forum['id'])
                         ->find_one();
 
@@ -554,7 +554,7 @@ class Profile
     public function getUsername($id)
     {
         // Get the username of the user we are processing
-        $username = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+        $username = DB::forTable('users')
             ->select('username')
             ->where('id', $id)
             ->find_one();
@@ -566,7 +566,7 @@ class Profile
     {
         $result['select'] = ['id', 'moderators'];
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+        $result = DB::forTable('forums')
             ->select_many($result['select']);
         $result = Container::get('hooks')->fireDB('model.profile.loop_mod_forums', $result);
         $result = $result->find_many();
@@ -590,7 +590,7 @@ class Profile
                 $cur_moderators[$username] = $id;
                 uksort($cur_moderators, 'utf8_strcasecmp');
 
-                $update_forums = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+                $update_forums = DB::forTable('forums')
                     ->where('id', $cur_forum['id'])
                     ->find_one()
                     ->set('moderators', serialize($cur_moderators));
@@ -601,7 +601,7 @@ class Profile
             elseif (!in_array($cur_forum['id'], $moderator_in) && in_array($id, $cur_moderators)) {
                 unset($cur_moderators[$username]);
 
-                $update_forums = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+                $update_forums = DB::forTable('forums')
                     ->where('id', $cur_forum['id'])
                     ->find_one();
 
@@ -632,7 +632,7 @@ class Profile
         $username = $this->getUsername($id);
 
         // Check whether user is already banned
-        $ban_id = \ORM::for_table(ORM_TABLE_PREFIX.'bans')
+        $ban_id = DB::forTable('bans')
             ->select('id')
             ->where('username', $username)
             ->order_by_expr('expire IS NULL DESC')
@@ -654,10 +654,10 @@ class Profile
         $pid = Input::query('pid') ? intval(Input::query('pid')) : 0;
 
         // Find the group ID to promote the user to
-        $next_group_id = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+        $next_group_id = DB::forTable('groups')
             ->select('g.g_promote_next_group')
             ->table_alias('g')
-            ->inner_join(ORM_TABLE_PREFIX.'users', ['u.group_id', '=', 'g.g_id'], 'u')
+            ->inner_join(DB::prefix().'users', ['u.group_id', '=', 'g.g_id'], 'u')
             ->where('u.id', $id);
         $next_group_id = Container::get('hooks')->fireDB('model.profile.promote_user_group_id', $next_group_id);
         $next_group_id = $next_group_id->find_one();
@@ -667,7 +667,7 @@ class Profile
         }
 
         // Update the user
-        $update_user = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+        $update_user = DB::forTable('users')
             ->where('id', $id)
             ->find_one()
             ->set('group_id', $next_group_id->g_promote_next_group);
@@ -686,7 +686,7 @@ class Profile
         // Get the username and group of the user we are deleting
         $result['select'] = ['group_id', 'username'];
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+        $result = DB::forTable('users')
             ->where('id', $id)
             ->select_many($result['select']);
         $result = Container::get('hooks')->fireDB('model.profile.delete_user_username', $result);
@@ -702,7 +702,7 @@ class Profile
         if (Input::post('delete_user_comply')) {
             // If the user is a moderator or an administrator, we remove him/her from the moderator
             // list in all forums as well
-            $group_mod = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+            $group_mod = DB::forTable('groups')
                 ->select('g_moderator')
                 ->where('g_id', $group_id);
             $group_mod = Container::get('hooks')->fireDB('model.profile.delete_user_group_mod', $group_mod);
@@ -719,7 +719,7 @@ class Profile
                     if (in_array($id, $cur_moderators)) {
                         unset($cur_moderators[$username]);
 
-                        $update_forums = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+                        $update_forums = DB::forTable('forums')
                             ->where('id', $cur_forum['id'])
                             ->find_one();
 
@@ -736,20 +736,20 @@ class Profile
             }
 
             // Delete any subscriptions
-            $delete_subscriptions = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
+            $delete_subscriptions = DB::forTable('topic_subscriptions')
                 ->where('user_id', $id);
             $delete_subscriptions = Container::get('hooks')
                 ->fireDB('model.profile.delete_user_subscriptions_topic', $delete_subscriptions);
             $delete_subscriptions = $delete_subscriptions->delete_many();
             unset($delete_subscriptions);
-            $delete_subscriptions = \ORM::for_table(ORM_TABLE_PREFIX.'forum_subscriptions')
+            $delete_subscriptions = DB::forTable('forum_subscriptions')
                 ->where('user_id', $id);
             $delete_subscriptions = Container::get('hooks')
                 ->fireDB('model.profile.delete_user_subscriptions_forum', $delete_subscriptions);
             $delete_subscriptions = $delete_subscriptions->delete_many();
 
             // Remove him/her from the online list (if they happen to be logged in)
-            $delete_online = \ORM::for_table(ORM_TABLE_PREFIX.'online')
+            $delete_online = DB::forTable('online')
                 ->where('user_id', $id);
             $delete_online = Container::get('hooks')->fireDB('model.profile.delete_user_online', $delete_online);
             $delete_online = $delete_online->delete_many();
@@ -765,11 +765,11 @@ class Profile
                 unset($result);
                 $result['select'] = ['p.id', 'p.topic_id', 't.forum_id'];
 
-                $result = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+                $result = DB::forTable('posts')
                     ->table_alias('p')
                     ->select_many($result['select'])
-                    ->inner_join(ORM_TABLE_PREFIX.'topics', ['t.id', '=', 'p.topic_id'], 't')
-                    ->inner_join(ORM_TABLE_PREFIX.'forums', ['f.id', '=', 't.forum_id'], 'f')
+                    ->inner_join(DB::prefix().'topics', ['t.id', '=', 'p.topic_id'], 't')
+                    ->inner_join(DB::prefix().'forums', ['f.id', '=', 't.forum_id'], 'f')
                     ->where('p.poster_id', $id);
                 $result = Container::get('hooks')->fireDB('model.profile.delete_user_posts_first_query', $result);
                 $result = $result->find_many();
@@ -777,7 +777,7 @@ class Profile
                 if ($result) {
                     foreach ($result as $cur_post) {
                         // Determine whether this post is the "topic post" or not
-                        $result2 = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+                        $result2 = DB::forTable('posts')
                             ->select('id')
                             ->where('topic_id', $cur_post['topic_id'])
                             ->order_by_expr('posted');
@@ -786,12 +786,12 @@ class Profile
                         $result2 = $result2->find_one();
 
                         if ($result2->id == $cur_post['id']) {
-                            \ORM::forTable(ORM_TABLE_PREFIX.'topics')
+                            DB::forTable('topics')
                                 ->where('id', $cur_post['topic_id'])
                                 ->findOne()
                                 ->delete();
                         } else {
-                           \ORM::forTable(ORM_TABLE_PREFIX.'posts')
+                           DB::forTable('posts')
                                ->where('id', $cur_post['id'])
                                ->where('topic_id', $cur_post['topic_id'])
                                ->findOne()
@@ -803,7 +803,7 @@ class Profile
                 }
             } else {
                 // Set all his/her posts to guest
-                $update_guest = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+                $update_guest = DB::forTable('posts')
                     ->where_in('poster_id', '1')
                     ->find_one();
                 $update_guest = Container::get('hooks')
@@ -813,7 +813,7 @@ class Profile
             }
 
             // Delete the user
-            $delete_user = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+            $delete_user = DB::forTable('users')
                             ->where('id', $id);
             $delete_user = $delete_user->delete_many();
 
@@ -845,10 +845,10 @@ class Profile
             'is_moderator' => 'g.g_moderator'
         ];
 
-        $info = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+        $info = DB::forTable('users')
             ->table_alias('u')
             ->select_many($info['select'])
-            ->left_outer_join(ORM_TABLE_PREFIX.'groups', ['g.g_id', '=', 'u.group_id'], 'g')
+            ->left_outer_join(DB::prefix().'groups', ['g.g_id', '=', 'u.group_id'], 'g')
             ->where('u.id', $id);
         $info = Container::get('hooks')->fireDB('model.profile.fetch_user_group', $info);
         $info = $info->find_one();
@@ -1103,7 +1103,7 @@ class Profile
             throw new  RunBBException(__('Bad request'), 404);
         }
 
-        $update_user = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+        $update_user = DB::forTable('users')
             ->where('id', $id)
             ->find_one()
             ->set($temp);
@@ -1112,7 +1112,7 @@ class Profile
 
         // If we changed the username we have to update some stuff
         if ($username_updated) {
-            $bans_updated = \ORM::for_table(ORM_TABLE_PREFIX.'bans')
+            $bans_updated = DB::forTable('bans')
                 ->where('username', $info['old_username'])
                 ->find_one();
             $bans_updated = Container::get('hooks')
@@ -1120,7 +1120,7 @@ class Profile
             $bans_updated->set(['username' => $form['username']])
                 ->save();
 
-            $update_poster_id = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+            $update_poster_id = DB::forTable('posts')
                 ->where('poster_id', $id)
                 ->find_one();
             $update_poster_id = Container::get('hooks')
@@ -1128,14 +1128,14 @@ class Profile
             $update_poster_id->set(['poster' => $form['username']])
                 ->save();
 
-            $update_posts = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+            $update_posts = DB::forTable('posts')
                 ->where('edited_by', $info['old_username'])
                 ->find_one();
             $update_posts = Container::get('hooks')->fireDB('model.profile.update_profile_posts', $update_posts);
             $update_posts->set(['edited_by' => $form['username']])
                 ->save();
 
-            $update_topics_poster = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+            $update_topics_poster = DB::forTable('topics')
                 ->where('poster', $info['old_username'])
                 ->find_one();
             $update_topics_poster = Container::get('hooks')
@@ -1143,7 +1143,7 @@ class Profile
             $update_topics_poster->set(['poster' => $form['username']])
                 ->save();
 
-            $update_topics_last_poster = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+            $update_topics_last_poster = DB::forTable('topics')
                 ->where('last_poster', $info['old_username'])
                 ->find_one();
             $update_topics_last_poster = Container::get('hooks')
@@ -1151,14 +1151,14 @@ class Profile
             $update_topics_last_poster->set(['last_poster' => $form['username']])
                 ->save();
 
-            $update_forums = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+            $update_forums = DB::forTable('forums')
                 ->where('last_poster', $info['old_username'])
                 ->find_one();
             $update_forums = Container::get('hooks')->fireDB('model.profile.update_profile_forums', $update_forums);
             $update_forums->set(['last_poster' => $form['username']])
                 ->save();
 
-            $update_online = \ORM::for_table(ORM_TABLE_PREFIX.'online')
+            $update_online = DB::forTable('online')
                 ->where('ident', $info['old_username'])
                 ->find_one();
             $update_online = Container::get('hooks')->fireDB('model.profile.update_profile_online', $update_online);
@@ -1166,14 +1166,14 @@ class Profile
                 ->save();
 
             // If the user is a moderator or an administrator we have to update the moderator lists
-            $group_id = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+            $group_id = DB::forTable('users')
                 ->select('group_id')
                 ->where('id', $id);
             // TODO: restore hook
             $group_id = Container::get('hooks')->fireDB('model.profile.update_profile_group_id', $group_id);
             $group_id = $group_id->find_one();
 
-            $group_mod = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+            $group_mod = DB::forTable('groups')
                 ->select('g_moderator')
                 ->where('g_id', $group_id->group_id);
             $group_mod = Container::get('hooks')->fireDB('model.profile.update_profile_group_mod', $group_mod);
@@ -1192,7 +1192,7 @@ class Profile
                         $cur_moderators[$form['username']] = $id;
                         uksort($cur_moderators, 'utf8_strcasecmp');
 
-                        $update_mods = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+                        $update_mods = DB::forTable('forums')
                             ->where('id', $cur_forum['id'])
                             ->find_one()
                             ->set('moderators', serialize($cur_moderators));
@@ -1257,10 +1257,10 @@ class Profile
             'g.g_moderator'
         ];
 
-        $user = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+        $user = DB::forTable('users')
             ->table_alias('u')
             ->select_many($user['select'])
-            ->left_outer_join(ORM_TABLE_PREFIX.'groups', ['g.g_id', '=', 'u.group_id'], 'g')
+            ->left_outer_join(DB::prefix().'groups', ['g.g_id', '=', 'u.group_id'], 'g')
             ->where('u.id', $id);
         $user = Container::get('hooks')->fireDB('model.profile.get_user_info', $user);
         $user = $user->find_one();
@@ -1476,7 +1476,7 @@ class Profile
 
         $result['select'] = ['g_id', 'g_title'];
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'groups')
+        $result = DB::forTable('groups')
             ->select_many($result['select'])
             ->where_not_equal('g_id', ForumEnv::get('FEATHER_GUEST'))
             ->order_by_expr('g_title');
@@ -1508,10 +1508,10 @@ class Profile
         $result['select'] = ['cid' => 'c.id', 'c.cat_name', 'fid' => 'f.id', 'f.forum_name', 'f.moderators'];
         $result['order_by'] = 'c.disp_position, c.id, f.disp_position';
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'categories')
+        $result = DB::forTable('categories')
             ->table_alias('c')
             ->select_many($result['select'])
-            ->inner_join(ORM_TABLE_PREFIX.'forums', ['c.id', '=', 'f.cat_id'], 'f')
+            ->inner_join(DB::prefix().'forums', ['c.id', '=', 'f.cat_id'], 'f')
             ->where_null('f.redirect_url')
             ->order_by_expr($result['order_by']);
         $result = Container::get('hooks')->fireDB('model.profile.get_forum_list', $result);
@@ -1587,8 +1587,8 @@ class Profile
         // Check that the username (or a too similar username) is not already registered
         $query = (!is_null($exclude_id)) ? ' AND id!='.$exclude_id : '';
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'online')->raw_query('SELECT username FROM '.
-            ForumSettings::get('db_prefix').'users 
+        $result = DB::forTable('online')->raw_query('SELECT username FROM '.
+            DB::prefix().'users 
             WHERE (UPPER(username)=UPPER(:username1) 
             OR UPPER(username)=UPPER(:username2)) 
             AND id>1'.$query, [
@@ -1618,7 +1618,7 @@ class Profile
 
         $mail['select'] = ['username', 'email', 'email_setting'];
 
-        $mail = \ORM::for_table(ORM_TABLE_PREFIX.'users')
+        $mail = DB::forTable('users')
                 ->select_many($mail['select'])
                 ->where('id', $recipient_id);
         $mail = Container::get('hooks')->fireDB('model.profile.get_info_mail_query', $mail);
@@ -1693,7 +1693,7 @@ class Profile
             User::get()->username
         );
 
-        $update_last_mail_sent = \ORM::forTable(ORM_TABLE_PREFIX.'users')
+        $update_last_mail_sent = DB::forTable('users')
             ->where('id', User::get()->id)
             ->findOne()
             ->set('last_email_sent', time());
@@ -1721,7 +1721,7 @@ class Profile
 
     public function changeStyle()
     {
-        $user = \ORM::forTable(ORM_TABLE_PREFIX.'users')
+        $user = DB::forTable('users')
             ->find_one(User::get()->id);
         $user->style = Input::post('styleToChange');
         $user->save();
@@ -1729,7 +1729,7 @@ class Profile
 
     public function changeLanguage()
     {
-        $user = \ORM::forTable(ORM_TABLE_PREFIX.'users')
+        $user = DB::forTable('users')
             ->find_one(User::get()->id);
         $user->language = Input::post('languageToChange');
         $user->save();

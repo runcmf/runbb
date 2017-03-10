@@ -37,23 +37,23 @@ class Forum
                 'is_subscribed' => 's.user_id'
             ];
 
-            $cur_forum = \ORM::for_table(ORM_TABLE_PREFIX.'forums')->table_alias('f')
+            $cur_forum = DB::forTable('forums')->table_alias('f')
                             ->select_many($cur_forum['select'])
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_subscriptions',
+//                            ->left_outer_join(DB::prefix().'forum_subscriptions',
 // array('f.id', '=', 's.forum_id'), 's')
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_subscriptions',
+//                            ->left_outer_join(DB::prefix().'forum_subscriptions',
 // array('s.user_id', '=', User::get()->id), null, true)
                     ->left_outer_join(
-                        ORM_TABLE_PREFIX.'forum_subscriptions',
+                    DB::prefix().'forum_subscriptions',
                         '(f.id = s.forum_id AND s.user_id = '.User::get()->id.')',
                         's'
                     )
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+//                            ->left_outer_join(DB::prefix().'forum_perms',
 // array('fp.forum_id', '=', 'f.id'), 'fp')
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+//                            ->left_outer_join(DB::prefix().'forum_perms',
 // array('fp.group_id', '=', User::get()->g_id), null, true)
                 ->left_outer_join(
-                    ORM_TABLE_PREFIX.'forum_perms',
+                    DB::prefix().'forum_perms',
                     '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
                     'fp'
                 )
@@ -70,15 +70,15 @@ class Forum
                 'fp.post_topics'
             ];
 
-            $cur_forum = \ORM::for_table(ORM_TABLE_PREFIX.'forums')->table_alias('f')
+            $cur_forum = DB::forTable('forums')->table_alias('f')
                             ->select_many($cur_forum['select'])
                             ->select_expr(0, 'is_subscribed')
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+//                            ->left_outer_join(DB::prefix().'forum_perms',
 // array('fp.forum_id', '=', 'f.id'), 'fp')
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+//                            ->left_outer_join(DB::prefix().'forum_perms',
 // array('fp.group_id', '=', User::get()->g_id), null, true)
                 ->left_outer_join(
-                    ORM_TABLE_PREFIX.'forum_perms',
+                    DB::prefix().'forum_perms',
                     '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
                     'fp'
                 )
@@ -101,7 +101,7 @@ class Forum
 
     public function getModerators($fid)
     {
-        $moderators = \ORM::forTable(ORM_TABLE_PREFIX.'forums')
+        $moderators = DB::forTable('forums')
             ->select('moderators')
             ->where('id', $fid)
             ->findOne();
@@ -181,7 +181,7 @@ class Forum
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the
         // IDs here then later fetch the remaining data
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $result = DB::forTable('topics')
                         ->select('id')
                         ->where('forum_id', $forum_id)
                         ->order_by_desc('sticky')
@@ -219,7 +219,7 @@ class Forum
                     'moved_to'
                 ];
 
-                $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+                $result = DB::forTable('topics')
                             ->select_many($result['select'])
                             ->where_in('id', $topic_ids)
                             ->order_by_desc('sticky')
@@ -243,15 +243,15 @@ class Forum
                     't.moved_to'
                 ];
 
-                $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+                $result = DB::forTable('topics')
                             ->table_alias('t')
                             ->select_many($result['select'])
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'posts',
+//                            ->left_outer_join(DB::prefix().'posts',
 // array('t.id', '=', 'p.topic_id'), 'p')
-//                            ->left_outer_join(ORM_TABLE_PREFIX.'posts',
+//                            ->left_outer_join(DB::prefix().'posts',
 // array('p.poster_id', '=', User::get()->id), null, true)
                     ->left_outer_join(
-                        ORM_TABLE_PREFIX.'posts',
+                        DB::prefix().'posts',
                         '(t.id = p.topic_id AND p.poster_id = '.User::get()->id.')',
                         'p'
                     )
@@ -379,7 +379,7 @@ class Forum
 
         // Retrieve a list of topic IDs, LIMIT is (really) expensive so we only fetch the
         // IDs here then later fetch the remaining data
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')->select('id')
+        $result = DB::forTable('topics')->select('id')
                     ->where('forum_id', $fid)
                     ->order_by_expr('sticky DESC, '.$sort_by)
                     ->limit(User::get()->disp_topics)
@@ -409,7 +409,7 @@ class Forum
                 'sticky',
                 'moved_to'
             ];
-            $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')->select_many($result['select'])
+            $result = DB::forTable('topics')->select_many($result['select'])
                         ->where_in('id', $topic_ids)
                         ->order_by_desc('sticky')
                         ->order_by_expr($sort_by)
@@ -517,7 +517,7 @@ class Forum
     //
     public static function update($forum_id)
     {
-        $stats_query = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $stats_query = DB::forTable('topics')
                             ->where('forum_id', $forum_id)
                             ->select_expr('COUNT(id)', 'total_topics')
                             ->select_expr('SUM(num_replies)', 'total_replies')
@@ -531,7 +531,7 @@ class Forum
 
         $select_update_forum = ['last_post', 'last_post_id', 'last_poster'];
 
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')->select_many($select_update_forum)
+        $result = DB::forTable('topics')->select_many($select_update_forum)
                     ->where('forum_id', $forum_id)
                     ->where_null('moved_to')
                     ->order_by_desc('last_post')
@@ -556,7 +556,7 @@ class Forum
                 'last_poster'  => 'NULL',
             ];
         }
-        \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+        DB::forTable('forums')
             ->where('id', $forum_id)
             ->find_one()
             ->set($insert_update_forum)
@@ -571,7 +571,7 @@ class Forum
             throw new  RunBBException(__('No permission'), 403);
         }
 
-        $is_subscribed = \ORM::for_table(ORM_TABLE_PREFIX.'forum_subscriptions')
+        $is_subscribed = DB::forTable('forum_subscriptions')
             ->where('user_id', User::get()->id)
             ->where('forum_id', $forum_id);
         $is_subscribed = Container::get('hooks')
@@ -583,7 +583,7 @@ class Forum
         }
 
         // Delete the subscription
-        $delete = \ORM::for_table(ORM_TABLE_PREFIX.'forum_subscriptions')
+        $delete = DB::forTable('forum_subscriptions')
             ->where('user_id', User::get()->id)
             ->where('forum_id', $forum_id);
         $delete = Container::get('hooks')->fireDB('model.forum.unsubscribe_forum_query', $delete);
@@ -604,14 +604,14 @@ class Forum
             ['fp.read_forum' => '1']
         ];
 
-        $authorized = \ORM::for_table(ORM_TABLE_PREFIX.'forums')
+        $authorized = DB::forTable('forums')
                         ->table_alias('f')
-//                        ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+//                        ->left_outer_join(DB::prefix().'forum_perms',
 // array('fp.forum_id', '=', 'f.id'), 'fp')
-//                        ->left_outer_join(ORM_TABLE_PREFIX.'forum_perms',
+//                        ->left_outer_join(DB::prefix().'forum_perms',
 // array('fp.group_id', '=', User::get()->g_id), null, true)
             ->left_outer_join(
-                ORM_TABLE_PREFIX.'forum_perms',
+                DB::prefix().'forum_perms',
                 '(fp.forum_id = f.id AND fp.group_id = '.User::get()->g_id.')',
                 'fp'
             )
@@ -625,7 +625,7 @@ class Forum
             throw new  RunBBException(__('Bad request'), 404);
         }
 
-        $is_subscribed = \ORM::for_table(ORM_TABLE_PREFIX.'forum_subscriptions')
+        $is_subscribed = DB::forTable('forum_subscriptions')
             ->where('user_id', User::get()->id)
             ->where('forum_id', $forum_id);
         $is_subscribed = Container::get('hooks')
@@ -641,7 +641,7 @@ class Forum
             'user_id' => User::get()->id,
             'forum_id'  => $forum_id
         ];
-        $subscription = \ORM::for_table(ORM_TABLE_PREFIX.'forum_subscriptions')
+        $subscription = DB::forTable('forum_subscriptions')
                             ->create()
                             ->set($subscription['insert']);
         $subscription = Container::get('hooks')->fireDB('model.forum.subscribe_forum_query', $subscription);
@@ -650,10 +650,10 @@ class Forum
 
     public function closeMultipleTopics($action, $topics)
     {
-//        $close_multiple_topics = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+//        $close_multiple_topics = DB::forTable('topics')
 //                                    ->where_in('id', $topics);
 //        $close_multiple_topics = Container::get('hooks')->fireDB('model.forum.open_topic', $close_multiple_topics);
-        \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        DB::forTable('topics')
             ->where('id', $topics)
             ->find_one()
             ->set(['closed' => $action])
@@ -671,7 +671,7 @@ class Forum
         $topics_sql = explode(',', $topics);
 
         // Verify that the topic IDs are valid
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $result = DB::forTable('topics')
                     ->where_in('id', $topics_sql)
                     ->where('forum_id', $fid);
         $result = Container::get('hooks')->fireDB('model.forum.delete_topics_verify_id', $result);
@@ -683,7 +683,7 @@ class Forum
 
         // Verify that the posts are not by admins
         if (User::get()->g_id != ForumEnv::get('FEATHER_ADMIN')) {
-            $authorized = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+            $authorized = DB::forTable('posts')
                             ->where_in('topic_id', $topics_sql)
                             ->where('poster_id', Utils::getAdminIds());
             $authorized = Container::get('hooks')->fireDB('model.forum.delete_topics_authorized', $authorized);
@@ -694,27 +694,27 @@ class Forum
         }
 
         // Delete the topics
-        $delete_topics = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $delete_topics = DB::forTable('topics')
                             ->where_in('id', $topics_sql);
         $delete_topics = Container::get('hooks')->fireDB('model.forum.delete_topics_query', $delete_topics);
         $delete_topics = $delete_topics->delete_many();
 
         // Delete any redirect topics
-        $delete_redirect_topics = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $delete_redirect_topics = DB::forTable('topics')
                                     ->where_in('moved_to', $topics_sql);
         $delete_redirect_topics = Container::get('hooks')
             ->fireDB('model.forum.delete_topics_redirect', $delete_redirect_topics);
         $delete_redirect_topics = $delete_redirect_topics->delete_many();
 
         // Delete any subscriptions
-        $delete_subscriptions = \ORM::for_table(ORM_TABLE_PREFIX.'topic_subscriptions')
+        $delete_subscriptions = DB::forTable('topic_subscriptions')
                                     ->where_in('topic_id', $topics_sql);
         $delete_subscriptions = Container::get('hooks')
             ->fireDB('model.forum.delete_topics_subscriptions', $delete_subscriptions);
         $delete_subscriptions = $delete_subscriptions->delete_many();
 
         // Create a list of the post IDs in this topic and then strip the search index
-        $find_ids = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+        $find_ids = DB::forTable('posts')
                         ->select('id')
                         ->where_in('topic_id', $topics_sql);
         $find_ids = Container::get('hooks')
@@ -736,7 +736,7 @@ class Forum
         }
 
         // Delete posts
-        $delete_posts = \ORM::for_table(ORM_TABLE_PREFIX.'posts')
+        $delete_posts = DB::forTable('posts')
                             ->where_in('topic_id', $topics_sql);
         $delete_posts = Container::get('hooks')->fireDB('model.forum.delete_topics_delete_posts', $delete_posts);
         $delete_posts = $delete_posts->delete_many();
@@ -758,7 +758,7 @@ class Forum
         }
 
         // Verify that the topic IDs are valid (redirect links will point to the merged topic after the merge)
-        $result = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $result = DB::forTable('topics')
                     ->where_in('id', $topics)
                     ->where('forum_id', $fid);
         $result = Container::get('hooks')->fireDB('model.forum.merge_topics_topic_ids', $result);
@@ -769,7 +769,7 @@ class Forum
         }
 
         // The topic that we are merging into is the one with the smallest ID
-        $merge_to_tid = \ORM::for_table(ORM_TABLE_PREFIX.'topics')
+        $merge_to_tid = DB::forTable('topics')
             ->select('id')
             ->whereIn('id', $topics)
             ->where('forum_id', $fid)
@@ -779,7 +779,7 @@ class Forum
         $merge_to_tid = Container::get('hooks')->fire('model.forum.merge_topics_tid', $merge_to_tid);
 
         // Make any redirect topics point to our new, merged topic
-        $query = 'UPDATE '.ForumSettings::get('db_prefix').'topics SET moved_to='.$merge_to_tid.
+        $query = 'UPDATE '.DB::prefix().'topics SET moved_to='.$merge_to_tid.
             ' WHERE moved_to IN('.implode(',', $topics).')';
 
         // Should we create redirect topics?
@@ -787,19 +787,19 @@ class Forum
             $query .= ' OR (id IN('.implode(',', $topics).') AND id != '.$merge_to_tid.')';
         }
 
-        \ORM::forTable(ORM_TABLE_PREFIX.'topics')->raw_execute($query);
+        DB::forTable('topics')->raw_execute($query);
 
         // Merge the posts into the topic
 //        $merge_posts = Container::get('hooks')->fireDB('model.forum.merge_topics_merge_posts', $merge_posts);
         // TODO slit for hook ???
-        \ORM::forTable(ORM_TABLE_PREFIX.'posts')
+        DB::forTable('posts')
             ->whereIn('topic_id', $topics)
             ->find_one()
             ->set(['topic_id' => $merge_to_tid])
             ->save();
 
         // Update any subscriptions
-        $find_ids = \ORM::forTable(ORM_TABLE_PREFIX.'topic_subscriptions')->select('user_id')
+        $find_ids = DB::forTable('topic_subscriptions')->select('user_id')
                         ->distinct()
                         ->whereIn('topic_id', $topics);
         $find_ids = Container::get('hooks')->fireDB('model.forum.merge_topics_find_ids', $find_ids);
@@ -811,7 +811,7 @@ class Forum
         }
 
         // Delete the subscriptions
-        $delete_subscriptions = \ORM::forTable(ORM_TABLE_PREFIX.'topic_subscriptions')
+        $delete_subscriptions = DB::forTable('topic_subscriptions')
                                     ->whereIn('topic_id', $topics);
         $delete_subscriptions = Container::get('hooks')
             ->fireDB('model.forum.merge_topics_delete_subscriptions', $delete_subscriptions);
@@ -824,7 +824,7 @@ class Forum
                 'user_id'   =>  $cur_user_id,
             ];
             // Insert the subscription
-            $subscriptions = \ORM::forTable(ORM_TABLE_PREFIX.'topic_subscriptions')
+            $subscriptions = DB::forTable('topic_subscriptions')
                                 ->create()
                                 ->set($subscriptions['insert']);
             $subscriptions = Container::get('hooks')
@@ -834,7 +834,7 @@ class Forum
 
         // Without redirection the old topics are removed
         if (Input::post('with_redirect') == 0) {
-            $delete_topics = \ORM::forTable(ORM_TABLE_PREFIX.'topics')
+            $delete_topics = DB::forTable('topics')
                                 ->whereIn('id', $topics)
                                 ->whereNotEqual('id', $merge_to_tid);
             $delete_topics = Container::get('hooks')
@@ -843,13 +843,13 @@ class Forum
         }
 
         // Count number of replies in the topic
-        $num_replies = \ORM::forTable(ORM_TABLE_PREFIX.'posts')->where('topic_id', $merge_to_tid)->count('id') - 1;
+        $num_replies = DB::forTable('posts')->where('topic_id', $merge_to_tid)->count('id') - 1;
         $num_replies = Container::get('hooks')->fire('model.forum.merge_topics_num_replies', $num_replies);
 
         // Get last_post, last_post_id and last_poster
         $last_post['select'] = ['posted', 'id', 'poster'];
 
-        $last_post = \ORM::forTable(ORM_TABLE_PREFIX.'posts')
+        $last_post = DB::forTable('posts')
                         ->selectMany($last_post['select'])
                         ->where('topic_id', $merge_to_tid)
                         ->orderByDesc('id');
@@ -864,7 +864,7 @@ class Forum
             'last_poster'  => $last_post['poster'],
         ];
 
-        $topic = \ORM::forTable(ORM_TABLE_PREFIX.'topics')
+        $topic = DB::forTable('topics')
                     ->where('id', $merge_to_tid)
                     ->findOne()
                     ->set($update_topic['insert']);

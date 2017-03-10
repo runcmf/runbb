@@ -39,7 +39,7 @@ class BBLogger extends AbstractProcessingHandler
      */
     protected function write(array $record)
     {
-        $log = \ORM::forTable(ORM_TABLE_PREFIX . 'logs')->create();
+        $log = DB::forTable('logs')->create();
         $log->set('channel', $record['channel']);
         $log->set('level', $record['level']);
         $log->set('level_name', $record['level_name']);
@@ -64,10 +64,20 @@ class BBLogger extends AbstractProcessingHandler
     public static function getLogs()
     {
         //FIXME paginate!
-        $res = \ORM::forTable(ORM_TABLE_PREFIX . 'logs')
+        $res = DB::forTable('logs')
             ->orderByDesc('id')
             ->findMany();
 //tdie($res);
         return $res;
+    }
+
+    public static function delete(array $ids)
+    {
+        if(!empty($ids)) {
+            return DB::forTable('logs')
+                ->whereIn('id', array_keys($ids))
+                ->deleteMany();
+        }
+        return false;
     }
 }

@@ -18,6 +18,7 @@
 namespace RunBB\Controller\Admin;
 
 use RunBB\Core\AdminUtils;
+use RunBB\Core\Interfaces\Input;
 use RunBB\Core\Utils;
 use RunBB\Model\BBLogger;
 
@@ -32,9 +33,18 @@ class Logs
     {
         AdminUtils::generateAdminMenu('logs');
 
+        $delIds = Input::post('logIds', []);
+        if(!empty($delIds)) {
+            if(BBLogger::delete($delIds)) {
+                return Router::redirect(Router::pathFor('adminLogs'), ['success', 'Logs deleted']);
+            } else {
+                return Router::redirect(Router::pathFor('adminLogs'), ['error', 'ERROR delete Logs :(']);
+            }
+        }
+
         return View::setPageInfo([
             'active_page' => 'admin',
-            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), 'Loggs'],// TODO translate
+            'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), 'Logs'],// TODO translate
             'admin_console' => true,
             'logs' => BBLogger::getLogs()
         ])->display('@forum/admin/logs');

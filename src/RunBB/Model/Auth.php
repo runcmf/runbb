@@ -22,11 +22,12 @@ class Auth
         $result['where'] = ['u.id' => $user_id];
         $result['join'] = ($user_id == 1) ? Utils::getIp() : 'u.id';
 
-        $result = \ORM::forTable(ORM_TABLE_PREFIX.'users')
+//        $result = DB::forTable('users')
+        $result = DB::forTable('users')
                 ->tableAlias('u')
                 ->selectMany($result['select'])
-                ->innerJoin(ORM_TABLE_PREFIX.'groups', ['u.group_id', '=', 'g.g_id'], 'g')
-                ->rawJoin('LEFT JOIN '.ORM_TABLE_PREFIX.'online', 'o.user_id=?', 'o', [1 => $result['join']])
+                ->innerJoin(DB::prefix().'groups', ['u.group_id', '=', 'g.g_id'], 'g')
+                ->rawJoin('LEFT JOIN '.DB::prefix().'online', 'o.user_id=?', 'o', [1 => $result['join']])
                 ->where($result['where'])
                 ->findOne();
         return $result;
@@ -34,7 +35,7 @@ class Auth
 
     public static function deleteOnlineByIp($ip)
     {
-        $delete_online = \ORM::forTable(ORM_TABLE_PREFIX.'online')->where('ident', $ip);
+        $delete_online = DB::forTable('online')->where('ident', $ip);
         $delete_online = Container::get('hooks')->fireDB('delete_online_login', $delete_online);
         return $delete_online->deleteMany();
     }
@@ -42,14 +43,14 @@ class Auth
     public static function deleteOnlineById($user_id)
     {
         // Remove user from "users online" list
-        $delete_online = \ORM::forTable(ORM_TABLE_PREFIX.'online')->where('user_id', $user_id);
+        $delete_online = DB::forTable('online')->where('user_id', $user_id);
         $delete_online = Container::get('hooks')->fireDB('delete_online_logout', $delete_online);
         return $delete_online->deleteMany();
     }
 
     public static function getUserFromName($username)
     {
-        $user = \ORM::forTable(ORM_TABLE_PREFIX.'users')->where('username', $username);
+        $user = DB::forTable('users')->where('username', $username);
         $user = Container::get('hooks')->fireDB('find_user_login', $user);
         return $user->findOne();
     }
@@ -57,7 +58,7 @@ class Auth
     public static function getUserFromEmail($email)
     {
         $result['select'] = ['id', 'username', 'last_email_sent'];
-        $result = \ORM::forTable(ORM_TABLE_PREFIX.'users')
+        $result = DB::forTable('users')
             ->selectMany($result['select'])
             ->where('email', $email);
         $result = Container::get('hooks')->fireDB('password_forgotten_query', $result);
@@ -66,7 +67,7 @@ class Auth
 
     public static function updateGroup($user_id, $group_id)
     {
-        $update_usergroup = \ORM::forTable(ORM_TABLE_PREFIX.'users')->where('id', $user_id)
+        $update_usergroup = DB::forTable('users')->where('id', $user_id)
             ->findOne()
             ->set('group_id', $group_id);
         $update_usergroup = Container::get('hooks')->fireDB('update_usergroup_login', $update_usergroup);
@@ -75,7 +76,7 @@ class Auth
 
     public static function setLastVisit($user_id, $last_visit)
     {
-        $update_last_visit = \ORM::forTable(ORM_TABLE_PREFIX.'users')->where('id', (int) $user_id)
+        $update_last_visit = DB::forTable('users')->where('id', (int) $user_id)
             ->findOne()
             ->set('last_visit', (int) $last_visit);
         $update_last_visit = Container::get('hooks')->fireDB('update_online_logout', $update_last_visit);
@@ -90,7 +91,7 @@ class Auth
             'last_email_sent' => time(),
         ];
 
-        $query = \ORM::forTable(ORM_TABLE_PREFIX.'users')
+        $query = DB::forTable('users')
                     ->where('id', $user_id)
                     ->findOne()
                     ->set($query['update']);
