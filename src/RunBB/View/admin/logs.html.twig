@@ -1,20 +1,36 @@
 {% extends '@forum/adminLayout.html.twig' %}
 
 {% block content %}
-    <form class="panel panel-primary" method="post" action="{{ pathFor('adminLogs') }}" enctype="multipart/form-data">
+    <div class="linkst">
+        <div class="inbox crumbsplus">
+            <div class="pagepost">
+                <p class="pagelink conl">{{ paging_links|raw }}</p>
+            </div>
+        </div>
+    </div>
+
+    <form id="logsForm" class="panel panel-primary" method="post" action="{{ pathFor('adminLogs') }}" enctype="multipart/form-data">
         <input type="hidden" name="csrf_name" value="{{ csrf_name }}">
         <input type="hidden" name="csrf_value" value="{{ csrf_value }}">
         <input type="hidden" name="form_sent" value="1" />
 
         <div class="panel-heading">
-            <h3 class="panel-title">RunBB Logs</h3>
+            <h3 class="panel-title">
+                <div class="pull-right">
+                    <input class="btn btn-info btn-sm" type="submit" name="save" value="{{ trans('Save changes') }}" />
+                </div>
+                RunBB Logs
+            </h3>
+            <div class="clearfix"></div>
         </div>
 
         <div class="list-group">
             <div class="list-group-item list-group-item-info">
                 <div class="row">
                     <div class="col-xs-11 col-sm-11">Id / Time / Message / Info</div>
-                    <div class="col-xs-1 col-sm-1">del chk</div>
+                    <div class="col-xs-1 col-sm-1">
+                        <a href="#" class="btn btn-primary btn-sm" onclick="RunBB.selectCheckboxes('logsForm', this, '{{ trans('Unselect all') }}')">{{ trans('Select all') }}</a>
+                    </div>
                 </div>
             </div>
             {% for log in logs %}
@@ -31,14 +47,11 @@
                             </p>
                             <p>{{ log.message|raw }}</p>
                             {% set extra = jsonDecode(log.extra) %}
-                            {#<a class="btn btn-info btn-sm" href="#extra{{ log.id }}" data-toggle="collapse">extra</a>#}
-                            {#<div id="extra{{ log.id }}" class="collapse">#}
                             {% for var, val in extra %}
                                 <div class="text-info">
                                     <strong>{{ var }}:</strong> {{ val }}
                                 </div>
                             {% endfor %}
-                            {#</div>#}
                         </div>
                         <div class="col-xs-1 col-sm-1">
                             <input name="logIds[{{ log.id }}]" type="checkbox" value="1">
@@ -52,4 +65,12 @@
             <input class="btn btn-primary" type="submit" name="save" value="{{ trans('Save changes') }}" />
         </div>
     </form>
+
+    <div class="linkst">
+        <div class="inbox crumbsplus">
+            <div class="pagepost">
+                <p class="pagelink conl">{{ paging_links|raw }}</p>
+            </div>
+        </div>
+    </div>
 {% endblock content %}

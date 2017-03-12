@@ -61,14 +61,18 @@ class BBLogger extends AbstractProcessingHandler
         return $this;
     }
 
-    public static function getLogs()
+    public static function count()
     {
-        //FIXME paginate!
-        $res = DB::forTable('logs')
+        return DB::forTable('logs')->count();
+    }
+
+    public static function getLogs($start_from = 0)
+    {
+        return DB::forTable('logs')
             ->orderByDesc('id')
+            ->limit(User::get()->disp_topics)
+            ->offset($start_from)
             ->findMany();
-//tdie($res);
-        return $res;
     }
 
     public static function delete(array $ids)

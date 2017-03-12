@@ -9,6 +9,8 @@
 
 namespace RunBB\Core;
 
+use RunBB\Init;
+
 class Url
 {
     protected static $url_replace = [
@@ -594,7 +596,6 @@ class Url
     {
         $pages = [];
         $link_to_all = false;
-        $link = 'forum/'.$link; // FIXME
 
         // If $cur_page == -1, we link to all pages (used in Forum.php)
         if ($cur_page == -1) {
@@ -801,7 +802,8 @@ class Url
             }
         }
 
-        $gen_link = $base_url.'/'.str_replace(
+//        $gen_link = $base_url.'/'.str_replace(
+        $gen_link = $base_url.str_replace(
             '#',
             str_replace('$1', str_replace('$1', $subarg, $sublink), '$1/'),
             $gen_link

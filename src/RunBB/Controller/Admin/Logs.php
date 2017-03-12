@@ -42,11 +42,21 @@ class Logs
             }
         }
 
+        // Determine the logs offset (based on $args['page'])
+        $num_pages = ceil(BBLogger::count() / User::get()->disp_topics);
+        $p = (!isset($args['page']) || $args['page'] <= 1 || $args['page'] > $num_pages) ? 1 : (int)$args['page'];
+        $start_from = User::get()->disp_topics * ($p - 1);
+        // Generate paging links
+        $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' .
+            Url::paginate($num_pages, $p, Router::pathFor('adminLogs') . '/#');
+
+
         return View::setPageInfo([
             'active_page' => 'admin',
             'title' => [Utils::escape(ForumSettings::get('o_board_title')), __('Admin'), 'Logs'],// TODO translate
             'admin_console' => true,
-            'logs' => BBLogger::getLogs()
+            'paging_links' => $paging_links,
+            'logs' => BBLogger::getLogs($start_from)
         ])->display('@forum/admin/logs');
     }
 }

@@ -84,7 +84,7 @@ class Topic
 
         // Generate paging links
         $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' .
-            Url::paginate($num_pages, $p, 'topic/' . $args['id'] . '/' . $url_topic . '/#');
+            Url::paginate($num_pages, $p, \RunBB\Init::$uri . '/topic/' . $args['id'] . '/' . $url_topic . '/#');
 
         if (ForumSettings::get('o_censoring') == '1') {
             $cur_topic['subject'] = Utils::censor($cur_topic['subject']);
@@ -306,7 +306,8 @@ class Topic
                 'fid' => $args['fid'],
                 'id' => $args['id'],
                 'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' .
-                    Url::paginate($num_pages, $p, 'topic/moderate/' . $args['id'] . '/forum/' . $args['fid'] . '/#'),
+                    Url::paginate($num_pages, $p, \RunBB\Init::$uri . '/topic/moderate/' .
+                        $args['id'] . '/forum/' . $args['fid'] . '/#'),
                 'post_data' => $this->model->displayPostsModerate($args['id'], $start_from),
                 'button_status' => $button_status,
                 'start_from' => $start_from,

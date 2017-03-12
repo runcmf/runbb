@@ -986,7 +986,7 @@ class Search
                     $subject_multipage = '<span class="pagestext">[ '.Url::paginate(
                         $num_pages_topic,
                         -1,
-                        'topic/'.$cur_search['tid'].'/'.$url_topic.'/#'
+                            Init::$uri . '/topic/'.$cur_search['tid'].'/'.$url_topic.'/#'
                     ).' ]</span>';
                 } else {
                     $subject_multipage = null;

@@ -17,6 +17,11 @@
 
 namespace RunBB\Core\Interfaces;
 
+/**
+ * Idiorm wrapper
+ * Class DB
+ * @package RunBB\Core\Interfaces
+ */
 class DB extends SlimSugar
 {
     /**
@@ -24,14 +29,14 @@ class DB extends SlimSugar
      * @param null $name
      * @return \ORM
      */
-    public static function forTable($name=null)
+    public static function forTable($name=null, $connName = \ORM::DEFAULT_CONNECTION)
     {
-        return \ORM::forTable(\ORM::getConfig('tablePrefix') . $name);
+        return \ORM::forTable(\ORM::getConfig('tablePrefix', $connName) . $name, $connName);
     }
 
-    public static function prefix()
+    public static function prefix($connName = \ORM::DEFAULT_CONNECTION)
     {
-        return \ORM::getConfig('tablePrefix');
+        return \ORM::getConfig('tablePrefix', $connName);
     }
 
     public static function init(array $config, $connName = \ORM::DEFAULT_CONNECTION)

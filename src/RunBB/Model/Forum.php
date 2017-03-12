@@ -345,8 +345,8 @@ class Forum
 
                 if ($num_pages_topic > 1) {// FIXME rebuild url
                     $subject_multipage = '<span class="pagestext">[ '.
-                        Url::paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_subject.'/#').
-                        ' ]</span>';
+                        Url::paginate($num_pages_topic, -1, Init::$uri . '/topic/'.$cur_topic['id'].
+                            '/'.$url_subject.'/#'). ' ]</span>';
                 } else {
                     $subject_multipage = null;
                 }
@@ -491,8 +491,8 @@ class Forum
 
                 if ($num_pages_topic > 1) {// FIXME rebuild url
                     $subject_multipage = '<span class="pagestext">[ '.
-                        Url::paginate($num_pages_topic, -1, 'topic/'.$cur_topic['id'].'/'.$url_topic.'/#').
-                        ' ]</span>';
+                        Url::paginate($num_pages_topic, -1, Init::$uri . '/topic/'.$cur_topic['id'].
+                            '/'.$url_topic.'/#'). ' ]</span>';
                 } else {
                     $subject_multipage = null;
                 }

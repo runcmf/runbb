@@ -62,7 +62,7 @@ class Forum
 
         // Generate paging links
         $paging_links = '<span class="pages-label">' . __('Pages') . ' </span>' .
-            Url::paginate($num_pages, $p, $args['fid'] . '/' . $url_forum . '/#');
+            Url::paginate($num_pages, $p, \RunBB\Init::$uri . '/' . $args['fid'] . '/' . $url_forum . '/#');
 
         $forum_actions = $this->model->getForumActions(
             $args['fid'],
@@ -149,7 +149,7 @@ class Forum
             'url_forum' => $url_forum,
             'cur_forum' => $cur_forum,
             'paging_links' => '<span class="pages-label">' . __('Pages') . ' </span>' .
-                Url::paginate($num_pages, $p, 'forum/moderate/' . $args['fid'] . '/#'),
+                Url::paginate($num_pages, $p, \RunBB\Init::$uri . '/moderate/' . $args['fid'] . '/#'),
             'topic_data' => $this->model->displayTopicsModerate($args['fid'], $sort_by, $start_from),
             'start_from' => $start_from,
         ])->display('@forum/moderate/moderator_forum');

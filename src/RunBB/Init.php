@@ -427,7 +427,7 @@ class Init
             // Admin logs
             Route::map(
                 ['GET', 'POST'],
-                '/logs',
+                '/logs[/page/{page:[0-9]+}]',
                 '\RunBB\Controller\Admin\Logs:display'
             )->add(new IsAdmin)->setName('adminLogs');
 

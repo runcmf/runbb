@@ -137,31 +137,37 @@ class Auth
         $select_update_users_online = ['user_id', 'ident', 'logged', 'idle'];
 
         $result = DB::forTable('online')
-                    ->select_many($select_update_users_online)
-                    ->where_lt('logged', Container::get('now')-ForumSettings::get('o_timeout_online'))
-                    ->find_many();
+                    ->selectMany($select_update_users_online)
+                    ->whereLt('logged', Container::get('now')-ForumSettings::get('o_timeout_online'))
+                    ->findMany();
 
         foreach ($result as $cur_user) {
             // If the entry is a guest, delete it
             if ($cur_user['user_id'] == '1') {
-                DB::forTable('online')->where('ident', $cur_user['ident'])
-                    ->delete_many();
+                DB::forTable('online')
+                    ->where('ident', $cur_user['ident'])
+                    ->deleteMany();
             } else {
                 // If the entry is older than "o_timeout_visit", update last_visit for the user in question,
                 // then delete him/her from the online list
                 if ($cur_user['logged'] < (Container::get('now')-ForumSettings::get('o_timeout_visit'))) {
-                    DB::forTable('users')->where('id', $cur_user['user_id'])
-                        ->find_one()
-                        ->set('last_visit', $cur_user['logged'])
-                        ->save();
-                    DB::forTable('online')->where('user_id', $cur_user['user_id'])
-                        ->delete_many();
-                } elseif ($cur_user['idle'] == '0') {
+                    $ret = DB::forTable('users')
+                        ->where('id', $cur_user['user_id'])
+                        ->findOne();
+                    // empty user table
+                    if ($ret !== false) {
+                        $ret->set('last_visit', $cur_user['logged'])->save();
+                    }
                     DB::forTable('online')
                         ->where('user_id', $cur_user['user_id'])
-                        ->find_one()
-                        ->set(['idle' => 1])
-                        ->save();
+                        ->deleteMany();
+                } elseif ($cur_user['idle'] == '0') {
+                    $ret = DB::forTable('online')
+                        ->where('user_id', $cur_user['user_id'])
+                        ->findOne();
+                    if ($ret !== false) {
+                        $ret->set(['idle' => 1])->save();
+                    }
                 }
             }
         }
@@ -255,24 +261,31 @@ class Auth
         if ($jwt = $this->getCookieData($authCookie)) {
             $user = AuthModel::loadUser($jwt->data->userId);
 
+            if(!($user instanceof \ORM)) {
+                $user = new \stdClass;
+                $user->id = 1;
+                $user->g_id = ForumEnv::get('FEATHER_GUEST');
+                $user->username = 'Guest';
+            }
+
             $expires = ($jwt->exp > Container::get('now') + ForumSettings::get('o_timeout_visit')) ?
                 Container::get('now') + 1209600 : Container::get('now') + ForumSettings::get('o_timeout_visit');
 
-            $user->is_guest = false;
+            $user->is_guest = $user->id == 1;
             $user->is_admmod = $user->g_id == ForumEnv::get('FEATHER_ADMIN');
             $user->isModerator = $user->g_id == ForumEnv::get('FEATHER_MOD');
 
-            if (!$user->disp_topics) {
+            if (!isset($user->disp_topics) || $user->disp_topics == null) {
                 $user->disp_topics = ForumSettings::get('o_disp_topics_default');
             }
-            if (!$user->disp_posts) {
+            if (!isset($user->disp_posts) || $user->disp_posts == null) {
                 $user->disp_posts = ForumSettings::get('o_disp_posts_default');
             }
-            if (!file_exists(ForumEnv::get('FORUM_ROOT').'lang/'.$user->language)) {
+            if (!isset($user->language) || $user->language == null) {
                 $user->language = ForumSettings::get('o_default_lang');
             }
 
-            if (!file_exists(ForumEnv::get('WEB_ROOT').'themes/'.$user->style.'/style.css')) {
+            if(!isset($user->style) || !file_exists(ForumEnv::get('WEB_ROOT').'themes/'.$user->style.'/style.css')) {
                 $user->style = ForumSettings::get('o_default_style');
             }
 
