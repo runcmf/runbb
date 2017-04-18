@@ -78,7 +78,7 @@ class DB extends SlimSugar
         if (method_exists('ORM', $method)) {
             return call_user_func_array(['ORM', $method], $arguments);
         } else {
-            throw new \RunBB\Exception\RunBBException("Idiorm Method $name() does not exist in class " . get_class($this), 500);
+            throw new \RunBB\Exception\RunBBException("Idiorm Method $name() does not exist", 500);
         }
     }
 
@@ -86,6 +86,11 @@ class DB extends SlimSugar
     {
         $method = strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $name));
 
-        return call_user_func_array(['ORM', $method], $arguments);
+//        return call_user_func_array(['ORM', $method], $arguments);
+        if (method_exists('ORM', $method)) {
+            return call_user_func_array(['ORM', $method], $arguments);
+        } else {
+            throw new \RunBB\Exception\RunBBException("Idiorm Method $name() does not exist", 500);
+        }
     }
 }

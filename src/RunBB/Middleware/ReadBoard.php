@@ -25,7 +25,7 @@ class ReadBoard
     {
         // Display error page
         if (User::get()->g_read_board == '0') {
-            throw new  RunBBException(__('No view'), 403);
+            throw new RunBBException(__('No view'), 403);
         }
         $response = $next($request, $response);
         return $response;

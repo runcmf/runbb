@@ -214,7 +214,9 @@ class Init
                                 'class: &nbsp;' . $trace[$i]['class'] . ' [' . $trace[$i]['function'] . ']<br />';
                         }
                     }
-                    Log::error($error['message'] . '<br /><br />' . $msg, ['context' => 'errorHandler']);
+                    if(Container::get('log')) {
+                        Container::get('log')->error($error['message'] . '<br /><br />' . $msg, ['context' => 'errorHandler']);
+                    }
                 }
 
                 if (isset(User::get()->is_admmod) &&

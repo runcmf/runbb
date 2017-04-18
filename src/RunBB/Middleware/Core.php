@@ -12,7 +12,6 @@ namespace RunBB\Middleware;
 
 use RunBB\Core\Email;
 use RunBB\Core\Hooks;
-use RunBB\Core\Interfaces\Log;
 use RunBB\Core\Parser;
 use RunBB\Core\Interfaces\Container;
 use RunBB\Core\Interfaces\Lang;

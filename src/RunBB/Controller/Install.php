@@ -194,6 +194,7 @@ class Install
                 'base_url' => $base_url,
                 'default_lang' => $this->install_lang
             ];
+            \ORM::configure('tablePrefix', '');
             return View::setPageInfo([
                 'languages' => $this->available_langs,
                 'supported_dbs' => $this->supported_dbs,
@@ -238,7 +239,7 @@ class Install
         // Handle db prefix
         $data['db_prefix'] = (!empty($data['db_prefix'])) ? $data['db_prefix'] : '';
         // Init DB
-        Core::initDb($data);
+        DB::init($data);
         // Load appropriate language ???
 //        Lang::load('install', 'RunBB', __DIR__ . '/../lang');
 
