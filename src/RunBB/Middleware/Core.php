@@ -160,7 +160,7 @@ class Core
             return new \RunBB\Core\Cache([
                 'name' => 'runbb',
                 'path' => $this->forum_env['FORUM_CACHE_DIR'],
-                'extension' => '.cache'
+                'extension' => '.cache.json'
             ]);
         });
         // Load permissions

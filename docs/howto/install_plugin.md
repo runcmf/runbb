@@ -1,9 +1,12 @@
 # Example install [runbb-ext-markitup](https://github.com/runcmf/runbb-ext-markitup) plugin 
 
 **1.**
-go to Administration -> Plugins -> repo -> find `markItup based markdown editor toolbar with elFinder` -> click `install`    
+go to Administration -> Plugins -> repo -> find `markItup based markdown editor toolbar with elFinder` -> click `composer >`    
 
-in modal window click green button with `require runcmf/runbb-ext-markitup`  
+`in first run composer will be downloaded and unpacked. You see it in modal 'Console Output:'`  
+
+after you see `Ready. All commands are available.`  
+click green button with `require runcmf/runbb-ext-markitup`  
 
 **2.**   
 after close modal, page refreshed and you see `markItup based markdown editor toolbar with elFinder` **installed**  

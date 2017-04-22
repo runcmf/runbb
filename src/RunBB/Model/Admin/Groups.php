@@ -315,7 +315,7 @@ class Groups
             ->inner_join(DB::prefix().'users', ['g.g_id', '=', 'u.group_id'], 'u')
             ->where('g.g_id', $group_id)
             ->group_by('g.g_id')
-            ->group_by('g_title');
+            ->group_by('g.g_title');
         $is_member = Container::get('hooks')->fireDB('model.admin.groups.check_members', $is_member);
         $is_member = $is_member->find_one();
 
@@ -390,7 +390,7 @@ class Groups
                     ->inner_join(DB::prefix().'users', ['g.g_id', '=', 'u.group_id'], 'u')
                     ->where('g.g_id', $group_id)
                     ->group_by('g.g_id')
-                    ->group_by('g_title');
+                    ->group_by('g.g_title');
         $group = Container::get('hooks')->fireDB('model.admin.groups.get_title_members.query', $group);
         $group = $group->find_one();
 

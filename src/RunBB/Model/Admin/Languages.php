@@ -106,14 +106,14 @@ class Languages
     {
         // now only with English compare, rebuild for any
         if ($id === 1) {
-            $list = DB::forTable('lang_trans')
+            $list = DB::forTable('lang_trans')->distinct()
                 ->where([
                     'lid' => (int)$id,
                     'domain' => (string)$domain
                 ])
                 ->findArray();
         } else {
-            $list = DB::forTable('lang_trans')
+            $list = DB::forTable('lang_trans')->distinct()
                 ->table_alias('lt')
                 ->select('lt.*')
                 ->select('ltwith.msgstr', 'msgstrwith')
@@ -123,7 +123,7 @@ class Languages
                     'lt.domain' => (string)$domain,
                     'ltwith.lid' => 1,// TODO to any langs
                 ])
-                ->group_by('id')
+                ->group_by('lt.id')
                 ->findArray();
         }
         return $list;

@@ -56,7 +56,7 @@ class Cache
     {
         return ['name' => 'default',
             'path' => 'cache/',
-            'extension' => '.cache'];
+            'extension' => '.cache.json'];
     }
 
     /**
@@ -182,7 +182,7 @@ class Cache
                     ++$i;
                     return $value;
                 }
-            });
+            }, $cache);
             if ($i > 0) {
                 $this->saveCache($cache);
             }
@@ -255,7 +255,7 @@ class Cache
             return $this->cache;
         }
 
-        if (file_exists($this->getCacheFile())) {
+        if (file_exists($this->getCacheFile()) && !empty($this->getCacheFile())) {
             $this->cache = json_decode(file_get_contents($this->getCacheFile()), true);
             return $this->cache;
         }
@@ -270,7 +270,11 @@ class Cache
     private function saveCache(array $data)
     {
         $this->cache = $data; // Save new data in object to avoid useless I/O access
-        return file_put_contents($this->getCacheFile(), json_encode($data));
+        $opt = '';
+        if (ForumEnv::get('FEATHER_DEBUG')) {
+            $opt = JSON_PRETTY_PRINT;
+        }
+        return file_put_contents($this->getCacheFile(), json_encode($data, $opt));
     }
 
     /**
