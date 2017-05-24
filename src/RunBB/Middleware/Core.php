@@ -60,9 +60,6 @@ class Core
         // Populate forum_env
         $this->forum_env = array_merge($this->loadDefaultForumEnv(), $this->forum_env);
 
-        // Load debugger helper
-        require $this->forum_env['FORUM_ROOT'] . 'Helpers/shortcuts.php';
-
         // Load IdiORM
         // TODO move to global separately forum ???
         require_once $data['root_dir'] . 'vendor/j4mie/idiorm/idiorm.php';

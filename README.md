@@ -33,7 +33,7 @@ $ composer require runcmf/runbb:dev-master
 ## Requirements
 
 * A webserver
-* PHP 5.6.0 or later
+* PHP 5.6.0 or later with mbstring, curl
 * DB: all supported by [Idiorm](https://github.com/j4mie/idiorm)
 
 ## Recommendations
